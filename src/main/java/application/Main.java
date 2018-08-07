@@ -1,6 +1,12 @@
 package application;
 
-import org.artorg.tools.phantomData.server.boot.BootUtils;
+import static org.artorg.tools.phantomData.server.boot.BootInit.initDatabase;
+import static org.artorg.tools.phantomData.server.boot.BootUtils.deleteDatabase;
+import static org.artorg.tools.phantomData.server.boot.BootUtils.deleteFileStructure;
+import static org.artorg.tools.phantomData.server.boot.BootUtils.logInfos;
+import static org.artorg.tools.phantomData.server.boot.BootUtils.prepareFileStructure;
+import static org.artorg.tools.phantomData.server.boot.BootUtils.shutdownServer;
+import static org.artorg.tools.phantomData.server.boot.BootUtils.startingServer;
 
 import control.MainController;
 import javafx.application.Application;
@@ -11,8 +17,15 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
     public static void main( String[] args ) {
-    	BootUtils.startingServer(args);
-//		BootUtils.initDatabase();
+    	shutdownServer();
+		deleteDatabase();
+		deleteFileStructure();
+		prepareFileStructure();
+		logInfos();
+		startingServer(args);
+		
+		initDatabase();
+ 
     	
     	launch(args);
     }

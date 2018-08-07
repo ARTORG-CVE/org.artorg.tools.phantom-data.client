@@ -4,6 +4,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -20,19 +21,47 @@
       						<Menu fx:id="menuFile" mnemonicParsing="false" text="File">
       							<items>
       								<MenuItem fx:id="menuItemNew" mnemonicParsing="false" onAction="#addphantom" text="New" />
+                              <MenuItem mnemonicParsing="false" text="Open..." />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem mnemonicParsing="false" text="Save" />
       								<MenuItem fx:id="menuItemImport" mnemonicParsing="false" onAction="#importing" text="Import..." />
       								<MenuItem fx:id="menuItemExport" mnemonicParsing="false" onAction="#export" text="Export..." />
       								<MenuItem fx:id="menuItemSettings" mnemonicParsing="false" onAction="#settings" text="Settings" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
       								<MenuItem fx:id="menuItemClose" mnemonicParsing="false" onAction="#close" text="Close" />
       							</items>
       						</Menu>
       						<Menu fx:id="menuEdit" mnemonicParsing="false" text="Edit">
       							<items>
-      								<RadioMenuItem mnemonicParsing="false" text="Filters" />
+                              <MenuItem fx:id="menuItemUndo" mnemonicParsing="false" text="Undo" />
+                              <MenuItem fx:id="menuItemRedo" mnemonicParsing="false" text="Redo" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
       								<MenuItem fx:id="menuItemSearch" mnemonicParsing="false" onAction="#search" text="Search" />
       							</items>
       						</Menu>
-      						<Menu fx:id="MenuHelp" mnemonicParsing="false" text="Help">
+                        <Menu fx:id="menuTables" mnemonicParsing="false" text="Tables">
+                          <items>
+                              <MenuItem fx:id="menuItemTablePhantoms" mnemonicParsing="false" onAction="#openTablePhantoms" text="Phantoms" />
+                              <MenuItem fx:id="menuItemTableAnnulusDiameter" mnemonicParsing="false" onAction="#openTableAnnulusDiameter" text="Annulus Diameters" />
+                              <MenuItem fx:id="menuItemTableLiteratureBase" mnemonicParsing="false" onAction="#openTableLiteratureBases" text="Literature Bases" />
+                              <MenuItem fx:id="menuItemTableFabricationType" mnemonicParsing="false" onAction="#openTableFabricationTypes" text="Fabrication Types" />
+                              <MenuItem fx:id="menuItemTableSpecials" mnemonicParsing="false" onAction="#openTableSpecials" text="Specials" />
+                              <MenuItem fx:id="menuItemTableProperties" mnemonicParsing="false" onAction="#openTableProperties" text="Properties" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem fx:id="menuItemTableFiles" mnemonicParsing="false" onAction="#openTableFiles" text="Files" />
+                              <MenuItem fx:id="menuItemTableFileTypes" mnemonicParsing="false" onAction="#openTableFileTypes" text="File Types" />
+                          </items>
+                        </Menu>
+                        <Menu fx:id="menuView" mnemonicParsing="false" text="View">
+                          <items>
+      								<RadioMenuItem fx:id="menuItemShowFilters" mnemonicParsing="false" text="Show Filters" />
+                              <RadioMenuItem fx:id="menuItemShow3d" mnemonicParsing="false" text="Show 3D View" />
+                              <RadioMenuItem fx:id="menuItemShowTableBelow" mnemonicParsing="false" text="Show Table below" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem fx:id="menuitemResetView" mnemonicParsing="false" text="Reset View" />
+                          </items>
+                        </Menu>
+      						<Menu fx:id="menuHelp" mnemonicParsing="false" text="Help">
       							<items>
       								<MenuItem fx:id="menuItemAbout" mnemonicParsing="false" onAction="#about" text="About" />
       							</items>
@@ -51,7 +80,7 @@
                   </AnchorPane>
       			</children>
       		</VBox>
-            <AnchorPane fx:id="paneTableView" prefHeight="200.0" prefWidth="200.0">
+            <AnchorPane fx:id="paneTableView">
                <children>
                   <TableView fx:id="tableViewFiles" layoutY="299.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                </children>

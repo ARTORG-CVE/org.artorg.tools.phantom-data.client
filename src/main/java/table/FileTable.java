@@ -14,7 +14,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import specification.Table;
 
-public class FileTable implements Table<PhantomFile> {
+public class FileTable implements Table<FileTable, PhantomFile> {
 
 	private Set<PhantomFile> files;
 	

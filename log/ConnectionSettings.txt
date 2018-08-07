@@ -1,0 +1,4 @@
+Localhost URL:            http://localhost:8183
+URL of shutdown actuator: http://localhost:8183/actuator/shutdown
+Database path:            jdbc:h2:D:/Users/Marc/Desktop/phantomData/db/phantoms;AUTO_SERVER=TRUE
+Files path:               D:/Users/Marc/Desktop/phantomData/data

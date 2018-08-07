@@ -15,7 +15,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import specification.Table;
 
-public class PhantomTable implements Table<Phantom> {
+public class PhantomTable implements Table<PhantomTable, Phantom> {
 	
 	private Set<Phantom> phantoms;
 	
