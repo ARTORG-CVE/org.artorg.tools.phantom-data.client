@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="parentPane" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+	<children>
+      <SplitPane dividerPositions="0.7863974495217854" layoutY="-143.0" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <items>
+      		<VBox prefHeight="200.0" prefWidth="100.0">
+      			<children>
+      				<MenuBar fx:id="menuBar" prefHeight="25.0" prefWidth="600.0">
+      					<menus>
+      						<Menu fx:id="menuFile" mnemonicParsing="false" text="File">
+      							<items>
+      								<MenuItem fx:id="menuItemNew" mnemonicParsing="false" onAction="#addphantom" text="New" />
+      								<MenuItem fx:id="menuItemImport" mnemonicParsing="false" onAction="#importing" text="Import..." />
+      								<MenuItem fx:id="menuItemExport" mnemonicParsing="false" onAction="#export" text="Export..." />
+      								<MenuItem fx:id="menuItemSettings" mnemonicParsing="false" onAction="#settings" text="Settings" />
+      								<MenuItem fx:id="menuItemClose" mnemonicParsing="false" onAction="#close" text="Close" />
+      							</items>
+      						</Menu>
+      						<Menu fx:id="menuEdit" mnemonicParsing="false" text="Edit">
+      							<items>
+      								<RadioMenuItem mnemonicParsing="false" text="Filters" />
+      								<MenuItem fx:id="menuItemSearch" mnemonicParsing="false" onAction="#search" text="Search" />
+      							</items>
+      						</Menu>
+      						<Menu fx:id="MenuHelp" mnemonicParsing="false" text="Help">
+      							<items>
+      								<MenuItem fx:id="menuItemAbout" mnemonicParsing="false" onAction="#about" text="About" />
+      							</items>
+      						</Menu>
+      					</menus>
+      				</MenuBar>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <SplitPane fx:id="splitPane" dividerPositions="0.4766277128547579" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <items>
+                              		<AnchorPane fx:id="paneSpreadsheet" />
+            						<AnchorPane fx:id="pane3d" />
+                           </items>
+                        </SplitPane>
+                     </children>
+                  </AnchorPane>
+      			</children>
+      		</VBox>
+            <AnchorPane fx:id="paneTableView" prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <TableView fx:id="tableViewFiles" layoutY="299.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </children>
+            </AnchorPane>
+         </items>
+      </SplitPane>
+	</children>
+</AnchorPane>
