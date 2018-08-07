@@ -10,6 +10,7 @@ import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,9 +27,12 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.graphics.Scene3D;
+import table.AnnulusDiameterTable;
 import table.FabricationTypeTable;
 import table.FileTable;
+import table.LiteratureBaseTable;
 import table.PhantomTable;
+import table.SpecialTable;
 
 public class MainController {
 
@@ -169,8 +173,10 @@ public class MainController {
 
     @FXML
     void close(ActionEvent event) {
-    	new Thread(() -> shutdownServer()).start();;
-    	System.exit(0);
+    	Platform.exit();
+    	
+//    	new Thread(() -> shutdownServer()).start();
+//    	System.exit(0);
     }
 
     @FXML
@@ -200,13 +206,15 @@ public class MainController {
 
     @FXML
     void openTableFiles(ActionEvent event) {
-
+    	FileTable table = new FileTable();
+    	Stage stage = table.createStage(table);
+    	stage.show();
     }
 
     @FXML
     void openTablePhantoms(ActionEvent event) {
-    	PhantomTable phantomTable = new PhantomTable();
-    	Stage stage = phantomTable.createStage(phantomTable);
+    	PhantomTable table = new PhantomTable();
+    	Stage stage = table.createStage(table);
     	stage.show();
     }
 
@@ -217,24 +225,35 @@ public class MainController {
 
     @FXML
     void openTableSpecials(ActionEvent event) {
-
+    	SpecialTable table = new SpecialTable();
+    	Stage stage = table.createStage(table);
+    	stage.show();
     }
 
     @FXML
     void openTableAnnulusDiameter(ActionEvent event) {
-
+    	AnnulusDiameterTable table = new AnnulusDiameterTable();
+    	Stage stage = table.createStage(table);
+    	stage.show();
     }
 
     @FXML
     void openTableFabricationTypes(ActionEvent event) {
-    	FabricationTypeTable phantomTable = new FabricationTypeTable();
-    	Stage stage = phantomTable.createStage(phantomTable);
+    	FabricationTypeTable table = new FabricationTypeTable();
+    	Stage stage = table.createStage(table);
     	stage.show();
     }
 
     @FXML
     void openTableLiteratureBases(ActionEvent event) {
-
+    	LiteratureBaseTable table = new LiteratureBaseTable();
+    	Stage stage = table.createStage(table);
+    	stage.show();
     }
+//    
+//    @FXML
+//    public void exitApplication(ActionEvent event) {
+//    	new Thread(() -> shutdownServer()).start();
+//    }
     
 }

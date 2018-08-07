@@ -27,8 +27,6 @@ public class AnnulusDiameterTable implements Table<AnnulusDiameterTable, Annulus
 		TableColumn<AnnulusDiameter, String> idCol = new TableColumn<AnnulusDiameter, String>("id");
 		TableColumn<AnnulusDiameter, String> shortcutCol = new TableColumn<AnnulusDiameter, String>("shortcut");
 	    TableColumn<AnnulusDiameter, String> valueCol = new TableColumn<AnnulusDiameter, String>("value");
-	    TableColumn<AnnulusDiameter, String> extensionCol = new TableColumn<AnnulusDiameter, String>("extension");
-	    TableColumn<AnnulusDiameter, String> fileTypeCol = new TableColumn<AnnulusDiameter, String>("file type");
 	    
 	    idCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getId())));
 	    shortcutCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getShortcut())));

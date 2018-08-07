@@ -32,7 +32,6 @@ public class Main extends Application {
     
     @Override
 	public void start(Stage stage) throws Exception {
-    		
 			FXMLLoader loader = new FXMLLoader(Main.class.getResource("Main.fxml"));
 			MainController controller = new MainController();
 			loader.setController(controller);
@@ -44,7 +43,11 @@ public class Main extends Application {
 			stage.setHeight(root.getPrefHeight()+50);
 			stage.setTitle("Phantom database");
 			stage.show();
-
 	}
+    
+    @Override
+    public void stop(){
+    	shutdownServer();
+    }
     
 }
