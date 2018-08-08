@@ -22,6 +22,7 @@ public class PropertyFieldTable implements Table<PropertyFieldTable,PropertyFiel
 	
 	{
 		propertyFields = new HashSet<PropertyField>();
+		propertyFields.addAll(PropertyFieldConnector.get().readAllAsSet());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -50,6 +51,30 @@ public class PropertyFieldTable implements Table<PropertyFieldTable,PropertyFiel
 		descriptionCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getDescription())));
 		list.add(descriptionCol);
 		return list;
+	}
+
+	@Override
+	public List<TableColumn<PropertyField, ?>> createColumns() {
+		List<TableColumn<PropertyField, ?>> columns = new ArrayList<TableColumn<PropertyField, ?>>();
+		
+		TableColumn<PropertyField, String> idCol = new TableColumn<PropertyField, String>("id");
+		TableColumn<PropertyField, String> nameCol = new TableColumn<PropertyField, String>("name");
+	    TableColumn<PropertyField, String> descriptionCol = new TableColumn<PropertyField, String>("description");
+	    
+	    idCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getId())));
+	    nameCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getName())));
+	    descriptionCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getDescription())));
+	    
+	    columns.add(idCol);
+	    columns.add(nameCol);
+	    columns.add(descriptionCol);
+	    
+		return columns;
+	}
+
+	@Override
+	public Set<PropertyField> getItems() {
+		return propertyFields;
 	}
 
 }

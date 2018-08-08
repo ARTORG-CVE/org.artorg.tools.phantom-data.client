@@ -1,7 +1,6 @@
 package table;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,10 +9,7 @@ import org.artorg.tools.phantomData.server.connector.property.BooleanPropertyCon
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import specification.Table;
 
 public class BooleanPropertyTable implements Table<BooleanPropertyTable, BooleanProperty> {
@@ -22,11 +18,13 @@ public class BooleanPropertyTable implements Table<BooleanPropertyTable, Boolean
 	
 	{
 		booleanProperties = new HashSet<BooleanProperty>();
+		booleanProperties.addAll(BooleanPropertyConnector.get().readAllAsSet());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public TableView<BooleanProperty> createTableView(TableView<BooleanProperty> table) {
+	public List<TableColumn<BooleanProperty, ?>> createColumns() {
+		List<TableColumn<BooleanProperty,?>> columns = new ArrayList<TableColumn<BooleanProperty,?>>();
+		
 		TableColumn<BooleanProperty, String> idCol = new TableColumn<BooleanProperty, String>("id");
 		TableColumn<BooleanProperty, String> propertyFieldCol = new TableColumn<BooleanProperty, String>("property field");
 	    TableColumn<BooleanProperty, String> boolCol = new TableColumn<BooleanProperty, String>("value");
@@ -35,23 +33,16 @@ public class BooleanPropertyTable implements Table<BooleanPropertyTable, Boolean
 	    propertyFieldCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getPropertyField().getDescription())));
 	    boolCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getBool())));
 	    
-	    table.getColumns().removeAll(table.getColumns());
-		table.getColumns().addAll(idCol, propertyFieldCol, boolCol);
+	    columns.add(idCol);
+	    columns.add(propertyFieldCol);
+	    columns.add(boolCol);
 		
-		booleanProperties.addAll(BooleanPropertyConnector.get().readAllAsSet());
-	    ObservableList<BooleanProperty> data = FXCollections.observableArrayList(booleanProperties);
-	    table.setItems(data);
-	    table.getSortOrder().addAll(idCol, propertyFieldCol);
-		return table;
+		return columns;
 	}
-	
-	public static Collection<TableColumn<BooleanProperty,?>> createUpperTableColumns() {
-		List<TableColumn<BooleanProperty,?>> list = new ArrayList<TableColumn<BooleanProperty,?>>();
-		
-		
-		
-		
-		return list;
+
+	@Override
+	public Set<BooleanProperty> getItems() {
+		return booleanProperties;
 	}
 	
 

@@ -1,6 +1,8 @@
 package table;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -21,6 +23,7 @@ public class PhantomTable implements Table<PhantomTable, Phantom> {
 	
 	{
 		phantoms = new HashSet<Phantom>();
+		phantoms.addAll(PhantomConnector.get().readAllAsSet());
 	}
 	
 	@Override
@@ -57,6 +60,50 @@ public class PhantomTable implements Table<PhantomTable, Phantom> {
 		return phantoms.stream().filter(p -> p.getId().intValue()==id)
 				.findFirst().isPresent();
 	}
+
+	@Override
+	public List<TableColumn<Phantom, ?>> createColumns() {
+		List<TableColumn<Phantom, ?>> columns = new ArrayList<TableColumn<Phantom, ?>>();
+		
+		TableColumn<Phantom, String> annulusCol = new TableColumn<Phantom, String>("annulus [mm]");
+	    TableColumn<Phantom, String> fTypeCol = new TableColumn<Phantom, String>("type");
+	    TableColumn<Phantom, String> literatureBaseCol = new TableColumn<Phantom, String>("literature");
+	    TableColumn<Phantom, String> specials = new TableColumn<Phantom, String>("specials");
+	    TableColumn<Phantom, String> numberCol = new TableColumn<Phantom, String>("number?");
+	
+	    Function<Double, String> roundNumberFunc = (d) -> {
+	    	if ((double)((int)((double)d)) == d) return String.valueOf((int)((double)d));
+	    	return String.format("%.1f", d);
+	    };
+	    
+	    annulusCol.setCellValueFactory(cellData -> new SimpleStringProperty(roundNumberFunc.apply(cellData.getValue().getAnnulusDiameter().getValue())));
+	    fTypeCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getfType().getFabricationType()));
+	    literatureBaseCol.setCellValueFactory(celldata -> new SimpleStringProperty(celldata.getValue().getLiteratureBase().getLiteratureBase()));
+	    specials.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getSpecial().getShortcut())));
+	    specials.setCellFactory( tc -> new CheckBoxTableCell<>());
+	    numberCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getNumber())));
+	    numberCol.setCellFactory( tc -> new CheckBoxTableCell<>());
+	    
+	    columns.add(annulusCol);
+	    columns.add(fTypeCol);
+	    columns.add(literatureBaseCol);
+	    columns.add(specials);
+	    columns.add(numberCol);
+	    
+	    return columns;
+	}
+
+	@Override
+	public Set<Phantom> getItems() {
+		return phantoms;
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 	
 //	

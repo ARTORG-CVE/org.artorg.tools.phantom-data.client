@@ -1,6 +1,7 @@
 package specification;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.controlsfx.control.spreadsheet.GridBase;
@@ -13,19 +14,36 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public interface Table<TABLE extends Table<TABLE, ITEM>, ITEM> {
+	
+	List<TableColumn<ITEM,?>> createColumns();
+	
+	Set<ITEM> getItems();
+	
+	default TableView<ITEM> createTableView(TableView<ITEM> table) {
+		table.getColumns().removeAll(table.getColumns());
 
-	TableView<ITEM> createTableView(TableView<ITEM> table);
+	    List<TableColumn<ITEM,?>> columns = createColumns();
+	    table.getColumns().addAll(columns);
+	    
+	    ObservableList<ITEM> data = FXCollections.observableArrayList(getItems());
+	    table.setItems(data);
+	    
+	    this.setSortOrder(table);
+	    this.autoResizeColumns(table);
+	    
+		return table;
+	}
 	
 	default void setSortOrder(TableView<ITEM> table) {
 		table.getSortOrder().addAll(table.getColumns());
 	}
-	
 	
 	default void autoResize(TableView<ITEM> table, Stage stage) {
 		double width = table.getColumns().stream().mapToDouble(c -> c.getPrefWidth()).sum();

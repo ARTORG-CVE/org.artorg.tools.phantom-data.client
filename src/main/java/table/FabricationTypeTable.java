@@ -1,16 +1,15 @@
 package table;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.artorg.tools.phantomData.server.connector.FabricationTypeConnector;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import specification.Table;
 
 public class FabricationTypeTable implements Table<FabricationTypeTable, FabricationType>{
@@ -19,11 +18,13 @@ public class FabricationTypeTable implements Table<FabricationTypeTable, Fabrica
 	
 	{
 		fabricationTypes = new HashSet<FabricationType>();
+		fabricationTypes.addAll(FabricationTypeConnector.get().readAllAsSet());
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	@Override
-	public TableView<FabricationType> createTableView(TableView<FabricationType> table) {
+	public List<TableColumn<FabricationType, ?>> createColumns() {
+		List<TableColumn<FabricationType,?>> columns = new ArrayList<TableColumn<FabricationType, ?>>();
+		
 		TableColumn<FabricationType, String> idCol = new TableColumn<FabricationType, String>("id");
 		TableColumn<FabricationType, String> shortcutCol = new TableColumn<FabricationType, String>("shortcut");
 	    TableColumn<FabricationType, String> valueCol = new TableColumn<FabricationType, String>("value");
@@ -32,13 +33,16 @@ public class FabricationTypeTable implements Table<FabricationTypeTable, Fabrica
 	    shortcutCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getShortcut())));
 	    valueCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getFabricationType())));
 	    
-	    table.getColumns().removeAll(table.getColumns());
-		table.getColumns().addAll(idCol, shortcutCol, valueCol);
+	    columns.add(idCol);
+	    columns.add(shortcutCol);
+	    columns.add(valueCol);
 		
-		fabricationTypes.addAll(FabricationTypeConnector.get().readAllAsSet());
-	    ObservableList<FabricationType> data = FXCollections.observableArrayList(fabricationTypes);
-	    table.setItems(data);
-		return table;
+		return columns;
+	}
+
+	@Override
+	public Set<FabricationType> getItems() {
+		return fabricationTypes;
 	}
 
 }
