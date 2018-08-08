@@ -42,11 +42,13 @@
                         <Menu fx:id="menuTables" mnemonicParsing="false" text="Tables">
                           <items>
                               <MenuItem fx:id="menuItemTablePhantoms" mnemonicParsing="false" onAction="#openTablePhantoms" text="Phantoms" />
-                              <MenuItem fx:id="menuItemTableAnnulusDiameter" mnemonicParsing="false" onAction="#openTableAnnulusDiameter" text="Annulus Diameters" />
-                              <MenuItem fx:id="menuItemTableLiteratureBase" mnemonicParsing="false" onAction="#openTableLiteratureBases" text="Literature Bases" />
-                              <MenuItem fx:id="menuItemTableFabricationType" mnemonicParsing="false" onAction="#openTableFabricationTypes" text="Fabrication Types" />
+                              <MenuItem fx:id="menuItemTableAnnulusDiameters" mnemonicParsing="false" onAction="#openTableAnnulusDiameter" text="Annulus Diameters" />
+                              <MenuItem fx:id="menuItemTableLiteratureBases" mnemonicParsing="false" onAction="#openTableLiteratureBases" text="Literature Bases" />
+                              <MenuItem fx:id="menuItemTableFabricationTypes" mnemonicParsing="false" onAction="#openTableFabricationTypes" text="Fabrication Types" />
                               <MenuItem fx:id="menuItemTableSpecials" mnemonicParsing="false" onAction="#openTableSpecials" text="Specials" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
                               <MenuItem fx:id="menuItemTableProperties" mnemonicParsing="false" onAction="#openTableProperties" text="Properties" />
+                              <MenuItem fx:id="menuItemTablePropertyFields" mnemonicParsing="false" onAction="#openTablePropertyFields" text="Property Fields" />
                               <SeparatorMenuItem mnemonicParsing="false" />
                               <MenuItem fx:id="menuItemTableFiles" mnemonicParsing="false" onAction="#openTableFiles" text="Files" />
                               <MenuItem fx:id="menuItemTableFileTypes" mnemonicParsing="false" onAction="#openTableFileTypes" text="File Types" />

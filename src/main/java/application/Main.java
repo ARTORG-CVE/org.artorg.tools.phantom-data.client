@@ -17,14 +17,14 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
     public static void main( String[] args ) {
-    	shutdownServer();
-		deleteDatabase();
-		deleteFileStructure();
-		prepareFileStructure();
-		logInfos();
-		startingServer(args);
-		
-		initDatabase();
+//    	shutdownServer();
+//		deleteDatabase();
+//		deleteFileStructure();
+//		prepareFileStructure();
+//		logInfos();
+//		startingServer(args);
+//		
+//		initDatabase();
  
     	
     	launch(args);
@@ -47,7 +47,7 @@ public class Main extends Application {
     
     @Override
     public void stop(){
-    	shutdownServer();
+//    	shutdownServer();
     }
     
 }

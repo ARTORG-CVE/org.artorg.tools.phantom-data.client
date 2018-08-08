@@ -1,10 +1,12 @@
 package table;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.server.connector.SpecialConnector;
+import org.artorg.tools.phantomData.server.connector.property.PropertyFieldConnector;
 import org.artorg.tools.phantomData.server.model.Special;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -20,27 +22,43 @@ public class SpecialTable implements Table<SpecialTable, Special>{
 	
 	{
 		specials = new HashSet<Special>();
+		specials.addAll(SpecialConnector.get().readAllAsSet());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public TableView<Special> createTableView(TableView<Special> table) {
+		table.getColumns().removeAll(table.getColumns());
+		
 		TableColumn<Special, String> idCol = new TableColumn<Special, String>("id");
 		TableColumn<Special, String> shortcutCol = new TableColumn<Special, String>("shortcut");
-	    TableColumn<Special, String> valueCol = new TableColumn<Special, String>("value");
 	    
 	    idCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getId())));
-	    shortcutCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getShortcut())));
+	    shortcutCol.setCellValueFactory(cellData -> new SimpleStringProperty(String
+	    		.valueOf(cellData.getValue().getShortcut())));
 	    
-	    valueCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getBooleanProperties()
-	    		.stream().map(p -> p.toString()).collect(Collectors.joining(", ", "[", "]")))));
+	    table.getColumns().addAll(idCol, shortcutCol);
 	    
-	    table.getColumns().removeAll(table.getColumns());
-		table.getColumns().addAll(idCol, shortcutCol, valueCol);
-		
-		specials.addAll(SpecialConnector.get().readAllAsSet());
+	    List<Integer> idList = specials.stream().flatMap(s -> s.getBooleanProperties()
+	    		.stream()).mapToInt(p -> p.getPropertyField().getId()).distinct().sorted()
+	    		.collect(() -> new ArrayList<Integer>(), (set, e) -> set.add(e), (e1, e2) -> {});
+	    int nPropertyCols = idList.size();
+	    List<TableColumn<Special, String>> listBoolPropDescriptionCols = new ArrayList<TableColumn<Special, String>>();
+	    for (int i=0; i<nPropertyCols; i++) {
+	    	String colName = PropertyFieldConnector.get().readById(idList.get(i)).getDescription();
+	    	listBoolPropDescriptionCols.add(new TableColumn<Special, String>(colName));
+	    	final int temp = i;
+	    	listBoolPropDescriptionCols.get(i).setCellValueFactory(cellData -> new SimpleStringProperty(String
+	    			.valueOf(cellData.getValue().getBooleanProperties().get(temp).getBool())));
+	    	table.getColumns().add(listBoolPropDescriptionCols.get(i));
+	    }
+	    
 	    ObservableList<Special> data = FXCollections.observableArrayList(specials);
 	    table.setItems(data);
+	    
+	    this.setSortOrder(table);
+	    this.autoResizeColumns(table);
+	    
 		return table;
 	}
 

@@ -38,6 +38,7 @@ public class AnnulusDiameterTable implements Table<AnnulusDiameterTable, Annulus
 		annulusDiameters.addAll(AnnulusDiameterConnector.get().readAllAsSet());
 	    ObservableList<AnnulusDiameter> data = FXCollections.observableArrayList(annulusDiameters);
 	    table.setItems(data);
+	    table.getSortOrder().addAll(idCol, shortcutCol);
 		return table;
 	}
 

@@ -3,7 +3,6 @@ package specification;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.server.model.Phantom;
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellBase;
@@ -16,40 +15,65 @@ import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import table.PhantomTable;
 
 public interface Table<TABLE extends Table<TABLE, ITEM>, ITEM> {
-	
+
 	TableView<ITEM> createTableView(TableView<ITEM> table);
 	
+	default void setSortOrder(TableView<ITEM> table) {
+		table.getSortOrder().addAll(table.getColumns());
+	}
 	
-	default Stage createStage(TABLE table) {
+	
+	default void autoResize(TableView<ITEM> table, Stage stage) {
+		double width = table.getColumns().stream().mapToDouble(c -> c.getPrefWidth()).sum();
+		stage.setWidth(width + 17.0d + 50.0d);
+	}
+	
+	default void autoResizeColumns(TableView<ITEM> table) {
+	    table.setColumnResizePolicy( TableView.UNCONSTRAINED_RESIZE_POLICY);
+	    table.getColumns().stream().forEach( (column) -> {
+	        Text t = new Text( column.getText() );
+	        double max = t.getLayoutBounds().getWidth();
+	        for ( int i = 0; i < table.getItems().size(); i++ ) {
+	            if ( column.getCellData( i ) != null ) {
+	                t = new Text( column.getCellData( i ).toString() );
+	                double calcwidth = t.getLayoutBounds().getWidth();
+	                if ( calcwidth > max )
+	                    max = calcwidth;
+	            }
+	        }
+	        column.setPrefWidth( max + 35.0d );
+	    } );
+	}
+	
+	default Stage createStage(javafx.scene.control.Control n, String name) {
 		AnchorPane pane = new AnchorPane();
 		Scene scene = new Scene(pane);
 		Stage stage = new Stage();
-		TableView<ITEM> tableView = table.createTableView();
 		
 		stage.setScene(scene);
+		stage.setTitle(name);
 		
-		pane.getChildren().add(tableView);
+		pane.getChildren().add(n);
 		AnchorPane.setTopAnchor(pane, 0.0);
         AnchorPane.setLeftAnchor(pane, 0.0);
         AnchorPane.setRightAnchor(pane, 0.0);
         AnchorPane.setBottomAnchor(pane, 0.0);
         
-        stage.setHeight(tableView.getMinHeight());
-        stage.setWidth(tableView.getMinWidth());
+        stage.setHeight(n.getMinHeight());
+        stage.setWidth(n.getMinWidth());
      
-        tableView.prefWidthProperty().bind(stage.widthProperty());
-        tableView.prefHeightProperty().bind(stage.heightProperty());
+        n.prefWidthProperty().bind(stage.widthProperty());
+        n.prefHeightProperty().bind(stage.heightProperty());
         
 		stage.setWidth(800);
 		stage.setHeight(500);        
         
 		return stage;
 	}
-	
 	
 	default TableView<ITEM> createTableView() {
 		return createTableView(new TableView<ITEM>());

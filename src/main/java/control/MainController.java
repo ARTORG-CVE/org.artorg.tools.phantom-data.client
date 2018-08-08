@@ -6,8 +6,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
+import org.artorg.tools.phantomData.server.model.FabricationType;
+import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
+import org.artorg.tools.phantomData.server.model.Special;
+import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
+import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
 import javafx.application.Platform;
@@ -27,11 +33,14 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.graphics.Scene3D;
+import specification.Table;
 import table.AnnulusDiameterTable;
+import table.BooleanPropertyTable;
 import table.FabricationTypeTable;
 import table.FileTable;
 import table.LiteratureBaseTable;
 import table.PhantomTable;
+import table.PropertyFieldTable;
 import table.SpecialTable;
 
 public class MainController {
@@ -56,9 +65,9 @@ public class MainController {
     	menuItemSearch, menuItemAbout, menuItemNew, menuItemUndo, menuItemRedo, menuitemResetView;
     
     @FXML
-    private MenuItem menuItemTablePhantoms, menuItemTableAnnulusDiameter, menuItemTableLiteratureBase, 
-    	menuItemTableFabricationType, menuItemTableSpecials, menuItemTableProperties,
-    	menuItemTableFiles, menuItemTableFileTypes;
+    private MenuItem menuItemTablePhantoms, menuItemTableAnnulusDiameters, menuItemTableLiteratureBases, 
+    	menuItemTableFabricationTypes, menuItemTableSpecials, menuItemTableProperties,
+    	menuItemTableFiles, menuItemTableFileTypes, menuItemTablePropertyFields;
     
     @FXML
     private RadioMenuItem menuItemShowFilters, menuItemShow3d, menuItemShowTableBelow;
@@ -98,13 +107,14 @@ public class MainController {
         assert menuitemResetView != null : "fx:id=\"menuitemResetView\" was not injected: check your FXML file 'Main.fxml'.";
         assert menuItemShowTableBelow != null : "fx:id=\"menuItemShowTableBelow\" was not injected: check your FXML file 'Main.fxml'.";
         assert menuItemTablePhantoms != null : "fx:id=\"menuItemTablePhantoms\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemTableAnnulusDiameter != null : "fx:id=\"menuItemTableAnnulusDiameter\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemTableLiteratureBase != null : "fx:id=\"menuItemTableLiteratureBase\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemTableFabricationType != null : "fx:id=\"menuItemTableFabricationType\" was not injected: check your FXML file 'Main.fxml'.";
+        assert menuItemTableAnnulusDiameters != null : "fx:id=\"menuItemTableAnnulusDiameter\" was not injected: check your FXML file 'Main.fxml'.";
+        assert menuItemTableLiteratureBases != null : "fx:id=\"menuItemTableLiteratureBase\" was not injected: check your FXML file 'Main.fxml'.";
+        assert menuItemTableFabricationTypes != null : "fx:id=\"menuItemTableFabricationType\" was not injected: check your FXML file 'Main.fxml'.";
         assert menuItemTableSpecials != null : "fx:id=\"menuItemTableSpecials\" was not injected: check your FXML file 'Main.fxml'.";
         assert menuItemTableProperties != null : "fx:id=\"menuItemTableProperties\" was not injected: check your FXML file 'Main.fxml'.";
         assert menuItemTableFiles != null : "fx:id=\"menuItemTableFiles\" was not injected: check your FXML file 'Main.fxml'.";
         assert menuItemTableFileTypes != null : "fx:id=\"menuItemTableFileTypes\" was not injected: check your FXML file 'Main.fxml'.";
+        assert menuItemTablePropertyFields != null : "fx:id=\"menuItemTablePropertyField\" was not injected: check your FXML file 'Main.fxml'.";
         
         assert tableViewFiles != null : "fx:id=\"tableViewFiles\" was not injected: check your FXML file 'Main.fxml'.";
         
@@ -174,9 +184,6 @@ public class MainController {
     @FXML
     void close(ActionEvent event) {
     	Platform.exit();
-    	
-//    	new Thread(() -> shutdownServer()).start();
-//    	System.exit(0);
     }
 
     @FXML
@@ -207,53 +214,73 @@ public class MainController {
     @FXML
     void openTableFiles(ActionEvent event) {
     	FileTable table = new FileTable();
-    	Stage stage = table.createStage(table);
+    	TableView<PhantomFile> tableView = table.createTableView();
+    	Stage stage = table.createStage(tableView, "Files");
+    	table.autoResize(tableView, stage);
     	stage.show();
     }
 
     @FXML
     void openTablePhantoms(ActionEvent event) {
     	PhantomTable table = new PhantomTable();
-    	Stage stage = table.createStage(table);
+    	TableView<Phantom> tableView = table.createTableView();
+    	Stage stage = table.createStage(tableView, "Phantoms");
+    	table.autoResize(tableView, stage);
     	stage.show();
     }
 
     @FXML
     void openTableProperties(ActionEvent event) {
-
+    	BooleanPropertyTable table = new BooleanPropertyTable();
+    	TableView<BooleanProperty> tableView = table.createTableView();
+    	Stage stage = table.createStage(tableView, "Properties");
+    	table.autoResize(tableView, stage);
+    	stage.show();
     }
 
     @FXML
     void openTableSpecials(ActionEvent event) {
     	SpecialTable table = new SpecialTable();
-    	Stage stage = table.createStage(table);
+    	TableView<Special> tableView = table.createTableView();
+    	Stage stage = table.createStage(tableView, "Specials");
+    	table.autoResize(tableView, stage);
     	stage.show();
     }
 
     @FXML
     void openTableAnnulusDiameter(ActionEvent event) {
     	AnnulusDiameterTable table = new AnnulusDiameterTable();
-    	Stage stage = table.createStage(table);
+    	TableView<AnnulusDiameter> tableView = table.createTableView();
+    	Stage stage = table.createStage(tableView, "Annulus Diameters");
+    	table.autoResize(tableView, stage);
     	stage.show();
     }
 
     @FXML
     void openTableFabricationTypes(ActionEvent event) {
     	FabricationTypeTable table = new FabricationTypeTable();
-    	Stage stage = table.createStage(table);
+    	TableView<FabricationType> tableView = table.createTableView();
+    	Stage stage = table.createStage(tableView, "Fabrication Types");
+    	table.autoResize(tableView, stage);
     	stage.show();
     }
 
     @FXML
     void openTableLiteratureBases(ActionEvent event) {
     	LiteratureBaseTable table = new LiteratureBaseTable();
-    	Stage stage = table.createStage(table);
+    	TableView<LiteratureBase> tableView = table.createTableView();
+    	Stage stage = table.createStage(tableView, "Literature Bases");
+    	table.autoResize(tableView, stage);
     	stage.show();
     }
-//    
-//    @FXML
-//    public void exitApplication(ActionEvent event) {
-//    	new Thread(() -> shutdownServer()).start();
-//    }
+    
+    @FXML
+    void openTablePropertyFields(ActionEvent event) {
+    	PropertyFieldTable table = new PropertyFieldTable();
+    	TableView<PropertyField> tableView = table.createTableView();
+    	Stage stage = table.createStage(tableView, "Property Fields");
+    	table.autoResize(tableView, stage);
+    	stage.show();
+    }
     
 }
