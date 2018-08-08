@@ -6,20 +6,17 @@ import java.util.List;
 import java.util.Set;
 
 import org.artorg.tools.phantomData.client.connector.property.BooleanPropertyConnector;
+import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.specification.StageTable;
 import org.artorg.tools.phantomData.client.specification.Table;
+import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 
-public class BooleanPropertyTable implements Table<BooleanPropertyTable, BooleanProperty> {
-	
-	private Set<BooleanProperty> booleanProperties;
-	
-	{
-		booleanProperties = new HashSet<BooleanProperty>();
-		booleanProperties.addAll(BooleanPropertyConnector.get().readAllAsSet());
-	}
+public class BooleanPropertyTable extends StageTable<BooleanPropertyTable, BooleanProperty, Integer> {
 
 	@Override
 	public List<TableColumn<BooleanProperty, ?>> createColumns() {
@@ -41,8 +38,8 @@ public class BooleanPropertyTable implements Table<BooleanPropertyTable, Boolean
 	}
 
 	@Override
-	public Set<BooleanProperty> getItems() {
-		return booleanProperties;
+	public HttpDatabaseCrud<BooleanProperty, Integer> getConnector() {
+		return BooleanPropertyConnector.get();
 	}
 	
 

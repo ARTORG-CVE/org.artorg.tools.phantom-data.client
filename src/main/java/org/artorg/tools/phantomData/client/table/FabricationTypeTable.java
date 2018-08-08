@@ -6,20 +6,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.artorg.tools.phantomData.client.connector.FabricationTypeConnector;
-import org.artorg.tools.phantomData.client.specification.Table;
+import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.specification.StageTable;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TableColumn;
 
-public class FabricationTypeTable implements Table<FabricationTypeTable, FabricationType>{
-
-	private Set<FabricationType> fabricationTypes;
-	
-	{
-		fabricationTypes = new HashSet<FabricationType>();
-		fabricationTypes.addAll(FabricationTypeConnector.get().readAllAsSet());
-	}
+public class FabricationTypeTable extends StageTable<FabricationTypeTable, FabricationType, Integer> {
 
 	@Override
 	public List<TableColumn<FabricationType, ?>> createColumns() {
@@ -41,8 +35,8 @@ public class FabricationTypeTable implements Table<FabricationTypeTable, Fabrica
 	}
 
 	@Override
-	public Set<FabricationType> getItems() {
-		return fabricationTypes;
+	public HttpDatabaseCrud<FabricationType, Integer> getConnector() {
+		return FabricationTypeConnector.get();
 	}
 
 }

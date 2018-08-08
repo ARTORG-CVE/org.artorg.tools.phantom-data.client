@@ -1,3 +1,4 @@
+package init;
 import static org.artorg.tools.phantomData.server.boot.BootUtils.deleteDatabase;
 import static org.artorg.tools.phantomData.server.boot.BootUtils.deleteFileStructure;
 import static org.artorg.tools.phantomData.server.boot.BootUtils.logInfos;
@@ -27,7 +28,7 @@ import org.artorg.tools.phantomData.server.model.Special;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
-public class TestInitDatabase {
+public class InitDatabaseTest {
 	
 	
 	public static void main(String[] args) {

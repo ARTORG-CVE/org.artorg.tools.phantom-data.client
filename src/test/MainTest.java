@@ -38,14 +38,14 @@ import javafx.stage.Stage;
 public class MainTest extends Application {
 	
     public static void main( String[] args ) {
-    	shutdownServer();
-		deleteDatabase();
-		deleteFileStructure();
-		prepareFileStructure();
-		logInfos();
-		startingServer(args);
-		
-		initDatabase();
+//    	shutdownServer();
+//		deleteDatabase();
+//		deleteFileStructure();
+//		prepareFileStructure();
+//		logInfos();
+//		startingServer(args);
+//		
+//		initDatabase();
  
     	
     	launch(args);
@@ -68,7 +68,7 @@ public class MainTest extends Application {
     
     @Override
     public void stop(){
-    	shutdownServer();
+//    	shutdownServer();
     }
     
     private static AnnulusDiameterConnector adConn = AnnulusDiameterConnector.get();
@@ -152,7 +152,7 @@ public class MainTest extends Application {
 		fileConn.create(new PhantomFile("", "model3", "stl", fileTypeConn.readById(3)));
 		
 		fileConn.readByName("model").create("D:/Users/Marc/Desktop/test1.stl");
-		System.out.println(fileConn.readByName("model").toString());
+		fileConn.readByName("model").toString();
 		
 	}
 	
@@ -180,8 +180,6 @@ public class MainTest extends Application {
 		files0.add(FileConnector.get().readByName("model2"));
 		phantoms[0].setFiles(files0);
 		phantConn.create(phantoms);
-		
-		System.out.println(phantomConn.toString());
 	}
 	
 	private static Phantom createPhantom(int annulusDiameter, String fType, String litBase, String special, int number) {

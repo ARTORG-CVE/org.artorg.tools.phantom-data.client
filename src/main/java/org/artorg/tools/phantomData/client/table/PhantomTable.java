@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.function.Function;
 
 import org.artorg.tools.phantomData.client.connector.PhantomConnector;
+import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.specification.StageTable;
 import org.artorg.tools.phantomData.client.specification.Table;
 import org.artorg.tools.phantomData.server.model.Phantom;
 
@@ -17,49 +19,14 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 
-public class PhantomTable implements Table<PhantomTable, Phantom> {
+public class PhantomTable extends StageTable<PhantomTable, Phantom, Integer> {
 	
-	private Set<Phantom> phantoms;
-	
-	{
-		phantoms = new HashSet<Phantom>();
-		phantoms.addAll(PhantomConnector.get().readAllAsSet());
-	}
-	
-	@Override
-	@SuppressWarnings("unchecked")
-	public TableView<Phantom> createTableView(TableView<Phantom> table) {
-		TableColumn<Phantom, String> annulusCol = new TableColumn<Phantom, String>("annulus [mm]");
-	    TableColumn<Phantom, String> fTypeCol = new TableColumn<Phantom, String>("type");
-	    TableColumn<Phantom, String> literatureBaseCol = new TableColumn<Phantom, String>("literature");
-	    TableColumn<Phantom, String> specials = new TableColumn<Phantom, String>("specials");
-	    TableColumn<Phantom, String> numberCol = new TableColumn<Phantom, String>("number?");
-	
-	    Function<Double, String> roundNumberFunc = (d) -> {
-	    	if ((double)((int)((double)d)) == d) return String.valueOf((int)((double)d));
-	    	return String.format("%.1f", d);
-	    };
-	    
-	    annulusCol.setCellValueFactory(cellData -> new SimpleStringProperty(roundNumberFunc.apply(cellData.getValue().getAnnulusDiameter().getValue())));
-	    fTypeCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getfType().getFabricationType()));
-	    literatureBaseCol.setCellValueFactory(celldata -> new SimpleStringProperty(celldata.getValue().getLiteratureBase().getLiteratureBase()));
-	    specials.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getSpecial().getShortcut())));
-	    specials.setCellFactory( tc -> new CheckBoxTableCell<>());
-	    numberCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getNumber())));
-	    numberCol.setCellFactory( tc -> new CheckBoxTableCell<>());
-	    
-	    table.getColumns().addAll(annulusCol, fTypeCol, literatureBaseCol, specials, numberCol);
 
-	    phantoms.addAll(PhantomConnector.get().readAllAsSet());
-	    ObservableList<Phantom> data = FXCollections.observableArrayList(phantoms);
-	    table.setItems(data);
-	    return table;
-	}
 
-	public boolean contains(int id) {
-		return phantoms.stream().filter(p -> p.getId().intValue()==id)
-				.findFirst().isPresent();
-	}
+//	public boolean contains(int id) {
+//		return phantoms.stream().filter(p -> p.getId().intValue()==id)
+//				.findFirst().isPresent();
+//	}
 
 	@Override
 	public List<TableColumn<Phantom, ?>> createColumns() {
@@ -92,10 +59,10 @@ public class PhantomTable implements Table<PhantomTable, Phantom> {
 	    
 	    return columns;
 	}
-
+	
 	@Override
-	public Set<Phantom> getItems() {
-		return phantoms;
+	public HttpDatabaseCrud<Phantom, Integer> getConnector() {
+		return PhantomConnector.get();
 	}
 	
 	

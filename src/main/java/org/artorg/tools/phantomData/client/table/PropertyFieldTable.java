@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.artorg.tools.phantomData.client.connector.property.PropertyFieldConnector;
+import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.specification.StageTable;
 import org.artorg.tools.phantomData.client.specification.Table;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
@@ -16,34 +18,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
-public class PropertyFieldTable implements Table<PropertyFieldTable,PropertyField> {
-	
-	private Set<PropertyField> propertyFields;
-	
-	{
-		propertyFields = new HashSet<PropertyField>();
-		propertyFields.addAll(PropertyFieldConnector.get().readAllAsSet());
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public TableView<PropertyField> createTableView(TableView<PropertyField> table) {
-		TableColumn<PropertyField, String> idCol = new TableColumn<PropertyField, String>("id");
-		TableColumn<PropertyField, String> nameCol = new TableColumn<PropertyField, String>("name");
-	    TableColumn<PropertyField, String> descriptionCol = new TableColumn<PropertyField, String>("description");
-	    
-	    idCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getId())));
-	    nameCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getName())));
-	    descriptionCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getDescription())));
-	    
-	    table.getColumns().removeAll(table.getColumns());
-		table.getColumns().addAll(idCol, nameCol, descriptionCol);
-		
-		propertyFields.addAll(PropertyFieldConnector.get().readAllAsSet());
-	    ObservableList<PropertyField> data = FXCollections.observableArrayList(propertyFields);
-	    table.setItems(data);
-		return table;
-	}
+public class PropertyFieldTable extends StageTable<PropertyFieldTable,PropertyField, Integer> {
 	
 	public static Collection<TableColumn<PropertyField,?>> createUpperTableColumns() {
 		List<TableColumn<PropertyField,?>> list = new ArrayList<TableColumn<PropertyField,?>>();
@@ -71,10 +46,10 @@ public class PropertyFieldTable implements Table<PropertyFieldTable,PropertyFiel
 	    
 		return columns;
 	}
-
+	
 	@Override
-	public Set<PropertyField> getItems() {
-		return propertyFields;
+	public HttpDatabaseCrud<PropertyField, Integer> getConnector() {
+		return PropertyFieldConnector.get();
 	}
 
 }

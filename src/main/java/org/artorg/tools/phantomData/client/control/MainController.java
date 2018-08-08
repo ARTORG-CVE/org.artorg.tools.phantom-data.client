@@ -269,6 +269,7 @@ public class MainController {
     void openTableLiteratureBases(ActionEvent event) {
     	LiteratureBaseTable table = new LiteratureBaseTable();
     	TableView<LiteratureBase> tableView = table.createTableView();
+//    	SpreadsheetView tableView = table.createSpreadsheetView();
     	Stage stage = table.createStage(tableView, "Literature Bases");
     	table.autoResize(tableView, stage);
     	stage.show();

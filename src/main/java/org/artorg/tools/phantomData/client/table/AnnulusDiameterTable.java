@@ -1,25 +1,17 @@
 package org.artorg.tools.phantomData.client.table;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.artorg.tools.phantomData.client.connector.AnnulusDiameterConnector;
-import org.artorg.tools.phantomData.client.specification.Table;
+import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.specification.StageTable;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TableColumn;
 
-public class AnnulusDiameterTable implements Table<AnnulusDiameterTable, AnnulusDiameter> {
-	
-	private Set<AnnulusDiameter> annulusDiameters;
-	
-	{
-		annulusDiameters = new HashSet<AnnulusDiameter>();
-		annulusDiameters.addAll(AnnulusDiameterConnector.get().readAllAsSet());
-	}
+public class AnnulusDiameterTable extends StageTable<AnnulusDiameterTable, AnnulusDiameter, Integer> {
 
 	@Override
 	public List<TableColumn<AnnulusDiameter, ?>> createColumns() {
@@ -39,10 +31,10 @@ public class AnnulusDiameterTable implements Table<AnnulusDiameterTable, Annulus
 		
 	    return columns;
 	}
-
+	
 	@Override
-	public Set<AnnulusDiameter> getItems() {
-		return annulusDiameters;
+	public HttpDatabaseCrud<AnnulusDiameter, Integer> getConnector() {
+		return AnnulusDiameterConnector.get();
 	}
 
 }

@@ -247,6 +247,10 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<T, ID_TYPE>,
 		return varArgHelper(this::update, t);
 	}
 	
+	public boolean update(Set<T> t) {
+		return varArgHelper(this::update, t);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public boolean update(T... t) {
 		return varArgHelper(this::update, t);
@@ -308,6 +312,11 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<T, ID_TYPE>,
 			}
 		}
 		return succesful;
+	}
+	
+	public boolean varArgHelper(Function<T,Boolean> func, Set<T> set) {
+		return set.stream().map(e -> func.apply(e))
+				.filter(b -> b == false).findFirst().orElse(true);
 	}
 	
 	@SuppressWarnings("unchecked")

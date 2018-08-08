@@ -1,26 +1,18 @@
 package org.artorg.tools.phantomData.client.table;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.artorg.tools.phantomData.client.connector.SpecialConnector;
 import org.artorg.tools.phantomData.client.connector.property.PropertyFieldConnector;
-import org.artorg.tools.phantomData.client.specification.Table;
+import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.specification.StageTable;
 import org.artorg.tools.phantomData.server.model.Special;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TableColumn;
 
-public class SpecialTable implements Table<SpecialTable, Special>{
-	
-	private Set<Special> specials;
-	
-	{
-		specials = new HashSet<Special>();
-		specials.addAll(SpecialConnector.get().readAllAsSet());
-	}
+public class SpecialTable extends StageTable<SpecialTable, Special, Integer> {
 
 	@Override
 	public List<TableColumn<Special, ?>> createColumns() {
@@ -34,7 +26,7 @@ public class SpecialTable implements Table<SpecialTable, Special>{
 	    columns.add(idCol);
 	    columns.add(shortcutCol);
 	    
-	    List<Integer> idList = specials.stream().flatMap(s -> s.getBooleanProperties()
+	    List<Integer> idList = getItems().stream().flatMap(s -> s.getBooleanProperties()
 	    		.stream()).mapToInt(p -> p.getPropertyField().getId()).distinct().sorted()
 	    		.collect(() -> new ArrayList<Integer>(), (set, e) -> set.add(e), (e1, e2) -> {});
 	    int nPropertyCols = idList.size();
@@ -49,10 +41,10 @@ public class SpecialTable implements Table<SpecialTable, Special>{
 	    }
 	    return columns;
 	}
-
+	
 	@Override
-	public Set<Special> getItems() {
-		return specials;
+	public HttpDatabaseCrud<Special, Integer> getConnector() {
+		return SpecialConnector.get();
 	}
 
 }

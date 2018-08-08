@@ -5,20 +5,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.artorg.tools.phantomData.client.connector.FileConnector;
+import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.specification.StageTable;
 import org.artorg.tools.phantomData.client.specification.Table;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TableColumn;
 
-public class FileTable implements Table<FileTable, PhantomFile> {
-
-	private Set<PhantomFile> files;
-	
-	{
-		files = new HashSet<PhantomFile>();
-	}
-
+public class FileTable extends StageTable<FileTable, PhantomFile, Integer> {
 	@Override
 	public List<TableColumn<PhantomFile, ?>> createColumns() {
 		List<TableColumn<PhantomFile, ?>> columns = new ArrayList<TableColumn<PhantomFile, ?>>();
@@ -45,8 +41,8 @@ public class FileTable implements Table<FileTable, PhantomFile> {
 	}
 
 	@Override
-	public Set<PhantomFile> getItems() {
-		return files;
+	public HttpDatabaseCrud<PhantomFile, Integer> getConnector() {
+		return FileConnector.get();
 	}
 
 }
