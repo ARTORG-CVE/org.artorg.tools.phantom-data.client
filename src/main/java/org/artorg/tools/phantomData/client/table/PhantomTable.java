@@ -1,23 +1,12 @@
 package org.artorg.tools.phantomData.client.table;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Function;
 
 import org.artorg.tools.phantomData.client.connector.PhantomConnector;
 import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.client.specification.StageTable;
-import org.artorg.tools.phantomData.client.specification.Table;
 import org.artorg.tools.phantomData.server.model.Phantom;
-
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.CheckBoxTableCell;
 
 public class PhantomTable extends StageTable<PhantomTable, Phantom, Integer> {
 	
@@ -28,41 +17,42 @@ public class PhantomTable extends StageTable<PhantomTable, Phantom, Integer> {
 //				.findFirst().isPresent();
 //	}
 
-	@Override
-	public List<TableColumn<Phantom, ?>> createColumns() {
-		List<TableColumn<Phantom, ?>> columns = new ArrayList<TableColumn<Phantom, ?>>();
-		
-		TableColumn<Phantom, String> annulusCol = new TableColumn<Phantom, String>("annulus [mm]");
-	    TableColumn<Phantom, String> fTypeCol = new TableColumn<Phantom, String>("type");
-	    TableColumn<Phantom, String> literatureBaseCol = new TableColumn<Phantom, String>("literature");
-	    TableColumn<Phantom, String> specials = new TableColumn<Phantom, String>("specials");
-	    TableColumn<Phantom, String> numberCol = new TableColumn<Phantom, String>("number?");
-	
-	    Function<Double, String> roundNumberFunc = (d) -> {
-	    	if ((double)((int)((double)d)) == d) return String.valueOf((int)((double)d));
-	    	return String.format("%.1f", d);
-	    };
-	    
-	    annulusCol.setCellValueFactory(cellData -> new SimpleStringProperty(roundNumberFunc.apply(cellData.getValue().getAnnulusDiameter().getValue())));
-	    fTypeCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getfType().getFabricationType()));
-	    literatureBaseCol.setCellValueFactory(celldata -> new SimpleStringProperty(celldata.getValue().getLiteratureBase().getLiteratureBase()));
-	    specials.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getSpecial().getShortcut())));
-	    specials.setCellFactory( tc -> new CheckBoxTableCell<>());
-	    numberCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getNumber())));
-	    numberCol.setCellFactory( tc -> new CheckBoxTableCell<>());
-	    
-	    columns.add(annulusCol);
-	    columns.add(fTypeCol);
-	    columns.add(literatureBaseCol);
-	    columns.add(specials);
-	    columns.add(numberCol);
-	    
-	    return columns;
-	}
 	
 	@Override
 	public HttpDatabaseCrud<Phantom, Integer> getConnector() {
 		return PhantomConnector.get();
+	}
+
+	@Override
+	public Object getValue(Phantom item, int col) {
+		switch (col) {
+			case 0: return item.getId();
+			case 1: return item.getAnnulusDiameter().getValue();
+			case 2: return item.getfType().getFabricationType();
+			case 3: return item.getLiteratureBase().getLiteratureBase();
+			case 4: return item.getSpecial().getShortcut();
+			case 5: return item.getNumber();
+		}
+		throw new IllegalArgumentException();
+	}
+
+	@Override
+	public void setValue(Phantom item, int col, Object value) {
+		switch (col) {
+			case 0: item.setId((Integer) value); break;
+			case 1: item.getAnnulusDiameter().setValue((Double) value); break;
+			case 2: item.getfType().setFabricationType((String) value); break;
+			case 3: item.getLiteratureBase().setLiteratureBase((String) value); break;
+			case 4: item.getSpecial().setShortcut((String) value); break;
+			case 5: item.setNumber((int) value); break;
+		}
+		throw new IllegalArgumentException();
+		
+	}
+
+	@Override
+	public List<String> getColumnNames() {
+		return Arrays.asList("annulus [mm]", "type", "literature", "specials", "number");
 	}
 	
 	

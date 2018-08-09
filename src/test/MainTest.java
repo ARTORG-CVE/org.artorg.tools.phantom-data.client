@@ -38,14 +38,14 @@ import javafx.stage.Stage;
 public class MainTest extends Application {
 	
     public static void main( String[] args ) {
-//    	shutdownServer();
-//		deleteDatabase();
-//		deleteFileStructure();
-//		prepareFileStructure();
-//		logInfos();
-//		startingServer(args);
-//		
-//		initDatabase();
+    	shutdownServer();
+		deleteDatabase();
+		deleteFileStructure();
+		prepareFileStructure();
+		logInfos();
+		startingServer(args);
+		
+		initDatabase();
  
     	
     	launch(args);
@@ -68,7 +68,7 @@ public class MainTest extends Application {
     
     @Override
     public void stop(){
-//    	shutdownServer();
+    	shutdownServer();
     }
     
     private static AnnulusDiameterConnector adConn = AnnulusDiameterConnector.get();

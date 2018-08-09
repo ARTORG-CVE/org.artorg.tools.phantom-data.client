@@ -1,6 +1,7 @@
 package org.artorg.tools.phantomData.client.table;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.connector.LiteratureBaseConnector;
@@ -14,27 +15,34 @@ import javafx.scene.control.TableColumn;
 public class LiteratureBaseTable extends StageTable<LiteratureBaseTable, LiteratureBase, Integer> {
 	
 	@Override
-	public List<TableColumn<LiteratureBase, ?>> createColumns() {
-		List<TableColumn<LiteratureBase, ?>> columns = new ArrayList<TableColumn<LiteratureBase, ?>>();
-		
-		TableColumn<LiteratureBase, String> idCol = new TableColumn<LiteratureBase, String>("id");
-		TableColumn<LiteratureBase, String> shortcutCol = new TableColumn<LiteratureBase, String>("shortcut");
-	    TableColumn<LiteratureBase, String> valueCol = new TableColumn<LiteratureBase, String>("value");
-	    
-	    idCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getId())));
-	    shortcutCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getShortcut())));
-	    valueCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getLiteratureBase())));
-	    
-	    columns.add(idCol);
-	    columns.add(shortcutCol);
-	    columns.add(valueCol);
-	    
-	    return columns;
-	}
-	
-	@Override
 	public HttpDatabaseCrud<LiteratureBase, Integer> getConnector() {
 		return LiteratureBaseConnector.get();
+	}
+
+	@Override
+	public Object getValue(LiteratureBase item, int col) {
+		switch (col) {
+			case 0: return item.getId();
+			case 1: return item.getShortcut();
+			case 2: return item.getLiteratureBase();
+		}
+		throw new IllegalArgumentException();
+	}
+
+	@Override
+	public void setValue(LiteratureBase item, int col, Object value) {
+		switch (col) {
+			case 0: item.setId((Integer) value); break;
+			case 1: item.setShortcut((String) value); break;
+			case 2: item.setLiteratureBase((String) value); break;
+		}
+		throw new IllegalArgumentException();
+		
+	}
+
+	@Override
+	public List<String> getColumnNames() {
+		return Arrays.asList("id", "shortcut", "value");
 	}
 
 }

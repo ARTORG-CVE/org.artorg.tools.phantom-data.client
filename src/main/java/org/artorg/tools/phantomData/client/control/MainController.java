@@ -268,10 +268,10 @@ public class MainController {
     @FXML
     void openTableLiteratureBases(ActionEvent event) {
     	LiteratureBaseTable table = new LiteratureBaseTable();
-    	TableView<LiteratureBase> tableView = table.createTableView();
-//    	SpreadsheetView tableView = table.createSpreadsheetView();
+//    	TableView<LiteratureBase> tableView = table.createTableView();
+    	SpreadsheetView tableView = table.createSpreadsheetView();
     	Stage stage = table.createStage(tableView, "Literature Bases");
-    	table.autoResize(tableView, stage);
+//    	table.autoResize(tableView, stage);
     	stage.show();
     }
     

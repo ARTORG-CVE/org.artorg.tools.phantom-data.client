@@ -1,12 +1,18 @@
 package org.artorg.tools.phantomData.client.specification;
 
+import java.util.List;
+
 import org.artorg.tools.phantomData.client.connector.LiteratureBaseConnector;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -61,13 +67,24 @@ public abstract class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 	}
 	
 	public boolean save() {
-		((LiteratureBase)this.getItems().get(1)).setLiteratureBase("//////");
-		
+//		System.out.println("//////////////////////");
+//		this.getItems().forEach(i -> System.out.println(i.toString()));
+//		System.out.println("//////////////////////");
+//		
+//		this.getConnector().update(this.getItems());
+//		
+//		System.out.println("//////////////////////");
+//		this.getItems().forEach(i -> System.out.println(i.toString()));
+//		System.out.println("//////////////////////");
+//		
 		System.out.println("//////////////////////");
-		this.getItems().forEach(i -> System.out.println(i.toString()));
+		this.getData().stream().flatMap(c -> c.stream()).forEach(i -> {
+			System.out.println(i.toString());
+		});
 		System.out.println("//////////////////////");
-		
-		this.getConnector().update(this.getItems());
+//		
+//		
+		List<List<String>> rows = this.getData();
 		
 		
 		return true;

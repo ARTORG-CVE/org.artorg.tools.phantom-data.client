@@ -1,42 +1,43 @@
 package org.artorg.tools.phantomData.client.table;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.artorg.tools.phantomData.client.connector.FabricationTypeConnector;
 import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.client.specification.StageTable;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.control.TableColumn;
-
 public class FabricationTypeTable extends StageTable<FabricationTypeTable, FabricationType, Integer> {
-
-	@Override
-	public List<TableColumn<FabricationType, ?>> createColumns() {
-		List<TableColumn<FabricationType,?>> columns = new ArrayList<TableColumn<FabricationType, ?>>();
-		
-		TableColumn<FabricationType, String> idCol = new TableColumn<FabricationType, String>("id");
-		TableColumn<FabricationType, String> shortcutCol = new TableColumn<FabricationType, String>("shortcut");
-	    TableColumn<FabricationType, String> valueCol = new TableColumn<FabricationType, String>("value");
-	    
-	    idCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getId())));
-	    shortcutCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getShortcut())));
-	    valueCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getFabricationType())));
-	    
-	    columns.add(idCol);
-	    columns.add(shortcutCol);
-	    columns.add(valueCol);
-		
-		return columns;
-	}
 
 	@Override
 	public HttpDatabaseCrud<FabricationType, Integer> getConnector() {
 		return FabricationTypeConnector.get();
+	}
+
+	@Override
+	public Object getValue(FabricationType item, int col) {
+		switch (col) {
+			case 0: return item.getId();
+			case 1: return item.getShortcut();
+			case 2: return item.getFabricationType();
+		}
+		throw new IllegalArgumentException();
+	}
+
+	@Override
+	public void setValue(FabricationType item, int col, Object value) {
+		switch (col) {
+			case 0: item.setId((Integer) value); break;
+			case 1: item.setShortcut((String) value); break;
+			case 2: item.setFabricationType( (String) value); break;
+		}
+		throw new IllegalArgumentException();
+	}
+
+	@Override
+	public List<String> getColumnNames() {
+		return Arrays.asList("id", "shortcut", "value");
 	}
 
 }
