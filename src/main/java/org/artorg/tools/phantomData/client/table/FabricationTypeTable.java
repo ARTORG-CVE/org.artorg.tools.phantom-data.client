@@ -1,8 +1,10 @@
 package org.artorg.tools.phantomData.client.table;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.artorg.tools.phantomData.client.commandPattern.PropertyUndoable;
 import org.artorg.tools.phantomData.client.connector.FabricationTypeConnector;
 import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.client.specification.StageTable;
@@ -14,30 +16,26 @@ public class FabricationTypeTable extends StageTable<FabricationTypeTable, Fabri
 	public HttpDatabaseCrud<FabricationType, Integer> getConnector() {
 		return FabricationTypeConnector.get();
 	}
-
+	
 	@Override
-	public Object getValue(FabricationType item, int col) {
-		switch (col) {
-			case 0: return item.getId();
-			case 1: return item.getShortcut();
-			case 2: return item.getFabricationType();
-		}
-		throw new IllegalArgumentException();
-	}
-
-	@Override
-	public void setValue(FabricationType item, int col, Object value) {
-		switch (col) {
-			case 0: item.setId((Integer) value); break;
-			case 1: item.setShortcut((String) value); break;
-			case 2: item.setFabricationType( (String) value); break;
-		}
-		throw new IllegalArgumentException();
-	}
-
-	@Override
-	public List<String> getColumnNames() {
+	public List<String> createColumnNames() {
 		return Arrays.asList("id", "shortcut", "value");
+	}
+
+	@Override
+	public List<PropertyUndoable<FabricationType, Object>> createProperties() {
+		List<PropertyUndoable<FabricationType, Object>> properties = 
+				new ArrayList<PropertyUndoable<FabricationType, Object>>();
+		properties.add(createProperty(
+				(i,o) -> i.setId((Integer) o), 
+				i -> i.getId()));
+		properties.add(createProperty(
+				(i,o) -> i.setShortcut((String) o), 
+				i -> i.getShortcut()));
+		properties.add(createProperty(
+				(i,o) -> i.setValue((String) o), 
+				i -> i.getValue()));
+		return properties;
 	}
 
 }

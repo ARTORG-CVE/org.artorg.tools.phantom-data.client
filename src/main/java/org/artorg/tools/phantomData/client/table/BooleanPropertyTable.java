@@ -1,8 +1,10 @@
 package org.artorg.tools.phantomData.client.table;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.artorg.tools.phantomData.client.commandPattern.PropertyUndoable;
 import org.artorg.tools.phantomData.client.connector.property.BooleanPropertyConnector;
 import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.client.specification.StageTable;
@@ -16,29 +18,24 @@ public class BooleanPropertyTable extends StageTable<BooleanPropertyTable, Boole
 	}
 
 	@Override
-	public Object getValue(BooleanProperty item, int col) {
-		switch (col) {
-			case 0: return item.getId();
-			case 1: return item.getPropertyField().getDescription();
-			case 2: return item.getBool();
-		}
-		throw new IllegalArgumentException();
-	}
-
-	@Override
-	public void setValue(BooleanProperty item, int col, Object value) {
-		switch (col) {
-			case 0: item.setId((Integer) value); break;
-			case 1: item.getPropertyField().setDescription((String) value); break;
-			case 2: item.setBool((Boolean) value); break;
-		}
-		throw new IllegalArgumentException();
-	}
-
-	@Override
-	public List<String> getColumnNames() {
+	public List<String> createColumnNames() {
 		return Arrays.asList("id", "property field", "value");
 	}
-	
+
+	@Override
+	public List<PropertyUndoable<BooleanProperty, Object>> createProperties() {
+		List<PropertyUndoable<BooleanProperty, Object>> properties = 
+				new ArrayList<PropertyUndoable<BooleanProperty, Object>>();
+		properties.add(createProperty(
+				(i,o) -> i.setId((Integer) o), 
+				i -> i.getId()));
+		properties.add(createProperty(
+				(i,o) -> i.getPropertyField().setDescription((String) o), 
+				i -> i.getPropertyField().getDescription()));
+		properties.add(createProperty(
+				(i,o) -> i.setBool((Boolean) o), 
+				i -> i.getBool()));
+		return properties;
+	}
 
 }

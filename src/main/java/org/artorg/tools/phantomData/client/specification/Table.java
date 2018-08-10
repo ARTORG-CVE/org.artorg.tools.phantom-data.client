@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.commandPattern.PropertyUndoable;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
@@ -23,29 +26,31 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM extends DatabasePersistent<ITEM, ID_TYPE>, ID_TYPE> {
-	
 	private final ObservableList<ITEM> items;
-	
-	private final List<List<String>> data;
+	private final List<List<Object>> data;
+	private final List<PropertyUndoable<ITEM,Object>> properties;
+	private final List<Function<ITEM,Object>> getters;
+	private final List<BiConsumer<ITEM, Object>> setters;
 	
 	{
 		Set<ITEM> itemSet = new HashSet<ITEM>();
 		itemSet.addAll(getConnector().readAllAsSet());
 		items = FXCollections.observableArrayList(itemSet);
+		data  = new ArrayList<List<Object>>();
+		properties = createProperties();
+		getters = createGetters();
+		setters = createSetters();
 	}
 	
-	{
-		 data  = new ArrayList<List<String>>();
-	}
+	public abstract List<String> createColumnNames();
 	
-	public List<List<String>> getData() {
-		return data;
-	}
+	public abstract HttpDatabaseCrud<ITEM, ID_TYPE> getConnector();
 	
+	public abstract List<PropertyUndoable<ITEM,Object>> createProperties();
 	
 	public List<TableColumn<ITEM,?>> createColumns() {
 		List<TableColumn<ITEM,?>> columns = new ArrayList<TableColumn<ITEM,?>>();
-		List<String> columnNames = getColumnNames();
+		List<String> columnNames = createColumnNames();
 		
 		int nCols = getNumOfColumns();
 		for ( int i=0; i<nCols; i++) {
@@ -63,16 +68,35 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM exte
 		return items;
 	}
 	
-	public abstract HttpDatabaseCrud<ITEM, ID_TYPE> getConnector();
+	public final List<Object> getValues(ITEM item) {
+		return getGetters().stream().map(g -> g.apply(item))
+				.collect(Collectors.toList());
+	}
 	
-	public abstract Object getValue(ITEM item, int col);
+	public PropertyUndoable<ITEM,Object> createProperty(BiConsumer<ITEM,Object> setter, Function<ITEM,Object> getter) {
+		return new PropertyUndoable<ITEM,Object>(setter, getter);
+	}
 	
-	public abstract void setValue(ITEM item, int col, Object value);
+	public final List<Function<ITEM,Object>> createGetters() {
+		List<PropertyUndoable<ITEM, Object>> properties = getProperties();
+		return properties.stream().map(p -> p.getGetter()).collect(Collectors.toList());
+	}
 	
-	public abstract List<String> getColumnNames();
+	public final List<BiConsumer<ITEM, Object>> createSetters() {
+		List<PropertyUndoable<ITEM, Object>> properties = getProperties();
+		return properties.stream().map(p -> p.getSetter()).collect(Collectors.toList());
+	}
+	
+	public final Object getValue(ITEM item, int col) {
+		return getValues(item).get(col);
+	}
+	
+	public final void setValue(ITEM item, int col, Object value) {
+		getSetters().get(col).accept(item, value);
+	}
 	
 	public int getNumOfColumns() {
-		return getColumnNames().size();
+		return createColumnNames().size();
 	}
 	
 	public Object getValue(int row, int col) {
@@ -81,6 +105,26 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM exte
 	
 	public void setValue(int row, int col, Object value) {
 		setValue(items.get(row), col, value);
+	}
+	
+	public void createData() { 
+        int nCols = getNumOfColumns();
+        data.add(createColumnNames().stream().map(s -> (Object)s)
+        		.collect(Collectors.toList()));
+        
+        List<ITEM> items = new ArrayList<ITEM>();
+		items.addAll(getConnector().readAllAsList());
+        
+        for (int row=1; row<items.size(); row++) {
+        	List<Object> testList2 = new ArrayList<Object>();
+            for (int col = 0; col < nCols; col++) {
+            	Object value = getValue(items.get(row), col);
+            	if ( value instanceof String) 
+            		testList2.add((String)value);
+            }
+            data.add(testList2);
+        }
+
 	}
 	
 	public TableView<ITEM> createTableView(TableView<ITEM> table) {
@@ -143,7 +187,7 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM exte
     			.map(tc -> tc.getText()).collect(Collectors.toList());
         final ObservableList<SpreadsheetCell> list1 = FXCollections.observableArrayList();
         
-        List<String> testList = new ArrayList<String>();
+        List<Object> testList = new ArrayList<Object>();
         ObservableList<ObservableList<SpreadsheetCell>> rows = FXCollections.observableArrayList();
         
         for (int col = 0; col < columnCount; col++) {
@@ -158,7 +202,7 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM exte
         Integer row=1;
         while (row<items.size()) {
         	final ObservableList<SpreadsheetCell> list2 = FXCollections.observableArrayList();
-        	List<String> testList2 = new ArrayList<String>();
+        	List<Object> testList2 = new ArrayList<Object>();
         	
             for (int col = 0; col < columnCount; col++) {
             	Object value = table.getColumns().get(col).getCellData(items.get(row));
@@ -202,6 +246,22 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM exte
         spreadsheet.setGrid(grid);
         
         return spreadsheet; 
+	}
+
+	public List<PropertyUndoable<ITEM,Object>> getProperties() {
+		return properties;
+	}
+	
+	public List<Function<ITEM, Object>> getGetters() {
+		return getters;
+	}
+
+	public List<BiConsumer<ITEM, Object>> getSetters() {
+		return setters;
+	}
+
+	public List<List<Object>> getData() {
+		return data;
 	}
 
 }

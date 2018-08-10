@@ -1,11 +1,14 @@
 package org.artorg.tools.phantomData.client.table;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.artorg.tools.phantomData.client.commandPattern.PropertyUndoable;
 import org.artorg.tools.phantomData.client.connector.PhantomConnector;
 import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.client.specification.StageTable;
+import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.Phantom;
 
 public class PhantomTable extends StageTable<PhantomTable, Phantom, Integer> {
@@ -22,37 +25,35 @@ public class PhantomTable extends StageTable<PhantomTable, Phantom, Integer> {
 	public HttpDatabaseCrud<Phantom, Integer> getConnector() {
 		return PhantomConnector.get();
 	}
-
+	
 	@Override
-	public Object getValue(Phantom item, int col) {
-		switch (col) {
-			case 0: return item.getId();
-			case 1: return item.getAnnulusDiameter().getValue();
-			case 2: return item.getfType().getFabricationType();
-			case 3: return item.getLiteratureBase().getLiteratureBase();
-			case 4: return item.getSpecial().getShortcut();
-			case 5: return item.getNumber();
-		}
-		throw new IllegalArgumentException();
-	}
-
-	@Override
-	public void setValue(Phantom item, int col, Object value) {
-		switch (col) {
-			case 0: item.setId((Integer) value); break;
-			case 1: item.getAnnulusDiameter().setValue((Double) value); break;
-			case 2: item.getfType().setFabricationType((String) value); break;
-			case 3: item.getLiteratureBase().setLiteratureBase((String) value); break;
-			case 4: item.getSpecial().setShortcut((String) value); break;
-			case 5: item.setNumber((int) value); break;
-		}
-		throw new IllegalArgumentException();
-		
-	}
-
-	@Override
-	public List<String> getColumnNames() {
+	public List<String> createColumnNames() {
 		return Arrays.asList("annulus [mm]", "type", "literature", "specials", "number");
+	}
+
+	@Override
+	public List<PropertyUndoable<Phantom, Object>> createProperties() {
+		List<PropertyUndoable<Phantom, Object>> properties = 
+				new ArrayList<PropertyUndoable<Phantom, Object>>();
+		properties.add(createProperty(
+				(i,o) -> i.setId((Integer) o), 
+				i -> i.getId()));
+		properties.add(createProperty(
+				(i,o) -> i.getAnnulusDiameter().setValue((Double) o), 
+				i -> i.getAnnulusDiameter().getValue()));
+		properties.add(createProperty(
+				(i,o) -> i.getFabricationType().setValue((String) o), 
+				i -> i.getFabricationType().getValue()));
+		properties.add(createProperty(
+				(i,o) -> i.getLiteratureBase().setValue((String) o), 
+				i -> i.getLiteratureBase().getValue()));
+		properties.add(createProperty(
+				(i,o) -> i.getSpecial().setShortcut((String) o), 
+				i -> i.getSpecial().getShortcut()));
+		properties.add(createProperty(
+				(i,o) -> i.setNumber((Integer) o), 
+				i -> i.getNumber()));
+		return properties;
 	}
 	
 	

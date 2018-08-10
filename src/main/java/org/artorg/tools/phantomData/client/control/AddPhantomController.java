@@ -122,12 +122,12 @@ public class AddPhantomController {
           });
         
         List<String> fabricationType = FabricationTypeConnector.get().readAllAsStream()
-        		.distinct().map(ad -> ad.getFabricationType()).collect(Collectors.toList());
+        		.distinct().map(ad -> ad.getValue()).collect(Collectors.toList());
         comboBoxType.setItems(FXCollections.observableList(fabricationType));
         comboBoxType.getSelectionModel().selectFirst();
 
         List<String> literatureBases = LiteratureBaseConnector.get().readAllAsStream()
-        		.distinct().map(lb -> lb.getLiteratureBase()).collect(Collectors.toList());
+        		.distinct().map(lb -> lb.getValue()).collect(Collectors.toList());
         comboBoxLiterature.setItems(FXCollections.observableList(literatureBases));
         comboBoxLiterature.getSelectionModel().selectFirst();
         

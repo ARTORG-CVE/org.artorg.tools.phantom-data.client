@@ -156,21 +156,21 @@ public class InitDatabaseTest {
 		
 		Phantom p1 = new Phantom();
 		p1.setAnnulusDiameter(daConn.readById(1));
-		p1.setfType(fTypeConn.readById(1));
+		p1.setFabricationType(fTypeConn.readById(1));
 		p1.setLiteratureBase(litBaseConn.readById(1));
 		p1.setSpecial(specConn.readById(1));
 		p1.setNumber(1);
 		
 		Phantom p2 = new Phantom();
 		p2.setAnnulusDiameter(daConn.readById(1));
-		p2.setfType(fTypeConn.readById(1));
+		p2.setFabricationType(fTypeConn.readById(1));
 		p2.setLiteratureBase(litBaseConn.readById(1));
 		p2.setSpecial(specConn.readById(3));
 		p2.setNumber(2);
 		
 		Phantom p3 = new Phantom();
 		p3.setAnnulusDiameter(daConn.readById(3));
-		p3.setfType(fTypeConn.readById(1));
+		p3.setFabricationType(fTypeConn.readById(1));
 		p3.setLiteratureBase(litBaseConn.readById(3));
 		p3.setSpecial(specConn.readById(1));
 		p3.setNumber(3);
@@ -182,7 +182,7 @@ public class InitDatabaseTest {
 		
 		Phantom p4 = new Phantom();
 		p4.setAnnulusDiameter(daConn.readById(3));
-		p4.setfType(fTypeConn.readById(1));
+		p4.setFabricationType(fTypeConn.readById(1));
 		p4.setLiteratureBase(litBaseConn.readById(3));
 		p4.setSpecial(specConn.readById(1));
 		p4.setNumber(5);
