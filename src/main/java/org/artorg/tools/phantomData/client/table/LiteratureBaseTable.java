@@ -23,9 +23,9 @@ public class LiteratureBaseTable extends StageTable<LiteratureBaseTable, Literat
 	}
 
 	@Override
-	public List<PropertyUndoable<LiteratureBase, Object>> createProperties() {
-		List<PropertyUndoable<LiteratureBase, Object>> properties = 
-				new ArrayList<PropertyUndoable<LiteratureBase, Object>>();
+	public List<PropertyUndoable<LiteratureBase, Integer, Object>> createProperties() {
+		List<PropertyUndoable<LiteratureBase, Integer, Object>> properties = 
+				new ArrayList<PropertyUndoable<LiteratureBase, Integer, Object>>();
 		properties.add(createProperty(
 				(i,o) -> i.setId((Integer) o), 
 				i -> i.getId()));

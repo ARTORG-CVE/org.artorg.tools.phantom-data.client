@@ -3,36 +3,46 @@ package org.artorg.tools.phantomData.client.commandPattern;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public class PropertyUndoable<T,U> extends UndoManager {
+import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-	private final Function<T,U> getter;
+public class PropertyUndoable<ITEM extends DatabasePersistent<ITEM, ID_TYPE>, ID_TYPE, U> extends UndoManager {
+
+	private final Function<ITEM,U> getter;
 	
 	
 
-	private final BiConsumer<T,U> setter;
+	private final BiConsumer<ITEM,U> setter;
 			
-	public PropertyUndoable(BiConsumer<T,U> setter, Function<T,U> getter) {
+	private final HttpDatabaseCrud<ITEM, ID_TYPE> connector;
+	
+	
+	public PropertyUndoable(BiConsumer<ITEM,U> setter, Function<ITEM,U> getter, HttpDatabaseCrud<ITEM, ID_TYPE> connector) {
 		this.getter = getter;
 		this.setter = setter;
+		this.connector = connector;
 	}
 	
-	public void set(T item, U value) {
+	public void set(ITEM item, U value) {
 		U currentValue = getter.apply(item);
 		UndoRedoNode node = new UndoRedoNode(() -> setter.accept(item, value), 
-				() -> setter.accept(item, currentValue));
+				() -> setter.accept(item, currentValue),
+				() -> connector.update(item));
 		super.addNode(node);
 		node.redo();
 	}
 	
-	public U get(T item) {
+	public U get(ITEM item) {
 		return getter.apply(item);
 	}
 
-	public Function<T, U> getGetter() {
+	public Function<ITEM, U> getGetter() {
 		return getter;
 	}
 
-	public BiConsumer<T, U> getSetter() {
+	public BiConsumer<ITEM, U> getSetter() {
 		return setter;
 	}
+	
+	
 }

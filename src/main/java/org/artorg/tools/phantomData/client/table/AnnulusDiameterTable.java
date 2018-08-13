@@ -23,9 +23,9 @@ public class AnnulusDiameterTable extends StageTable<AnnulusDiameterTable, Annul
 	}
 
 	@Override
-	public List<PropertyUndoable<AnnulusDiameter, Object>> createProperties() {
-		List<PropertyUndoable<AnnulusDiameter, Object>> properties = 
-				new ArrayList<PropertyUndoable<AnnulusDiameter, Object>>();
+	public List<PropertyUndoable<AnnulusDiameter, Integer, Object>> createProperties() {
+		List<PropertyUndoable<AnnulusDiameter, Integer, Object>> properties = 
+				new ArrayList<PropertyUndoable<AnnulusDiameter, Integer, Object>>();
 		properties.add(createProperty(
 				(i,o) -> i.setId((Integer) o), 
 				i -> i.getId()));

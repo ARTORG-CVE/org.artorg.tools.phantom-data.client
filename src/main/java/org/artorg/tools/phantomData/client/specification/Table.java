@@ -28,7 +28,7 @@ import javafx.stage.Stage;
 public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM extends DatabasePersistent<ITEM, ID_TYPE>, ID_TYPE> {
 	private final ObservableList<ITEM> items;
 	private final List<List<Object>> data;
-	private final List<PropertyUndoable<ITEM,Object>> properties;
+	private final List<PropertyUndoable<ITEM,ID_TYPE, Object>> properties;
 	private final List<Function<ITEM,Object>> getters;
 	private final List<BiConsumer<ITEM, Object>> setters;
 	
@@ -46,7 +46,7 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM exte
 	
 	public abstract HttpDatabaseCrud<ITEM, ID_TYPE> getConnector();
 	
-	public abstract List<PropertyUndoable<ITEM,Object>> createProperties();
+	public abstract List<PropertyUndoable<ITEM,ID_TYPE, Object>> createProperties();
 	
 	public List<TableColumn<ITEM,?>> createColumns() {
 		List<TableColumn<ITEM,?>> columns = new ArrayList<TableColumn<ITEM,?>>();
@@ -73,17 +73,17 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM exte
 				.collect(Collectors.toList());
 	}
 	
-	public PropertyUndoable<ITEM,Object> createProperty(BiConsumer<ITEM,Object> setter, Function<ITEM,Object> getter) {
-		return new PropertyUndoable<ITEM,Object>(setter, getter);
+	public PropertyUndoable<ITEM, ID_TYPE, Object> createProperty(BiConsumer<ITEM,Object> setter, Function<ITEM,Object> getter) {
+		return new PropertyUndoable<ITEM, ID_TYPE, Object>(setter, getter, getConnector());
 	}
 	
 	public final List<Function<ITEM,Object>> createGetters() {
-		List<PropertyUndoable<ITEM, Object>> properties = getProperties();
+		List<PropertyUndoable<ITEM, ID_TYPE, Object>> properties = getProperties();
 		return properties.stream().map(p -> p.getGetter()).collect(Collectors.toList());
 	}
 	
 	public final List<BiConsumer<ITEM, Object>> createSetters() {
-		List<PropertyUndoable<ITEM, Object>> properties = getProperties();
+		List<PropertyUndoable<ITEM, ID_TYPE, Object>> properties = getProperties();
 		return properties.stream().map(p -> p.getSetter()).collect(Collectors.toList());
 	}
 	
@@ -100,11 +100,14 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM exte
 	}
 	
 	public Object getValue(int row, int col) {
-		return getValue(items.get(row),col);
+		return data.get(row+1).get(col);
+		
+//		return getValue(items.get(row),col);
 	}
 	
 	public void setValue(int row, int col, Object value) {
-		setValue(items.get(row), col, value);
+		data.get(row+1).set(col, value);
+//		setValue(items.get(row), col, value);
 	}
 	
 	public void createData() { 
@@ -133,7 +136,10 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM exte
 	    List<TableColumn<ITEM,?>> columns = createColumns();
 	    table.getColumns().addAll(columns);
 	    
-	    ObservableList<ITEM> data = FXCollections.observableArrayList(getItems());
+	    Set<ITEM> itemSet = new HashSet<ITEM>();
+		itemSet.addAll(getConnector().readAllAsSet());
+	    ObservableList<ITEM> items = FXCollections.observableArrayList(itemSet);
+	    ObservableList<ITEM> data = FXCollections.observableArrayList(items);
 	    table.setItems(data);
 	    
 	    this.setSortOrder(table);
@@ -199,7 +205,7 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM exte
         
         ObservableList<ITEM> items = table.getItems();
         
-        Integer row=1;
+        Integer row=0;
         while (row<items.size()) {
         	final ObservableList<SpreadsheetCell> list2 = FXCollections.observableArrayList();
         	List<Object> testList2 = new ArrayList<Object>();
@@ -217,6 +223,8 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM exte
             		final int tempCol = col;
             		label.setOnAction((event) -> {
             			data.get(tempRow+1).set(tempCol, label.getText());
+            			data.stream().flatMap(l -> l.stream()).forEach(System.out::println);
+            			properties.get(tempCol).set(items.get(tempRow), label.getText());
             		});
             		cell.setGraphic(label);
             		list2.add(cell);
@@ -248,7 +256,7 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM exte
         return spreadsheet; 
 	}
 
-	public List<PropertyUndoable<ITEM,Object>> getProperties() {
+	public List<PropertyUndoable<ITEM, ID_TYPE, Object>> getProperties() {
 		return properties;
 	}
 	

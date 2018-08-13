@@ -23,9 +23,9 @@ public class PropertyFieldTable extends StageTable<PropertyFieldTable,PropertyFi
 	}
 
 	@Override
-	public List<PropertyUndoable<PropertyField, Object>> createProperties() {
-		List<PropertyUndoable<PropertyField, Object>> properties = 
-				new ArrayList<PropertyUndoable<PropertyField, Object>>();
+	public List<PropertyUndoable<PropertyField, Integer, Object>> createProperties() {
+		List<PropertyUndoable<PropertyField, Integer, Object>> properties = 
+				new ArrayList<PropertyUndoable<PropertyField, Integer, Object>>();
 		properties.add(createProperty(
 				(i,o) -> i.setId((Integer) o), 
 				i -> i.getId()));

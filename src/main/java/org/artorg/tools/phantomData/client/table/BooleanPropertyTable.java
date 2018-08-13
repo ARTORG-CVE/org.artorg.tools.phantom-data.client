@@ -23,9 +23,9 @@ public class BooleanPropertyTable extends StageTable<BooleanPropertyTable, Boole
 	}
 
 	@Override
-	public List<PropertyUndoable<BooleanProperty, Object>> createProperties() {
-		List<PropertyUndoable<BooleanProperty, Object>> properties = 
-				new ArrayList<PropertyUndoable<BooleanProperty, Object>>();
+	public List<PropertyUndoable<BooleanProperty, Integer, Object>> createProperties() {
+		List<PropertyUndoable<BooleanProperty, Integer, Object>> properties = 
+				new ArrayList<PropertyUndoable<BooleanProperty, Integer, Object>>();
 		properties.add(createProperty(
 				(i,o) -> i.setId((Integer) o), 
 				i -> i.getId()));

@@ -23,9 +23,9 @@ public class FabricationTypeTable extends StageTable<FabricationTypeTable, Fabri
 	}
 
 	@Override
-	public List<PropertyUndoable<FabricationType, Object>> createProperties() {
-		List<PropertyUndoable<FabricationType, Object>> properties = 
-				new ArrayList<PropertyUndoable<FabricationType, Object>>();
+	public List<PropertyUndoable<FabricationType, Integer, Object>> createProperties() {
+		List<PropertyUndoable<FabricationType, Integer, Object>> properties = 
+				new ArrayList<PropertyUndoable<FabricationType, Integer, Object>>();
 		properties.add(createProperty(
 				(i,o) -> i.setId((Integer) o), 
 				i -> i.getId()));

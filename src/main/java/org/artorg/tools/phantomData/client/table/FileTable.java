@@ -25,9 +25,9 @@ public class FileTable extends StageTable<FileTable, PhantomFile, Integer> {
 	}
 
 	@Override
-	public List<PropertyUndoable<PhantomFile, Object>> createProperties() {
-		List<PropertyUndoable<PhantomFile, Object>> properties = 
-				new ArrayList<PropertyUndoable<PhantomFile, Object>>();
+	public List<PropertyUndoable<PhantomFile, Integer, Object>> createProperties() {
+		List<PropertyUndoable<PhantomFile, Integer, Object>> properties = 
+				new ArrayList<PropertyUndoable<PhantomFile, Integer, Object>>();
 		properties.add(createProperty(
 				(i,o) -> i.setId((Integer) o), 
 				i -> i.getId()));

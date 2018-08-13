@@ -32,9 +32,9 @@ public class PhantomTable extends StageTable<PhantomTable, Phantom, Integer> {
 	}
 
 	@Override
-	public List<PropertyUndoable<Phantom, Object>> createProperties() {
-		List<PropertyUndoable<Phantom, Object>> properties = 
-				new ArrayList<PropertyUndoable<Phantom, Object>>();
+	public List<PropertyUndoable<Phantom, Integer, Object>> createProperties() {
+		List<PropertyUndoable<Phantom, Integer, Object>> properties = 
+				new ArrayList<PropertyUndoable<Phantom, Integer, Object>>();
 		properties.add(createProperty(
 				(i,o) -> i.setId((Integer) o), 
 				i -> i.getId()));

@@ -241,9 +241,10 @@ public class MainController {
     @FXML
     void openTableSpecials(ActionEvent event) {
     	SpecialTable table = new SpecialTable();
-    	TableView<Special> tableView = table.createTableView();
+//    	TableView<Special> tableView = table.createTableView();
+    	SpreadsheetView tableView = table.createSpreadsheetView();
     	Stage stage = table.createStage(tableView, "Specials");
-    	table.autoResize(tableView, stage);
+//    	table.autoResize(tableView, stage);
     	stage.show();
     }
 
