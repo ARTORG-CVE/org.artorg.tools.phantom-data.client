@@ -1,15 +1,16 @@
-package org.artorg.tools.phantomData.client.table;
+package org.artorg.tools.phantomData.client.tables;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.commandPattern.PropertyUndoable;
-import org.artorg.tools.phantomData.client.connector.LiteratureBaseConnector;
-import org.artorg.tools.phantomData.client.specification.Column;
-import org.artorg.tools.phantomData.client.specification.Column2;
-import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
-import org.artorg.tools.phantomData.client.specification.StageTable;
+import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
+import org.artorg.tools.phantomData.client.table.Column;
+import org.artorg.tools.phantomData.client.table.ColumnOptional;
+import org.artorg.tools.phantomData.client.table.IColumn;
+import org.artorg.tools.phantomData.client.table.StageTable;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
@@ -22,9 +23,9 @@ public class LiteratureBaseTable extends StageTable<LiteratureBaseTable, Literat
 	}
 
 	@Override
-	public List<Column<LiteratureBase, ? extends DatabasePersistent<?, ?>, ?, ?>> createColumns2() {
-		List<Column<LiteratureBase, ? extends DatabasePersistent<?, ?>, ?, ?>> columns =
-				new ArrayList<Column<LiteratureBase, ? extends DatabasePersistent<?, ?>, ?, ?>>();
+	public List<IColumn<LiteratureBase, ?, ?>> createColumns() {
+		List<IColumn<LiteratureBase, ?, ?>> columns =
+				new ArrayList<IColumn<LiteratureBase, ?, ?>>();
 		columns.add(new Column<LiteratureBase, LiteratureBase, Integer, Integer>(
 				"id", item -> item, 
 				path -> path.getId(), 

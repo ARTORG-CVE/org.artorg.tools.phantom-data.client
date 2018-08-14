@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.specification;
+package org.artorg.tools.phantomData.client.connector;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

@@ -1,6 +1,6 @@
-package org.artorg.tools.phantomData.client.connector.property;
+package org.artorg.tools.phantomData.client.connectors.property;
 
-import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.server.controller.property.DatePropertyController;
 import org.artorg.tools.phantomData.server.model.property.DateProperty;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;

@@ -1,15 +1,16 @@
-package org.artorg.tools.phantomData.client.table;
+package org.artorg.tools.phantomData.client.tables;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.commandPattern.PropertyUndoable;
-import org.artorg.tools.phantomData.client.connector.FabricationTypeConnector;
-import org.artorg.tools.phantomData.client.specification.Column;
-import org.artorg.tools.phantomData.client.specification.Column2;
-import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
-import org.artorg.tools.phantomData.client.specification.StageTable;
+import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
+import org.artorg.tools.phantomData.client.table.Column;
+import org.artorg.tools.phantomData.client.table.ColumnOptional;
+import org.artorg.tools.phantomData.client.table.IColumn;
+import org.artorg.tools.phantomData.client.table.StageTable;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
@@ -22,9 +23,9 @@ public class FabricationTypeTable extends StageTable<FabricationTypeTable, Fabri
 	}
 
 	@Override
-	public List<Column<FabricationType, ? extends DatabasePersistent<?, ?>, ?, ?>> createColumns2() {
-		List<Column<FabricationType, ? extends DatabasePersistent<?, ?>, ?, ?>> columns =
-				new ArrayList<Column<FabricationType, ? extends DatabasePersistent<?, ?>, ?, ?>>();
+	public List<IColumn<FabricationType, ?, ?>> createColumns() {
+		List<IColumn<FabricationType, ?, ?>> columns =
+				new ArrayList<IColumn<FabricationType, ?, ?>>();
 		columns.add(new Column<FabricationType, FabricationType, Integer, Integer>(
 				"id", item -> item, 
 				path -> path.getId(), 

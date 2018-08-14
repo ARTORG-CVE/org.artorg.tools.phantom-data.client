@@ -7,10 +7,10 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.client.connector.AnnulusDiameterConnector;
-import org.artorg.tools.phantomData.client.connector.FabricationTypeConnector;
-import org.artorg.tools.phantomData.client.connector.LiteratureBaseConnector;
-import org.artorg.tools.phantomData.client.connector.SpecialConnector;
+import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
+import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
+import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
+import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.graphics.Scene3D;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.Phantom;

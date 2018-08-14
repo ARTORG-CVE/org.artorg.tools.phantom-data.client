@@ -1,6 +1,6 @@
-package org.artorg.tools.phantomData.client.connector;
+package org.artorg.tools.phantomData.client.connectors;
 
-import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.server.controller.AnnulusDiameterController;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;

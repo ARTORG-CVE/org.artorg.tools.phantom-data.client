@@ -1,6 +1,6 @@
-package org.artorg.tools.phantomData.client.connector;
+package org.artorg.tools.phantomData.client.connectors;
 
-import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.server.controller.SpecialController;
 import org.artorg.tools.phantomData.server.model.Special;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;

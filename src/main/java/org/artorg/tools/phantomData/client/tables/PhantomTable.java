@@ -1,13 +1,14 @@
-package org.artorg.tools.phantomData.client.table;
+package org.artorg.tools.phantomData.client.tables;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connector.PhantomConnector;
-import org.artorg.tools.phantomData.client.specification.Column;
-import org.artorg.tools.phantomData.client.specification.Column2;
-import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
-import org.artorg.tools.phantomData.client.specification.StageTable;
+import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connectors.PhantomConnector;
+import org.artorg.tools.phantomData.client.table.Column;
+import org.artorg.tools.phantomData.client.table.ColumnOptional;
+import org.artorg.tools.phantomData.client.table.IColumn;
+import org.artorg.tools.phantomData.client.table.StageTable;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
@@ -23,9 +24,9 @@ public class PhantomTable extends StageTable<PhantomTable, Phantom, Integer> {
 	}
 
 	@Override
-	public List<Column<Phantom, ? extends DatabasePersistent<?, ?>, ?, ?>> createColumns2() {
-		List<Column<Phantom, ? extends DatabasePersistent<?, ?>, ?, ?>> columns =
-				new ArrayList<Column<Phantom, ? extends DatabasePersistent<?, ?>, ?, ?>>();
+	public List<IColumn<Phantom, ?, ?>> createColumns() {
+		List<IColumn<Phantom, ?, ?>> columns =
+				new ArrayList<IColumn<Phantom, ?, ?>>();
 		columns.add(new Column<Phantom, Phantom, Integer, Integer>(
 				"id", item -> item, 
 				path -> path.getId(), 

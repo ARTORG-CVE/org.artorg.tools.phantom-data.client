@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.specification;
+package org.artorg.tools.phantomData.client.table;
 
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 

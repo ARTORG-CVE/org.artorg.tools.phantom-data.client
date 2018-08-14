@@ -1,13 +1,14 @@
-package org.artorg.tools.phantomData.client.table;
+package org.artorg.tools.phantomData.client.tables;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connector.property.PropertyFieldConnector;
-import org.artorg.tools.phantomData.client.specification.Column;
-import org.artorg.tools.phantomData.client.specification.Column2;
-import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
-import org.artorg.tools.phantomData.client.specification.StageTable;
+import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;
+import org.artorg.tools.phantomData.client.table.Column;
+import org.artorg.tools.phantomData.client.table.ColumnOptional;
+import org.artorg.tools.phantomData.client.table.IColumn;
+import org.artorg.tools.phantomData.client.table.StageTable;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
@@ -19,9 +20,9 @@ public class PropertyFieldTable extends StageTable<PropertyFieldTable,PropertyFi
 	}
 
 	@Override
-	public List<Column<PropertyField, ? extends DatabasePersistent<?, ?>, ?, ?>> createColumns2() {
-		List<Column<PropertyField, ? extends DatabasePersistent<?, ?>, ?, ?>> columns =
-				new ArrayList<Column<PropertyField, ? extends DatabasePersistent<?, ?>, ?, ?>>();
+	public List<IColumn<PropertyField, ?, ?>> createColumns() {
+		List<IColumn<PropertyField, ?, ?>> columns =
+				new ArrayList<IColumn<PropertyField, ?, ?>>();
 		columns.add(new Column<PropertyField, PropertyField, Integer, Integer>(
 				"id", item -> item, 
 				path -> path.getId(), 

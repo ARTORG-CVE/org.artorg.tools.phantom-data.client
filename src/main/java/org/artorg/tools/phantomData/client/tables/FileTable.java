@@ -1,13 +1,14 @@
-package org.artorg.tools.phantomData.client.table;
+package org.artorg.tools.phantomData.client.tables;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connector.FileConnector;
-import org.artorg.tools.phantomData.client.specification.Column;
-import org.artorg.tools.phantomData.client.specification.Column2;
-import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
-import org.artorg.tools.phantomData.client.specification.StageTable;
+import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connectors.FileConnector;
+import org.artorg.tools.phantomData.client.table.Column;
+import org.artorg.tools.phantomData.client.table.ColumnOptional;
+import org.artorg.tools.phantomData.client.table.IColumn;
+import org.artorg.tools.phantomData.client.table.StageTable;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
@@ -20,9 +21,9 @@ public class FileTable extends StageTable<FileTable, PhantomFile, Integer> {
 	}
 
 	@Override
-	public List<Column<PhantomFile, ? extends DatabasePersistent<?, ?>, ?, ?>> createColumns2() {
-		List<Column<PhantomFile, ? extends DatabasePersistent<?, ?>, ?, ?>> columns =
-				new ArrayList<Column<PhantomFile, ? extends DatabasePersistent<?, ?>, ?, ?>>();
+	public List<IColumn<PhantomFile, ?, ?>> createColumns() {
+		List<IColumn<PhantomFile, ?, ?>> columns =
+				new ArrayList<IColumn<PhantomFile, ?, ?>>();
 		columns.add(new Column<PhantomFile, PhantomFile, Integer, Integer>(
 				"id", item -> item, 
 				path -> path.getId(), 
