@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.artorg.tools.phantomData.client.commandPattern.UndoManager;
 import org.artorg.tools.phantomData.server.BootApplication;
 import org.artorg.tools.phantomData.server.boot.BootUtils;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
@@ -47,27 +48,7 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<T, ID_TYPE>,
 	private final String annoStringCreate;
 	private final String annoStringDelete;
 	private final String annoStringUpdate;
-
-	public abstract Class<?> getControllerClass();
-
-	public abstract Class<?> getArrayModelClass();
-
-	public abstract Class<? extends DatabasePersistent<T, ID_TYPE>> getModelClass();
-
-	public final String getAnnoStringControlClass() {
-		return annoStringControlClass;
-	}
-
-	public final String getAnnoStringRead() {return annoStringRead;}
-
-	public final String getAnnoStringReadAll() {return annoStringReadAll;}
-
-	public final String getAnnoStringUpdate() {return annoStringUpdate;}
-
-	public final String getAnnoStringCreate() {return annoStringCreate;}
-
-	public final String getAnnoStringDelete() {return annoStringDelete;}
-
+	
 	{
 		stringAnnosFuncCreate = m -> m.getAnnotation(PostMapping.class).value();
 		stringAnnosFuncRead = m -> m.getAnnotation(GetMapping.class).value();
@@ -86,6 +67,17 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<T, ID_TYPE>,
 		annoStringUpdate = getAnnotationString(PutMapping.class, stringAnnosFuncUpdate);
 		annoStringDelete = getAnnotationString(DeleteMapping.class, stringAnnosFuncDelete);
 	}
+	
+	public abstract Class<?> getControllerClass();
+	public abstract Class<?> getArrayModelClass();
+	public abstract Class<? extends DatabasePersistent<T, ID_TYPE>> getModelClass();
+	
+	public final String getAnnoStringControlClass() {return annoStringControlClass;}
+	public final String getAnnoStringRead() {return annoStringRead;}
+	public final String getAnnoStringReadAll() {return annoStringReadAll;}
+	public final String getAnnoStringUpdate() {return annoStringUpdate;}
+	public final String getAnnoStringCreate() {return annoStringCreate;}
+	public final String getAnnoStringDelete() {return annoStringDelete;}
 	
 	@Override
 	public String toString() {

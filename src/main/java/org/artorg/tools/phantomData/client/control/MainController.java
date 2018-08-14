@@ -241,10 +241,12 @@ public class MainController {
     @FXML
     void openTableSpecials(ActionEvent event) {
     	SpecialTable table = new SpecialTable();
+    	table.test();
 //    	TableView<Special> tableView = table.createTableView();
     	SpreadsheetView tableView = table.createSpreadsheetView();
     	Stage stage = table.createStage(tableView, "Specials");
 //    	table.autoResize(tableView, stage);
+    	
     	stage.show();
     }
 
@@ -260,9 +262,10 @@ public class MainController {
     @FXML
     void openTableFabricationTypes(ActionEvent event) {
     	FabricationTypeTable table = new FabricationTypeTable();
-    	TableView<FabricationType> tableView = table.createTableView();
+//    	TableView<FabricationType> tableView = table.createTableView();
+    	SpreadsheetView tableView = table.createSpreadsheetView();
     	Stage stage = table.createStage(tableView, "Fabrication Types");
-    	table.autoResize(tableView, stage);
+//    	table.autoResize(tableView, stage);
     	stage.show();
     }
 

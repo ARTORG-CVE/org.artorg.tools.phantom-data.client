@@ -1,16 +1,16 @@
 package org.artorg.tools.phantomData.client.table;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.commandPattern.PropertyUndoable;
 import org.artorg.tools.phantomData.client.connector.FileConnector;
+import org.artorg.tools.phantomData.client.specification.Column;
+import org.artorg.tools.phantomData.client.specification.Column2;
 import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.client.specification.StageTable;
-import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
+import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 public class FileTable extends StageTable<FileTable, PhantomFile, Integer> {
 
@@ -20,30 +20,30 @@ public class FileTable extends StageTable<FileTable, PhantomFile, Integer> {
 	}
 
 	@Override
-	public List<String> createColumnNames() {
-		return Arrays.asList("id", "path", "name", "extension", "file type");
-	}
-
-	@Override
-	public List<PropertyUndoable<PhantomFile, Integer, Object>> createProperties() {
-		List<PropertyUndoable<PhantomFile, Integer, Object>> properties = 
-				new ArrayList<PropertyUndoable<PhantomFile, Integer, Object>>();
-		properties.add(createProperty(
-				(i,o) -> i.setId((Integer) o), 
-				i -> i.getId()));
-		properties.add(createProperty(
-				(i,o) -> i.setPath((String) o), 
-				i -> i.getPath()));
-		properties.add(createProperty(
-				(i,o) -> i.setName((String) o), 
-				i -> i.getName()));
-		properties.add(createProperty(
-				(i,o) -> i.setExtension((String) o), 
-				i -> i.getExtension()));
-		properties.add(createProperty(
-				(i,o) -> i.getFileType().setName((String) o), 
-				i -> i.getFileType().getName()));
-		return properties;
+	public List<Column<PhantomFile, ? extends DatabasePersistent<?, ?>, ?, ?>> createColumns2() {
+		List<Column<PhantomFile, ? extends DatabasePersistent<?, ?>, ?, ?>> columns =
+				new ArrayList<Column<PhantomFile, ? extends DatabasePersistent<?, ?>, ?, ?>>();
+		columns.add(new Column<PhantomFile, PhantomFile, Integer, Integer>(
+				"id", item -> item, 
+				path -> path.getId(), 
+				(path,value) -> path.setId(value)));
+		columns.add(new Column<PhantomFile, PhantomFile, String, Integer>(
+				"path", item -> item, 
+				path -> path.getPath(), 
+				(path,value) -> path.setPath(value)));
+		columns.add(new Column<PhantomFile, PhantomFile, String, Integer>(
+				"name", item -> item, 
+				path -> path.getName(), 
+				(path,value) -> path.setName(value)));
+		columns.add(new Column<PhantomFile, PhantomFile, String, Integer>(
+				"extension", item -> item, 
+				path -> path.getExtension(), 
+				(path,value) -> path.setExtension(value)));
+		columns.add(new Column<PhantomFile, FileType, String, Integer>(
+				"file type", item -> item.getFileType(), 
+				path -> path.getName(), 
+				(path,value) -> path.setName(value)));
+		return columns;
 	}
 
 }

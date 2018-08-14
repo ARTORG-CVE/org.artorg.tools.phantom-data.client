@@ -6,7 +6,6 @@ import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 public class AnnulusDiameterConnector extends HttpDatabaseCrud<AnnulusDiameter, Integer> {
-
 	private static final AnnulusDiameterConnector connector;
 	
 	static {

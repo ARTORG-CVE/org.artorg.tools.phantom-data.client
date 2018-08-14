@@ -58,28 +58,29 @@ public abstract class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 		return stage;
 	}
 	
-	public boolean save() {
+	public void save() {
+		super.getUndoManager().save();
+		
+////		System.out.println("//////////////////////");
+////		this.getItems().forEach(i -> System.out.println(i.toString()));
+////		System.out.println("//////////////////////");
+////		
+////		this.getConnector().update(this.getItems());
+////		
+////		System.out.println("//////////////////////");
+////		this.getItems().forEach(i -> System.out.println(i.toString()));
+////		System.out.println("//////////////////////");
+////		
 //		System.out.println("//////////////////////");
-//		this.getItems().forEach(i -> System.out.println(i.toString()));
+////		this.getData().stream().flatMap(c -> c.stream()).forEach(i -> {
+////			System.out.println(i.toString());
+////		});
 //		System.out.println("//////////////////////");
-//		
-//		this.getConnector().update(this.getItems());
-//		
-//		System.out.println("//////////////////////");
-//		this.getItems().forEach(i -> System.out.println(i.toString()));
-//		System.out.println("//////////////////////");
-//		
-		System.out.println("//////////////////////");
-//		this.getData().stream().flatMap(c -> c.stream()).forEach(i -> {
-//			System.out.println(i.toString());
-//		});
-		System.out.println("//////////////////////");
-//		
-//		
-//		List<List<String>> rows = this.getData();
+////		
+////		
+////		List<List<String>> rows = this.getData();
 		
 		
-		return true;
 	}
 
 }

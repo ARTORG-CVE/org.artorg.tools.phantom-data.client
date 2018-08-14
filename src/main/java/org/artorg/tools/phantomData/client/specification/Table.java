@@ -9,6 +9,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.commandPattern.PropertyUndoable;
+import org.artorg.tools.phantomData.client.commandPattern.UndoManager;
+import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
@@ -25,28 +27,35 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM extends DatabasePersistent<ITEM, ID_TYPE>, ID_TYPE> {
+public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM extends DatabasePersistent<ITEM, ID_TYPE>, ID_TYPE> 
+		extends UndoManager {
 	private final ObservableList<ITEM> items;
 	private final List<List<Object>> data;
 	private final List<PropertyUndoable<ITEM,ID_TYPE, Object>> properties;
 	private final List<Function<ITEM,Object>> getters;
 	private final List<BiConsumer<ITEM, Object>> setters;
+	private final UndoManager undoManager;
 	
 	{
 		Set<ITEM> itemSet = new HashSet<ITEM>();
 		itemSet.addAll(getConnector().readAllAsSet());
 		items = FXCollections.observableArrayList(itemSet);
 		data  = new ArrayList<List<Object>>();
+		undoManager = new UndoManager();
 		properties = createProperties();
 		getters = createGetters();
 		setters = createSetters();
 	}
 	
-	public abstract List<String> createColumnNames();
+//	public abstract List<String> createColumnNames();
 	
 	public abstract HttpDatabaseCrud<ITEM, ID_TYPE> getConnector();
 	
-	public abstract List<PropertyUndoable<ITEM,ID_TYPE, Object>> createProperties();
+//	public abstract List<PropertyUndoable<ITEM,ID_TYPE, Object>> createProperties();
+	
+//	public abstract List<Function<ITEM,Object>> createPropertyGetters();
+	
+	public abstract List<Column<ITEM, ? extends DatabasePersistent<?, ?>, ?, ?>> createColumns2();
 	
 	public List<TableColumn<ITEM,?>> createColumns() {
 		List<TableColumn<ITEM,?>> columns = new ArrayList<TableColumn<ITEM,?>>();
@@ -68,13 +77,17 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM exte
 		return items;
 	}
 	
+	public UndoManager getUndoManager() {
+		return undoManager;
+	}
+	
 	public final List<Object> getValues(ITEM item) {
 		return getGetters().stream().map(g -> g.apply(item))
 				.collect(Collectors.toList());
 	}
 	
 	public PropertyUndoable<ITEM, ID_TYPE, Object> createProperty(BiConsumer<ITEM,Object> setter, Function<ITEM,Object> getter) {
-		return new PropertyUndoable<ITEM, ID_TYPE, Object>(setter, getter, getConnector());
+		return new PropertyUndoable<ITEM, ID_TYPE, Object>(setter, getter, getConnector(), undoManager);
 	}
 	
 	public final List<Function<ITEM,Object>> createGetters() {
@@ -182,6 +195,8 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM exte
 		return createSpreadsheetView(createTableView());
 	}
 	
+	
+	
 	public SpreadsheetView createSpreadsheetView(TableView<ITEM> table) {
 		// create Grid
 		int rowCount = table.getItems().size()+1;
@@ -203,7 +218,7 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM exte
         rows.add(list1);
         data.add(testList);
         
-        ObservableList<ITEM> items = table.getItems();
+        
         
         Integer row=0;
         while (row<items.size()) {
@@ -223,8 +238,17 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM exte
             		final int tempCol = col;
             		label.setOnAction((event) -> {
             			data.get(tempRow+1).set(tempCol, label.getText());
+            			this.setValue(items.get(tempRow), tempCol, label.getText());
             			data.stream().flatMap(l -> l.stream()).forEach(System.out::println);
             			properties.get(tempCol).set(items.get(tempRow), label.getText());
+            			
+            			System.out.println("--//--//--//--// items in Table start");
+            			items.stream().forEach(System.out::println);
+            			System.out.println("--//--//--//--// items in Table end");
+            			
+            			System.out.println("--//--//--//--// data in Table start");
+            			data.stream().forEach(l -> l.stream().forEach(System.out::println));
+            			System.out.println("--//--//--//--// data in Table end");
             		});
             		cell.setGraphic(label);
             		list2.add(cell);

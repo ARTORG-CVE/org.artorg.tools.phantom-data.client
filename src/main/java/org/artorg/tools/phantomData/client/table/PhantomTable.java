@@ -1,69 +1,65 @@
 package org.artorg.tools.phantomData.client.table;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.commandPattern.PropertyUndoable;
 import org.artorg.tools.phantomData.client.connector.PhantomConnector;
+import org.artorg.tools.phantomData.client.specification.Column;
+import org.artorg.tools.phantomData.client.specification.Column2;
 import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.client.specification.StageTable;
+import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
+import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.Phantom;
+import org.artorg.tools.phantomData.server.model.Special;
+import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 public class PhantomTable extends StageTable<PhantomTable, Phantom, Integer> {
-	
 
-
-//	public boolean contains(int id) {
-//		return phantoms.stream().filter(p -> p.getId().intValue()==id)
-//				.findFirst().isPresent();
-//	}
-
-	
 	@Override
 	public HttpDatabaseCrud<Phantom, Integer> getConnector() {
 		return PhantomConnector.get();
 	}
-	
-	@Override
-	public List<String> createColumnNames() {
-		return Arrays.asList("annulus [mm]", "type", "literature", "specials", "number");
-	}
 
 	@Override
-	public List<PropertyUndoable<Phantom, Integer, Object>> createProperties() {
-		List<PropertyUndoable<Phantom, Integer, Object>> properties = 
-				new ArrayList<PropertyUndoable<Phantom, Integer, Object>>();
-		properties.add(createProperty(
-				(i,o) -> i.setId((Integer) o), 
-				i -> i.getId()));
-		properties.add(createProperty(
-				(i,o) -> i.getAnnulusDiameter().setValue((Double) o), 
-				i -> i.getAnnulusDiameter().getValue()));
-		properties.add(createProperty(
-				(i,o) -> i.getFabricationType().setValue((String) o), 
-				i -> i.getFabricationType().getValue()));
-		properties.add(createProperty(
-				(i,o) -> i.getLiteratureBase().setValue((String) o), 
-				i -> i.getLiteratureBase().getValue()));
-		properties.add(createProperty(
-				(i,o) -> i.getSpecial().setShortcut((String) o), 
-				i -> i.getSpecial().getShortcut()));
-		properties.add(createProperty(
-				(i,o) -> i.setNumber((Integer) o), 
-				i -> i.getNumber()));
-		return properties;
+	public List<Column<Phantom, ? extends DatabasePersistent<?, ?>, ?, ?>> createColumns2() {
+		List<Column<Phantom, ? extends DatabasePersistent<?, ?>, ?, ?>> columns =
+				new ArrayList<Column<Phantom, ? extends DatabasePersistent<?, ?>, ?, ?>>();
+		columns.add(new Column<Phantom, Phantom, Integer, Integer>(
+				"id", item -> item, 
+				path -> path.getId(), 
+				(path,value) -> path.setId(value)));
+		columns.add(new Column<Phantom, AnnulusDiameter, Double, Integer>(
+				"annulus [mm]", item -> item.getAnnulusDiameter(), 
+				path -> path.getValue(), 
+				(path,value) -> path.setValue(value)));
+		columns.add(new Column<Phantom, FabricationType, String, Integer>(
+				"type", item -> item.getFabricationType(), 
+				path -> path.getValue(), 
+				(path,value) -> path.setValue(value)));
+		columns.add(new Column<Phantom, LiteratureBase, String, Integer>(
+				"literature", item -> item.getLiteratureBase(), 
+				path -> path.getValue(), 
+				(path,value) -> path.setValue(value)));
+		columns.add(new Column<Phantom, Special, String, Integer>(
+				"special", item -> item.getSpecial(), 
+				path -> path.getShortcut(), 
+				(path,value) -> path.setShortcut(value)));
+		columns.add(new Column<Phantom, Phantom, Integer, Integer>(
+				"number", item -> item, 
+				path -> path.getNumber(), 
+				(path,value) -> path.setNumber(value)));
+		return columns;
 	}
 	
 	
 	
-	
-	
-	
-	
-	
-	
+//	public boolean contains(int id) {
+//	return phantoms.stream().filter(p -> p.getId().intValue()==id)
+//			.findFirst().isPresent();
+//}
+
 //	
 //	public int getNextPhantomNumber(String idWithoutNumber) {
 //		if (!idWithoutNumber.matches(".*-.*-.*-.*"))

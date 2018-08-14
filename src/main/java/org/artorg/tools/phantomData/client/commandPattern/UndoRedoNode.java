@@ -13,18 +13,33 @@ public class UndoRedoNode {
 		this.timestamp = System.currentTimeMillis();
 	}
 	
-	public void undo() {
-		undo.run();
-	}
+//	public void undo(UndoManager undoManager) {
+//		undoManager.
+//		
+//		undo.run();
+//	}
+//	
+//	public void redo() {
+//		redo.run();
+//	}
 	
-	public void redo() {
-		redo.run();
-		save();
-	}
 	
+
 	public void save() {
 		System.out.println("Saving value in database");
 		save.run();
+	}
+	
+	public Runnable getUndo() {
+		return undo;
+	}
+
+	public Runnable getRedo() {
+		return redo;
+	}
+
+	public Runnable getSave() {
+		return save;
 	}
 	
 	public long getTimestamp() {

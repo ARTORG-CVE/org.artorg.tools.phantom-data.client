@@ -1,5 +1,6 @@
 package org.artorg.tools.phantomData.client.connector;
 
+import org.artorg.tools.phantomData.client.commandPattern.UndoManager;
 import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.server.controller.FabricationTypeController;
 import org.artorg.tools.phantomData.server.model.FabricationType;

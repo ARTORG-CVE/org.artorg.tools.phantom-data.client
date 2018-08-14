@@ -1,14 +1,15 @@
 package org.artorg.tools.phantomData.client.table;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.commandPattern.PropertyUndoable;
 import org.artorg.tools.phantomData.client.connector.property.PropertyFieldConnector;
+import org.artorg.tools.phantomData.client.specification.Column;
+import org.artorg.tools.phantomData.client.specification.Column2;
 import org.artorg.tools.phantomData.client.specification.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.client.specification.StageTable;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
+import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 public class PropertyFieldTable extends StageTable<PropertyFieldTable,PropertyField, Integer> {
 	
@@ -18,24 +19,22 @@ public class PropertyFieldTable extends StageTable<PropertyFieldTable,PropertyFi
 	}
 
 	@Override
-	public List<String> createColumnNames() {
-		return Arrays.asList("id", "name", "description");
-	}
-
-	@Override
-	public List<PropertyUndoable<PropertyField, Integer, Object>> createProperties() {
-		List<PropertyUndoable<PropertyField, Integer, Object>> properties = 
-				new ArrayList<PropertyUndoable<PropertyField, Integer, Object>>();
-		properties.add(createProperty(
-				(i,o) -> i.setId((Integer) o), 
-				i -> i.getId()));
-		properties.add(createProperty(
-				(i,o) -> i.setName((String) o), 
-				i -> i.getName()));
-		properties.add(createProperty(
-				(i,o) -> i.setDescription((String) o), 
-				i -> i.getDescription()));
-		return properties;
+	public List<Column<PropertyField, ? extends DatabasePersistent<?, ?>, ?, ?>> createColumns2() {
+		List<Column<PropertyField, ? extends DatabasePersistent<?, ?>, ?, ?>> columns =
+				new ArrayList<Column<PropertyField, ? extends DatabasePersistent<?, ?>, ?, ?>>();
+		columns.add(new Column<PropertyField, PropertyField, Integer, Integer>(
+				"id", item -> item, 
+				path -> path.getId(), 
+				(path,value) -> path.setId(value)));
+		columns.add(new Column<PropertyField, PropertyField, String, Integer>(
+				"name", item -> item, 
+				path -> path.getName(), 
+				(path,value) -> path.setName(value)));
+		columns.add(new Column<PropertyField, PropertyField, String, Integer>(
+				"description", item -> item, 
+				path -> path.getDescription(), 
+				(path,value) -> path.setDescription(value)));
+		return columns;
 	}
 
 }
