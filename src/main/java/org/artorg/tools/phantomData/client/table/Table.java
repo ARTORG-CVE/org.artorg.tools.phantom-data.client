@@ -60,6 +60,8 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	
 	public void setValue(int row, int col, Object value) {
 		columns.get(col).set(items.get(row), value);
+		System.out.println("value change: [" +row +", " +col +"], new value: " +value);
+		
 	}
 	
 	// addiotional methods

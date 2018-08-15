@@ -134,6 +134,7 @@ public class MainController {
 		SpreadsheetViewCrud<PhantomTable, Phantom, Integer> view = 
     			new SpreadsheetViewCrud<PhantomTable, Phantom, Integer>(); 
 		PhantomTable phantomTable = new PhantomTable();
+		phantomTable.readAllData();
 		view.setTable(phantomTable);
 		Control spreadsheet = view.getGraphic();
 		
@@ -150,6 +151,7 @@ public class MainController {
         TableViewCrud<FileTable, PhantomFile, Integer> viewTable = 
     			new TableViewCrud<FileTable, PhantomFile, Integer>();
         FileTable fileTable = new FileTable();
+        fileTable.readAllData();
         viewTable.setTable(fileTable);
         Control tableView  = viewTable.getGraphic();
         paneTableView.getChildren().add(tableView);
@@ -273,7 +275,10 @@ public class MainController {
 			StageTable<TABLE, ITEM, ID_TYPE> table, String name) {
 				
 		SpreadsheetViewCrud<TABLE, ITEM, ID_TYPE> view = 
-			new SpreadsheetViewCrud<TABLE, ITEM, ID_TYPE>(); 
+			new SpreadsheetViewCrud<TABLE, ITEM, ID_TYPE>();
+			table.readAllData();
+		view.setTable(table);
+		view.getGraphic().setStyle("-fx-focus-color: transparent;");
 		
 		table.setGui(view);
 		Stage stage = table.getStage();

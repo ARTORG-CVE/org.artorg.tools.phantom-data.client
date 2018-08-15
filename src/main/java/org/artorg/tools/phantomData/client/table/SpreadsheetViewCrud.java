@@ -51,21 +51,16 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 				// Object value =
 				// table.getColumns().get(col).getCellData(table.getItems().get(row));
 				Object value = table.getValue(row, col);
-				if (value instanceof String) {
-					SpreadsheetCellBase cell = new SpreadsheetCellBase(row, col, 1, 1);
-					TextField label = new TextField();
-					label.setText((String) value);
-					final int localRow = row;
-					final int localCol = row;
-					label.setOnAction((event) -> {
-						table.setValue(localRow, localCol, label.getText());
-						System.out.println("--//--//--//--// items in Table start");
-						table.toString();
-						System.out.println("--//--//--//--// items in Table end");
-					});
-					cell.setGraphic(label);
-					rowItem.add(cell);
-				}
+				SpreadsheetCellBase cell = new SpreadsheetCellBase(row+1, col, 1, 1);
+				TextField label = new TextField();
+				label.setText(String.valueOf(value));
+				final int localRow = row+1;
+				final int localCol = col;
+				label.setOnAction((event) -> {
+					table.setValue(localRow, localCol, label.getText());
+				});
+				cell.setGraphic(label);
+				rowItem.add(cell);
 			}
 			rows.add(rowItem);
 		}
