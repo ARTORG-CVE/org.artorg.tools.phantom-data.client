@@ -7,7 +7,10 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.graphics.Scene3D;
+import org.artorg.tools.phantomData.client.table.SpreadsheetViewCrud;
+import org.artorg.tools.phantomData.client.table.StageTable;
 import org.artorg.tools.phantomData.client.table.Table;
+import org.artorg.tools.phantomData.client.table.TableViewCrud;
 import org.artorg.tools.phantomData.client.tables.AnnulusDiameterTable;
 import org.artorg.tools.phantomData.client.tables.BooleanPropertyTable;
 import org.artorg.tools.phantomData.client.tables.FabricationTypeTable;
@@ -24,6 +27,7 @@ import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.model.Special;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
+import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
 import javafx.application.Platform;
@@ -31,6 +35,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Control;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -126,11 +131,15 @@ public class MainController {
 		scene3d.loadFile(filePath);
         
 		// init spreadsheet
+		SpreadsheetViewCrud<PhantomTable, Phantom, Integer> view = 
+    			new SpreadsheetViewCrud<PhantomTable, Phantom, Integer>(); 
 		PhantomTable phantomTable = new PhantomTable();
-		SpreadsheetView spreadsheet = phantomTable.createSpreadsheetView();
+		view.setTable(phantomTable);
+		Control spreadsheet = view.getGraphic();
+		
         paneSpreadsheet.getChildren().add(spreadsheet);
         spreadsheet.setStyle("-fx-focus-color: transparent;");
-        
+        phantomTable.setGui(view);
         AnchorPane.setTopAnchor(spreadsheet, 0.0);
         AnchorPane.setLeftAnchor(spreadsheet, 0.0);
         AnchorPane.setRightAnchor(spreadsheet, 0.0);
@@ -138,9 +147,12 @@ public class MainController {
         paneSpreadsheet.setMinWidth(300);
         
         // init tableview
-//        paneTableView.getChildren().add(new FileTable().createTableView());
+        TableViewCrud<FileTable, PhantomFile, Integer> viewTable = 
+    			new TableViewCrud<FileTable, PhantomFile, Integer>();
         FileTable fileTable = new FileTable();
-        fileTable.createTableView(tableViewFiles);
+        viewTable.setTable(fileTable);
+        Control tableView  = viewTable.getGraphic();
+        paneTableView.getChildren().add(tableView);
         
     }
     
@@ -210,82 +222,64 @@ public class MainController {
     void openTableFileTypes(ActionEvent event) {
 
     }
+    
+    
 
     @FXML
     void openTableFiles(ActionEvent event) {
-    	FileTable table = new FileTable();
-    	TableView<PhantomFile> tableView = table.createTableView();
-    	Stage stage = table.createStage(tableView, "Files");
-    	table.autoResize(tableView, stage);
-    	stage.show();
+    	initTableHelperSpreadsheet(new FileTable(), "Files");
     }
 
     @FXML
     void openTablePhantoms(ActionEvent event) {
-    	PhantomTable table = new PhantomTable();
-    	TableView<Phantom> tableView = table.createTableView();
-    	Stage stage = table.createStage(tableView, "Phantoms");
-    	table.autoResize(tableView, stage);
-    	stage.show();
+    	initTableHelperSpreadsheet(new PhantomTable(), "Phantoms");
     }
 
     @FXML
     void openTableProperties(ActionEvent event) {
-    	BooleanPropertyTable table = new BooleanPropertyTable();
-    	TableView<BooleanProperty> tableView = table.createTableView();
-    	Stage stage = table.createStage(tableView, "Properties");
-    	table.autoResize(tableView, stage);
-    	stage.show();
+    	initTableHelperSpreadsheet(new BooleanPropertyTable(), "Boolean Properties");
     }
 
     @FXML
     void openTableSpecials(ActionEvent event) {
-    	SpecialTable table = new SpecialTable();
-    	table.test();
-//    	TableView<Special> tableView = table.createTableView();
-    	SpreadsheetView tableView = table.createSpreadsheetView();
-    	Stage stage = table.createStage(tableView, "Specials");
-//    	table.autoResize(tableView, stage);
-    	
-    	stage.show();
+    	initTableHelperSpreadsheet(new SpecialTable(), "Specials");
     }
 
     @FXML
     void openTableAnnulusDiameter(ActionEvent event) {
-    	AnnulusDiameterTable table = new AnnulusDiameterTable();
-    	TableView<AnnulusDiameter> tableView = table.createTableView();
-    	Stage stage = table.createStage(tableView, "Annulus Diameters");
-    	table.autoResize(tableView, stage);
-    	stage.show();
+    	initTableHelperSpreadsheet(new AnnulusDiameterTable(), "Annulus Diameter");
     }
+    
+    
 
     @FXML
     void openTableFabricationTypes(ActionEvent event) {
-    	FabricationTypeTable table = new FabricationTypeTable();
-//    	TableView<FabricationType> tableView = table.createTableView();
-    	SpreadsheetView tableView = table.createSpreadsheetView();
-    	Stage stage = table.createStage(tableView, "Fabrication Types");
-//    	table.autoResize(tableView, stage);
-    	stage.show();
+    	initTableHelperSpreadsheet(new FabricationTypeTable(), "Fabrication Types");
     }
 
     @FXML
     void openTableLiteratureBases(ActionEvent event) {
-    	LiteratureBaseTable table = new LiteratureBaseTable();
-//    	TableView<LiteratureBase> tableView = table.createTableView();
-    	SpreadsheetView tableView = table.createSpreadsheetView();
-    	Stage stage = table.createStage(tableView, "Literature Bases");
-//    	table.autoResize(tableView, stage);
-    	stage.show();
+    	initTableHelperSpreadsheet(new LiteratureBaseTable(), "Literature Bases");
     }
     
     @FXML
     void openTablePropertyFields(ActionEvent event) {
-    	PropertyFieldTable table = new PropertyFieldTable();
-    	TableView<PropertyField> tableView = table.createTableView();
-    	Stage stage = table.createStage(tableView, "Property Fields");
-    	table.autoResize(tableView, stage);
-    	stage.show();
+    	initTableHelperSpreadsheet(new PropertyFieldTable(), "Property Fields");
     }
+    
+    private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
+	ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+	ID_TYPE> void initTableHelperSpreadsheet(
+			StageTable<TABLE, ITEM, ID_TYPE> table, String name) {
+				
+		SpreadsheetViewCrud<TABLE, ITEM, ID_TYPE> view = 
+			new SpreadsheetViewCrud<TABLE, ITEM, ID_TYPE>(); 
+		
+		table.setGui(view);
+		Stage stage = table.getStage();
+		stage.setTitle(name);
+		view.autoResizeColumns();
+		stage.show();
+	}
     
 }

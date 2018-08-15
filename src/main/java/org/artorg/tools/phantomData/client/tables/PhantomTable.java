@@ -3,10 +3,8 @@ package org.artorg.tools.phantomData.client.tables;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.client.connectors.PhantomConnector;
 import org.artorg.tools.phantomData.client.table.Column;
-import org.artorg.tools.phantomData.client.table.ColumnOptional;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.client.table.StageTable;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
@@ -14,13 +12,11 @@ import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.Special;
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 public class PhantomTable extends StageTable<PhantomTable, Phantom, Integer> {
 
-	@Override
-	public HttpDatabaseCrud<Phantom, Integer> getConnector() {
-		return PhantomConnector.get();
+	{
+		this.setConnector(PhantomConnector.get());
 	}
 
 	@Override
@@ -30,27 +26,27 @@ public class PhantomTable extends StageTable<PhantomTable, Phantom, Integer> {
 		columns.add(new Column<Phantom, Phantom, Integer, Integer>(
 				"id", item -> item, 
 				path -> path.getId(), 
-				(path,value) -> path.setId(value)));
+				(path,value) -> path.setId((Integer) value)));
 		columns.add(new Column<Phantom, AnnulusDiameter, Double, Integer>(
 				"annulus [mm]", item -> item.getAnnulusDiameter(), 
 				path -> path.getValue(), 
-				(path,value) -> path.setValue(value)));
+				(path,value) -> path.setValue((Double) value)));
 		columns.add(new Column<Phantom, FabricationType, String, Integer>(
 				"type", item -> item.getFabricationType(), 
 				path -> path.getValue(), 
-				(path,value) -> path.setValue(value)));
+				(path,value) -> path.setValue((String) value)));
 		columns.add(new Column<Phantom, LiteratureBase, String, Integer>(
 				"literature", item -> item.getLiteratureBase(), 
 				path -> path.getValue(), 
-				(path,value) -> path.setValue(value)));
+				(path,value) -> path.setValue((String) value)));
 		columns.add(new Column<Phantom, Special, String, Integer>(
 				"special", item -> item.getSpecial(), 
 				path -> path.getShortcut(), 
-				(path,value) -> path.setShortcut(value)));
+				(path,value) -> path.setShortcut((String) value)));
 		columns.add(new Column<Phantom, Phantom, Integer, Integer>(
 				"number", item -> item, 
 				path -> path.getNumber(), 
-				(path,value) -> path.setNumber(value)));
+				(path,value) -> path.setNumber((int) value)));
 		return columns;
 	}
 	

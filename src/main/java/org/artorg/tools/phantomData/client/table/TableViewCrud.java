@@ -1,52 +1,68 @@
 package org.artorg.tools.phantomData.client.table;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Control;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
-public class TableViewCrud<ITEM> {
+public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
+		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+		ID_TYPE> implements TableGui {
 	
+	private final TableView<ITEM> tableView;
 	
-	public List<TableColumn<ITEM,?>> createColumns() {
-		List<TableColumn<ITEM,?>> columns = new ArrayList<TableColumn<ITEM,?>>();
-		List<String> columnNames = createColumnNames();
+	private Table<TABLE, ITEM, ID_TYPE> table;
 		
-		int nCols = getNumOfColumns();
+	{
+		tableView = new TableView<ITEM>();
+	}
+	
+	public void setTable(Table<TABLE, ITEM, ID_TYPE> table) {
+		this.table = table;
+		
+		tableView.getColumns().removeAll(tableView.getColumns());
+	    
+	    // creating columns
+	    List<TableColumn<ITEM,?>> columns = new ArrayList<TableColumn<ITEM,?>>();
+		List<String> columnNames = table.getColumnNames();
+		
+		int nCols = table.getNcols();
 		for ( int i=0; i<nCols; i++) {
 			TableColumn<ITEM, String> column = new TableColumn<ITEM, String>(columnNames.get(i));
 			int j = i;
 		    column.setCellValueFactory(cellData -> new SimpleStringProperty(
-		    		String.valueOf(getValue(cellData.getValue(), j))));
+		    		String.valueOf(table.getValue(cellData.getValue(), j))));
 		    columns.add(column);
 		}
-		
-	    return columns;
+	    tableView.getColumns().addAll(columns);
+	    
+	    // fill with items
+	    ObservableList<ITEM> items = table.getItems();
+	    tableView.setItems(items);
+	    
+	    // finishing
+	    this.setSortOrder();
+	    autoResizeColumns();
 	}
 	
-	public void setSortOrder(TableView<ITEM> table) {
-		table.getSortOrder().addAll(table.getColumns());
+	public void setSortOrder() {
+		tableView.getSortOrder().addAll(tableView.getColumns());
 	}
 	
-	public void autoResize(TableView<ITEM> table, Stage stage) {
-		double width = table.getColumns().stream().mapToDouble(c -> c.getPrefWidth()).sum();
-		stage.setWidth(width + 17.0d + 50.0d);
-	}
-	
-	public void autoResizeColumns(TableView<ITEM> table) {
-	    table.setColumnResizePolicy( TableView.UNCONSTRAINED_RESIZE_POLICY);
-	    table.getColumns().stream().forEach( (column) -> {
+	@Override
+	public void autoResizeColumns() {
+		tableView.setColumnResizePolicy( TableView.UNCONSTRAINED_RESIZE_POLICY);
+	    tableView.getColumns().stream().forEach( (column) -> {
 	        Text t = new Text( column.getText() );
 	        double max = t.getLayoutBounds().getWidth();
-	        for ( int i = 0; i < table.getItems().size(); i++ ) {
+	        for ( int i = 0; i < tableView.getItems().size(); i++ ) {
 	            if ( column.getCellData( i ) != null ) {
 	                t = new Text( column.getCellData( i ).toString() );
 	                double calcwidth = t.getLayoutBounds().getWidth();
@@ -57,27 +73,14 @@ public class TableViewCrud<ITEM> {
 	        column.setPrefWidth( max + 35.0d );
 	    } );
 	}
-	
-	public TableView<ITEM> createTableView() {
-		return createTableView(new TableView<ITEM>());
-	}
-	
-	public TableView<ITEM> createTableView(TableView<ITEM> table) {
-		table.getColumns().removeAll(table.getColumns());
 
-	    List<TableColumn<ITEM,?>> columns = createColumns();
-	    table.getColumns().addAll(columns);
-	    
-	    Set<ITEM> itemSet = new HashSet<ITEM>();
-		itemSet.addAll(getConnector().readAllAsSet());
-	    ObservableList<ITEM> items = FXCollections.observableArrayList(itemSet);
-	    ObservableList<ITEM> data = FXCollections.observableArrayList(items);
-	    table.setItems(data);
-	    
-	    this.setSortOrder(table);
-	    this.autoResizeColumns(table);
-	    
+	public Table<TABLE, ITEM, ID_TYPE> getTable() {
 		return table;
+	}
+
+	@Override
+	public Control getGraphic() {
+		return tableView;
 	}
 
 }

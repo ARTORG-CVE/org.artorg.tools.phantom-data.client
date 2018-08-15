@@ -8,20 +8,27 @@ import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public abstract class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM extends DatabasePersistent<ITEM, ID_TYPE>, ID_TYPE> extends Table<TABLE, ITEM, ID_TYPE> {
+public abstract class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
+		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+		ID_TYPE> 
+		extends Table<TABLE, ITEM, ID_TYPE> {
 	
-	public final Stage createStage(javafx.scene.control.Control n, String name) {
-		AnchorPane pane = new AnchorPane();
-		AnchorPane tablePane = new AnchorPane();
-		Scene scene = new Scene(pane);
-		Stage stage = new Stage();
-		
+	private final AnchorPane pane;
+	private final Stage stage;
+	private AnchorPane tablePane;
+	private final Scene scene;
+	
+	{
+		pane = new AnchorPane();
+		tablePane = new AnchorPane();
+		scene = new Scene(pane);
+		stage = new Stage();
 		stage.setScene(scene);
-		stage.setTitle(name);
 		
 		VBox vbox = new VBox();
 		pane.getChildren().add(vbox);
@@ -33,29 +40,42 @@ public abstract class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 		        save();
 		    }
 		});
+		
 		menuFile.getItems().add(menuItemSave);
 		menuBar.getMenus().add(menuFile);
 		
 		vbox.getChildren().add(menuBar);
 		vbox.getChildren().add(tablePane);
 		
-		
-		tablePane.getChildren().add(n);
+	}
+	
+	public final Stage getStage() {
+		return stage;
+	}	
+	
+	public void autoResize(TableView<ITEM> table, Stage stage) {
+		double width = table.getColumns().stream().mapToDouble(c -> c.getPrefWidth()).sum();
+		stage.setWidth(width + 17.0d + 50.0d);
+	}
+	
+	
+	public void setGui(TableGui tableGui) {
+		javafx.scene.control.Control control = tableGui.getGraphic();
+		tablePane.getChildren().clear();
+		tablePane.getChildren().add(control);
 		AnchorPane.setTopAnchor(tablePane, 0.0);
         AnchorPane.setLeftAnchor(tablePane, 0.0);
         AnchorPane.setRightAnchor(tablePane, 0.0);
         AnchorPane.setBottomAnchor(tablePane, 0.0);
         
-        stage.setHeight(n.getMinHeight());
-        stage.setWidth(n.getMinWidth());
+        stage.setHeight(control.getMinHeight());
+        stage.setWidth(control.getMinWidth());
      
-        n.prefWidthProperty().bind(stage.widthProperty());
-        n.prefHeightProperty().bind(stage.heightProperty());
+        control.prefWidthProperty().bind(stage.widthProperty());
+        control.prefHeightProperty().bind(stage.heightProperty());
         
 		stage.setWidth(800);
-		stage.setHeight(500);        
-        
-		return stage;
+		stage.setHeight(500); 
 	}
 	
 	public void save() {

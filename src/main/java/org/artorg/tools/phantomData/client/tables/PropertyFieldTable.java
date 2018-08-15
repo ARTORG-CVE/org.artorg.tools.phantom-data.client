@@ -14,9 +14,8 @@ import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 public class PropertyFieldTable extends StageTable<PropertyFieldTable,PropertyField, Integer> {
 	
-	@Override
-	public HttpDatabaseCrud<PropertyField, Integer> getConnector() {
-		return PropertyFieldConnector.get();
+	{
+		this.setConnector(PropertyFieldConnector.get());
 	}
 
 	@Override
@@ -26,15 +25,15 @@ public class PropertyFieldTable extends StageTable<PropertyFieldTable,PropertyFi
 		columns.add(new Column<PropertyField, PropertyField, Integer, Integer>(
 				"id", item -> item, 
 				path -> path.getId(), 
-				(path,value) -> path.setId(value)));
+				(path,value) -> path.setId((Integer) value)));
 		columns.add(new Column<PropertyField, PropertyField, String, Integer>(
 				"name", item -> item, 
 				path -> path.getName(), 
-				(path,value) -> path.setName(value)));
+				(path,value) -> path.setName((String) value)));
 		columns.add(new Column<PropertyField, PropertyField, String, Integer>(
 				"description", item -> item, 
 				path -> path.getDescription(), 
-				(path,value) -> path.setDescription(value)));
+				(path,value) -> path.setDescription((String) value)));
 		return columns;
 	}
 
