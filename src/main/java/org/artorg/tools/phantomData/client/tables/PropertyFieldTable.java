@@ -25,15 +25,18 @@ public class PropertyFieldTable extends StageTable<PropertyFieldTable,PropertyFi
 		columns.add(new Column<PropertyField, PropertyField, Integer, Integer>(
 				"id", item -> item, 
 				path -> path.getId(), 
-				(path,value) -> path.setId((Integer) value)));
+				(path,value) -> path.setId((Integer) value),
+				PropertyFieldConnector.get()));
 		columns.add(new Column<PropertyField, PropertyField, String, Integer>(
 				"name", item -> item, 
 				path -> path.getName(), 
-				(path,value) -> path.setName((String) value)));
+				(path,value) -> path.setName((String) value),
+				PropertyFieldConnector.get()));
 		columns.add(new Column<PropertyField, PropertyField, String, Integer>(
 				"description", item -> item, 
 				path -> path.getDescription(), 
-				(path,value) -> path.setDescription((String) value)));
+				(path,value) -> path.setDescription((String) value),
+				PropertyFieldConnector.get()));
 		return columns;
 	}
 

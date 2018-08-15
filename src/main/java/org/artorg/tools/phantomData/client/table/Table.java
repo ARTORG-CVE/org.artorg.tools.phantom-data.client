@@ -23,8 +23,8 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	
 	{
 		undoManager = new UndoManager();
-		columns = createColumns();
 		items = FXCollections.observableArrayList();
+		columns = createColumns();
 	}
 	
 	public void setConnector(HttpDatabaseCrud<ITEM, ID_TYPE> connector) {
@@ -52,6 +52,8 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	
 	public final void setValue(ITEM item, int col, Object value) {
 		columns.get(col).set(item, value);
+		columns.get(col).update(item);
+		readAllData();
 	}
 	
 	public Object getValue(int row, int col) {
@@ -59,9 +61,7 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	}
 	
 	public void setValue(int row, int col, Object value) {
-		columns.get(col).set(items.get(row), value);
-		System.out.println("value change: [" +row +", " +col +"], new value: " +value);
-		
+		setValue(items.get(row), col, value);
 	}
 	
 	// addiotional methods

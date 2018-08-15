@@ -22,15 +22,18 @@ public class AnnulusDiameterTable extends StageTable<AnnulusDiameterTable, Annul
 		columns.add(new Column<AnnulusDiameter, AnnulusDiameter, Integer, Integer>(
 				"id", item -> item, 
 				path -> path.getId(), 
-				(path,value) -> path.setId((Integer) value)));
+				(path,value) -> path.setId((Integer) value),
+				AnnulusDiameterConnector.get()));
 		columns.add(new Column<AnnulusDiameter, AnnulusDiameter, Integer, Integer>(
 				"shortcut", item -> item, 
 				path -> path.getShortcut(), 
-				(path,value) -> path.setShortcut((Integer) value)));
+				(path,value) -> path.setShortcut((Integer) value),
+				AnnulusDiameterConnector.get()));
 		columns.add(new Column<AnnulusDiameter, AnnulusDiameter, Double, Integer>(
 				"value", item -> item, 
 				path -> path.getValue(), 
-				(path,value) -> path.setValue((Double) value)));
+				(path,value) -> path.setValue((Double) value),
+				AnnulusDiameterConnector.get()));
 		return columns;
 	}
 

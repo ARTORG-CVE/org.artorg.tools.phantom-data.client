@@ -3,7 +3,11 @@ package org.artorg.tools.phantomData.client.tables;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
+import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
+import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
 import org.artorg.tools.phantomData.client.connectors.PhantomConnector;
+import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.client.table.StageTable;
@@ -26,27 +30,33 @@ public class PhantomTable extends StageTable<PhantomTable, Phantom, Integer> {
 		columns.add(new Column<Phantom, Phantom, Integer, Integer>(
 				"id", item -> item, 
 				path -> path.getId(), 
-				(path,value) -> path.setId((Integer) value)));
+				(path,value) -> path.setId((Integer) value),
+				PhantomConnector.get()));
 		columns.add(new Column<Phantom, AnnulusDiameter, Double, Integer>(
 				"annulus [mm]", item -> item.getAnnulusDiameter(), 
 				path -> path.getValue(), 
-				(path,value) -> path.setValue((Double) value)));
+				(path,value) -> path.setValue((Double) value),
+				AnnulusDiameterConnector.get()));
 		columns.add(new Column<Phantom, FabricationType, String, Integer>(
 				"type", item -> item.getFabricationType(), 
 				path -> path.getValue(), 
-				(path,value) -> path.setValue((String) value)));
+				(path,value) -> path.setValue((String) value),
+				FabricationTypeConnector.get()));
 		columns.add(new Column<Phantom, LiteratureBase, String, Integer>(
 				"literature", item -> item.getLiteratureBase(), 
 				path -> path.getValue(), 
-				(path,value) -> path.setValue((String) value)));
+				(path,value) -> path.setValue((String) value),
+				LiteratureBaseConnector.get()));
 		columns.add(new Column<Phantom, Special, String, Integer>(
 				"special", item -> item.getSpecial(), 
 				path -> path.getShortcut(), 
-				(path,value) -> path.setShortcut((String) value)));
+				(path,value) -> path.setShortcut((String) value),
+				SpecialConnector.get()));
 		columns.add(new Column<Phantom, Phantom, Integer, Integer>(
 				"number", item -> item, 
 				path -> path.getNumber(), 
-				(path,value) -> path.setNumber((int) value)));
+				(path,value) -> path.setNumber((int) value),
+				PhantomConnector.get()));
 		return columns;
 	}
 	

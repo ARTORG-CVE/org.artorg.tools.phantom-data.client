@@ -22,15 +22,18 @@ public class FabricationTypeTable extends StageTable<FabricationTypeTable, Fabri
 		columns.add(new Column<FabricationType, FabricationType, Integer, Integer>(
 				"id", item -> item, 
 				path -> path.getId(), 
-				(path,value) -> path.setId((Integer) value)));
+				(path,value) -> path.setId((Integer) value),
+				FabricationTypeConnector.get()));
 		columns.add(new Column<FabricationType, FabricationType, String, Integer>(
 				"shortcut", item -> item, 
 				path -> path.getShortcut(), 
-				(path,value) -> path.setShortcut((String) value)));
+				(path,value) -> path.setShortcut((String) value),
+				FabricationTypeConnector.get()));
 		columns.add(new Column<FabricationType, FabricationType, String, Integer>(
 				"value", item -> item, 
 				path -> path.getValue(), 
-				(path,value) -> path.setValue((String) value)));
+				(path,value) -> path.setValue((String) value),
+				FabricationTypeConnector.get()));
 		return columns;
 	}
 

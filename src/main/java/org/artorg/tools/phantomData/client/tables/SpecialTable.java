@@ -3,8 +3,8 @@ package org.artorg.tools.phantomData.client.tables;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
+import org.artorg.tools.phantomData.client.connectors.property.BooleanPropertyConnector;
 import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.ColumnOptional;
 import org.artorg.tools.phantomData.client.table.IColumn;
@@ -25,11 +25,13 @@ public class SpecialTable extends StageTable<SpecialTable, Special, Integer> {
 		columns.add(new Column<Special, Special, Integer, Integer>(
 				"id", item -> item, 
 				path -> path.getId(), 
-				(path,value) -> path.setId((Integer) value)));
+				(path,value) -> path.setId((Integer) value),
+				SpecialConnector.get()));
 		columns.add(new Column<Special, Special, String, Integer>(
 				"shortcut", item -> item, 
 				path -> path.getShortcut(), 
-				(path,value) -> path.setShortcut((String) value)));
+				(path,value) -> path.setShortcut((String) value),
+				SpecialConnector.get()));
 		
 		List<Integer> idList = getItems().stream().flatMap(s -> s.getBooleanProperties()
 				.stream()).mapToInt(p -> p.getPropertyField().getId()).distinct().sorted()
@@ -42,26 +44,11 @@ public class SpecialTable extends StageTable<SpecialTable, Special, Integer> {
 						.filter(p -> p.getPropertyField().getId() == id).findFirst(),
 					path -> String.valueOf(path.getBool()),
 					(path,value) -> path.setBool((Boolean) value),
-					""
+					"",
+					BooleanPropertyConnector.get()
 		)));
 		
 		return columns;
 	}
-	
-	
-	public void test() {
-		System.out.println("########################## in Special Table start");
-//		Special s = this.getItems().stream().filter(item -> item.getShortcut().equals("L")).findFirst().get();
-//		s.getBooleanProperties().stream().filter(p -> p.getId().equals(1)).findFirst().get().setBool(false);
-//		
-//		System.out.println(s);
-//		this.getConnector().update(s);
-		System.out.println("########################## in Special Table end");
-//		BooleanPropertyConnector.get().update(s.getBooleanProperties().stream().filter(p -> p.getId().equals(1)).findFirst().get());
-		
-		
-		
-	}
-
 	
 }

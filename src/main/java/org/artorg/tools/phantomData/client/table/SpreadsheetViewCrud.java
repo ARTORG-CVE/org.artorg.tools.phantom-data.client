@@ -10,6 +10,7 @@ import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
@@ -43,7 +44,15 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 			rowColumnNames.add(SpreadsheetCellType.STRING.createCell(0, col, 1, 1, columnNames.get(col)));
 		rows.add(rowColumnNames);
 
-		
+		table.getItems().addListener(new ListChangeListener() {
+
+			@Override
+			public void onChanged(Change c) {
+				System.out.println("listener called");
+				
+			}
+			
+		});
 		for (int row=0; row < table.getNrows(); row++) {
 			final ObservableList<SpreadsheetCell> rowItem = FXCollections.observableArrayList();
 

@@ -22,15 +22,18 @@ public class LiteratureBaseTable extends StageTable<LiteratureBaseTable, Literat
 		columns.add(new Column<LiteratureBase, LiteratureBase, Integer, Integer>(
 				"id", item -> item, 
 				path -> path.getId(), 
-				(path,value) -> path.setId((Integer) value)));
+				(path,value) -> path.setId((Integer) value),
+				LiteratureBaseConnector.get()));
 		columns.add(new Column<LiteratureBase, LiteratureBase, String, Integer>(
 				"shortcut", item -> item, 
 				path -> path.getShortcut(), 
-				(path,value) -> path.setShortcut((String) value)));
+				(path,value) -> path.setShortcut((String) value),
+				LiteratureBaseConnector.get()));
 		columns.add(new Column<LiteratureBase, LiteratureBase, String, Integer>(
 				"value", item -> item, 
 				path -> path.getValue(), 
-				(path,value) -> path.setValue((String) value)));
+				(path,value) -> path.setValue((String) value),
+				LiteratureBaseConnector.get()));
 		return columns;
 	}
 

@@ -12,5 +12,7 @@ public interface IColumn<ITEM extends DatabasePersistent<ITEM, ?>,
 	void set(ITEM item, Object value);
 	
 	String getColumnName();
+	
+	boolean update(ITEM item);
 
 }

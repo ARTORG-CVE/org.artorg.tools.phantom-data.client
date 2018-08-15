@@ -260,6 +260,11 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<T, ID_TYPE>,
 		}
 		return false;
 	}
+	
+//	public <PATH> void update(PATH path) {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 	@SuppressWarnings("unchecked")
 	public T[] readAll() {
@@ -324,5 +329,7 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<T, ID_TYPE>,
 		}
 		e.printStackTrace();
 	}
+	
+	
 
 }

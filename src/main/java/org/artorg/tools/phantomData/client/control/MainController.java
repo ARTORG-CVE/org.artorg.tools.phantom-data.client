@@ -139,8 +139,8 @@ public class MainController {
 		Control spreadsheet = view.getGraphic();
 		
         paneSpreadsheet.getChildren().add(spreadsheet);
-        spreadsheet.setStyle("-fx-focus-color: transparent;");
-        phantomTable.setGui(view);
+//        spreadsheet.setStyle("-fx-focus-color: transparent;");
+//        phantomTable.setGui(view);
         AnchorPane.setTopAnchor(spreadsheet, 0.0);
         AnchorPane.setLeftAnchor(spreadsheet, 0.0);
         AnchorPane.setRightAnchor(spreadsheet, 0.0);
@@ -155,6 +155,11 @@ public class MainController {
         viewTable.setTable(fileTable);
         Control tableView  = viewTable.getGraphic();
         paneTableView.getChildren().add(tableView);
+        
+        AnchorPane.setTopAnchor(tableView, 0.0);
+        AnchorPane.setLeftAnchor(tableView, 0.0);
+        AnchorPane.setRightAnchor(tableView, 0.0);
+        AnchorPane.setBottomAnchor(tableView, 0.0);
         
     }
     
