@@ -131,18 +131,18 @@ public class MainController {
 		scene3d.loadFile(filePath);
         
 		// init spreadsheet
+//		StageTable<PhantomTable, Phantom, Integer> stageTable = new StageTable<PhantomTable, Phantom, Integer>();
+		PhantomTable phantomTable = new PhantomTable();
+//		stageTable.setTable(phantomTable);
 		SpreadsheetViewCrud<PhantomTable, Phantom, Integer> view = 
     			new SpreadsheetViewCrud<PhantomTable, Phantom, Integer>(); 
-		PhantomTable phantomTable = new PhantomTable();
-		view.setTable(phantomTable);
+//		stageTable.setView(view);
 		
-		phantomTable.readAllData();
+//		phantomTable.readAllData();
 		view.setTable(phantomTable);
 		Control spreadsheet = view.getGraphic();
 		
         paneSpreadsheet.getChildren().add(spreadsheet);
-//        spreadsheet.setStyle("-fx-focus-color: transparent;");
-//        phantomTable.setGui(view);
         AnchorPane.setTopAnchor(spreadsheet, 0.0);
         AnchorPane.setLeftAnchor(spreadsheet, 0.0);
         AnchorPane.setRightAnchor(spreadsheet, 0.0);
@@ -150,10 +150,11 @@ public class MainController {
         paneSpreadsheet.setMinWidth(300);
         
         // init tableview
+        FileTable fileTable = new FileTable();
         TableViewCrud<FileTable, PhantomFile, Integer> viewTable = 
     			new TableViewCrud<FileTable, PhantomFile, Integer>();
-        FileTable fileTable = new FileTable();
-        fileTable.readAllData();
+        
+//        fileTable.readAllData();
         viewTable.setTable(fileTable);
         Control tableView  = viewTable.getGraphic();
         paneTableView.getChildren().add(tableView);
@@ -280,10 +281,15 @@ public class MainController {
 	ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
 	ID_TYPE> void initTableHelperSpreadsheet(
 			Table<TABLE, ITEM, ID_TYPE> table, String name) {
+		
+		
+		StageTable<TABLE, ITEM, ID_TYPE> stageTable = new StageTable<TABLE, ITEM, ID_TYPE>();
+		stageTable.setTable(table);
 		SpreadsheetViewCrud<TABLE, ITEM, ID_TYPE> view = 
-			new SpreadsheetViewCrud<TABLE, ITEM, ID_TYPE>();
-			view.setTable(table);
-		Stage stage = view.getStage();
+				new SpreadsheetViewCrud<TABLE, ITEM, ID_TYPE>();	
+		stageTable.setView(view);
+		Stage stage = stageTable.getStage();
+		
 		stage.setTitle(name);
 		view.autoResizeColumns();
 		stage.show();

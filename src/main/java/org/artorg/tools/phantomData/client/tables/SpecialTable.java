@@ -1,7 +1,11 @@
 package org.artorg.tools.phantomData.client.tables;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.connectors.property.BooleanPropertyConnector;
@@ -26,7 +30,7 @@ public class SpecialTable extends Table<SpecialTable, Special, Integer> {
 		columns.add(new Column<Special, Special, Integer, Integer>(
 				"id", item -> item, 
 				path -> path.getId(), 
-				(path,value) -> path.setId((Integer) value),
+				(path,value) -> path.setId(Integer.valueOf((String) value)),
 				SpecialConnector.get()));
 		columns.add(new Column<Special, Special, String, Integer>(
 				"shortcut", item -> item, 
@@ -34,17 +38,25 @@ public class SpecialTable extends Table<SpecialTable, Special, Integer> {
 				(path,value) -> path.setShortcut((String) value),
 				SpecialConnector.get()));
 		
-		List<Integer> idList = getItems().stream().flatMap(s -> s.getBooleanProperties()
-				.stream()).mapToInt(p -> p.getPropertyField().getId()).distinct().sorted()
-				.collect(() -> new ArrayList<Integer>(), (set, e) -> set.add(e), (e1, e2) -> {});
+		Map<Integer,String> map = new HashMap<Integer,String>();
+		Set<BooleanProperty> set =getItems().stream().flatMap(s -> s.getBooleanProperties()
+				.stream()).collect(Collectors.toSet()); 
+		set.stream().sorted((p1,p2) -> p1.getPropertyField().getId().compareTo(p2.getPropertyField().getId()))
+				.forEach(p -> map.put(p.getPropertyField().getId(), p.getPropertyField().getDescription()));
+//				.collect(() -> new HashMap<Integer,String>(), (map, e) -> set.put(e), (e1, e2) -> {});
+				
+//				.collect(() -> new ArrayList<Integer>(), (set, e) -> set.add(e), (e1, e2) -> {});
 		
-		idList.forEach(id -> 
+//		List<String> columnNames = getItems().stream().flatMap(s -> s.getBooleanProperties().stream())
+//				.map(p -> p.getPropertyField().getDescription())
+		
+		 map.entrySet().stream().forEach(entry -> 
 			columns.add(new ColumnOptional<Special, BooleanProperty, String, Integer>(
-					"test",
+					entry.getValue(),
 					item -> item.getBooleanProperties().stream()
-						.filter(p -> p.getPropertyField().getId() == id).findFirst(),
+						.filter(p -> p.getPropertyField().getId() == entry.getKey()).findFirst(),
 					path -> String.valueOf(path.getBool()),
-					(path,value) -> path.setBool((Boolean) value),
+					(path,value) -> path.setBool(Boolean.valueOf((String)value)),
 					"",
 					BooleanPropertyConnector.get()
 		)));

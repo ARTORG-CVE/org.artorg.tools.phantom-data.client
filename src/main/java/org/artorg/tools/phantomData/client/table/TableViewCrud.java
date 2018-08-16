@@ -14,42 +14,20 @@ import javafx.scene.text.Text;
 
 public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
-		ID_TYPE> implements TableGui {
+		ID_TYPE> implements TableGui<TABLE, ITEM , ID_TYPE> {
 	
 	private final TableView<ITEM> tableView;
-	
 	private Table<TABLE, ITEM, ID_TYPE> table;
-		
+	private List<Runnable> refreshListeners;
+	
 	{
 		tableView = new TableView<ITEM>();
+		refreshListeners = new ArrayList<Runnable>();
 	}
 	
 	public void setTable(Table<TABLE, ITEM, ID_TYPE> table) {
 		this.table = table;
-		
-		tableView.getColumns().removeAll(tableView.getColumns());
-	    
-	    // creating columns
-	    List<TableColumn<ITEM,?>> columns = new ArrayList<TableColumn<ITEM,?>>();
-		List<String> columnNames = table.getColumnNames();
-		
-		int nCols = table.getNcols();
-		for ( int i=0; i<nCols; i++) {
-			TableColumn<ITEM, String> column = new TableColumn<ITEM, String>(columnNames.get(i));
-			int j = i;
-		    column.setCellValueFactory(cellData -> new SimpleStringProperty(
-		    		String.valueOf(table.getValue(cellData.getValue(), j))));
-		    columns.add(column);
-		}
-	    tableView.getColumns().addAll(columns);
-	    
-	    // fill with items
-	    ObservableList<ITEM> items = table.getItems();
-	    tableView.setItems(items);
-	    
-	    // finishing
-	    this.setSortOrder();
-	    autoResizeColumns();
+		reload();
 	}
 	
 	public void setSortOrder() {
@@ -81,6 +59,39 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	@Override
 	public Control getGraphic() {
 		return tableView;
+	}
+
+	@Override
+	public void refresh() {
+		tableView.getColumns().removeAll(tableView.getColumns());
+
+	    // creating columns
+	    List<TableColumn<ITEM,?>> columns = new ArrayList<TableColumn<ITEM,?>>();
+		List<String> columnNames = table.getColumnNames();
+		
+		int nCols = table.getNcols();
+		for ( int i=0; i<nCols; i++) {
+			TableColumn<ITEM, String> column = new TableColumn<ITEM, String>(columnNames.get(i));
+			int j = i;
+		    column.setCellValueFactory(cellData -> new SimpleStringProperty(
+		    		String.valueOf(table.getValue(cellData.getValue(), j))));
+		    columns.add(column);
+		}
+	    tableView.getColumns().addAll(columns);
+	    
+	    // fill with items
+	    ObservableList<ITEM> items = table.getItems();
+	    tableView.setItems(items);
+	    
+	    // finishing
+	    this.setSortOrder();
+	    autoResizeColumns();
+	}
+
+	@Override
+	public void reload() {
+		table.readAllData();
+		refresh();
 	}
 
 }

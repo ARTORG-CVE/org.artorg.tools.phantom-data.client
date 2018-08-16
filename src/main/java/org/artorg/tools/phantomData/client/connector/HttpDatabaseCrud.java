@@ -276,12 +276,6 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<T, ID_TYPE>,
 		ResponseEntity<?> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 				getArrayModelClass());
 		T[] results1 = (T[]) responseEntity.getBody();
-		
-		System.out.println("/////////////////////// HttpDatabaseCrud.readAll {");
-		Stream.of(results1).forEach(item -> System.out.println("hashCode: " +item.hashCode() +", " +item.toString()));
-		System.out.println("/////////////////////// HttpDatabaseCrud.readAll }");
-		
-		
 		return results1;
 	}
 	

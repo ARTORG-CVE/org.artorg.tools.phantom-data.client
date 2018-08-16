@@ -1,5 +1,6 @@
 package org.artorg.tools.phantomData.client.table;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
@@ -9,36 +10,57 @@ import org.controlsfx.control.spreadsheet.SpreadsheetCellBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
 
 public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
-		ID_TYPE> extends StageTable<TABLE, ITEM, ID_TYPE>
-			implements TableGui {
+		ID_TYPE>
+			implements TableGui<TABLE, ITEM, ID_TYPE> {
 
+	private SpreadsheetView spreadsheet;
+	private Table<TABLE, ITEM, ID_TYPE> table;
 	private ListChangeListener<ITEM> changeListener;
 		
+	@Override
 	public void setTable(Table<TABLE, ITEM, ID_TYPE> table) {
-		changeListener = new ListChangeListener<ITEM>() {
-			@Override
-			public void onChanged(Change<? extends ITEM> c) {
-				createSpreadsheet(table);
-			}
-		};
-		table.getItems().addListener(changeListener);
+//		changeListener = new ListChangeListener<ITEM>() {
+//			@Override
+//			public void onChanged(Change<? extends ITEM> c) {
+//				refresh();
+//			}
+//		};
 		
-		createSpreadsheet(table);
+		changeListener = (item) -> refresh();
+		
+		
+		table.getItems().addListener(changeListener);
+		this.table = table;
+		
+		reload();
+		
 		
 	}
 	
-	private void createSpreadsheet(Table<TABLE, ITEM, ID_TYPE> table) {
-		table.getItems().removeListener(changeListener);
-		table.readAllData();
-		
-		SpreadsheetView spreadsheet = new SpreadsheetView();
+	@Override
+	public void autoResizeColumns() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Control getGraphic() {
+		return spreadsheet;
+	}
+
+	@Override
+	public void refresh() {
+		spreadsheet = new SpreadsheetView();
 		// create Grid
 		int rowCount = table.getNrows() + 1;
 		int columnCount = table.getNcols();
@@ -56,17 +78,30 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 			final ObservableList<SpreadsheetCell> rowItem = FXCollections.observableArrayList();
 
 			for (int col = 0; col < columnCount; col++) {
-				// Object value =
-				// table.getColumns().get(col).getCellData(table.getItems().get(row));
 				Object value = table.getValue(row, col);
 				SpreadsheetCellBase cell = new SpreadsheetCellBase(row+1, col, 1, 1);
 				TextField label = new TextField();
 				label.setText(String.valueOf(value));
 				final int localRow = row;
 				final int localCol = col;
-				label.setOnAction((event) -> {
-					table.setValue(localRow, localCol, label.getText());
+				
+//				label.setEditable(false);
+				
+				label.focusedProperty().addListener(new ChangeListener<Boolean>() {
+				    @Override
+				    public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+				        if (!newPropertyValue)
+				        	table.setValue(localRow, localCol, label.getText(), 
+									v -> label.setText(String.valueOf(v)), 
+									v -> label.setText(String.valueOf(v)));
+				    }
 				});
+				label.setOnAction((event) -> {
+					table.setValue(localRow, localCol, label.getText(), 
+							v -> label.setText(String.valueOf(v)), 
+							v -> label.setText(String.valueOf(v)));
+				});
+				
 				cell.setGraphic(label);
 				rowItem.add(cell);
 			}
@@ -76,14 +111,14 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 
 		spreadsheet.setGrid(grid);
 		spreadsheet.setStyle("-fx-focus-color: transparent;");
-		table.getItems().addListener(changeListener);
-		this.setGui(spreadsheet);
 	}
 
 	@Override
-	public void autoResizeColumns() {
-		// TODO Auto-generated method stub
-
+	public void reload() {
+		table.getItems().removeListener(changeListener);
+		table.readAllData();
+		refresh();
+		table.getItems().addListener(changeListener);
 	}
 
 }

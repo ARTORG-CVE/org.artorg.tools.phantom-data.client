@@ -19,21 +19,25 @@ public class UndoManager {
 	
 	public void run() {
 		int lastIndex = nodes.size();
-		for(int i=currentDoneIndex+1; i<lastIndex; i++)
-			nodes.get(i).getRedo().run();
-		currentDoneIndex = lastIndex;
+		for(int i=currentDoneIndex+1; i<lastIndex; i++) {
+			nodes.get(i).redo();
+			currentDoneIndex++;
+		}
 	}
 	
 	public void run(int index) {
 		if (currentDoneIndex < index) {
-			for(int i=currentDoneIndex+1; i<index; i++)
-				nodes.get(i).getRedo().run();
+			for(int i=currentDoneIndex+1; i<=index; i++) {
+				nodes.get(i).redo();
+				currentDoneIndex++;
+			}
 		} else if (currentDoneIndex > index) {
-			for(int i=currentDoneIndex; i<index; i--)
-				nodes.get(i).getUndo().run();
+			for(int i=currentDoneIndex; i<index; i--) {
+				nodes.get(i).undo();
+				currentDoneIndex--;
+			}
 		} else if (currentDoneIndex == index)
 			return;
-		currentDoneIndex = index;
 	}
 	
 	public List<UndoManager> getChildrens() {
@@ -68,11 +72,13 @@ public class UndoManager {
 	}
 
 	public void save() {
+		if (currentDoneIndex == -1) return;
+		
 		if (lastSavedIndex < currentDoneIndex)
-			for (int i=lastSavedIndex+1; i < currentDoneIndex; i++ )
+			for (int i=lastSavedIndex+1; i <= currentDoneIndex; i++ )
 				nodes.get(i).save();
 		else 
-			for (int i=currentDoneIndex; i > lastSavedIndex; i-- )
+			for (int i=currentDoneIndex; i >= lastSavedIndex; i-- )
 				nodes.get(i).save();
 		lastSavedIndex = currentDoneIndex;
 	}
@@ -83,7 +89,7 @@ public class UndoManager {
 	
 	public boolean redoAll() {
 		if (currentDoneIndex != nodes.size()) {
-			nodes.get(currentDoneIndex++).getRedo().run();
+			nodes.get(currentDoneIndex++).redo();
 			return true;
 		}
 		return false;
@@ -91,7 +97,7 @@ public class UndoManager {
 	
 	public boolean undoAll() {
 		if (currentDoneIndex>-1) {
-			nodes.get(currentDoneIndex).getUndo().run();
+			nodes.get(currentDoneIndex).undo();
 			currentDoneIndex--;
 			return true;
 		}
@@ -99,18 +105,18 @@ public class UndoManager {
 	}
 	
 	public void redo(int nActions) {
-		if (currentDoneIndex + nActions < nodes.size()) nActions = nodes.size()-currentDoneIndex-1;
-		while (nActions > 0) {
-			nodes.get(currentDoneIndex).getRedo().run();
+//		if (currentDoneIndex + nActions < nodes.size()) nActions = nodes.size()-currentDoneIndex-1;
+		while (currentDoneIndex+1 < nodes.size() && nActions > 0) {
+			nodes.get(currentDoneIndex+1).redo();
 			currentDoneIndex++;
 			nActions--;
 		}
 	}
 	
 	public void undo(int nActions) {
-		if (currentDoneIndex - nActions < -1) nActions = currentDoneIndex+1;
-		while (nActions > 0) {
-			nodes.get(currentDoneIndex).getUndo().run();
+//		if (currentDoneIndex - nActions < -1) nActions = currentDoneIndex+1;
+		while (currentDoneIndex > -1 && nActions > 0) {
+			nodes.get(currentDoneIndex).undo();
 			currentDoneIndex--;
 			nActions--;
 		}
@@ -120,9 +126,15 @@ public class UndoManager {
 		undo(1);
 	}
 	
+	public void redo() {
+		redo(1);
+	}
+	
 	public void addAndRun(UndoRedoNode node) {
+		for (int i=currentDoneIndex+1; i<nodes.size(); i++) 
+			nodes.remove(i);
 		add(node);
-		run(nodes.indexOf(node));
+		run();
 	}
 	
 	public void add(UndoRedoNode node) {

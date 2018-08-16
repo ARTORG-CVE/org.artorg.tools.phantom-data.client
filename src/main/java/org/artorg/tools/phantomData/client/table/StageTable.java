@@ -13,42 +13,25 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public abstract class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
+public class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
 		ID_TYPE> {
 	
-	private final AnchorPane pane;
-	private final Stage stage;
+	private AnchorPane pane;
+	private Stage stage;
 	private AnchorPane tablePane;
-	private final Scene scene;
+	private Scene scene;
 	private Table<TABLE, ITEM, ID_TYPE> table;
+	private TableGui<TABLE, ITEM, ID_TYPE> view;
 	
-	
-
-	{
-		pane = new AnchorPane();
-		tablePane = new AnchorPane();
-		scene = new Scene(pane);
-		stage = new Stage();
-		stage.setScene(scene);
-		
-		VBox vbox = new VBox();
-		pane.getChildren().add(vbox);
-		MenuBar menuBar = new MenuBar();
-		Menu menuFile = new Menu("File");
-		MenuItem menuItemSave = new MenuItem("Save");
-		menuItemSave.setOnAction(new EventHandler<ActionEvent>() {
+	private void initMenutItemHelper(String name, Runnable actionEvent, Menu parentMenu) {
+		MenuItem menuItem = new MenuItem(name);
+		menuItem.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent t) {
-		        save();
+		        actionEvent.run();
 		    }
 		});
-		
-		menuFile.getItems().add(menuItemSave);
-		menuBar.getMenus().add(menuFile);
-		
-		vbox.getChildren().add(menuBar);
-		vbox.getChildren().add(tablePane);
-		
+		parentMenu.getItems().add(menuItem);
 	}
 	
 	public final Stage getStage() {
@@ -60,9 +43,44 @@ public abstract class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		stage.setWidth(width + 17.0d + 50.0d);
 	}
 	
+	public void setView(TableGui<TABLE, ITEM, ID_TYPE> view) {
+		view.setTable(table);
+		view.refresh();
+		this.view = view;
+		createStage();
+		refresh();
+	}	
 	
-	public void setGui(javafx.scene.control.Control control) {
-//		javafx.scene.control.Control control = tableGui.getGraphic();
+	public void createStage() {
+		pane = new AnchorPane();
+		tablePane = new AnchorPane();
+		scene = new Scene(pane);
+		stage = new Stage();
+		stage.setScene(scene);
+		
+		VBox vbox = new VBox();
+		pane.getChildren().add(vbox);
+		MenuBar menuBar = new MenuBar();
+		
+		Menu menuFile = new Menu("File");
+		initMenutItemHelper("Save", () -> {save();}, menuFile);
+		initMenutItemHelper("Refresh", () -> {refresh();}, menuFile);
+		menuBar.getMenus().add(menuFile);
+		
+		Menu menuEdit = new Menu("Edit");
+		initMenutItemHelper("Undo", () -> {table.getUndoManager().undo();}, menuEdit);
+		initMenutItemHelper("Redo", () -> {table.getUndoManager().redo();}, menuEdit);
+		menuBar.getMenus().add(menuEdit);
+		
+		
+		
+		vbox.getChildren().add(menuBar);
+		vbox.getChildren().add(tablePane);
+	}
+	
+	
+	public void refresh() {
+		javafx.scene.control.Control control = view.getGraphic();
 		tablePane.getChildren().clear();
 		tablePane.getChildren().add(control);
 		AnchorPane.setTopAnchor(tablePane, 0.0);

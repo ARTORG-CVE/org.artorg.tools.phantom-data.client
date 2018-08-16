@@ -1,8 +1,10 @@
 package org.artorg.tools.phantomData.client.table;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.commandPattern.UndoManager;
@@ -24,11 +26,16 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	{
 		undoManager = new UndoManager();
 		items = FXCollections.observableArrayList();
-		columns = createColumns();
+		columns = new ArrayList<IColumn<ITEM, ?, ?>>();
+//		readAllData();
+//		columns = createColumns();
 	}
 	
 	public void setConnector(HttpDatabaseCrud<ITEM, ID_TYPE> connector) {
 		this.connector = connector;
+		this.columns.clear();
+		readAllData();
+		this.columns.addAll(createColumns());
 	}
 	
 	public void readAllData() {
@@ -36,9 +43,6 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		itemSet.addAll(connector.readAllAsSet());
 		items.clear();
 		items.addAll(itemSet);
-		System.out.println("/////////////////////////");
-		System.out.println(this.toString());
-		System.out.println("/////////////////////////");
 	}
 	
 	public abstract List<IColumn<ITEM, ?, ?>> createColumns();
@@ -53,18 +57,26 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		return columns.get(col).get(item);
 	}
 	
-	public final void setValue(ITEM item, int col, Object value) {
-		columns.get(col).set(item, value);
-		columns.get(col).update(item);
-		readAllData();
+	public final void setValue(ITEM item, int col, Object value, Consumer<Object> redo, Consumer<Object> undo) {
+		Object currentValue = getValue(item, col);
+		if (value.equals(currentValue))  return;
+		
+		UndoRedoNode node = new UndoRedoNode(() -> {
+				columns.get(col).set(item, value);
+				redo.accept(value);
+			}, () -> {
+				columns.get(col).set(item, currentValue);
+				undo.accept(currentValue);
+			}, () -> columns.get(col).update(item));
+		undoManager.addAndRun(node);
 	}
 	
 	public Object getValue(int row, int col) {
 		return columns.get(col).get(items.get(row));
 	}
 	
-	public void setValue(int row, int col, Object value) {
-		setValue(items.get(row), col, value);
+	public void setValue(int row, int col, Object value, Consumer<Object> redo, Consumer<Object> undo) {
+		setValue(items.get(row), col, value, redo, undo);
 	}
 	
 	// addiotional methods
@@ -95,17 +107,5 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	public UndoManager getUndoManager() {
 		return undoManager;
 	}
-	
-//	public boolean set(ITEM item, U value) {
-//		U currentValue = getter.apply(item);
-//		UndoRedoNode node = new UndoRedoNode(() -> setter.accept(item, value), 
-//				() -> setter.accept(item, currentValue),
-//				() -> {connector.update(item); System.out.println("   --in item block--  ");
-//				
-//					System.out.println("   /--" +item.toString());
-//				});
-//		undoManager.addAndRun(node);
-//		return true;
-//	}
 
 }
