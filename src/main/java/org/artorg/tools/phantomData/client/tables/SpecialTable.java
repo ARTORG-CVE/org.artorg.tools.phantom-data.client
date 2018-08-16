@@ -18,50 +18,34 @@ import org.artorg.tools.phantomData.server.model.Special;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 
 public class SpecialTable extends Table<SpecialTable, Special, Integer> {
-	
+
 	{
 		this.setConnector(SpecialConnector.get());
 	}
-	
+
 	@Override
-	public List<IColumn<Special, ?, ?>> createColumns() {
-		List<IColumn<Special, ?, ?>> columns =
-				new ArrayList<IColumn<Special, ?, ?>>();
-		columns.add(new Column<Special, Special, Integer, Integer>(
-				"id", item -> item, 
-				path -> path.getId(), 
-				(path,value) -> path.setId(Integer.valueOf((String) value)),
-				SpecialConnector.get()));
-		columns.add(new Column<Special, Special, String, Integer>(
-				"shortcut", item -> item, 
-				path -> path.getShortcut(), 
-				(path,value) -> path.setShortcut((String) value),
-				SpecialConnector.get()));
-		
-		Map<Integer,String> map = new HashMap<Integer,String>();
-		Set<BooleanProperty> set =getItems().stream().flatMap(s -> s.getBooleanProperties()
-				.stream()).collect(Collectors.toSet()); 
-		set.stream().sorted((p1,p2) -> p1.getPropertyField().getId().compareTo(p2.getPropertyField().getId()))
+	public List<IColumn<Special, ?>> createColumns() {
+		List<IColumn<Special, ?>> columns = new ArrayList<IColumn<Special, ?>>();
+		columns.add(new Column<Special, Special, Integer>("id", item -> item, path -> String.valueOf(path.getId()),
+				(path, value) -> path.setId(Integer.valueOf((String) value)), SpecialConnector.get()));
+		columns.add(new Column<Special, Special, Integer>("shortcut", item -> item, path -> path.getShortcut(),
+				(path, value) -> path.setShortcut(value), SpecialConnector.get()));
+
+		Map<Integer, String> map = new HashMap<Integer, String>();
+		Set<BooleanProperty> set = getItems().stream().flatMap(s -> s.getBooleanProperties().stream())
+				.collect(Collectors.toSet());
+		set.stream().sorted((p1, p2) -> p1.getPropertyField().getId().compareTo(p2.getPropertyField().getId()))
 				.forEach(p -> map.put(p.getPropertyField().getId(), p.getPropertyField().getDescription()));
-//				.collect(() -> new HashMap<Integer,String>(), (map, e) -> set.put(e), (e1, e2) -> {});
-				
-//				.collect(() -> new ArrayList<Integer>(), (set, e) -> set.add(e), (e1, e2) -> {});
-		
-//		List<String> columnNames = getItems().stream().flatMap(s -> s.getBooleanProperties().stream())
-//				.map(p -> p.getPropertyField().getDescription())
-		
-		 map.entrySet().stream().forEach(entry -> 
-			columns.add(new ColumnOptional<Special, BooleanProperty, String, Integer>(
-					entry.getValue(),
-					item -> item.getBooleanProperties().stream()
-						.filter(p -> p.getPropertyField().getId() == entry.getKey()).findFirst(),
-					path -> String.valueOf(path.getBool()),
-					(path,value) -> path.setBool(Boolean.valueOf((String)value)),
-					"",
-					BooleanPropertyConnector.get()
-		)));
-		
+
+		map.entrySet().stream()
+				.forEach(entry -> columns.add(new ColumnOptional<Special, BooleanProperty, Integer>(entry.getValue(),
+						item -> item.getBooleanProperties().stream()
+								.filter(p -> p.getPropertyField().getId() == entry.getKey()).findFirst(),
+						path -> String.valueOf(path.getBool()),
+						(path, value) -> path.setBool(Boolean.valueOf((String) value)), "",
+						BooleanPropertyConnector.get())));
+
 		return columns;
 	}
-	
+
 }

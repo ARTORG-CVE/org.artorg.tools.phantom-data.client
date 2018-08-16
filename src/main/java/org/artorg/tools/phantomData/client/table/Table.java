@@ -19,16 +19,16 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
 		ID_TYPE> {
 	private final ObservableList<ITEM> items;
-	private final List<IColumn<ITEM, ?, ?>> columns;
+	private final List<IColumn<ITEM, ?>> columns;
 	private final UndoManager undoManager;
 	private HttpDatabaseCrud<ITEM, ID_TYPE> connector;
+	private boolean isIdColumnVisible;
 	
 	{
 		undoManager = new UndoManager();
 		items = FXCollections.observableArrayList();
-		columns = new ArrayList<IColumn<ITEM, ?, ?>>();
-//		readAllData();
-//		columns = createColumns();
+		columns = new ArrayList<IColumn<ITEM, ?>>();
+		isIdColumnVisible = false;
 	}
 	
 	public void setConnector(HttpDatabaseCrud<ITEM, ID_TYPE> connector) {
@@ -45,7 +45,7 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		items.addAll(itemSet);
 	}
 	
-	public abstract List<IColumn<ITEM, ?, ?>> createColumns();
+	public abstract List<IColumn<ITEM, ?>> createColumns();
 	
 	public void setItems(ObservableList<ITEM> items) {
 		this.items.clear();
@@ -53,12 +53,12 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	}
 	
 	// exchange methods
-	public final Object getValue(ITEM item, int col) {
+	public final String getValue(ITEM item, int col) {
 		return columns.get(col).get(item);
 	}
 	
-	public final void setValue(ITEM item, int col, Object value, Consumer<Object> redo, Consumer<Object> undo) {
-		Object currentValue = getValue(item, col);
+	public final void setValue(ITEM item, int col, String value, Consumer<String> redo, Consumer<String> undo) {
+		String currentValue = getValue(item, col);
 		if (value.equals(currentValue))  return;
 		
 		UndoRedoNode node = new UndoRedoNode(() -> {
@@ -71,11 +71,11 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		undoManager.addAndRun(node);
 	}
 	
-	public Object getValue(int row, int col) {
+	public String getValue(int row, int col) {
 		return columns.get(col).get(items.get(row));
 	}
 	
-	public void setValue(int row, int col, Object value, Consumer<Object> redo, Consumer<Object> undo) {
+	public void setValue(int row, int col, String value, Consumer<String> redo, Consumer<String> undo) {
 		setValue(items.get(row), col, value, redo, undo);
 	}
 	
@@ -106,6 +106,14 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	
 	public UndoManager getUndoManager() {
 		return undoManager;
+	}
+
+	public boolean isIdColumnVisible() {
+		return isIdColumnVisible;
+	}
+
+	public void setIdColumnVisible(boolean isIdColumnVisible) {
+		this.isIdColumnVisible = isIdColumnVisible;
 	}
 
 }

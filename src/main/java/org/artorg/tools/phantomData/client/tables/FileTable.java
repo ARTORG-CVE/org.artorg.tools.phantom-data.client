@@ -18,33 +18,33 @@ public class FileTable extends Table<FileTable, PhantomFile, Integer> {
 	}
 
 	@Override
-	public List<IColumn<PhantomFile, ?, ?>> createColumns() {
-		List<IColumn<PhantomFile, ?, ?>> columns =
-				new ArrayList<IColumn<PhantomFile, ?, ?>>();
-		columns.add(new Column<PhantomFile, PhantomFile, Integer, Integer>(
+	public List<IColumn<PhantomFile, ?>> createColumns() {
+		List<IColumn<PhantomFile, ?>> columns =
+				new ArrayList<IColumn<PhantomFile, ?>>();
+		columns.add(new Column<PhantomFile, PhantomFile, Integer>(
 				"id", item -> item, 
-				path -> path.getId(), 
-				(path,value) -> path.setId((Integer) value),
+				path -> String.valueOf(path.getId()), 
+				(path,value) -> path.setId(Integer.valueOf(value)),
 				FileConnector.get()));
-		columns.add(new Column<PhantomFile, PhantomFile, String, Integer>(
+		columns.add(new Column<PhantomFile, PhantomFile, Integer>(
 				"path", item -> item, 
 				path -> path.getPath(), 
-				(path,value) -> path.setPath((String) value),
+				(path,value) -> path.setPath(value),
 				FileConnector.get()));
-		columns.add(new Column<PhantomFile, PhantomFile, String, Integer>(
+		columns.add(new Column<PhantomFile, PhantomFile, Integer>(
 				"name", item -> item, 
 				path -> path.getName(), 
-				(path,value) -> path.setName((String) value),
+				(path,value) -> path.setName(value),
 				FileConnector.get()));
-		columns.add(new Column<PhantomFile, PhantomFile, String, Integer>(
+		columns.add(new Column<PhantomFile, PhantomFile, Integer>(
 				"extension", item -> item, 
 				path -> path.getExtension(), 
-				(path,value) -> path.setExtension((String) value),
+				(path,value) -> path.setExtension(value),
 				FileConnector.get()));
-		columns.add(new Column<PhantomFile, FileType, String, Integer>(
+		columns.add(new Column<PhantomFile, FileType, Integer>(
 				"file type", item -> item.getFileType(), 
 				path -> path.getName(), 
-				(path,value) -> path.setName((String) value),
+				(path,value) -> path.setName(value),
 				FileTypeConnector.get()));
 		return columns;
 	}

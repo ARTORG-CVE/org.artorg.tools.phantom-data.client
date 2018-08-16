@@ -8,16 +8,16 @@ import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 public class Column<ITEM extends DatabasePersistent<ITEM, ?>, 
 		PATH extends DatabasePersistent<PATH, SUB_ID_TYPE>, 
-		CELL_TYPE extends Object, SUB_ID_TYPE> implements IColumn<ITEM, CELL_TYPE, SUB_ID_TYPE> {
+		SUB_ID_TYPE> implements IColumn<ITEM, SUB_ID_TYPE> {
 	private final String columnName;
 	private final Function<ITEM, PATH> itemToPropertyGetter;
-	private final Function<PATH, CELL_TYPE> propertyToValueGetter;
-	private final BiConsumer<PATH, Object> propertyToValueSetter;
+	private final Function<PATH, String> propertyToValueGetter;
+	private final BiConsumer<PATH, String> propertyToValueSetter;
 	private final HttpDatabaseCrud<PATH, SUB_ID_TYPE> connector;
 	
 	public Column(String columnName, Function<ITEM, PATH> itemToPropertyGetter, 
-			Function<PATH, CELL_TYPE> propertyToValueGetter, 
-			BiConsumer<PATH, Object> propertyToValueSetter,
+			Function<PATH, String> propertyToValueGetter, 
+			BiConsumer<PATH, String> propertyToValueSetter,
 			HttpDatabaseCrud<PATH, SUB_ID_TYPE> connector
 			) {
 		this.columnName = columnName;
@@ -28,12 +28,12 @@ public class Column<ITEM extends DatabasePersistent<ITEM, ?>,
 	}
 	
 	@Override
-	public CELL_TYPE get(ITEM item) {
+	public String get(ITEM item) {
 		return propertyToValueGetter.apply(itemToPropertyGetter.apply(item));
 	}
 	
 	@Override
-	public void set(ITEM item, Object value) {
+	public void set(ITEM item, String value) {
 		propertyToValueSetter.accept(itemToPropertyGetter.apply(item), value);
 	}
 	

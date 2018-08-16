@@ -17,20 +17,20 @@ public class LiteratureBaseTable extends Table<LiteratureBaseTable, LiteratureBa
 	}
 
 	@Override
-	public List<IColumn<LiteratureBase, ?, ?>> createColumns() {
-		List<IColumn<LiteratureBase, ?, ?>> columns =
-				new ArrayList<IColumn<LiteratureBase, ?, ?>>();
-		columns.add(new Column<LiteratureBase, LiteratureBase, Integer, Integer>(
+	public List<IColumn<LiteratureBase, ?>> createColumns() {
+		List<IColumn<LiteratureBase, ?>> columns =
+				new ArrayList<IColumn<LiteratureBase, ?>>();
+		columns.add(new Column<LiteratureBase, LiteratureBase, Integer>(
 				"id", item -> item, 
-				path -> path.getId(), 
-				(path,value) -> path.setId((Integer) value),
+				path -> String.valueOf(path.getId()), 
+				(path,value) -> path.setId(Integer.valueOf(value)),
 				LiteratureBaseConnector.get()));
-		columns.add(new Column<LiteratureBase, LiteratureBase, String, Integer>(
+		columns.add(new Column<LiteratureBase, LiteratureBase, Integer>(
 				"shortcut", item -> item, 
 				path -> path.getShortcut(), 
 				(path,value) -> path.setShortcut((String) value),
 				LiteratureBaseConnector.get()));
-		columns.add(new Column<LiteratureBase, LiteratureBase, String, Integer>(
+		columns.add(new Column<LiteratureBase, LiteratureBase, Integer>(
 				"value", item -> item, 
 				path -> path.getValue(), 
 				(path,value) -> path.setValue((String) value),

@@ -20,20 +20,20 @@ public class PropertyFieldTable extends Table<PropertyFieldTable,PropertyField, 
 	}
 
 	@Override
-	public List<IColumn<PropertyField, ?, ?>> createColumns() {
-		List<IColumn<PropertyField, ?, ?>> columns =
-				new ArrayList<IColumn<PropertyField, ?, ?>>();
-		columns.add(new Column<PropertyField, PropertyField, Integer, Integer>(
+	public List<IColumn<PropertyField, ?>> createColumns() {
+		List<IColumn<PropertyField, ?>> columns =
+				new ArrayList<IColumn<PropertyField, ?>>();
+		columns.add(new Column<PropertyField, PropertyField, Integer>(
 				"id", item -> item, 
-				path -> path.getId(), 
-				(path,value) -> path.setId((Integer) value),
+				path -> String.valueOf(path.getId()), 
+				(path,value) -> path.setId(Integer.valueOf(value)),
 				PropertyFieldConnector.get()));
-		columns.add(new Column<PropertyField, PropertyField, String, Integer>(
+		columns.add(new Column<PropertyField, PropertyField, Integer>(
 				"name", item -> item, 
 				path -> path.getName(), 
 				(path,value) -> path.setName((String) value),
 				PropertyFieldConnector.get()));
-		columns.add(new Column<PropertyField, PropertyField, String, Integer>(
+		columns.add(new Column<PropertyField, PropertyField, Integer>(
 				"description", item -> item, 
 				path -> path.getDescription(), 
 				(path,value) -> path.setDescription((String) value),

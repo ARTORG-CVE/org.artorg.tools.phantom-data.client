@@ -18,23 +18,23 @@ public class BooleanPropertyTable extends Table<BooleanPropertyTable, BooleanPro
 	}
 
 	@Override
-	public List<IColumn<BooleanProperty, ?, ?>> createColumns() {
-		List<IColumn<BooleanProperty, ?, ?>> columns =
-				new ArrayList<IColumn<BooleanProperty, ?, ?>>();
-		columns.add(new Column<BooleanProperty, BooleanProperty, Integer, Integer>(
+	public List<IColumn<BooleanProperty, ?>> createColumns() {
+		List<IColumn<BooleanProperty, ?>> columns =
+				new ArrayList<IColumn<BooleanProperty, ?>>();
+		columns.add(new Column<BooleanProperty, BooleanProperty, Integer>(
 				"id", item -> item, 
-				path -> path.getId(), 
-				(path,value) -> path.setId((Integer) value),
+				path -> String.valueOf(path.getId()), 
+				(path,value) -> path.setId(Integer.valueOf(value)),
 				BooleanPropertyConnector.get()));
-		columns.add(new Column<BooleanProperty, PropertyField, String, Integer>(
+		columns.add(new Column<BooleanProperty, PropertyField, Integer>(
 				"property field", item -> item.getPropertyField(), 
 				path -> path.getDescription(), 
-				(path,value) -> path.setDescription((String) value),
+				(path,value) -> path.setDescription(value),
 				PropertyFieldConnector.get()));
-		columns.add(new Column<BooleanProperty, BooleanProperty, Boolean, Integer>(
+		columns.add(new Column<BooleanProperty, BooleanProperty, Integer>(
 				"value", item -> item, 
-				path -> path.getBool(), 
-				(path,value) -> path.setBool((Boolean) value),
+				path -> String.valueOf(path.getBool()), 
+				(path,value) -> path.setBool(Boolean.valueOf(value)),
 				BooleanPropertyConnector.get()));
 		return columns;
 	}

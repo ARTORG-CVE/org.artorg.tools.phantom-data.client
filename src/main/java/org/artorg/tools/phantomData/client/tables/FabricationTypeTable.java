@@ -17,23 +17,23 @@ public class FabricationTypeTable extends Table<FabricationTypeTable, Fabricatio
 	}
 	
 	@Override
-	public List<IColumn<FabricationType, ?, ?>> createColumns() {
-		List<IColumn<FabricationType, ?, ?>> columns =
-				new ArrayList<IColumn<FabricationType, ?, ?>>();
-		columns.add(new Column<FabricationType, FabricationType, Integer, Integer>(
+	public List<IColumn<FabricationType, ?>> createColumns() {
+		List<IColumn<FabricationType, ?>> columns =
+				new ArrayList<IColumn<FabricationType, ?>>();
+		columns.add(new Column<FabricationType, FabricationType, Integer>(
 				"id", item -> item, 
-				path -> path.getId(), 
-				(path,value) -> path.setId((Integer) value),
+				path -> String.valueOf(path.getId()), 
+				(path,value) -> path.setId(Integer.valueOf(value)),
 				FabricationTypeConnector.get()));
-		columns.add(new Column<FabricationType, FabricationType, String, Integer>(
+		columns.add(new Column<FabricationType, FabricationType, Integer>(
 				"shortcut", item -> item, 
 				path -> path.getShortcut(), 
-				(path,value) -> path.setShortcut((String) value),
+				(path,value) -> path.setShortcut(value),
 				FabricationTypeConnector.get()));
-		columns.add(new Column<FabricationType, FabricationType, String, Integer>(
+		columns.add(new Column<FabricationType, FabricationType, Integer>(
 				"value", item -> item, 
 				path -> path.getValue(), 
-				(path,value) -> path.setValue((String) value),
+				(path,value) -> path.setValue(value),
 				FabricationTypeConnector.get()));
 		return columns;
 	}

@@ -25,38 +25,38 @@ public class PhantomTable extends Table<PhantomTable, Phantom, Integer> {
 	}
 
 	@Override
-	public List<IColumn<Phantom, ?, ?>> createColumns() {
-		List<IColumn<Phantom, ?, ?>> columns =
-				new ArrayList<IColumn<Phantom, ?, ?>>();
-		columns.add(new Column<Phantom, Phantom, Integer, Integer>(
+	public List<IColumn<Phantom, ?>> createColumns() {
+		List<IColumn<Phantom, ?>> columns =
+				new ArrayList<IColumn<Phantom, ?>>();
+		columns.add(new Column<Phantom, Phantom, Integer>(
 				"id", item -> item, 
-				path -> path.getId(), 
-				(path,value) -> path.setId((Integer) value),
+				path -> String.valueOf(path.getId()), 
+				(path,value) -> path.setId(Integer.valueOf(value)),
 				PhantomConnector.get()));
-		columns.add(new Column<Phantom, AnnulusDiameter, Double, Integer>(
+		columns.add(new Column<Phantom, AnnulusDiameter, Integer>(
 				"annulus [mm]", item -> item.getAnnulusDiameter(), 
-				path -> path.getValue(), 
-				(path,value) -> path.setValue((Double) value),
+				path -> String.valueOf(path.getValue()), 
+				(path,value) -> path.setValue(Double.valueOf(value)),
 				AnnulusDiameterConnector.get()));
-		columns.add(new Column<Phantom, FabricationType, String, Integer>(
+		columns.add(new Column<Phantom, FabricationType, Integer>(
 				"type", item -> item.getFabricationType(), 
 				path -> path.getValue(), 
-				(path,value) -> path.setValue((String) value),
+				(path,value) -> path.setValue(value),
 				FabricationTypeConnector.get()));
-		columns.add(new Column<Phantom, LiteratureBase, String, Integer>(
+		columns.add(new Column<Phantom, LiteratureBase, Integer>(
 				"literature", item -> item.getLiteratureBase(), 
 				path -> path.getValue(), 
-				(path,value) -> path.setValue((String) value),
+				(path,value) -> path.setValue(value),
 				LiteratureBaseConnector.get()));
-		columns.add(new Column<Phantom, Special, String, Integer>(
+		columns.add(new Column<Phantom, Special, Integer>(
 				"special", item -> item.getSpecial(), 
 				path -> path.getShortcut(), 
-				(path,value) -> path.setShortcut((String) value),
+				(path,value) -> path.setShortcut(value),
 				SpecialConnector.get()));
-		columns.add(new Column<Phantom, Phantom, Integer, Integer>(
+		columns.add(new Column<Phantom, Phantom, Integer>(
 				"number", item -> item, 
-				path -> path.getNumber(), 
-				(path,value) -> path.setNumber((int) value),
+				path -> String.valueOf(path.getNumber()), 
+				(path,value) -> path.setNumber(Integer.valueOf(value)),
 				PhantomConnector.get()));
 		return columns;
 	}

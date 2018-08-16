@@ -100,28 +100,6 @@ public class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	
 	public void save() {
 		table.getUndoManager().save();
-//		super.getUndoManager().save();
-		
-////		System.out.println("//////////////////////");
-////		this.getItems().forEach(i -> System.out.println(i.toString()));
-////		System.out.println("//////////////////////");
-////		
-////		this.getConnector().update(this.getItems());
-////		
-////		System.out.println("//////////////////////");
-////		this.getItems().forEach(i -> System.out.println(i.toString()));
-////		System.out.println("//////////////////////");
-////		
-//		System.out.println("//////////////////////");
-////		this.getData().stream().flatMap(c -> c.stream()).forEach(i -> {
-////			System.out.println(i.toString());
-////		});
-//		System.out.println("//////////////////////");
-////		
-////		
-////		List<List<String>> rows = this.getData();
-		
-		
 	}
 	
 	public void setTable(Table<TABLE, ITEM, ID_TYPE> table) {
