@@ -36,6 +36,9 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		itemSet.addAll(connector.readAllAsSet());
 		items.clear();
 		items.addAll(itemSet);
+		System.out.println("/////////////////////////");
+		System.out.println(this.toString());
+		System.out.println("/////////////////////////");
 	}
 	
 	public abstract List<IColumn<ITEM, ?, ?>> createColumns();

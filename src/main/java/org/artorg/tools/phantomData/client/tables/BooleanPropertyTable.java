@@ -7,11 +7,11 @@ import org.artorg.tools.phantomData.client.connectors.property.BooleanPropertyCo
 import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;
 import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.IColumn;
-import org.artorg.tools.phantomData.client.table.StageTable;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
-public class BooleanPropertyTable extends StageTable<BooleanPropertyTable, BooleanProperty, Integer> {
+public class BooleanPropertyTable extends Table<BooleanPropertyTable, BooleanProperty, Integer> {
 	
 	{
 		this.setConnector(BooleanPropertyConnector.get());

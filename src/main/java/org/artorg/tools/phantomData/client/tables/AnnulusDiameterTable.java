@@ -7,9 +7,10 @@ import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
 import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.client.table.StageTable;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 
-public class AnnulusDiameterTable extends StageTable<AnnulusDiameterTable, AnnulusDiameter, Integer> {
+public class AnnulusDiameterTable extends Table<AnnulusDiameterTable, AnnulusDiameter, Integer> {
 	
 	{
 		this.setConnector(AnnulusDiameterConnector.get());

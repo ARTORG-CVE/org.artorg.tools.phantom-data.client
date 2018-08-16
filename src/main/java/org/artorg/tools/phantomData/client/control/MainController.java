@@ -134,6 +134,8 @@ public class MainController {
 		SpreadsheetViewCrud<PhantomTable, Phantom, Integer> view = 
     			new SpreadsheetViewCrud<PhantomTable, Phantom, Integer>(); 
 		PhantomTable phantomTable = new PhantomTable();
+		view.setTable(phantomTable);
+		
 		phantomTable.readAllData();
 		view.setTable(phantomTable);
 		Control spreadsheet = view.getGraphic();
@@ -277,16 +279,11 @@ public class MainController {
     private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 	ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
 	ID_TYPE> void initTableHelperSpreadsheet(
-			StageTable<TABLE, ITEM, ID_TYPE> table, String name) {
-				
+			Table<TABLE, ITEM, ID_TYPE> table, String name) {
 		SpreadsheetViewCrud<TABLE, ITEM, ID_TYPE> view = 
 			new SpreadsheetViewCrud<TABLE, ITEM, ID_TYPE>();
-			table.readAllData();
-		view.setTable(table);
-		view.getGraphic().setStyle("-fx-focus-color: transparent;");
-		
-		table.setGui(view);
-		Stage stage = table.getStage();
+			view.setTable(table);
+		Stage stage = view.getStage();
 		stage.setTitle(name);
 		view.autoResizeColumns();
 		stage.show();

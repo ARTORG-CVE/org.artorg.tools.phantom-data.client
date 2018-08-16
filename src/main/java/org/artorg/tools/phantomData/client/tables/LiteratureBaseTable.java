@@ -7,9 +7,10 @@ import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
 import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.client.table.StageTable;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 
-public class LiteratureBaseTable extends StageTable<LiteratureBaseTable, LiteratureBase, Integer> {
+public class LiteratureBaseTable extends Table<LiteratureBaseTable, LiteratureBase, Integer> {
 
 	{
 		this.setConnector(LiteratureBaseConnector.get());

@@ -15,14 +15,16 @@ import javafx.stage.Stage;
 
 public abstract class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
-		ID_TYPE> 
-		extends Table<TABLE, ITEM, ID_TYPE> {
+		ID_TYPE> {
 	
 	private final AnchorPane pane;
 	private final Stage stage;
 	private AnchorPane tablePane;
 	private final Scene scene;
+	private Table<TABLE, ITEM, ID_TYPE> table;
 	
+	
+
 	{
 		pane = new AnchorPane();
 		tablePane = new AnchorPane();
@@ -59,8 +61,8 @@ public abstract class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	}
 	
 	
-	public void setGui(TableGui tableGui) {
-		javafx.scene.control.Control control = tableGui.getGraphic();
+	public void setGui(javafx.scene.control.Control control) {
+//		javafx.scene.control.Control control = tableGui.getGraphic();
 		tablePane.getChildren().clear();
 		tablePane.getChildren().add(control);
 		AnchorPane.setTopAnchor(tablePane, 0.0);
@@ -79,7 +81,8 @@ public abstract class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	}
 	
 	public void save() {
-		super.getUndoManager().save();
+		table.getUndoManager().save();
+//		super.getUndoManager().save();
 		
 ////		System.out.println("//////////////////////");
 ////		this.getItems().forEach(i -> System.out.println(i.toString()));
@@ -101,6 +104,10 @@ public abstract class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 ////		List<List<String>> rows = this.getData();
 		
 		
+	}
+	
+	public void setTable(Table<TABLE, ITEM, ID_TYPE> table) {
+		this.table = table;
 	}
 
 }

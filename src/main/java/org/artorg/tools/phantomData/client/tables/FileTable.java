@@ -7,11 +7,11 @@ import org.artorg.tools.phantomData.client.connectors.FileConnector;
 import org.artorg.tools.phantomData.client.connectors.FileTypeConnector;
 import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.IColumn;
-import org.artorg.tools.phantomData.client.table.StageTable;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 
-public class FileTable extends StageTable<FileTable, PhantomFile, Integer> {
+public class FileTable extends Table<FileTable, PhantomFile, Integer> {
 
 	{
 		this.setConnector(FileConnector.get());
