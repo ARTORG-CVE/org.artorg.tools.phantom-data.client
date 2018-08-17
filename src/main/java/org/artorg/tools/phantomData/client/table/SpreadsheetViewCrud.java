@@ -3,6 +3,7 @@ package org.artorg.tools.phantomData.client.table;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.artorg.tools.phantomData.client.table.multiSelectCombo.FilterBox;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.spreadsheet.Filter;
@@ -100,42 +101,61 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 			SpreadsheetCellBase cell = new SpreadsheetCellBase(0, col, 1, 1);
 //			TextField label = new TextField();
 			
-			ComboBox<Node> comboBox = new ComboBox<Node>();
-			comboBox.setPromptText(value);
-			comboBox.setStyle("-fx-background-color: transparent;");
+			List<Runnable> getters = new ArrayList<Runnable>();
+			for (int row=0; row<table.getNrows(); row++) {
+				final int localRow = row;
+				final int localCol = col;
+				getters.add(() -> table.getValue(localRow, localCol));
+			}
 			
 			
-			Button buttonA = new Button("Sort Ascending");
-			buttonA.setStyle("-fx-background-color: transparent;");
-//			buttonA.setPrefHeight(30);
-			Button buttonD = new Button("Sort Descending");
-//			buttonD.setPrefHeight(30);
-			buttonD.setStyle("-fx-background-color: transparent;");
-			
-			comboBox.getItems().add(buttonA);
-			comboBox.getItems().add(buttonD);
-			
-			CheckBox checkBox = new CheckBox();
-			Label label = new Label();
-			
-			label.setText("Test");
-			
-			HBox hbox = new HBox();
-			
-			hbox.getChildren().add(checkBox);
-			hbox.getChildren().add(label);
-			
-			comboBox.getItems().add(hbox);
+			FilterBox filterBox = new FilterBox(value, getters);
 			
 			
-			 // create the data to show in the CheckComboBox 
-			 final ObservableList<String> strings = FXCollections.observableArrayList();
-			 for (int i = 0; i <= 100; i++) {
-			     strings.add("Item " + i);
-			 }
-			 
-			 // Create the CheckComboBox with the data 
-			 final CheckComboBox<String> checkComboBox = new CheckComboBox<String>(strings);
+			
+			
+			
+			
+			
+			
+			
+//			
+//			ComboBox<Node> comboBox = new ComboBox<Node>();
+//			comboBox.setPromptText(value);
+//			comboBox.setStyle("-fx-background-color: transparent;");
+//			
+//			
+//			Button buttonA = new Button("Sort Ascending");
+//			buttonA.setStyle("-fx-background-color: transparent;");
+////			buttonA.setPrefHeight(30);
+//			Button buttonD = new Button("Sort Descending");
+////			buttonD.setPrefHeight(30);
+//			buttonD.setStyle("-fx-background-color: transparent;");
+//			
+//			comboBox.getItems().add(buttonA);
+//			comboBox.getItems().add(buttonD);
+//			
+//			CheckBox checkBox = new CheckBox();
+//			Label label = new Label();
+//			
+//			label.setText("Test");
+//			
+//			HBox hbox = new HBox();
+//			
+//			hbox.getChildren().add(checkBox);
+//			hbox.getChildren().add(label);
+//			
+//			comboBox.getItems().add(hbox);
+//			
+//			
+//			 // create the data to show in the CheckComboBox 
+//			 final ObservableList<String> strings = FXCollections.observableArrayList();
+//			 for (int i = 0; i <= 100; i++) {
+//			     strings.add("Item " + i);
+//			 }
+//			 
+//			 // Create the CheckComboBox with the data 
+//			 final CheckComboBox<String> checkComboBox = new CheckComboBox<String>(strings);
 //			 checkComboBox.sette
 			
 //			label.setText(value);
@@ -158,7 +178,7 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 //						s -> label.setText(s));
 //			});
 			
-			cell.setGraphic(checkComboBox);
+			cell.setGraphic(filterBox);
 			rowItemFilter.add(cell);
 		}
 		rows.add(rowItemFilter);
