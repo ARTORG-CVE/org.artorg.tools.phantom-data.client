@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.spreadsheet.Filter;
 import org.controlsfx.control.spreadsheet.FilterBase;
 import org.controlsfx.control.spreadsheet.GridBase;
@@ -17,8 +18,15 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 
 public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
@@ -72,13 +80,93 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		List<String> columnNames = table.getColumnNames();
 
 		ObservableList<ObservableList<SpreadsheetCell>> rows = FXCollections.observableArrayList();
-		final ObservableList<SpreadsheetCell> rowColumnNames = FXCollections.observableArrayList();
-		for (int col = 0; col < columnCount; col++) {
-			SpreadsheetCell cell = SpreadsheetCellType.STRING.createCell(0, col, 1, 1, columnNames.get(col));
-			cell.setEditable(false);
-			rowColumnNames.add(cell);
+		
+		
+//		final ObservableList<SpreadsheetCell> rowColumnNames = FXCollections.observableArrayList();
+//		for (int col = 0; col < columnCount; col++) {
+//			SpreadsheetCell cell = SpreadsheetCellType.STRING.createCell(0, col, 1, 1, columnNames.get(col));
+//			cell.setEditable(false);
+//			rowColumnNames.add(cell);
+//		}
+//		rows.add(rowColumnNames);
+		
+		
+		
+		
+		
+		final ObservableList<SpreadsheetCell> rowItemFilter = FXCollections.observableArrayList();
+		for (int col=0; col < columnCount; col++) {
+			String value = table.getColumnNames().get(col);
+			SpreadsheetCellBase cell = new SpreadsheetCellBase(0, col, 1, 1);
+//			TextField label = new TextField();
+			
+			ComboBox<Node> comboBox = new ComboBox<Node>();
+			comboBox.setPromptText(value);
+			comboBox.setStyle("-fx-background-color: transparent;");
+			
+			
+			Button buttonA = new Button("Sort Ascending");
+			buttonA.setStyle("-fx-background-color: transparent;");
+//			buttonA.setPrefHeight(30);
+			Button buttonD = new Button("Sort Descending");
+//			buttonD.setPrefHeight(30);
+			buttonD.setStyle("-fx-background-color: transparent;");
+			
+			comboBox.getItems().add(buttonA);
+			comboBox.getItems().add(buttonD);
+			
+			CheckBox checkBox = new CheckBox();
+			Label label = new Label();
+			
+			label.setText("Test");
+			
+			HBox hbox = new HBox();
+			
+			hbox.getChildren().add(checkBox);
+			hbox.getChildren().add(label);
+			
+			comboBox.getItems().add(hbox);
+			
+			
+			 // create the data to show in the CheckComboBox 
+			 final ObservableList<String> strings = FXCollections.observableArrayList();
+			 for (int i = 0; i <= 100; i++) {
+			     strings.add("Item " + i);
+			 }
+			 
+			 // Create the CheckComboBox with the data 
+			 final CheckComboBox<String> checkComboBox = new CheckComboBox<String>(strings);
+//			 checkComboBox.sette
+			
+//			label.setText(value);
+//			final int localCol = col;
+			
+//			label.setEditable(false);
+
+//			label.focusedProperty().addListener(new ChangeListener<Boolean>() {
+//			    @Override
+//			    public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+//			        if (!newPropertyValue)
+//			        	table.setValue(0, localCol, label.getText(),
+//								s -> label.setText(s), 
+//								s -> label.setText(s));
+//			    }
+//			});
+//			label.setOnAction((event) -> {
+//				table.setValue(0, localCol, label.getText(), 
+//						s -> label.setText(s),
+//						s -> label.setText(s));
+//			});
+			
+			cell.setGraphic(checkComboBox);
+			rowItemFilter.add(cell);
 		}
-		rows.add(rowColumnNames);
+		rows.add(rowItemFilter);
+		
+		
+		
+		
+		
 		
 		
 		
@@ -89,40 +177,26 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 				String value = table.getValue(row, col);
 				SpreadsheetCellBase cell = new SpreadsheetCellBase(row+1, col, 1, 1);
 				TextField label = new TextField();
+				
 				label.setText(value);
 				final int localRow = row;
 				final int localCol = col;
 				
 //				label.setEditable(false);
-				
-//				cell.setItem(value);
-				
+
 				label.focusedProperty().addListener(new ChangeListener<Boolean>() {
 				    @Override
 				    public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
 				        if (!newPropertyValue)
 				        	table.setValue(localRow, localCol, label.getText(),
-									s -> {
-										label.setText(s);
-//										rows.get(localRow).get(localCol).setItem(s);
-//										cell.setItem(s);
-									}, s -> {
-										label.setText(s);
-//										rows.get(localRow).get(localCol).setItem(s);
-//										cell.setItem(s);
-									});
+									s -> label.setText(s), 
+									s -> label.setText(s));
 				    }
 				});
 				label.setOnAction((event) -> {
 					table.setValue(localRow, localCol, label.getText(), 
-							s -> {
-								label.setText(s);
-//								rows.get(localRow).get(localCol).setItem(s);
-							},
-							s -> {
-								label.setText(s);
-//								rows.get(localRow).get(localCol).setItem(s);
-							});
+							s -> label.setText(s),
+							s -> label.setText(s));
 				});
 				
 				cell.setGraphic(label);
@@ -135,14 +209,11 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		spreadsheet.setGrid(grid);
 		spreadsheet.setStyle("-fx-focus-color: transparent;");
 		
-		spreadsheet.setFilteredRow(0);
-		for (int col=0; col < columnCount; col++) {
-			Filter filter = new FilterBase(spreadsheet, col);
-			spreadsheet.getColumns().get(col).setFilter(filter);
-		}
-
-        
-		System.out.println("test");
+//		spreadsheet.setFilteredRow(0);
+//		for (int col=0; col < columnCount; col++) {
+//			Filter filter = new FilterBase(spreadsheet, col);
+//			spreadsheet.getColumns().get(col).setFilter(filter);
+//		}
         
 		
 	}
