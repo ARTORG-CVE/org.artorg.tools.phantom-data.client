@@ -1,8 +1,8 @@
 package org.artorg.tools.phantomData.client.table;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
@@ -34,13 +34,6 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 
 	@Override
 	public void setTable(FilterTable<TABLE, ITEM, ID_TYPE> table) {
-		// changeListener = new ListChangeListener<ITEM>() {
-		// @Override
-		// public void onChanged(Change<? extends ITEM> c) {
-		// refresh();
-		// }
-		// };
-
 		changeListener = (item) -> refreshValues();
 
 		table.getItems().addListener(changeListener);
@@ -63,8 +56,6 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 
 	@Override
 	public void refresh() {
-		System.out.println("refresh in spreadsheet");
-		
 		spreadsheet = new SpreadsheetView();
 		int columnCount = table.getNcols();
 		rows = FXCollections.observableArrayList();
@@ -85,20 +76,19 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 				}
 				return getters;
 			};
+			
+			Comparator<? super ITEM> comparator = (i1,i2) -> table.getValue(i1, localCol).compareTo(table.getValue(i2, localCol));
+			
 
-			FilterBox filterBox = new FilterBox(value, createGetters);
+			MultiSelectComboBox<ITEM> filterBox = new SortFilterBox<ITEM>(value, createGetters, comparator);
 			filterBox.addEventHandler(ComboBox.ON_HIDDEN, event -> {
-			    System.out.println("CheckComboBox is now hidden.");
-			    
 				table.setColumnFilterValues(localCol, filterBox.getSelectedValues());
+				if (filterBox.isSortComparatorSet())
+					table.setSortComparator(filterBox.getSortComparator());
 				table.applyFilter();
 			    refreshValues();
-//			    filterBox.hide();
-//			    filterBox.getSelectionModel().clearSelection();
-//			    spreadsheet.requestFocus();
 			});
 			filterBox.addEventHandler(ComboBox.ON_SHOWING, event -> {
-			    System.out.println("CheckComboBox is opening.");
 				filterBox.updateNodes();
 			});
 			

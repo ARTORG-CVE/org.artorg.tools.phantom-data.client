@@ -1,6 +1,7 @@
 package org.artorg.tools.phantomData.client.table;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,12 +22,31 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 
 	private final ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
-	List<Predicate<ITEM>> columnFilters;
+	private List<Predicate<ITEM>> columnFilterPredicates;
+	private Comparator<? super ITEM> sortComparator;
+	
+
+	public Comparator<? super ITEM> getSortComparator() {
+		return sortComparator;
+	}
+
+	public void setSortComparator(Comparator<? super ITEM> sortComparator) {
+		this.sortComparator = sortComparator;
+	}
+	
+	
 
 	{
 		filteredItems = FXCollections.observableArrayList();
-		columnFilters = new ArrayList<Predicate<ITEM>>();
 		filterPredicate = item -> true;
+		columnFilterPredicates = new ArrayList<Predicate<ITEM>>();
+		sortComparator = (i1,i2) -> {
+			if (i1.getId() instanceof Integer)
+				return ((Integer)i1.getId()).compareTo(((Integer)i2.getId()));
+			if (i1.getId() instanceof Long)
+				return ((Long)i1.getId()).compareTo(((Long)i2.getId()));
+			return i1.getId().toString().compareTo(i2.getId().toString());
+		};
 	}
 	
 	public void createColumnFilters() {
@@ -44,12 +64,14 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	public void readAllData() {
 		super.readAllData();
 		
-		filteredItems.clear();
-		filteredItems.addAll(super.getItems());
-		columnFilters = new ArrayList<Predicate<ITEM>>(columns.size());
-		for (int i=0; i<columns.size(); i++)
-			columnFilters.add(item -> true);
 		
+		columnFilterPredicates = new ArrayList<Predicate<ITEM>>(columns.size());
+		for (int i=0; i<columns.size(); i++)
+			columnFilterPredicates.add(item -> true);
+		
+		
+		
+		applyFilter();
 	}
 	
 	@Override
@@ -84,7 +106,8 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	
 	@Override
 	public void setValue(int row, int col, String value, Consumer<String> redo, Consumer<String> undo) {
-		setValue(items.get(row), filteredItems.get(row), col, value, redo, undo);
+		ITEM superItem = items.stream().filter(item -> item.getId().equals(filteredItems.get(row).getId())).findFirst().get();
+		setValue(superItem, filteredItems.get(row), col, value, redo, undo);
 	}
 
 	public Predicate<ITEM> getFilterPredicate() {
@@ -92,17 +115,23 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	}
 
 	public void setColumnFilterValues(int columnIndex, List<String> values) {
-		columnFilters.set(columnIndex, item -> {
+		columnFilterPredicates.set(columnIndex, item -> {
 			return values.stream().filter(value -> getValue(item,columnIndex).equals(value)).findFirst().isPresent();
 		});
 	}
 	
 	public void applyFilter() {
-		filterPredicate = columnFilters.stream().reduce((f1,f2) -> f1.and(f2)).get();
+		filterPredicate = columnFilterPredicates.stream().reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
 		this.filteredItems.clear();
-		this.filteredItems.addAll(items.stream().filter(filterPredicate)
+		this.filteredItems.addAll(items.stream().filter(filterPredicate).sorted(sortComparator)
 				.collect(Collectors.toList()));
 	}
+
+	
+
+	
+	
+	
 	
 	
 

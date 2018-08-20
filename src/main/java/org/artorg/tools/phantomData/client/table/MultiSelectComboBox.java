@@ -5,20 +5,26 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import com.sun.javafx.scene.control.skin.ComboBoxListViewSkin;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
@@ -31,11 +37,25 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
 
-public class FilterBox extends ComboBox<Node> {
+public class MultiSelectComboBox<ITEM> extends ComboBox<Node> {
 	private ObservableList<Node> nodes;
-	private static final Image imgNormal, imgFilter;
-	private final Supplier<List<String>> getters;
+	
+	public ObservableList<Node> getNodes() {
+		return nodes;
+	}
 
+	private static final Image imgNormal, imgFilter;
+	private Supplier<List<String>> getters;
+	private Comparator<? super ITEM> sortComparator;
+	public Comparator<? super ITEM> getSortComparator() {
+		return sortComparator;
+	}
+
+	private boolean isSortComparatorSet;
+	
+	public boolean isSortComparatorSet() {
+		return isSortComparatorSet;
+	}
 	
 	static {
 		InputStream normalStream = null;
@@ -55,24 +75,28 @@ public class FilterBox extends ComboBox<Node> {
 		imgFilter = new Image(filterStream);
 	}
 	
-	public FilterBox(String name, Supplier<List<String>> getters) {
+	public void setGetters(Supplier<List<String>> getters) {
 		this.getters = getters;
-		
-		setPromptText(name);
 		
 		List<Node> nodes = new ArrayList<Node>();
 		
-		nodes.add(createCheckBoxAll());
+		
+		nodes.add(new CheckBoxAll());
 
 		Separator separator = new Separator(Orientation.HORIZONTAL);
 		separator.setPrefHeight(1);
 		nodes.add(separator);
 		
-		getters.get().stream().distinct().forEach(s -> nodes.add(createCheckBoxItem(() -> s)));
+		getters.get().stream().distinct().forEach(s -> nodes.add(new CheckBoxItem(() -> s)));
 
 		setNodes(nodes);
-
+		
 		this.setStyle("-fx-background-color: transparent;");
+		
+	}
+	
+	public void setComparator(Comparator<? super ITEM> comparator) {
+		this.sortComparator = comparator;
 	}
 	
 	
@@ -103,13 +127,15 @@ public class FilterBox extends ComboBox<Node> {
 		nodes.addAll(selectableValues.stream().filter(tableItem -> 
 			!getCheckBoxItemStream()
 					.filter(boxItem -> boxItem.nameGetter.get().equals(tableItem)).findFirst().isPresent())
-				.map(tableItem -> createCheckBoxItem(() -> tableItem)).collect(Collectors.toList()));
+				.map(tableItem -> new CheckBoxItem(() -> tableItem)).collect(Collectors.toList()));
 	}
 
+	@SuppressWarnings("unchecked")
 	public Stream<CheckBoxItem> getCheckBoxItemStream() {
-		return nodes.stream().filter(n -> n instanceof CheckBoxItem).map(n -> ((CheckBoxItem) n));
+		return nodes.stream().filter(n -> n instanceof MultiSelectComboBox.CheckBoxItem).map(n -> ((CheckBoxItem) n));
 	}
 
+	@SuppressWarnings("unchecked")
 	private class CheckBoxItem extends CheckBox {
 		private Supplier<String> nameGetter;
 
@@ -128,11 +154,11 @@ public class FilterBox extends ComboBox<Node> {
 
 					if (!reference.isSelected()) {
 						setFilterImage();
-						nodes.stream().filter(n -> n instanceof CheckBoxAll)
+						nodes.stream().filter(n -> n instanceof MultiSelectComboBox.CheckBoxAll)
 								.map(n -> ((CheckBoxAll) n)).findFirst()
 								.ifPresent(cba -> cba.setSelected(false));
 					} else {
-						if (!nodes.stream().filter(n -> n instanceof CheckBoxItem)
+						if (!nodes.stream().filter(n -> n instanceof MultiSelectComboBox.CheckBoxItem)
 								.map(n -> ((CheckBoxItem) n)).filter(c -> !c.isSelected())
 								.findFirst().isPresent())
 							setArrowImage();
@@ -149,14 +175,13 @@ public class FilterBox extends ComboBox<Node> {
 			this.setText("Select All");
 
 			CheckBoxAll reference = this;
-
 			this.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent event) {
 					CheckBox chk = (CheckBox) event.getSource();
 					reference.setSelected(chk.isSelected());
 
-					nodes.stream().filter(n -> n instanceof CheckBoxItem)
+					nodes.stream().filter(n -> n instanceof MultiSelectComboBox.CheckBoxItem)
 							.map(n -> ((CheckBoxItem) n))
 							.forEach(c -> c.setSelected(reference.isSelected()));
 
@@ -168,14 +193,6 @@ public class FilterBox extends ComboBox<Node> {
 			});
 
 		}
-	}
-
-	public CheckBoxItem createCheckBoxItem(Supplier<String> nameGetter) {
-		return new CheckBoxItem(nameGetter);
-	}
-
-	public CheckBoxAll createCheckBoxAll() {
-		return new CheckBoxAll();
 	}
 
 	public void setNodes(List<Node> nodes) {
