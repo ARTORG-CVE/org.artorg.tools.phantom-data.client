@@ -4,12 +4,15 @@ import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Control;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -65,6 +68,7 @@ public class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		Menu menuFile = new Menu("File");
 		initMenutItemHelper("Save", () -> {save();}, menuFile);
 		initMenutItemHelper("Refresh", () -> {refresh();}, menuFile);
+		initMenutItemHelper("Close", () -> {stage.close();}, menuFile);
 		menuBar.getMenus().add(menuFile);
 		
 		Menu menuEdit = new Menu("Edit");
@@ -81,7 +85,7 @@ public class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	
 	public void refresh() {
 		System.out.println("stagetable refresh");
-		javafx.scene.control.Control control = view.getGraphic();
+		Control control = view.getGraphic();
 		tablePane.getChildren().clear();
 		tablePane.getChildren().add(control);
 		AnchorPane.setTopAnchor(tablePane, 0.0);

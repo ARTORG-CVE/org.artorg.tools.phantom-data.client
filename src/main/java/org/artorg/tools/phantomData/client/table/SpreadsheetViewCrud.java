@@ -3,16 +3,12 @@ package org.artorg.tools.phantomData.client.table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
-import org.artorg.tools.phantomData.client.table.multiSelectCombo.FilterBox;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
-import org.controlsfx.control.CheckComboBox;
-import org.controlsfx.control.spreadsheet.Filter;
-import org.controlsfx.control.spreadsheet.FilterBase;
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellBase;
-import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
 import javafx.beans.value.ChangeListener;
@@ -20,15 +16,9 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
 
 public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM extends DatabasePersistent<ITEM, ID_TYPE>, ID_TYPE>
 		implements TableGui<TABLE, ITEM, ID_TYPE> {
@@ -86,24 +76,32 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 			SpreadsheetCellBase cell = new SpreadsheetCellBase(0, col, 1, 1);
 
 			final int localCol = col;
-			List<Callable<String>> getters = new ArrayList<Callable<String>>();
-			for (int row = 0; row < table.getNrows(); row++) {
-				final int localRow = row;
-				getters.add(() -> table.getValue(localRow, localCol));
-			}
-
-			FilterBox filterBox = new FilterBox(value, getters);
-			filterBox.addFilterChangedListener(new FilterItemListener() {
-
-				@Override
-				public void changed(List<String> newValues) {
-					System.out.println("Filter changed listener called");
-					table.setColumnFilterValues(localCol, newValues);
-					table.applyFilter();
-					refreshValues();
-				}
+			Supplier<List<String>> createGetters = () -> {
 				
+				List<String> getters = new ArrayList<String>();
+				for (int row = 0; row < table.getNrows(); row++) {
+					final int localRow = row;
+					getters.add(table.getValue(localRow, localCol));
+				}
+				return getters;
+			};
+
+			FilterBox filterBox = new FilterBox(value, createGetters);
+			filterBox.addEventHandler(ComboBox.ON_HIDDEN, event -> {
+			    System.out.println("CheckComboBox is now hidden.");
+			    
+				table.setColumnFilterValues(localCol, filterBox.getSelectedValues());
+				table.applyFilter();
+			    refreshValues();
+//			    filterBox.hide();
+//			    filterBox.getSelectionModel().clearSelection();
+//			    spreadsheet.requestFocus();
 			});
+			filterBox.addEventHandler(ComboBox.ON_SHOWING, event -> {
+			    System.out.println("CheckComboBox is opening.");
+				filterBox.updateNodes();
+			});
+			
 			cell.setGraphic(filterBox);
 			rowItemFilter.add(cell);
 		}

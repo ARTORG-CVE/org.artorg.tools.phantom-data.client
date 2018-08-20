@@ -46,6 +46,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -141,7 +142,7 @@ public class MainController {
 		
 //		phantomTable.readAllData();
 		view.setTable(phantomTable);
-		Control spreadsheet = view.getGraphic();
+		Region spreadsheet = view.getGraphic();
 		
         paneSpreadsheet.getChildren().add(spreadsheet);
         AnchorPane.setTopAnchor(spreadsheet, 0.0);
