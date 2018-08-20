@@ -9,11 +9,8 @@ import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 public class ColumnOptional<ITEM extends DatabasePersistent<ITEM, ?>, 
 		PATH extends DatabasePersistent<PATH, SUB_ID_TYPE>, 
-		SUB_ID_TYPE> implements IColumn<ITEM, SUB_ID_TYPE> {
-	private final String columnName;
+		SUB_ID_TYPE> extends IColumn<ITEM, SUB_ID_TYPE> {
 	private final Function<ITEM, Optional<PATH>> itemToPropertyGetter;
-	
-
 	private final Function<PATH, String> propertyToValueGetter;
 	private final BiConsumer<PATH, String> propertyToValueSetter;
 	private final String emptyValue;
@@ -26,7 +23,7 @@ public class ColumnOptional<ITEM extends DatabasePersistent<ITEM, ?>,
 			String emptyValue,
 			HttpDatabaseCrud<PATH, SUB_ID_TYPE> connector
 			) {
-		this.columnName = columnName;
+		super(columnName);
 		this.itemToPropertyGetter = itemToPropertyGetter;
 		this.propertyToValueGetter = propertyToValueGetter;
 		this.propertyToValueSetter = propertyToValueSetter;
@@ -47,11 +44,6 @@ public class ColumnOptional<ITEM extends DatabasePersistent<ITEM, ?>,
 		Optional<PATH> path = itemToPropertyGetter.apply(item);
 		if (path.isPresent())
 			propertyToValueSetter.accept(path.get(), value);
-	}
-
-	@Override
-	public String getColumnName() {
-		return columnName;
 	}
 
 	@Override

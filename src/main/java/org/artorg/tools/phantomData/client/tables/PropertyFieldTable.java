@@ -7,13 +7,14 @@ import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;
 import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.ColumnOptional;
+import org.artorg.tools.phantomData.client.table.FilterTable;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.client.table.StageTable;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class PropertyFieldTable extends Table<PropertyFieldTable,PropertyField, Integer> {
+public class PropertyFieldTable extends FilterTable<PropertyFieldTable,PropertyField, Integer> {
 	
 	{
 		this.setConnector(PropertyFieldConnector.get());

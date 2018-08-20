@@ -9,6 +9,7 @@ import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
 import org.artorg.tools.phantomData.client.connectors.PhantomConnector;
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.table.Column;
+import org.artorg.tools.phantomData.client.table.FilterTable;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.client.table.StageTable;
 import org.artorg.tools.phantomData.client.table.Table;
@@ -18,7 +19,7 @@ import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.Special;
 
-public class PhantomTable extends Table<PhantomTable, Phantom, Integer> {
+public class PhantomTable extends FilterTable<PhantomTable, Phantom, Integer> {
 
 	{
 		this.setConnector(PhantomConnector.get());

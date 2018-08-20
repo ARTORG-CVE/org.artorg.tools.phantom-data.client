@@ -21,7 +21,7 @@ public class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	private Stage stage;
 	private AnchorPane tablePane;
 	private Scene scene;
-	private Table<TABLE, ITEM, ID_TYPE> table;
+	private FilterTable<TABLE, ITEM, ID_TYPE> table;
 	private TableGui<TABLE, ITEM, ID_TYPE> view;
 	
 	private void initMenutItemHelper(String name, Runnable actionEvent, Menu parentMenu) {
@@ -80,6 +80,7 @@ public class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	
 	
 	public void refresh() {
+		System.out.println("stagetable refresh");
 		javafx.scene.control.Control control = view.getGraphic();
 		tablePane.getChildren().clear();
 		tablePane.getChildren().add(control);
@@ -102,7 +103,7 @@ public class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		table.getUndoManager().save();
 	}
 	
-	public void setTable(Table<TABLE, ITEM, ID_TYPE> table) {
+	public void setTable(FilterTable<TABLE, ITEM, ID_TYPE> table) {
 		this.table = table;
 	}
 

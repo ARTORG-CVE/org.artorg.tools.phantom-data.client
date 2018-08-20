@@ -18,15 +18,17 @@ import javafx.collections.ObservableList;
 public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
 		ID_TYPE> {
-	private final ObservableList<ITEM> items;
-	private final List<IColumn<ITEM, ?>> columns;
-	private final UndoManager undoManager;
-	private HttpDatabaseCrud<ITEM, ID_TYPE> connector;
+	protected final ObservableList<ITEM> items;
+	
+	protected final List<IColumn<ITEM, ?>> columns;
+	protected final UndoManager undoManager;
+	protected HttpDatabaseCrud<ITEM, ID_TYPE> connector;
 	private boolean isIdColumnVisible;
 	
 	{
 		undoManager = new UndoManager();
 		items = FXCollections.observableArrayList();
+		
 		columns = new ArrayList<IColumn<ITEM, ?>>();
 		isIdColumnVisible = false;
 	}
@@ -53,11 +55,11 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	}
 	
 	// exchange methods
-	public final String getValue(ITEM item, int col) {
+	public String getValue(ITEM item, int col) {
 		return columns.get(col).get(item);
 	}
 	
-	public final void setValue(ITEM item, int col, String value, Consumer<String> redo, Consumer<String> undo) {
+	private void setValue(ITEM item, int col, String value, Consumer<String> redo, Consumer<String> undo) {
 		String currentValue = getValue(item, col);
 		if (value.equals(currentValue))  return;
 		
@@ -107,7 +109,7 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	public UndoManager getUndoManager() {
 		return undoManager;
 	}
-
+	
 	public boolean isIdColumnVisible() {
 		return isIdColumnVisible;
 	}

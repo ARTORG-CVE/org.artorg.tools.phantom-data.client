@@ -10,7 +10,7 @@ public interface TableGui<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	
 	void autoResizeColumns();
 	
-	void setTable(Table<TABLE, ITEM, ID_TYPE> table);
+	void setTable(FilterTable<TABLE, ITEM, ID_TYPE> table);
 	
 	void refresh();
 	

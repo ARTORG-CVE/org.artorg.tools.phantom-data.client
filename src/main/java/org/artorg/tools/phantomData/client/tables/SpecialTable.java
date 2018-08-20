@@ -11,13 +11,14 @@ import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.connectors.property.BooleanPropertyConnector;
 import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.ColumnOptional;
+import org.artorg.tools.phantomData.client.table.FilterTable;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.client.table.StageTable;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.Special;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 
-public class SpecialTable extends Table<SpecialTable, Special, Integer> {
+public class SpecialTable extends FilterTable<SpecialTable, Special, Integer> {
 
 	{
 		this.setConnector(SpecialConnector.get());

@@ -1,14 +1,17 @@
 package org.artorg.tools.phantomData.client.table.multiSelectCombo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+
+import org.artorg.tools.phantomData.client.table.FilterItemListener;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -17,18 +20,30 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Skin;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
 
 public class MultiSelectCombo extends ComboBox<Node> {
 	private ObservableList<Node> nodes;
 	private Image imgNormal, imgFilter;
-
+	
+	private List<FilterItemListener> listeners;
+	
+	{
+		listeners = new ArrayList<FilterItemListener>();
+	}
+	
+	public void addFilterChangedListener(FilterItemListener listener) {
+		listeners.add(listener);
+	}
+	
+	
 	private class CheckBoxItem extends CheckBox {
 		private Callable<String> nameGetter;
 
 		private CheckBoxItem(Callable<String> nameGetter) {
+			this.nameGetter = nameGetter;
+			
 			try {
 				this.setText(nameGetter.call());
 			} catch (Exception e) {
@@ -42,6 +57,20 @@ public class MultiSelectCombo extends ComboBox<Node> {
 				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 					reference.setSelected(newValue);
 
+					List<String> newValues = nodes.stream().filter(n -> n instanceof CheckBoxItem).map(n -> ((CheckBoxItem) n))
+							.filter(c -> c.isSelected())
+							.map(c -> {
+								try {
+									return c.nameGetter.call();
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								return "";
+							}).filter(s -> !s.equals("")).collect(Collectors.toList());
+					
+					listeners.stream().forEach(l -> l.changed(newValues));
+					
 					if (!reference.isSelected())
 						setFilterImage();
 					else {

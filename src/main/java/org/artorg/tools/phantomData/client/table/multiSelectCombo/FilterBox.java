@@ -6,41 +6,18 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
-import com.sun.javafx.geom.BaseBounds;
-import com.sun.javafx.geom.transform.BaseTransform;
-import com.sun.javafx.jmx.MXNodeAlgorithm;
-import com.sun.javafx.jmx.MXNodeAlgorithmContext;
-import com.sun.javafx.sg.prism.NGNode;
-
-import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
-import javafx.stage.Stage;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBoxBase;
-import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
-import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 
 public class FilterBox extends MultiSelectCombo {
 
-	private final List<Runnable> getters;
+	private final List<Callable<String>> getters;
 	
-	public FilterBox(String name, List<Runnable> getters) {
+	public FilterBox(String name, List<Callable<String>> getters) {
 		this.getters = getters;
 		
 	    Image imgNormal = null;
@@ -75,11 +52,16 @@ public class FilterBox extends MultiSelectCombo {
 		separator.setPrefHeight(1);
 		nodes.add(separator);
 		
-		for (int i=1; i<10; i++) {
-			final int j = i;
-			nodes.add(createCheckBoxItem(() -> "Item " +j));
-		}
-			
+		getters.stream().map(c -> {
+			try {
+				return c.call();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return "";
+		}).filter(s -> !s.equals("")).distinct().forEach(s -> nodes.add(createCheckBoxItem(() -> s)));
+		
 		return nodes;
 		
 	}

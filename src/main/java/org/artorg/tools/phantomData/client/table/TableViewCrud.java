@@ -25,7 +25,7 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		refreshListeners = new ArrayList<Runnable>();
 	}
 	
-	public void setTable(Table<TABLE, ITEM, ID_TYPE> table) {
+	public void setTable(FilterTable<TABLE, ITEM, ID_TYPE> table) {
 		this.table = table;
 		reload();
 	}
@@ -93,5 +93,5 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		table.readAllData();
 		refresh();
 	}
-
+	
 }

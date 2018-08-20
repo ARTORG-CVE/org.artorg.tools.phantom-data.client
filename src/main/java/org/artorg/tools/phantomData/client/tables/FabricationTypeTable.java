@@ -5,12 +5,11 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
 import org.artorg.tools.phantomData.client.table.Column;
+import org.artorg.tools.phantomData.client.table.FilterTable;
 import org.artorg.tools.phantomData.client.table.IColumn;
-import org.artorg.tools.phantomData.client.table.StageTable;
-import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 
-public class FabricationTypeTable extends Table<FabricationTypeTable, FabricationType, Integer> {
+public class FabricationTypeTable extends FilterTable<FabricationTypeTable, FabricationType, Integer> {
 	
 	{
 		this.setConnector(FabricationTypeConnector.get());

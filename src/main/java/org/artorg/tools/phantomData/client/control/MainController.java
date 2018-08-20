@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.graphics.Scene3D;
+import org.artorg.tools.phantomData.client.table.FilterTable;
 import org.artorg.tools.phantomData.client.table.SpreadsheetViewCrud;
 import org.artorg.tools.phantomData.client.table.StageTable;
 import org.artorg.tools.phantomData.client.table.Table;
@@ -280,7 +281,7 @@ public class MainController {
     private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 	ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
 	ID_TYPE> void initTableHelperSpreadsheet(
-			Table<TABLE, ITEM, ID_TYPE> table, String name) {
+			FilterTable<TABLE, ITEM, ID_TYPE> table, String name) {
 		
 		
 		StageTable<TABLE, ITEM, ID_TYPE> stageTable = new StageTable<TABLE, ITEM, ID_TYPE>();

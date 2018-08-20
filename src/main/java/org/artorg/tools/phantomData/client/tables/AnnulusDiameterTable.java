@@ -5,11 +5,12 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
 import org.artorg.tools.phantomData.client.table.Column;
+import org.artorg.tools.phantomData.client.table.FilterTable;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 
-public class AnnulusDiameterTable extends Table<AnnulusDiameterTable, AnnulusDiameter, Integer> {
+public class AnnulusDiameterTable extends FilterTable<AnnulusDiameterTable, AnnulusDiameter, Integer> {
 	
 	{
 		this.setConnector(AnnulusDiameterConnector.get());
