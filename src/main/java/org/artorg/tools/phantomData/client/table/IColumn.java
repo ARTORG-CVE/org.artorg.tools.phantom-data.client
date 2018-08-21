@@ -7,13 +7,13 @@ public abstract class IColumn<ITEM extends DatabasePersistent<ITEM, ?>, SUB_ID_T
 	private boolean editable;
 	private boolean filterable;
 	private final String columnName;
-	private MultiSelectComboBox<ITEM> filterBox;
+	private MultiSelectComboBox filterBox;
 	
-	public MultiSelectComboBox<ITEM> getFilterBox() {
+	public MultiSelectComboBox getFilterBox() {
 		return filterBox;
 	}
 
-	public void setFilterBox(MultiSelectComboBox<ITEM> filterBox) {
+	public void setFilterBox(MultiSelectComboBox filterBox) {
 		this.filterBox = filterBox;
 	}
 

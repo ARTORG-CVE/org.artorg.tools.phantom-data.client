@@ -3,6 +3,7 @@ package org.artorg.tools.phantomData.client.table;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
@@ -27,19 +28,66 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 	private FilterTable<TABLE, ITEM, ID_TYPE> table;
 	private ListChangeListener<ITEM> changeListener;
 	private ObservableList<ObservableList<SpreadsheetCell>> rows;
+	private ObservableList<SpreadsheetCell> rowItemFilter;
 
 	{
 		rows = FXCollections.observableArrayList();
+	
 	}
 
 	@Override
 	public void setTable(FilterTable<TABLE, ITEM, ID_TYPE> table) {
-		changeListener = (item) -> refreshValues();
-
-		table.getItems().addListener(changeListener);
+//		changeListener = (item) -> refreshValues();
+//
+//		table.getItems().addListener(changeListener);
 		this.table = table;
 
+		
+		int columnCount = table.getNcols();
+		
+		// Column header filterable
+		rowItemFilter = FXCollections.observableArrayList();
+				for (int col = 0; col < columnCount; col++) {
+					String value = table.getColumnNames().get(col);
+					SpreadsheetCellBase cell = new SpreadsheetCellBase(0, col, 1, 1);
+
+					final int localCol = col;
+					Supplier<List<String>> createGetters = () -> {
+						
+						List<String> getters = new ArrayList<String>();
+						for (int row = 0; row < table.getNrows(); row++) {
+							final int localRow = row;
+							getters.add(table.getValue(localRow, localCol));
+						}
+						return getters;
+					};
+					
+//					Comparator<? super String> comparator = (i1,i2) -> table.getValue(i1, localCol).compareTo(table.getValue(i2, localCol));
+					
+
+					MultiSelectComboBox filterBox = new SortFilterBox(value, createGetters);
+					filterBox.addEventHandler(ComboBox.ON_HIDDEN, event -> {
+						table.setColumnFilterValues(localCol, filterBox.getSelectedValues());
+						if (filterBox.isSortComparatorSet()) {
+							System.out.println("set table comparator in spreadsheet");
+							table.setSortComparator(filterBox.getSortComparator(), item -> table.getValue(item,localCol));
+						}
+//						filterBox.setSortComparator(null);
+					    refresh();
+					});
+					filterBox.addEventHandler(ComboBox.ON_SHOWING, event -> {
+						filterBox.updateNodes();
+					});
+					
+					cell.setGraphic(filterBox);
+					rowItemFilter.add(cell);
+				}
+		
+		
+		
 		reload();
+		
+		
 
 	}
 
@@ -60,41 +108,7 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 		int columnCount = table.getNcols();
 		rows = FXCollections.observableArrayList();
 
-		// Column header filterable
-		final ObservableList<SpreadsheetCell> rowItemFilter = FXCollections.observableArrayList();
-		for (int col = 0; col < columnCount; col++) {
-			String value = table.getColumnNames().get(col);
-			SpreadsheetCellBase cell = new SpreadsheetCellBase(0, col, 1, 1);
-
-			final int localCol = col;
-			Supplier<List<String>> createGetters = () -> {
-				
-				List<String> getters = new ArrayList<String>();
-				for (int row = 0; row < table.getNrows(); row++) {
-					final int localRow = row;
-					getters.add(table.getValue(localRow, localCol));
-				}
-				return getters;
-			};
-			
-			Comparator<? super ITEM> comparator = (i1,i2) -> table.getValue(i1, localCol).compareTo(table.getValue(i2, localCol));
-			
-
-			MultiSelectComboBox<ITEM> filterBox = new SortFilterBox<ITEM>(value, createGetters, comparator);
-			filterBox.addEventHandler(ComboBox.ON_HIDDEN, event -> {
-				table.setColumnFilterValues(localCol, filterBox.getSelectedValues());
-				if (filterBox.isSortComparatorSet())
-					table.setSortComparator(filterBox.getSortComparator());
-				table.applyFilter();
-			    refreshValues();
-			});
-			filterBox.addEventHandler(ComboBox.ON_SHOWING, event -> {
-				filterBox.updateNodes();
-			});
-			
-			cell.setGraphic(filterBox);
-			rowItemFilter.add(cell);
-		}
+		
 		rows.add(rowItemFilter);
 
 		spreadsheet.setStyle("-fx-focus-color: transparent;");
@@ -109,8 +123,14 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 		int rowCount = table.getFilteredNrows() + 1;
 		int columnCount = table.getNcols();
 		GridBase grid = new GridBase(rowCount, columnCount);
+		
+		table.applyFilter();
 
-		rows.remove(1, rows.size());
+		ObservableList<SpreadsheetCell> rowItemFilter = rows.get(0);
+		
+		rows  = FXCollections.observableArrayList();
+		rows.add(rowItemFilter);
+
 
 		// value cells
 		for (int row = 0; row < table.getFilteredNrows(); row++) {
@@ -132,12 +152,12 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 					public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue,
 							Boolean newPropertyValue) {
 						if (!newPropertyValue)
-							table.setValue(localRow, localCol, label.getText(), s -> label.setText(s),
+							table.setFilteredValue(localRow, localCol, label.getText(), s -> label.setText(s),
 									s -> label.setText(s));
 					}
 				});
 				label.setOnAction((event) -> {
-					table.setValue(localRow, localCol, label.getText(), s -> label.setText(s), s -> label.setText(s));
+					table.setFilteredValue(localRow, localCol, label.getText(), s -> label.setText(s), s -> label.setText(s));
 				});
 
 				cell.setGraphic(label);
@@ -153,10 +173,10 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 
 	@Override
 	public void reload() {
-		table.getItems().removeListener(changeListener);
+//		table.getItems().removeListener(changeListener);
 		table.readAllData();
 		refresh();
-		table.getItems().addListener(changeListener);
+//		table.getItems().addListener(changeListener);
 	}
 
 }

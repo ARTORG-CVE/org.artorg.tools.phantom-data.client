@@ -8,15 +8,14 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 
-public class SortFilterBox<ITEM> extends MultiSelectComboBox<ITEM> {
+public class SortFilterBox extends MultiSelectComboBox {
 
-	public SortFilterBox(String name, Supplier<List<String>> getters,
-			Comparator<? super ITEM> comparator) {
+	public SortFilterBox(String name, Supplier<List<String>> getters) {
 		super.setPromptText(name);
 		super.setGetters(getters);
-		super.setComparator(comparator);
+//		super.setComparator(comparator);
 		
-		super.getNodes().add(0, new ButtonSortAscending());
+//		super.getNodes().add(0, new ButtonSortAscending());
 	}
 	
 	private class ButtonSortAscending extends Button {

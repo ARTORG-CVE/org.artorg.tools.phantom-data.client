@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -20,22 +21,11 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, ID_TYPE>
 		extends Table<TABLE, ITEM, ID_TYPE> {
 
-	private final ObservableList<ITEM> filteredItems;
+	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
 	private List<Predicate<ITEM>> columnFilterPredicates;
-	private Comparator<? super ITEM> sortComparator;
+	private Comparator<ITEM> sortComparator;
 	
-
-	public Comparator<? super ITEM> getSortComparator() {
-		return sortComparator;
-	}
-
-	public void setSortComparator(Comparator<? super ITEM> sortComparator) {
-		this.sortComparator = sortComparator;
-	}
-	
-	
-
 	{
 		filteredItems = FXCollections.observableArrayList();
 		filterPredicate = item -> true;
@@ -47,6 +37,11 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 				return ((Long)i1.getId()).compareTo(((Long)i2.getId()));
 			return i1.getId().toString().compareTo(i2.getId().toString());
 		};
+	}
+
+	public void setSortComparator(Comparator<String> sortComparator, Function<ITEM, String> valueGetter) {
+		System.out.println("Comparator setted");
+		this.sortComparator = (item1, item2) -> sortComparator.compare(valueGetter.apply(item1),valueGetter.apply(item2));
 	}
 	
 	public void createColumnFilters() {
@@ -68,8 +63,6 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		columnFilterPredicates = new ArrayList<Predicate<ITEM>>(columns.size());
 		for (int i=0; i<columns.size(); i++)
 			columnFilterPredicates.add(item -> true);
-		
-		
 		
 		applyFilter();
 	}
@@ -103,9 +96,7 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		return columns.get(col).get(filteredItems.get(row));
 	}
 	
-	
-	@Override
-	public void setValue(int row, int col, String value, Consumer<String> redo, Consumer<String> undo) {
+	public void setFilteredValue(int row, int col, String value, Consumer<String> redo, Consumer<String> undo) {
 		ITEM superItem = items.stream().filter(item -> item.getId().equals(filteredItems.get(row).getId())).findFirst().get();
 		setValue(superItem, filteredItems.get(row), col, value, redo, undo);
 	}
@@ -122,7 +113,9 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	
 	public void applyFilter() {
 		filterPredicate = columnFilterPredicates.stream().reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
-		this.filteredItems.clear();
+		this.filteredItems = FXCollections.observableArrayList();
+		
+		System.out.println("filter applied");
 		this.filteredItems.addAll(items.stream().filter(filterPredicate).sorted(sortComparator)
 				.collect(Collectors.toList()));
 	}

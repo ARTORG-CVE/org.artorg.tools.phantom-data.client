@@ -68,6 +68,7 @@ public class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		Menu menuFile = new Menu("File");
 		initMenutItemHelper("Save", () -> {save();}, menuFile);
 		initMenutItemHelper("Refresh", () -> {refresh();}, menuFile);
+//		initMenutItemHelper("Reload", () -> {reload();}, menuFile);
 		initMenutItemHelper("Close", () -> {stage.close();}, menuFile);
 		menuBar.getMenus().add(menuFile);
 		

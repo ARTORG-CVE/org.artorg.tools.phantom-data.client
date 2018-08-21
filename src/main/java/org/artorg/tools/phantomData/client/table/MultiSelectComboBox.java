@@ -8,23 +8,18 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import com.sun.javafx.scene.control.skin.ComboBoxListViewSkin;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
@@ -37,7 +32,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
 
-public class MultiSelectComboBox<ITEM> extends ComboBox<Node> {
+@SuppressWarnings("restriction")
+public class MultiSelectComboBox extends ComboBox<Node> {
 	private ObservableList<Node> nodes;
 	
 	public ObservableList<Node> getNodes() {
@@ -46,15 +42,22 @@ public class MultiSelectComboBox<ITEM> extends ComboBox<Node> {
 
 	private static final Image imgNormal, imgFilter;
 	private Supplier<List<String>> getters;
-	private Comparator<? super ITEM> sortComparator;
-	public Comparator<? super ITEM> getSortComparator() {
-		return sortComparator;
+	private Comparator<String> sortComparator;
+	
+	
+	public void setSortComparator(Comparator<String> sortComparator) {
+		this.sortComparator = sortComparator;
 	}
 
-	private boolean isSortComparatorSet;
+	private Comparator<String> sortComparatorAscending;
+	private Comparator<String> sortComparatorDescending;
+	
+	public Comparator<String> getSortComparator() {
+		return sortComparator;
+	}
 	
 	public boolean isSortComparatorSet() {
-		return isSortComparatorSet;
+		return !(sortComparator == null);
 	}
 	
 	static {
@@ -75,28 +78,30 @@ public class MultiSelectComboBox<ITEM> extends ComboBox<Node> {
 		imgFilter = new Image(filterStream);
 	}
 	
+	{
+		this.sortComparatorAscending = (s1,s2) -> s1.compareTo(s2);
+		this.sortComparatorDescending = (s1,s2) -> s2.compareTo(s1);
+	}
+	
 	public void setGetters(Supplier<List<String>> getters) {
 		this.getters = getters;
-		
 		List<Node> nodes = new ArrayList<Node>();
 		
-		
+		nodes.add(new CheckBoxSortAscending());
+		nodes.add(new CheckBoxSortDescending());
+		nodes.add(new Separator(Orientation.HORIZONTAL));
 		nodes.add(new CheckBoxAll());
-
-		Separator separator = new Separator(Orientation.HORIZONTAL);
-		separator.setPrefHeight(1);
-		nodes.add(separator);
-		
+		nodes.add(new Separator(Orientation.HORIZONTAL));
 		getters.get().stream().distinct().forEach(s -> nodes.add(new CheckBoxItem(() -> s)));
-
 		setNodes(nodes);
 		
 		this.setStyle("-fx-background-color: transparent;");
 		
 	}
 	
-	public void setComparator(Comparator<? super ITEM> comparator) {
-		this.sortComparator = comparator;
+	public void setComparatorAscending(Comparator<String> comparator) {
+		this.sortComparatorAscending = comparator;
+		this.sortComparatorDescending = comparator.reversed();
 	}
 	
 	
@@ -130,12 +135,10 @@ public class MultiSelectComboBox<ITEM> extends ComboBox<Node> {
 				.map(tableItem -> new CheckBoxItem(() -> tableItem)).collect(Collectors.toList()));
 	}
 
-	@SuppressWarnings("unchecked")
 	public Stream<CheckBoxItem> getCheckBoxItemStream() {
 		return nodes.stream().filter(n -> n instanceof MultiSelectComboBox.CheckBoxItem).map(n -> ((CheckBoxItem) n));
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	private class CheckBoxItem extends CheckBox {
 		private Supplier<String> nameGetter;
 
@@ -194,6 +197,64 @@ public class MultiSelectComboBox<ITEM> extends ComboBox<Node> {
 
 		}
 	}
+	
+	private class CheckBoxSortAscending extends CheckBox {
+		private CheckBoxSortAscending() {
+			this.setSelected(false);
+			this.setText("Sort Ascending");
+
+			CheckBoxSortAscending reference = this;
+			this.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent event) {
+					CheckBox chk = (CheckBox) event.getSource();
+					reference.setSelected(chk.isSelected());
+
+					if (reference.isSelected()) {
+						sortComparator = sortComparatorAscending;
+						
+						nodes.stream().filter(n -> n instanceof MultiSelectComboBox.CheckBoxSortDescending)
+						.map(n -> ((CheckBoxSortDescending)n))
+						.forEach(c -> c.setSelected(!reference.isSelected()));
+					} else {
+						if (!nodes.stream().filter(n -> n instanceof MultiSelectComboBox.CheckBoxSortDescending)
+						.map(n -> ((CheckBoxSortDescending)n)).findFirst().get().isSelected())
+							sortComparator = null;
+					}
+				}
+			});
+
+		}
+	}
+	
+	private class CheckBoxSortDescending extends CheckBox {
+		private CheckBoxSortDescending() {
+			this.setSelected(false);
+			this.setText("Sort Descending");
+
+			CheckBoxSortDescending reference = this;
+			this.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent event) {
+					CheckBox chk = (CheckBox) event.getSource();
+					reference.setSelected(chk.isSelected());
+					
+					if (reference.isSelected()) {
+						sortComparator = sortComparatorDescending;
+						
+						nodes.stream().filter(n -> n instanceof MultiSelectComboBox.CheckBoxSortAscending)
+						.map(n -> ((CheckBoxSortAscending)n))
+						.forEach(c -> c.setSelected(!reference.isSelected()));
+					} else {
+						if (!nodes.stream().filter(n -> n instanceof MultiSelectComboBox.CheckBoxSortAscending)
+						.map(n -> ((CheckBoxSortAscending)n)).findFirst().get().isSelected())
+							sortComparator = null;
+					}
+				}
+			});
+
+		}
+	}
 
 	public void setNodes(List<Node> nodes) {
 		this.nodes = FXCollections.observableArrayList(nodes);
@@ -222,8 +283,7 @@ public class MultiSelectComboBox<ITEM> extends ComboBox<Node> {
 			super.updateItem(item, empty);
 		}
 	};
-
-	@SuppressWarnings("restriction")
+	
 	@Override
 	protected Skin<?> createDefaultSkin() {
 		return new ComboBoxListViewSkin<Node>(this){
