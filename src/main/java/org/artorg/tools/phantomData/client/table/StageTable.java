@@ -48,10 +48,12 @@ public class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	
 	public void setView(TableGui<TABLE, ITEM, ID_TYPE> view) {
 		view.setTable(table);
+		
 		view.refresh();
 		this.view = view;
 		createStage();
 		refresh();
+		view.addRefreshListener(() -> refresh());
 	}	
 	
 	public void createStage() {

@@ -14,7 +14,7 @@ import javafx.scene.text.Text;
 
 public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
-		ID_TYPE> implements TableGui<TABLE, ITEM , ID_TYPE> {
+		ID_TYPE> extends TableGui<TABLE, ITEM , ID_TYPE> {
 	
 	private final TableView<ITEM> tableView;
 	private Table<TABLE, ITEM, ID_TYPE> table;
@@ -86,6 +86,8 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	    // finishing
 	    this.setSortOrder();
 	    autoResizeColumns();
+	    
+	    super.refresh();
 	}
 
 	@Override

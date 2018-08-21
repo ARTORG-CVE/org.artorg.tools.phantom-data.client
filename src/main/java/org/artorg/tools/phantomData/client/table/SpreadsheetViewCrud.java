@@ -22,7 +22,7 @@ import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
 
 public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM extends DatabasePersistent<ITEM, ID_TYPE>, ID_TYPE>
-		implements TableGui<TABLE, ITEM, ID_TYPE> {
+		extends TableGui<TABLE, ITEM, ID_TYPE> {
 
 	private SpreadsheetView spreadsheet;
 	private FilterTable<TABLE, ITEM, ID_TYPE> table;
@@ -114,6 +114,7 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 		spreadsheet.setStyle("-fx-focus-color: transparent;");
 		refreshValues();
 		
+		super.refresh();
 
 	}
 
