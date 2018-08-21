@@ -1,5 +1,6 @@
 package org.artorg.tools.phantomData.client.table;
 
+import org.artorg.tools.phantomData.client.table.multiSelectComboBox.MultiSelectComboBox;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 public abstract class IColumn<ITEM extends DatabasePersistent<ITEM, ?>, SUB_ID_TYPE> {

@@ -26,7 +26,6 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 
 	private SpreadsheetView spreadsheet;
 	private FilterTable<TABLE, ITEM, ID_TYPE> table;
-	private ListChangeListener<ITEM> changeListener;
 	private ObservableList<ObservableList<SpreadsheetCell>> rows;
 	private ObservableList<SpreadsheetCell> rowItemFilter;
 
@@ -37,51 +36,44 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 
 	@Override
 	public void setTable(FilterTable<TABLE, ITEM, ID_TYPE> table) {
-//		changeListener = (item) -> refreshValues();
-//
-//		table.getItems().addListener(changeListener);
 		this.table = table;
-
-		
 		int columnCount = table.getNcols();
 		
 		// Column header filterable
 		rowItemFilter = FXCollections.observableArrayList();
-				for (int col = 0; col < columnCount; col++) {
-					String value = table.getColumnNames().get(col);
-					SpreadsheetCellBase cell = new SpreadsheetCellBase(0, col, 1, 1);
+		for (int col = 0; col < columnCount; col++) {
+			String value = table.getColumnNames().get(col);
+			SpreadsheetCellBase cell = new SpreadsheetCellBase(0, col, 1, 1);
 
-					final int localCol = col;
-					Supplier<List<String>> createGetters = () -> {
-						
-						List<String> getters = new ArrayList<String>();
-						for (int row = 0; row < table.getNrows(); row++) {
-							final int localRow = row;
-							getters.add(table.getValue(localRow, localCol));
-						}
-						return getters;
-					};
-					
-//					Comparator<? super String> comparator = (i1,i2) -> table.getValue(i1, localCol).compareTo(table.getValue(i2, localCol));
-					
-
-					MultiSelectComboBox filterBox = new SortFilterBox(value, createGetters);
-					filterBox.addEventHandler(ComboBox.ON_HIDDEN, event -> {
-						table.setColumnFilterValues(localCol, filterBox.getSelectedValues());
-						if (filterBox.isSortComparatorSet()) {
-							System.out.println("set table comparator in spreadsheet");
-							table.setSortComparator(filterBox.getSortComparator(), item -> table.getValue(item,localCol));
-						}
-//						filterBox.setSortComparator(null);
-					    refresh();
-					});
-					filterBox.addEventHandler(ComboBox.ON_SHOWING, event -> {
-						filterBox.updateNodes();
-					});
-					
-					cell.setGraphic(filterBox);
-					rowItemFilter.add(cell);
+			final int localCol = col;
+			Supplier<List<String>> createGetters = () -> {
+				
+				List<String> getters = new ArrayList<String>();
+				for (int row = 0; row < table.getNrows(); row++) {
+					final int localRow = row;
+					getters.add(table.getValue(localRow, localCol));
 				}
+				return getters;
+			};
+			
+			SortFilterBox filterBox = new SortFilterBox();
+			filterBox.setPromptText(value);
+			filterBox.setGetters(createGetters);
+			filterBox.addEventHandler(ComboBox.ON_HIDDEN, event -> {
+				table.setColumnFilterValues(localCol, filterBox.getSelectedValues());
+				if (filterBox.isSortComparatorSet())
+					table.setSortComparator(filterBox.getAndClearSortComparator(), 
+							item -> table.getValue(item,localCol));
+//						filterBox.setSortComparator(null);
+			    refresh();
+			});
+			filterBox.addEventHandler(ComboBox.ON_SHOWING, event -> {
+				filterBox.updateNodes();
+			});
+			
+			cell.setGraphic(filterBox);
+			rowItemFilter.add(cell);
+		}
 		
 		
 		
