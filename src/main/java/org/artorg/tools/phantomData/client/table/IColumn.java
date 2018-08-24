@@ -1,6 +1,5 @@
 package org.artorg.tools.phantomData.client.table;
 
-import org.artorg.tools.phantomData.client.table.multiSelectComboBox.MultiSelectComboBox;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 public abstract class IColumn<ITEM extends DatabasePersistent<ITEM, ?>, SUB_ID_TYPE> {
@@ -8,15 +7,6 @@ public abstract class IColumn<ITEM extends DatabasePersistent<ITEM, ?>, SUB_ID_T
 	private boolean editable;
 	private boolean filterable;
 	private final String columnName;
-	private MultiSelectComboBox filterBox;
-	
-	public MultiSelectComboBox getFilterBox() {
-		return filterBox;
-	}
-
-	public void setFilterBox(MultiSelectComboBox filterBox) {
-		this.filterBox = filterBox;
-	}
 
 	{
 		visible = true;

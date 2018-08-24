@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.artorg.tools.phantomData.client.table.control.FilterMenuButton;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
@@ -29,7 +30,6 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 	private FilterTable<TABLE, ITEM, ID_TYPE> table;
 	private ObservableList<ObservableList<SpreadsheetCell>> rows;
 	private ObservableList<SpreadsheetCell> rowItemFilter;
-	private List<SortFilterBox> filterBoxes;
 
 	{
 		rows = FXCollections.observableArrayList();
@@ -45,7 +45,6 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 		
 		// Column header filterable
 		rowItemFilter = FXCollections.observableArrayList();
-		filterBoxes = new ArrayList<SortFilterBox>();
 		for (int col = 0; col < columnCount; col++) {
 			String value = table.getColumnNames().get(col);
 			SpreadsheetCellBase cell = new SpreadsheetCellBase(0, col, 1, 1);
@@ -60,60 +59,12 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 				}
 				return getters;
 			};
-			
-			SortFilterBox filterBox = new SortFilterBox();
-			filterBox.getComboBox().setPromptText(value);
-			filterBox.setGetters(createGetters);
-			filterBox.getComboBox().addEventHandler(ComboBox.ON_HIDING, event -> {
-				System.out.println("ON HIDING");
-				table.setColumnItemFilterValues(localCol, filterBox.getSelectedValues());
-				table.setColumnTextFilterValues(localCol, filterBox.getSearchString());
-				if (filterBox.isSortComparatorSet())
-					table.setSortComparator(filterBox.getAndClearSortComparator(), 
-							item -> table.getValue(item,localCol));
-//				filterBox.hide();
-		    	refresh();
-			});
-			
-			filterBox.getComboBox().addEventHandler(ComboBox.ON_HIDDEN, event -> {
-				System.out.println("ON HIDDEN");
-		    	refresh();
-		    	filterBox.getComboBox().hide();
-		    	filterBox.getComboBox().getSelectionModel().clearSelection();
-				filterBox.getComboBox().setFocusTraversable(false);
-			});
+			FilterMenuButton filterMenuButton = new FilterMenuButton();
+			filterMenuButton.setGetters(createGetters);
+			filterMenuButton.setText(value);
+			cell.setGraphic(filterMenuButton);
 			
 			
-//			filterBox.setOnHidden(new EventHandler(<>) {
-//				
-//			});
-			
-			filterBox.getComboBox().onMouseClickedProperty().addListener(new ChangeListener<Object>() {
-
-				@Override
-				public void changed(ObservableValue<? extends Object> observable, Object oldValue,
-						Object newValue) {
-					System.out.println("MOUSE CLICKED");
-					
-				}
-				
-			});
-			
-			filterBox.getComboBox().valueProperty().addListener( new ChangeListener<Object>() {
-			    @Override
-			    public void changed( ObservableValue<? extends Object> observable, Object oldValue, 
-			    		Object newValue ) {
-			    	System.out.println("value changed");
-			    }
-			});
-			
-			filterBox.getComboBox().addEventHandler(ComboBox.ON_SHOWING, event -> {
-				System.out.println("ON SHOWING");
-				filterBox.updateNodes();
-			});
-			filterBoxes.add(filterBox);
-			
-			cell.setGraphic(filterBox.getComboBox());
 			rowItemFilter.add(cell);
 		}
 		
@@ -142,18 +93,6 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 		int columnCount = table.getNcols();
 		rows = FXCollections.observableArrayList();
 
-		ObservableList<SpreadsheetCell> rowItemFilter = FXCollections.observableArrayList();
-		for (int col = 0; col < columnCount; col++) {
-			SpreadsheetCellBase cell = new SpreadsheetCellBase(0, col, 1, 1);
-			cell.setGraphic(filterBoxes.get(col).getComboBox());
-			rowItemFilter.add(cell);
-			
-			filterBoxes.get(col).refresh();
-			filterBoxes.get(col).getComboBox().hide();
-			filterBoxes.get(col).getComboBox().getSelectionModel().clearSelection();
-			filterBoxes.get(col).getComboBox().setFocusTraversable(false);
-		}
-		
 		rows.add(rowItemFilter);
 
 		spreadsheet.setStyle("-fx-focus-color: transparent;");
