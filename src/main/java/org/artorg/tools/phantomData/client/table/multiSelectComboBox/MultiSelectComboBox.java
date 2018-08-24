@@ -1,7 +1,10 @@
 package org.artorg.tools.phantomData.client.table.multiSelectComboBox;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.artorg.tools.phantomData.client.table.multiSelectComboBox.checkBoxItem.Item;
 
 import com.sun.javafx.scene.control.skin.ComboBoxListViewSkin;
 
@@ -20,13 +23,20 @@ import javafx.util.Callback;
 
 @SuppressWarnings("restriction")
 public class MultiSelectComboBox extends ComboBox<Node> implements IMultiSelectComboBox {
+	private List<Item> boxItems;
 	private ObservableList<Node> nodes;
 	
 	public ObservableList<Node> getNodes() {
 		return nodes;
 	}
 
-	public void setNodes(List<Node> nodes) {
+	public void setBoxItems(List<Item> boxItems) {
+		this.boxItems = boxItems;
+		List<Node> nodes = boxItems.stream().map(b -> b.getNode()).collect(Collectors.toList());
+		setNodes(nodes);
+	}
+	
+	private void setNodes(List<Node> nodes) {
 		this.nodes = FXCollections.observableArrayList(nodes);
 		setItems(this.nodes);
 
@@ -69,8 +79,8 @@ public class MultiSelectComboBox extends ComboBox<Node> implements IMultiSelectC
 	}
 
 	@Override
-	public Stream<Node> getNodeStream() {
-		return nodes.stream();
+	public Stream<Item> getBoxItemStream() {
+		return boxItems.stream();
 	}
 
 	@Override
@@ -79,11 +89,21 @@ public class MultiSelectComboBox extends ComboBox<Node> implements IMultiSelectC
 			@Override
 			public void run() {
 				StackPane sPane = (StackPane) lookup(".arrow-button");
-				sPane.getChildren().clear();
-				ImageView imgView = new ImageView(image);
-				sPane.getChildren().add(imgView);
+//				Object o = sPane.getChildren().get(0);
+//				System.out.println("Arrow Image: " +o.getClass());
+				
+				
+//				sPane.getChildren().clear();
+//				ImageView imgView = new ImageView(image);
+//				sPane.getChildren().add(imgView);
 			}
 		});
+		
+	}
+
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
 		
 	}
 

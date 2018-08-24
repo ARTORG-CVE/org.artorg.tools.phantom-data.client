@@ -3,15 +3,18 @@ package org.artorg.tools.phantomData.client.table.multiSelectComboBox.checkBoxIt
 import java.util.stream.Stream;
 
 import org.artorg.tools.phantomData.client.table.multiSelectComboBox.IMultiSelectComboBox;
-import org.artorg.tools.phantomData.client.table.multiSelectComboBox.checkBoxItem.CheckBoxItemFilterParent;
+import org.artorg.tools.phantomData.client.table.multiSelectComboBox.checkBoxItem.Item;
 
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 
-public class CheckBoxItemFilterAll extends CheckBoxItemFilterParent {
+public class CheckBoxItemFilterAll extends CheckBox implements Item {
+	private IMultiSelectComboBox parent;
 	
-	public CheckBoxItemFilterAll() {
+	public CheckBoxItemFilterAll(Image imgFilter, Runnable imgRefresher) {
 		this.setSelected(true);
 		this.setText("Select All");
 
@@ -25,18 +28,44 @@ public class CheckBoxItemFilterAll extends CheckBoxItemFilterParent {
 				CheckBoxItemFilter.stream(reference.getComboBoxParent())
 				.forEach(c -> c.setSelected(reference.isSelected()));
 
-				if (reference.isSelected())
-					reference.getComboBoxParent().setImage(getImgnormal());
+				if (!reference.isSelected())
+					reference.getComboBoxParent().setImage(imgFilter);
 				else
-					reference.getComboBoxParent().setImage(getImgfilter());
+					imgRefresher.run();
 			}
 		});
 
 	}
 	
 	public static Stream<CheckBoxItemFilterAll> stream(IMultiSelectComboBox multiSelectComboBox) {
-		return multiSelectComboBox.getNodeStream().filter(n -> n instanceof CheckBoxItemFilterAll)
+		return multiSelectComboBox.getBoxItemStream().filter(n -> n instanceof CheckBoxItemFilterAll)
 				.map(n -> ((CheckBoxItemFilterAll) n));
+	}
+
+	@Override
+	public void setComboBoxParent(IMultiSelectComboBox multiSelectComboBox) {
+		this.parent = multiSelectComboBox;
+	}
+
+	@Override
+	public IMultiSelectComboBox getComboBoxParent() {
+		return parent;
+	}
+
+	@Override
+	public void reset() {
+		this.setSelected(true);
+		
+	}
+
+	@Override
+	public Node getNode() {
+		return this;
+	}
+
+	@Override
+	public boolean isDefault() {
+		return this.isSelected();
 	}
 
 }

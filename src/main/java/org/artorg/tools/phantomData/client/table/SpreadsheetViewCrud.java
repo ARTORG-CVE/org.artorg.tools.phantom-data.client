@@ -12,6 +12,7 @@ import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -28,19 +29,23 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 	private FilterTable<TABLE, ITEM, ID_TYPE> table;
 	private ObservableList<ObservableList<SpreadsheetCell>> rows;
 	private ObservableList<SpreadsheetCell> rowItemFilter;
+	private List<SortFilterBox> filterBoxes;
 
 	{
 		rows = FXCollections.observableArrayList();
-	
+		
 	}
 
 	@Override
 	public void setTable(FilterTable<TABLE, ITEM, ID_TYPE> table) {
+		System.out.println("SET TABLE");
+		
 		this.table = table;
 		int columnCount = table.getNcols();
 		
 		// Column header filterable
 		rowItemFilter = FXCollections.observableArrayList();
+		filterBoxes = new ArrayList<SortFilterBox>();
 		for (int col = 0; col < columnCount; col++) {
 			String value = table.getColumnNames().get(col);
 			SpreadsheetCellBase cell = new SpreadsheetCellBase(0, col, 1, 1);
@@ -57,21 +62,58 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 			};
 			
 			SortFilterBox filterBox = new SortFilterBox();
-			filterBox.setPromptText(value);
+			filterBox.getComboBox().setPromptText(value);
 			filterBox.setGetters(createGetters);
-			filterBox.addEventHandler(ComboBox.ON_HIDDEN, event -> {
-				table.setColumnFilterValues(localCol, filterBox.getSelectedValues());
+			filterBox.getComboBox().addEventHandler(ComboBox.ON_HIDING, event -> {
+				System.out.println("ON HIDING");
+				table.setColumnItemFilterValues(localCol, filterBox.getSelectedValues());
+				table.setColumnTextFilterValues(localCol, filterBox.getSearchString());
 				if (filterBox.isSortComparatorSet())
 					table.setSortComparator(filterBox.getAndClearSortComparator(), 
 							item -> table.getValue(item,localCol));
-//						filterBox.setSortComparator(null);
-			    refresh();
-			});
-			filterBox.addEventHandler(ComboBox.ON_SHOWING, event -> {
-				filterBox.updateNodes();
+//				filterBox.hide();
+		    	refresh();
 			});
 			
-			cell.setGraphic(filterBox);
+			filterBox.getComboBox().addEventHandler(ComboBox.ON_HIDDEN, event -> {
+				System.out.println("ON HIDDEN");
+		    	refresh();
+		    	filterBox.getComboBox().hide();
+		    	filterBox.getComboBox().getSelectionModel().clearSelection();
+				filterBox.getComboBox().setFocusTraversable(false);
+			});
+			
+			
+//			filterBox.setOnHidden(new EventHandler(<>) {
+//				
+//			});
+			
+			filterBox.getComboBox().onMouseClickedProperty().addListener(new ChangeListener<Object>() {
+
+				@Override
+				public void changed(ObservableValue<? extends Object> observable, Object oldValue,
+						Object newValue) {
+					System.out.println("MOUSE CLICKED");
+					
+				}
+				
+			});
+			
+			filterBox.getComboBox().valueProperty().addListener( new ChangeListener<Object>() {
+			    @Override
+			    public void changed( ObservableValue<? extends Object> observable, Object oldValue, 
+			    		Object newValue ) {
+			    	System.out.println("value changed");
+			    }
+			});
+			
+			filterBox.getComboBox().addEventHandler(ComboBox.ON_SHOWING, event -> {
+				System.out.println("ON SHOWING");
+				filterBox.updateNodes();
+			});
+			filterBoxes.add(filterBox);
+			
+			cell.setGraphic(filterBox.getComboBox());
 			rowItemFilter.add(cell);
 		}
 		
@@ -100,6 +142,17 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 		int columnCount = table.getNcols();
 		rows = FXCollections.observableArrayList();
 
+		ObservableList<SpreadsheetCell> rowItemFilter = FXCollections.observableArrayList();
+		for (int col = 0; col < columnCount; col++) {
+			SpreadsheetCellBase cell = new SpreadsheetCellBase(0, col, 1, 1);
+			cell.setGraphic(filterBoxes.get(col).getComboBox());
+			rowItemFilter.add(cell);
+			
+			filterBoxes.get(col).refresh();
+			filterBoxes.get(col).getComboBox().hide();
+			filterBoxes.get(col).getComboBox().getSelectionModel().clearSelection();
+			filterBoxes.get(col).getComboBox().setFocusTraversable(false);
+		}
 		
 		rows.add(rowItemFilter);
 

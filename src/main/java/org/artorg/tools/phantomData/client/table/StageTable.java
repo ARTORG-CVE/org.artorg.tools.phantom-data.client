@@ -53,7 +53,15 @@ public class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		this.view = view;
 		createStage();
 		refresh();
-		view.addRefreshListener(() -> refresh());
+		view.addRefreshListener(() -> {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			refresh();
+		});
 	}	
 	
 	public void createStage() {

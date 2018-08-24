@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
@@ -23,13 +24,14 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 
 	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
-	private List<Predicate<ITEM>> columnFilterPredicates;
+	private List<Predicate<ITEM>> columnItemFilterPredicates;
+	private List<Predicate<ITEM>> columnTextFilterPredicates;
 	private Comparator<ITEM> sortComparator;
 	
 	{
 		filteredItems = FXCollections.observableArrayList();
 		filterPredicate = item -> true;
-		columnFilterPredicates = new ArrayList<Predicate<ITEM>>();
+		columnItemFilterPredicates = new ArrayList<Predicate<ITEM>>();
 		sortComparator = (i1,i2) -> {
 			if (i1.getId() instanceof Integer)
 				return ((Integer)i1.getId()).compareTo(((Integer)i2.getId()));
@@ -60,9 +62,13 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		super.readAllData();
 		
 		
-		columnFilterPredicates = new ArrayList<Predicate<ITEM>>(columns.size());
+		columnItemFilterPredicates = new ArrayList<Predicate<ITEM>>(columns.size());
 		for (int i=0; i<columns.size(); i++)
-			columnFilterPredicates.add(item -> true);
+			columnItemFilterPredicates.add(item -> true);
+		
+		columnTextFilterPredicates = new ArrayList<Predicate<ITEM>>(columns.size());
+		for (int i=0; i<columns.size(); i++)
+			columnTextFilterPredicates.add(item -> true);
 		
 		applyFilter();
 	}
@@ -105,14 +111,26 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		return filterPredicate;
 	}
 
-	public void setColumnFilterValues(int columnIndex, List<String> values) {
-		columnFilterPredicates.set(columnIndex, item -> {
+	public void setColumnItemFilterValues(int columnIndex, List<String> values) {
+		columnItemFilterPredicates.set(columnIndex, item -> {
 			return values.stream().filter(value -> getValue(item,columnIndex).equals(value)).findFirst().isPresent();
 		});
 	}
 	
+	public void setColumnTextFilterValues(int columnIndex, String searchText) {
+		final Pattern p = Pattern.compile("(?i)" +searchText);
+		if (searchText.isEmpty())
+			columnTextFilterPredicates.set(columnIndex, item -> true);
+		else
+			columnTextFilterPredicates.set(columnIndex, item ->
+				p.matcher(getValue(item, columnIndex)).find());
+	}
+	
 	public void applyFilter() {
-		filterPredicate = columnFilterPredicates.stream().reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
+		Predicate<ITEM> itemFilter = columnItemFilterPredicates.stream().reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
+		Predicate<ITEM> textFilter = columnTextFilterPredicates.stream().reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
+//		filterPredicate = itemFilter;
+		filterPredicate = itemFilter.and(textFilter);
 		this.filteredItems = FXCollections.observableArrayList();
 		
 		System.out.println("filter applied");
