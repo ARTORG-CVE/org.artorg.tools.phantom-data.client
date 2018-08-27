@@ -43,12 +43,13 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 	@Override
 	public void setTable(FilterTable<TABLE, ITEM, ID_TYPE> table) {
 		this.table = table;
-		int columnCount = table.getNcols();
+		int columnCount = table.getFilteredNcols();
 		
+		table.readAllData();
 		// Column header filterable
 		rowItemFilter = FXCollections.observableArrayList();
 		for (int col = 0; col < columnCount; col++) {
-			String value = table.getColumnNames().get(col);
+			String value = table.getFilteredColumnNames().get(col);
 			SpreadsheetCellBase cell = new SpreadsheetCellBase(0, col, 1, 1);
 
 			final int localCol = col;
@@ -56,7 +57,7 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 				List<String> getters = new ArrayList<String>();
 				for (int row = 0; row < table.getNrows(); row++) {
 					final int localRow = row;
-					getters.add(table.getValue(localRow, localCol));
+					getters.add(table.getColumnFilteredValue(localRow, localCol));
 				}
 				return getters;
 			};
@@ -67,7 +68,8 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 				table.setColumnItemFilterValues(localCol, filterMenuButton.getSelectedValues());
 				if (filterMenuButton.isSortComparatorSet())
 					table.setSortComparator(filterMenuButton.getSortComparator(), 
-							item -> table.getValue(item,localCol));
+							item -> table.getFilteredValue(item,localCol));
+				table.setColumnTextFilterValues(localCol, filterMenuButton.getRegex());
 			    refresh();
 			});
 			filterMenuButton.addEventHandler(ComboBox.ON_SHOWING, event -> {
@@ -112,7 +114,7 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 	public void refreshValues() {
 		// create Grid
 		int rowCount = table.getFilteredNrows() + 1;
-		int columnCount = table.getNcols();
+		int columnCount = table.getFilteredNcols();
 		GridBase grid = new GridBase(rowCount, columnCount);
 		
 		table.applyFilter();

@@ -20,7 +20,10 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		ID_TYPE> {
 	protected final ObservableList<ITEM> items;
 	
-	protected final List<IColumn<ITEM, ?>> columns;
+	private final List<IColumn<ITEM, ?>> columns;
+	
+	
+
 	protected final UndoManager undoManager;
 	protected HttpDatabaseCrud<ITEM, ID_TYPE> connector;
 	private boolean isIdColumnVisible;
@@ -116,6 +119,10 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 
 	public void setIdColumnVisible(boolean isIdColumnVisible) {
 		this.isIdColumnVisible = isIdColumnVisible;
+	}
+	
+	protected List<IColumn<ITEM, ?>> getColumns() {
+		return columns;
 	}
 
 }

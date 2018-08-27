@@ -29,10 +29,18 @@ public class PhantomTable extends FilterTable<PhantomTable, Phantom, Integer> {
 	public List<IColumn<Phantom, ?>> createColumns() {
 		List<IColumn<Phantom, ?>> columns =
 				new ArrayList<IColumn<Phantom, ?>>();
-		columns.add(new Column<Phantom, Phantom, Integer>(
+		IColumn<Phantom,?> column;
+		column = new Column<Phantom, Phantom, Integer>(
 				"id", item -> item, 
 				path -> String.valueOf(path.getId()), 
 				(path,value) -> path.setId(Integer.valueOf(value)),
+				PhantomConnector.get());
+		column.setVisibility(false);
+		columns.add(column);
+		columns.add(new Column<Phantom, Phantom, Integer>(
+				"PID", item -> item, 
+				path -> path.getProductId(), 
+				(path,value) -> path.setProductId(value),
 				PhantomConnector.get()));
 		columns.add(new Column<Phantom, AnnulusDiameter, Integer>(
 				"annulus [mm]", item -> item.getAnnulusDiameter(), 
@@ -49,11 +57,12 @@ public class PhantomTable extends FilterTable<PhantomTable, Phantom, Integer> {
 				path -> path.getValue(), 
 				(path,value) -> path.setValue(value),
 				LiteratureBaseConnector.get()));
-		columns.add(new Column<Phantom, Special, Integer>(
+		column = new Column<Phantom, Special, Integer>(
 				"special", item -> item.getSpecial(), 
 				path -> path.getShortcut(), 
 				(path,value) -> path.setShortcut(value),
-				SpecialConnector.get()));
+				SpecialConnector.get());
+		columns.add(column);
 		columns.add(new Column<Phantom, Phantom, Integer>(
 				"number", item -> item, 
 				path -> String.valueOf(path.getNumber()), 

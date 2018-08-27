@@ -18,17 +18,17 @@ public abstract class TableGui<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		refreshListener = new ArrayList<Runnable>();
 	}
 			
-	abstract Control getGraphic();
+	public abstract Control getGraphic();
 	
-	abstract void autoResizeColumns();
+	public abstract void autoResizeColumns();
 	
-	abstract void setTable(FilterTable<TABLE, ITEM, ID_TYPE> table);
+	public abstract void setTable(FilterTable<TABLE, ITEM, ID_TYPE> table);
 	
 	public void refresh() {
 		refreshListener.stream().forEach(l -> l.run());
 	}
 	
-	abstract void reload();
+	public abstract void reload();
 	
 	public void addRefreshListener(Runnable refresher) {
 		this.refreshListener.add(refresher);

@@ -63,6 +63,7 @@ public class FilterMenuButton extends MenuButton {
 		itemSearch = new TextItemSearch();
 		itemFilterAll = new CheckBoxItemFilterAll();
 		itemsFilter = new ArrayList<CheckBoxItemFilter>();
+		regex = "";
 	}
 	
 	public FilterMenuButton() {
@@ -155,8 +156,6 @@ public class FilterMenuButton extends MenuButton {
 	
 	public void setGetters(Supplier<List<String>> getters) {
 		this.getters = getters;
-		
-		updateNodes();
 	}
 	
 	public class ButtonItemReset extends CustomMenuItem {

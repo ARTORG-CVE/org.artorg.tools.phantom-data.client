@@ -16,6 +16,7 @@ import org.artorg.tools.phantomData.client.tables.AnnulusDiameterTable;
 import org.artorg.tools.phantomData.client.tables.BooleanPropertyTable;
 import org.artorg.tools.phantomData.client.tables.FabricationTypeTable;
 import org.artorg.tools.phantomData.client.tables.FileTable;
+import org.artorg.tools.phantomData.client.tables.FileTypeTable;
 import org.artorg.tools.phantomData.client.tables.LiteratureBaseTable;
 import org.artorg.tools.phantomData.client.tables.PhantomTable;
 import org.artorg.tools.phantomData.client.tables.PropertyFieldTable;
@@ -232,47 +233,17 @@ public class MainController {
     
     @FXML
     void openTableFileTypes(ActionEvent event) {
-
+    	initTableHelperSpreadsheet(new FileTypeTable(), "Files");
     }
     
-    
-
     @FXML
     void openTableFiles(ActionEvent event) {
     	initTableHelperSpreadsheet(new FileTable(), "Files");
     }
 
     @FXML
-    void openTablePhantoms(ActionEvent event) throws IOException {
-    	FXMLLoader loader = new FXMLLoader(org.artorg.tools.phantomData.client.Main.class.getResource("Table.fxml"));
-		TableController<PhantomTable,Phantom,Integer> controller = new TableController<PhantomTable,Phantom,Integer>();
-		loader.setController(controller);
-		AnchorPane pane = loader.load();
-		
-		FilterTable<PhantomTable, Phantom, Integer> table = 
-				new PhantomTable();
-		controller.setTable(table);
-		
-		SpreadsheetViewCrud<PhantomTable, Phantom, Integer> view = 
-				new SpreadsheetViewCrud<PhantomTable, Phantom, Integer>();
-		view.setTable(table);
-		
-		controller.setContent(view.getGraphic());
-		
-		
-		
-		
-		Scene scene = new Scene(pane,400,400);
-		scene.getStylesheets().add(org.artorg.tools.phantomData.client.Main.class.getResource("application.css").toExternalForm());
-		Stage stage = new Stage();
-		stage.setScene(scene);
-		stage.setWidth(pane.getPrefWidth());
-		stage.setHeight(pane.getPrefHeight()+50);
-		stage.setMinWidth(pane.getPrefWidth());
-		stage.setMinHeight(pane.getPrefHeight()+50);
-		stage.show();
-    	
-//    	initTableHelperSpreadsheet(new PhantomTable(), "Phantoms");
+    void openTablePhantoms(ActionEvent event) {    	
+    	initTableHelperSpreadsheet(new PhantomTable(), "Phantoms");
     }
 
     @FXML
@@ -290,8 +261,6 @@ public class MainController {
     	initTableHelperSpreadsheet(new AnnulusDiameterTable(), "Annulus Diameter");
     }
     
-    
-
     @FXML
     void openTableFabricationTypes(ActionEvent event) {
     	initTableHelperSpreadsheet(new FabricationTypeTable(), "Fabrication Types");
@@ -310,18 +279,32 @@ public class MainController {
     private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 	ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
 	ID_TYPE> void initTableHelperSpreadsheet(
-			FilterTable<TABLE, ITEM, ID_TYPE> table, String name) {
-		
-		
-		StageTable<TABLE, ITEM, ID_TYPE> stageTable = new StageTable<TABLE, ITEM, ID_TYPE>();
-		stageTable.setTable(table);
+			FilterTable<TABLE, ITEM, ID_TYPE> table, 
+			String name) {
+    	FXMLLoader loader = new FXMLLoader(org.artorg.tools.phantomData.client.Main.class.getResource("Table.fxml"));
+		TableController<TABLE,ITEM,ID_TYPE> controller = new TableController<TABLE,ITEM,ID_TYPE>();
+		loader.setController(controller);
+		AnchorPane pane = null;
+		try {
+			pane = loader.load();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		controller.setTable(table);
 		SpreadsheetViewCrud<TABLE, ITEM, ID_TYPE> view = 
-				new SpreadsheetViewCrud<TABLE, ITEM, ID_TYPE>();	
-		stageTable.setView(view);
-		Stage stage = stageTable.getStage();
+				new SpreadsheetViewCrud<TABLE, ITEM, ID_TYPE>();
+		view.setTable(table);
+		controller.setContent(view);
 		
+		Scene scene = new Scene(pane);
+		scene.getStylesheets().add(org.artorg.tools.phantomData.client.Main.class.getResource("application.css").toExternalForm());
+		Stage stage = new Stage();
+		stage.setScene(scene);
 		stage.setTitle(name);
-		view.autoResizeColumns();
+		stage.setWidth(800);
+		stage.setHeight(500);
+		
+		
 		stage.show();
 	}
     
