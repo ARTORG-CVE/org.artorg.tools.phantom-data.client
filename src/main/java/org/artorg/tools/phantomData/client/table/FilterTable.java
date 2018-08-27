@@ -17,7 +17,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, ID_TYPE>
+		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+		ID_TYPE>
 		extends Table<TABLE, ITEM, ID_TYPE> {
 
 	private ObservableList<ITEM> filteredItems;

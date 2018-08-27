@@ -54,6 +54,9 @@ public class StageTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		view.addRefreshListener(() -> {
 			refresh();
 		});
+		System.out.println("<<<<< Content of " +table.getClass().getSimpleName() +"<<<<<");
+		System.out.println(view.toString());
+		System.out.println(">>>>> Content of " +table.getClass().getSimpleName() +">>>>>");
 	}	
 	
 	public void createStage() {

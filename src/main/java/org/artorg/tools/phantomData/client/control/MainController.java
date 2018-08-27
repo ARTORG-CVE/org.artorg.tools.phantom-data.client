@@ -243,8 +243,36 @@ public class MainController {
     }
 
     @FXML
-    void openTablePhantoms(ActionEvent event) {
-    	initTableHelperSpreadsheet(new PhantomTable(), "Phantoms");
+    void openTablePhantoms(ActionEvent event) throws IOException {
+    	FXMLLoader loader = new FXMLLoader(org.artorg.tools.phantomData.client.Main.class.getResource("Table.fxml"));
+		TableController<PhantomTable,Phantom,Integer> controller = new TableController<PhantomTable,Phantom,Integer>();
+		loader.setController(controller);
+		AnchorPane pane = loader.load();
+		
+		FilterTable<PhantomTable, Phantom, Integer> table = 
+				new PhantomTable();
+		controller.setTable(table);
+		
+		SpreadsheetViewCrud<PhantomTable, Phantom, Integer> view = 
+				new SpreadsheetViewCrud<PhantomTable, Phantom, Integer>();
+		view.setTable(table);
+		
+		controller.setContent(view.getGraphic());
+		
+		
+		
+		
+		Scene scene = new Scene(pane,400,400);
+		scene.getStylesheets().add(org.artorg.tools.phantomData.client.Main.class.getResource("application.css").toExternalForm());
+		Stage stage = new Stage();
+		stage.setScene(scene);
+		stage.setWidth(pane.getPrefWidth());
+		stage.setHeight(pane.getPrefHeight()+50);
+		stage.setMinWidth(pane.getPrefWidth());
+		stage.setMinHeight(pane.getPrefHeight()+50);
+		stage.show();
+    	
+//    	initTableHelperSpreadsheet(new PhantomTable(), "Phantoms");
     }
 
     @FXML
