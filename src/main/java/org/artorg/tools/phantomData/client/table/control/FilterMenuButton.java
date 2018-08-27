@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -32,9 +34,9 @@ public class FilterMenuButton extends MenuButton {
 	private final CheckBoxItemSortDescending itemDescending;
 	private final TextItemSearch itemSearch;
 	private final CheckBoxItemFilterAll itemFilterAll;
+	private final List<CheckBoxItemFilter> itemsFilter;
 	private Supplier<List<String>> getters;
 	private String regex;
-	
 	
 	static {
 		InputStream normalStream = null;
@@ -60,11 +62,10 @@ public class FilterMenuButton extends MenuButton {
 		itemDescending = new CheckBoxItemSortDescending();
 		itemSearch = new TextItemSearch();
 		itemFilterAll = new CheckBoxItemFilterAll();
+		itemsFilter = new ArrayList<CheckBoxItemFilter>();
 	}
 	
 	public FilterMenuButton() {
-		
-		
 		itemReset.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -99,7 +100,7 @@ public class FilterMenuButton extends MenuButton {
 			public void changed(ObservableValue<? extends String> observable, String oldValue,
 					String newValue) {
 				if (!newValue.isEmpty()) {
-					regex = newValue;
+					setRegex(newValue);
 					setImage(imgFilter);
 				}
 				else 
@@ -120,7 +121,6 @@ public class FilterMenuButton extends MenuButton {
 			}
 		});
 		
-		
 		this.getItems().add(itemReset);
 		this.getItems().add(new SeparatorMenuItem());
 		this.getItems().add(itemAscending);
@@ -128,8 +128,6 @@ public class FilterMenuButton extends MenuButton {
 		this.getItems().add(itemSearch);	
 		this.getItems().add(itemFilterAll);
 		this.getItems().add(new SeparatorMenuItem());
-		
-		
 		
 	}
 	
@@ -151,53 +149,22 @@ public class FilterMenuButton extends MenuButton {
 		setImage(imgNormal);
 	}
 	
-	
-	
 	private Stream<CheckBox> streamCheckBoxes() {
-		return this.getItems().stream().filter(m -> m instanceof CheckBoxItemFilter)
-			.map(c -> ((CheckBoxItemFilter)c).getCheckBox());
+		return itemsFilter.stream().map(i -> i.getCheckBox());
 	}
 	
 	public void setGetters(Supplier<List<String>> getters) {
 		this.getters = getters;
 		
-		List<CheckBoxItemFilter> list = getters.get().stream().distinct().map(s ->
-			new CheckBoxItemFilter(s)).collect(Collectors.toList());
-		
-		if (!list.isEmpty()) {
-			if (!(this.getItems().get(this.getItems().size()-1) instanceof SeparatorMenuItem))
-				this.getItems().add(new SeparatorMenuItem());
-		} else if ((this.getItems().get(this.getItems().size()-1) instanceof SeparatorMenuItem)) 
-			this.getItems().remove(this.getItems().size()-1);
-		
-		this.getItems().addAll(list);
-		
-		streamCheckBoxes().forEach(c -> c.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) { 
-				if (!c.isSelected()) {
-					setImage(imgFilter);
-					itemFilterAll.getCheckBox().setSelected(false);
-				} else {
-					if (!streamCheckBoxes().filter(c -> !c.isSelected()).findFirst().isPresent()) {
-						itemFilterAll.getCheckBox().setSelected(true);
-						refreshImage();
-					}
-				}
-			}
-		}));
-		
-		
+		updateNodes();
 	}
 	
 	public class ButtonItemReset extends CustomMenuItem {
-		
 		public ButtonItemReset() {
 			super(new Label("Reset Filter"));
 			this.setHideOnClick(false);
 		}
 	}
-	
 	
 	public class TextItemSearch extends CustomMenuItem {
 		private final TextField textField;
@@ -213,9 +180,25 @@ public class FilterMenuButton extends MenuButton {
 		}
 	}
 	
-	
 	public class CheckBoxItemSortAscending extends CustomMenuItem {
 		private final CheckBox checkBox;
+		private final Comparator<String> comparator;
+		
+		{
+			comparator = (s1,s2) -> {
+				try {
+					Long l1 = Long.valueOf(s1);
+					Long l2 = Long.valueOf(s2);
+					return l1.compareTo(l2);
+				} catch (Exception e) {}
+				try {
+					Double d1 = Double.valueOf(s1);
+					Double d2 = Double.valueOf(s2);
+					return d1.compareTo(d2);
+				} catch (Exception e) {}
+				return s1.compareTo(s2);
+			};
+		}
 		
 		public CheckBoxItemSortAscending() {
 			super(new CheckBox("Sort Ascending"));
@@ -226,10 +209,31 @@ public class FilterMenuButton extends MenuButton {
 		public CheckBox getCheckBox() {
 			return checkBox;
 		}
+
+		public Comparator<String> getComparator() {
+			return comparator;
+		}
 	}
 	
 	public class CheckBoxItemSortDescending extends CustomMenuItem {
 		private final CheckBox checkBox;
+		private final Comparator<String> comparator;
+		
+		{
+			comparator = (s1,s2) -> {
+				try {
+					Long l1 = Long.valueOf(s1);
+					Long l2 = Long.valueOf(s2);
+					return l2.compareTo(l1);
+				} catch (Exception e) {}
+				try {
+					Double d1 = Double.valueOf(s1);
+					Double d2 = Double.valueOf(s2);
+					return d2.compareTo(d1);
+				} catch (Exception e) {}
+				return s2.compareTo(s1);
+			};
+		}
 		
 		public CheckBoxItemSortDescending() {
 			super(new CheckBox("Sort Descending"));
@@ -239,6 +243,10 @@ public class FilterMenuButton extends MenuButton {
 		
 		public CheckBox getCheckBox() {
 			return checkBox;
+		}
+		
+		public Comparator<String> getComparator() {
+			return comparator;
 		}
 	}
 	
@@ -272,8 +280,59 @@ public class FilterMenuButton extends MenuButton {
 		}
 	}
 	
-	
-	
-	
+	public String getRegex() {
+		return regex;
+	}
+
+	private void setRegex(String regex) {
+		this.regex = regex;
+	}
+
+	public List<String> getSelectedValues() {
+		return streamCheckBoxes().filter(c -> c.isSelected()).map(c -> c.getText())
+		.collect(Collectors.toList());
+	}
+
+	public boolean isSortComparatorSet() {
+		if (itemAscending.getCheckBox().isSelected()) return true;
+		if (itemDescending.getCheckBox().isSelected()) return true;
+		return false;
+	}
+
+	public Comparator<String> getSortComparator() {
+		if (itemAscending.getCheckBox().isSelected()) return itemAscending.getComparator();
+		if (itemDescending.getCheckBox().isSelected()) return itemDescending.getComparator();
+		return (s1,s2) -> 0;
+	}
+
+	public void updateNodes() {		
+		this.getItems().removeAll(itemsFilter);
+		itemsFilter.clear();
+		itemsFilter.addAll(getters.get().stream().distinct().map(g ->
+			new CheckBoxItemFilter(g)).collect(Collectors.toList()));
+		
+		if (!itemsFilter.isEmpty()) {
+			if (!(this.getItems().get(this.getItems().size()-1) instanceof SeparatorMenuItem))
+				this.getItems().add(new SeparatorMenuItem());
+		} else if ((this.getItems().get(this.getItems().size()-1) instanceof SeparatorMenuItem)) 
+			this.getItems().remove(this.getItems().size()-1);
+		
+		this.getItems().addAll(itemsFilter);
+		
+		streamCheckBoxes().forEach(c -> c.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) { 
+				if (!c.isSelected()) {
+					setImage(imgFilter);
+					itemFilterAll.getCheckBox().setSelected(false);
+				} else {
+					if (!streamCheckBoxes().filter(c -> !c.isSelected()).findFirst().isPresent()) {
+						itemFilterAll.getCheckBox().setSelected(true);
+						refreshImage();
+					}
+				}
+			}
+		}));
+	}
 
 }

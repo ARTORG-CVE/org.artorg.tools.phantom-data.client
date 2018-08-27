@@ -38,8 +38,6 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 
 	@Override
 	public void setTable(FilterTable<TABLE, ITEM, ID_TYPE> table) {
-		System.out.println("SET TABLE");
-		
 		this.table = table;
 		int columnCount = table.getNcols();
 		
@@ -51,7 +49,6 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 
 			final int localCol = col;
 			Supplier<List<String>> createGetters = () -> {
-				
 				List<String> getters = new ArrayList<String>();
 				for (int row = 0; row < table.getNrows(); row++) {
 					final int localRow = row;
@@ -62,18 +59,22 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 			FilterMenuButton filterMenuButton = new FilterMenuButton();
 			filterMenuButton.setGetters(createGetters);
 			filterMenuButton.setText(value);
+			filterMenuButton.addEventHandler(ComboBox.ON_HIDDEN, event -> {
+				table.setColumnItemFilterValues(localCol, filterMenuButton.getSelectedValues());
+				if (filterMenuButton.isSortComparatorSet())
+					table.setSortComparator(filterMenuButton.getSortComparator(), 
+							item -> table.getValue(item,localCol));
+			    refresh();
+			});
+			filterMenuButton.addEventHandler(ComboBox.ON_SHOWING, event -> {
+				filterMenuButton.updateNodes();
+			});
+			
 			cell.setGraphic(filterMenuButton);
-			
-			
 			rowItemFilter.add(cell);
 		}
 		
-		
-		
 		reload();
-		
-		
-
 	}
 
 	@Override
@@ -90,7 +91,6 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 	@Override
 	public void refresh() {
 		spreadsheet = new SpreadsheetView();
-		int columnCount = table.getNcols();
 		rows = FXCollections.observableArrayList();
 
 		rows.add(rowItemFilter);
@@ -103,19 +103,15 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 	}
 
 	public void refreshValues() {
-		System.out.println("refresh values");
 		// create Grid
 		int rowCount = table.getFilteredNrows() + 1;
 		int columnCount = table.getNcols();
 		GridBase grid = new GridBase(rowCount, columnCount);
 		
 		table.applyFilter();
-
 		ObservableList<SpreadsheetCell> rowItemFilter = rows.get(0);
-		
 		rows  = FXCollections.observableArrayList();
 		rows.add(rowItemFilter);
-
 
 		// value cells
 		for (int row = 0; row < table.getFilteredNrows(); row++) {
@@ -158,10 +154,8 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 
 	@Override
 	public void reload() {
-//		table.getItems().removeListener(changeListener);
 		table.readAllData();
 		refresh();
-//		table.getItems().addListener(changeListener);
 	}
 
 }

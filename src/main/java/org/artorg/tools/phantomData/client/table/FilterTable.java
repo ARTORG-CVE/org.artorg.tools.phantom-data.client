@@ -2,9 +2,7 @@ package org.artorg.tools.phantomData.client.table;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -42,25 +40,17 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	}
 
 	public void setSortComparator(Comparator<String> sortComparator, Function<ITEM, String> valueGetter) {
-		System.out.println("Comparator setted");
 		this.sortComparator = (item1, item2) -> sortComparator.compare(valueGetter.apply(item1),valueGetter.apply(item2));
-	}
-	
-	public void createColumnFilters() {
-//		columnFilters = new ArrayList<Predicate<ITEM>>(columns.size());
-//		filterPredicate = columnFilters.stream().reduce((f1,f2) -> f1.and(f2)).get();
 	}
 	
 	@Override
 	public void setConnector(HttpDatabaseCrud<ITEM, ID_TYPE> connector) {
 		super.setConnector(connector);
-		createColumnFilters();
 	}
 	
 	@Override
 	public void readAllData() {
 		super.readAllData();
-		
 		
 		columnItemFilterPredicates = new ArrayList<Predicate<ITEM>>(columns.size());
 		for (int i=0; i<columns.size(); i++)
@@ -132,18 +122,8 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 //		filterPredicate = itemFilter;
 		filterPredicate = itemFilter.and(textFilter);
 		this.filteredItems = FXCollections.observableArrayList();
-		
-		System.out.println("filter applied");
 		this.filteredItems.addAll(items.stream().filter(filterPredicate).sorted(sortComparator)
 				.collect(Collectors.toList()));
 	}
-
-	
-
-	
-	
-	
-	
-	
 
 }
