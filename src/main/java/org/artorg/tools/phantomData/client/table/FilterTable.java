@@ -22,7 +22,6 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
 		ID_TYPE>
 		extends Table<TABLE, ITEM, ID_TYPE> {
-
 	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
 	private List<Predicate<ITEM>> columnItemFilterPredicates;
@@ -31,7 +30,6 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	private int nFilteredCols;
 	private List<Integer> mappedColumnIndexes;
 	private Function<Integer, Integer> columnIndexMapper;
-	
 	
 	{
 		filteredItems = FXCollections.observableArrayList();
@@ -46,7 +44,6 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 			return i1.getId().toString().compareTo(i2.getId().toString());
 		};
 		mappedColumnIndexes = new ArrayList<>();
-		
 	}
 	
 	public void setSortComparator(Comparator<String> sortComparator, Function<ITEM, String> valueGetter) {
@@ -101,19 +98,19 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 				.collect(Collectors.toList());
 	}
 	
-	private void setFilteredValue(ITEM item, ITEM filteredItem, int col, String value, Consumer<String> redo, Consumer<String> undo) {
-		String currentValue = getFilteredValue(item, col);
+	private void setFilteredValue(ITEM item, ITEM filteredItem, int filteredCol, String value, Consumer<String> redo, Consumer<String> undo) {
+		String currentValue = getFilteredValue(item, filteredCol);
 		if (value.equals(currentValue))  return;
 		
 		UndoRedoNode node = new UndoRedoNode(() -> {
-				getFilteredColumns().get(col).set(item, value);
-				getFilteredColumns().get(col).set(filteredItem, value);
+				getFilteredColumns().get(filteredCol).set(filteredItem, value);
 				redo.accept(value);
 			}, () -> {
-				getFilteredColumns().get(col).set(item, currentValue);
-				getFilteredColumns().get(col).set(filteredItem, currentValue);
+				getFilteredColumns().get(filteredCol).set(filteredItem, currentValue);
 				undo.accept(currentValue);
-			}, () -> getColumns().get(col).update(item));
+			}, () -> {
+				getFilteredColumns().get(filteredCol).update(filteredItem);
+		});
 		undoManager.addAndRun(node);
 	}
 	
@@ -137,6 +134,15 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	public void setFilteredValue(int row, int col, String value, Consumer<String> redo, Consumer<String> undo) {
 		ITEM superItem = items.stream().filter(item -> item.getId().equals(filteredItems.get(row).getId())).findFirst().get();
 		setFilteredValue(superItem, filteredItems.get(row), col, value, redo, undo);
+	}
+	
+	public void setFilteredValue(ITEM item, int filteredCol, String value, Consumer<String> redo, Consumer<String> undo) {
+		ITEM superItem = items.stream().filter(i -> i.getId().equals(item.getId())).findFirst().get();
+		setFilteredValue(superItem, item, filteredCol, value, redo, undo);
+	}
+	
+	public void setFilteredValue(ITEM item, int filteredCol, String value) {
+		setFilteredValue(item, filteredCol, value, s -> {}, s -> {});
 	}
 
 	public Predicate<ITEM> getFilterPredicate() {
@@ -167,18 +173,7 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 				.filter(i -> i<columnTextFilterPredicates.size())
 				.map(i -> columnTextFilterPredicates.get(i))
 				.reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
-		
-//		for (int i=0; i<nFilteredCols; i++) {
-//			columnItemFilterPredicates.get(columnIndexMapper.apply(i))
-//		}
-//		
-//		Predicate<ITEM> itemFilter = columnItemFilterPredicates.stream().reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
-//		Predicate<ITEM> textFilter = columnTextFilterPredicates.stream().reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
-//		
-		
-//		filterPredicate = itemFilter;
 		filterPredicate = itemFilter.and(textFilter);
-//		this.filteredItems = FXCollections.observableArrayList();
 		this.filteredItems.clear();
 		this.filteredItems.addAll(items.stream().filter(filterPredicate).sorted(sortComparator)
 				.collect(Collectors.toList()));
@@ -189,11 +184,14 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		int nRows = this.getFilteredNrows();
 		int nCols = this.getFilteredNcols();
 		if (nRows == 0 || nCols == 0) return "";
-		String[][] content = new String[nRows][nCols];
+		String[][] content = new String[nRows+1][nCols];
+				
+		for (int col=0; col<nCols; col++)
+			content[0][col] = getFilteredColumnNames().get(col);
 		
 		for(int row=0; row<nRows; row++) 
 			for(int col=0; col<nCols; col++)
-				content[row][col] = this.getFilteredValue(row, col);
+				content[row+1][col] = this.getFilteredValue(row, col);
 		
 		int[] columnWidth = new int[nCols];
 		for(int col=0; col<nCols; col++) {
@@ -215,11 +213,11 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		columnStrings.add(StringUtils.repeat("-", columnStrings.get(0).length()));
 		
 		
-		for(int row=1; row<nRows; row++) {
+		for(int row=0; row<nRows; row++) {
 			for(int j=0; j<nCols; j++)
-				content[row][j] = content[row][j] +StringUtils
-					.repeat(" ", columnWidth[j] - content[row][j].length());
-			columnStrings.add(Arrays.stream(content[row]).collect(Collectors.joining("|")));
+				content[row+1][j] = content[row+1][j] +StringUtils
+					.repeat(" ", columnWidth[j] - content[row+1][j].length());
+			columnStrings.add(Arrays.stream(content[row+1]).collect(Collectors.joining("|")));
 		}
 		
 		return columnStrings.stream().collect(Collectors.joining("\n"));

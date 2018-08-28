@@ -3,22 +3,14 @@ package org.artorg.tools.phantomData.client.table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
-import org.artorg.tools.phantomData.client.table.control.CustomHeaderLabel;
 import org.artorg.tools.phantomData.client.table.control.FilterMenuButton;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
@@ -26,12 +18,8 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
-import javafx.util.StringConverter;
 
 public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
@@ -39,23 +27,17 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	
 	private final TableView<ITEM> tableView;
 	private FilterTable<TABLE, ITEM, ID_TYPE> table;
-	private List<Runnable> refreshListeners;
 	private List<FilterMenuButton> filterMenuButtons;
 	
 	{
 		tableView = new TableView<ITEM>();
 		tableView.setEditable(true);
-		refreshListeners = new ArrayList<Runnable>();
 		filterMenuButtons = new ArrayList<FilterMenuButton>();
 	}
 	
 	public void setTable(FilterTable<TABLE, ITEM, ID_TYPE> table) {
 		this.table = table;
 		reload();
-	}
-	
-	public void setSortOrder() {
-		tableView.getSortOrder().addAll(tableView.getColumns());
 	}
 	
 	@Override
@@ -117,13 +99,6 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 			}); 
 			filterMenuButtons.add(filterMenuButton);
 			
-			
-//			column.setCellFactory(cellData -> {
-//				TextFieldTableCell<ITEM, String> tableCell = new TextFieldTableCell<ITEM, String>();
-//						tableCell.setText("test");
-//				return tableCell;
-//			});
-			
 			column.setCellFactory(TextFieldTableCell.forTableColumn());
 			
 //			column.setCellValueFactory(cellData -> new PropertyValueFactory<ITEM,String>(
@@ -135,36 +110,23 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		    	    new EventHandler<CellEditEvent<ITEM, String>>() {
 		    	        @Override
 		    	        public void handle(CellEditEvent<ITEM, String> t) {
-//		    	            ((ITEM) t.getTableView().getItems().get(
-//		    	                t.getTablePosition().getRow())
-//		    	                ).setFirstName(t.getNewValue());
+		    	        	ITEM item = ((ITEM) t.getTableView().getItems().get(
+			    	                t.getTablePosition().getRow()));
+		    	        	table.setFilteredValue(item, localCol, t.getNewValue());
 		    	        }
-
 		    	    }
 		    	);
 		    columns.add(column);
 		}
 		
-		
-		
-		
 	    tableView.getColumns().addAll(columns);
-	    
-	    // fill with items
 	    ObservableList<ITEM> items = table.getItems();
 	    tableView.setItems(items);
-	    
-	    // finishing
-	    this.setSortOrder();
 	    autoResizeColumns();
-	    
-	    
-	    
 	    super.refresh();
-	    installMod();
 	}
 	
-	public void installMod() {
+	public void showFilterButtons() {
         for (Node n : tableView.lookupAll(".column-header > .label")) {
             if (n instanceof Label) {
             	Label parent = (Label)n;
@@ -178,9 +140,6 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
             		filterMenuButton.get().getStyleClass().add("filter-menu-button");
             	}
             	parent.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-            	
-            	
-//                new CustomHeaderLabel((Label) n);
             }
         }
     }

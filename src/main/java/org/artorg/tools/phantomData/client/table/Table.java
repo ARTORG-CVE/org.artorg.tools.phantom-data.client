@@ -13,22 +13,15 @@ import org.artorg.tools.phantomData.client.commandPattern.UndoManager;
 import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
 import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
-import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.TextField;
 
 public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
 		ID_TYPE> {
 	protected final ObservableList<ITEM> items;
-	
 	private final List<IColumn<ITEM, ?>> columns;
-	
-	
-
 	protected final UndoManager undoManager;
 	protected HttpDatabaseCrud<ITEM, ID_TYPE> connector;
 	private boolean isIdColumnVisible;
@@ -77,7 +70,9 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 			}, () -> {
 				columns.get(col).set(item, currentValue);
 				undo.accept(currentValue);
-			}, () -> columns.get(col).update(item));
+			}, () -> {
+				columns.get(col).update(item);
+				});
 		undoManager.addAndRun(node);
 	}
 	
@@ -103,29 +98,26 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		return items.size();
 	}
 	
-//	@Override
-//	public String toString() {
-//		return items.stream().map(item -> item.toString())
-//				.collect(Collectors.joining("\n"));
-//	}
-	
     @Override
 	public String toString() {
 		int nRows = this.getNrows();
 		int nCols = this.getNcols();
 		if (nRows == 0 || nCols == 0) return "";
-		String[][] content = new String[nRows][nCols];
+		String[][] content = new String[nRows+1][nCols];
+		
+		for (int col=0; col<nCols; col++)
+			content[0][col] = getColumnNames().get(col);
 		
 		for(int row=0; row<nRows; row++) 
 			for(int col=0; col<nCols; col++)
-				content[row][col] = this.getValue(row, col);
+				content[row+1][col] = this.getValue(row, col);
 		
 		int[] columnWidth = new int[nCols];
 		for(int col=0; col<nCols; col++) {
 			int maxLength = 0;
 			for(int row=0; row<nRows; row++) {
-				if (content[row][col].length() > maxLength)
-					maxLength = content[row][col].length();
+				if (content[row+1][col].length() > maxLength)
+					maxLength = content[row+1][col].length();
 			}
 			columnWidth[col] = maxLength;
 		}
@@ -142,9 +134,9 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		
 		for(int row=1; row<nRows; row++) {
 			for(int j=0; j<nCols; j++)
-				content[row][j] = content[row][j] +StringUtils
-					.repeat(" ", columnWidth[j] - content[row][j].length());
-			columnStrings.add(Arrays.stream(content[row]).collect(Collectors.joining("|")));
+				content[row][j] = content[row+1][j] +StringUtils
+					.repeat(" ", columnWidth[j] - content[row+1][j].length());
+			columnStrings.add(Arrays.stream(content[row+1]).collect(Collectors.joining("|")));
 		}
 		
 		return columnStrings.stream().collect(Collectors.joining("\n"));

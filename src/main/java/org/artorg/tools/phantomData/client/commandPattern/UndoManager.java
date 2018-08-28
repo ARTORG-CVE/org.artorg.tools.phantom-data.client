@@ -18,6 +18,7 @@ public class UndoManager {
 	}
 	
 	public void run() {
+		System.out.println("run in UndoManager");
 		int lastIndex = nodes.size();
 		for(int i=currentDoneIndex+1; i<lastIndex; i++) {
 			nodes.get(i).redo();
@@ -105,7 +106,6 @@ public class UndoManager {
 	}
 	
 	public void redo(int nActions) {
-//		if (currentDoneIndex + nActions < nodes.size()) nActions = nodes.size()-currentDoneIndex-1;
 		while (currentDoneIndex+1 < nodes.size() && nActions > 0) {
 			nodes.get(currentDoneIndex+1).redo();
 			currentDoneIndex++;
@@ -114,7 +114,6 @@ public class UndoManager {
 	}
 	
 	public void undo(int nActions) {
-//		if (currentDoneIndex - nActions < -1) nActions = currentDoneIndex+1;
 		while (currentDoneIndex > -1 && nActions > 0) {
 			nodes.get(currentDoneIndex).undo();
 			currentDoneIndex--;
@@ -131,6 +130,7 @@ public class UndoManager {
 	}
 	
 	public void addAndRun(UndoRedoNode node) {
+		System.out.println("Add and run node");
 		for (int i=currentDoneIndex+1; i<nodes.size(); i++) 
 			nodes.remove(i);
 		add(node);

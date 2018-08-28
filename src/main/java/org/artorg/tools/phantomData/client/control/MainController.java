@@ -1,19 +1,14 @@
 package org.artorg.tools.phantomData.client.control;
 
-import static org.artorg.tools.phantomData.server.boot.BootUtils.shutdownServer;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.graphics.Scene3D;
 import org.artorg.tools.phantomData.client.table.FilterTable;
-import org.artorg.tools.phantomData.client.table.SpreadsheetViewCrud;
-import org.artorg.tools.phantomData.client.table.StageTable;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.table.TableGui;
 import org.artorg.tools.phantomData.client.table.TableViewCrud;
-import org.artorg.tools.phantomData.client.table.control.CustomHeaderLabel;
 import org.artorg.tools.phantomData.client.tables.AnnulusDiameterTable;
 import org.artorg.tools.phantomData.client.tables.BooleanPropertyTable;
 import org.artorg.tools.phantomData.client.tables.FabricationTypeTable;
@@ -23,29 +18,15 @@ import org.artorg.tools.phantomData.client.tables.LiteratureBaseTable;
 import org.artorg.tools.phantomData.client.tables.PhantomTable;
 import org.artorg.tools.phantomData.client.tables.PropertyFieldTable;
 import org.artorg.tools.phantomData.client.tables.SpecialTable;
-import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
-import org.artorg.tools.phantomData.server.model.FabricationType;
-import org.artorg.tools.phantomData.server.model.LiteratureBase;
-import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
-import org.artorg.tools.phantomData.server.model.Special;
-import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
-import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
-import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -54,14 +35,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class MainController {
@@ -146,24 +121,24 @@ public class MainController {
 		String filePath = workingDir +"/src/main/resources/model.STL";
 		scene3d.loadFile(filePath);
         
-		// init spreadsheet
-//		StageTable<PhantomTable, Phantom, Integer> stageTable = new StageTable<PhantomTable, Phantom, Integer>();
-		PhantomTable phantomTable = new PhantomTable();
-//		stageTable.setTable(phantomTable);
-		SpreadsheetViewCrud<PhantomTable, Phantom, Integer> view = 
-    			new SpreadsheetViewCrud<PhantomTable, Phantom, Integer>(); 
-//		stageTable.setView(view);
-		
-//		phantomTable.readAllData();
-		view.setTable(phantomTable);
-		Region spreadsheet = view.getGraphic();
-		
-        paneSpreadsheet.getChildren().add(spreadsheet);
-        AnchorPane.setTopAnchor(spreadsheet, 0.0);
-        AnchorPane.setLeftAnchor(spreadsheet, 0.0);
-        AnchorPane.setRightAnchor(spreadsheet, 0.0);
-        AnchorPane.setBottomAnchor(spreadsheet, 0.0);
-        paneSpreadsheet.setMinWidth(300);
+//		// init spreadsheet
+////		StageTable<PhantomTable, Phantom, Integer> stageTable = new StageTable<PhantomTable, Phantom, Integer>();
+//		PhantomTable phantomTable = new PhantomTable();
+////		stageTable.setTable(phantomTable);
+//		SpreadsheetViewCrud<PhantomTable, Phantom, Integer> view = 
+//    			new SpreadsheetViewCrud<PhantomTable, Phantom, Integer>(); 
+////		stageTable.setView(view);
+//		
+////		phantomTable.readAllData();
+//		view.setTable(phantomTable);
+//		Region spreadsheet = view.getGraphic();
+//		
+//        paneSpreadsheet.getChildren().add(spreadsheet);
+//        AnchorPane.setTopAnchor(spreadsheet, 0.0);
+//        AnchorPane.setLeftAnchor(spreadsheet, 0.0);
+//        AnchorPane.setRightAnchor(spreadsheet, 0.0);
+//        AnchorPane.setBottomAnchor(spreadsheet, 0.0);
+//        paneSpreadsheet.setMinWidth(300);
         
         // init tableview
         FileTable fileTable = new FileTable();
@@ -246,12 +221,12 @@ public class MainController {
     
     @FXML
     void openTableFileTypes(ActionEvent event) {
-    	initTableHelperSpreadsheet(new FileTypeTable(), "Files");
+    	initTableHelperTableView(new FileTypeTable(), "Files");
     }
     
     @FXML
     void openTableFiles(ActionEvent event) {
-    	initTableHelperSpreadsheet(new FileTable(), "Files");
+    	initTableHelperTableView(new FileTable(), "Files");
     }
 
     @FXML
@@ -261,41 +236,33 @@ public class MainController {
 
     @FXML
     void openTableProperties(ActionEvent event) {
-    	initTableHelperSpreadsheet(new BooleanPropertyTable(), "Boolean Properties");
+    	initTableHelperTableView(new BooleanPropertyTable(), "Boolean Properties");
     }
 
     @FXML
     void openTableSpecials(ActionEvent event) {
-    	initTableHelperSpreadsheet(new SpecialTable(), "Specials");
+    	initTableHelperTableView(new SpecialTable(), "Specials");
     }
 
     @FXML
     void openTableAnnulusDiameter(ActionEvent event) {
-    	initTableHelperSpreadsheet(new AnnulusDiameterTable(), "Annulus Diameter");
+    	initTableHelperTableView(new AnnulusDiameterTable(), "Annulus Diameter");
     }
     
     @FXML
     void openTableFabricationTypes(ActionEvent event) {
-    	initTableHelperSpreadsheet(new FabricationTypeTable(), "Fabrication Types");
+    	initTableHelperTableView(new FabricationTypeTable(), "Fabrication Types");
     }
 
     @FXML
     void openTableLiteratureBases(ActionEvent event) {
-    	initTableHelperSpreadsheet(new LiteratureBaseTable(), "Literature Bases");
+    	initTableHelperTableView(new LiteratureBaseTable(), "Literature Bases");
     }
     
     @FXML
     void openTablePropertyFields(ActionEvent event) {
-    	initTableHelperSpreadsheet(new PropertyFieldTable(), "Property Fields");
+    	initTableHelperTableView(new PropertyFieldTable(), "Property Fields");
     }
-    
-    private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-	ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
-	ID_TYPE> void initTableHelperSpreadsheet(
-			FilterTable<TABLE, ITEM, ID_TYPE> table, 
-			String name) {
-		initTableHelper(new SpreadsheetViewCrud<TABLE, ITEM, ID_TYPE>(), table, name);
-	}
 	
 	 private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
@@ -303,36 +270,8 @@ public class MainController {
 				FilterTable<TABLE, ITEM, ID_TYPE> table, 
 				String name) {
 			TableViewCrud<TABLE, ITEM, ID_TYPE> view = new TableViewCrud<TABLE, ITEM, ID_TYPE>();
-//			initTableHelper(view, table, name);
-			
-			
-			FXMLLoader loader = new FXMLLoader(org.artorg.tools.phantomData.client.Main.class.getResource("Table.fxml"));
-			TableController<TABLE,ITEM,ID_TYPE> controller = new TableController<TABLE,ITEM,ID_TYPE>();
-			loader.setController(controller);
-			AnchorPane pane = null;
-			try {
-				pane = loader.load();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			controller.setTable(table);
-			view.setTable(table);
-			controller.setContent(view);
-			
-			Scene scene = new Scene(pane);
-			scene.getStylesheets().add(org.artorg.tools.phantomData.client.Main.class.getResource("application.css").toExternalForm());
-			Stage stage = new Stage();
-			stage.setScene(scene);
-			stage.setTitle(name);
-			stage.setWidth(800);
-			stage.setHeight(500);
-			
-			
-			
-			stage.show();
-			
-			view.installMod();
-			
+			initTableHelper(view, table, name);
+			view.showFilterButtons();
 	}
 		
 	private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
@@ -365,13 +304,5 @@ public class MainController {
 			
 			stage.show();
 		}
-		
-		public <ITEM> void installMod(TableView<ITEM> table) {
-	        for (Node n : table.lookupAll(".column-header > .label")) {
-	            if (n instanceof Label) {
-	                new CustomHeaderLabel((Label) n);
-	            }
-	        }
-	    }
     
 }
