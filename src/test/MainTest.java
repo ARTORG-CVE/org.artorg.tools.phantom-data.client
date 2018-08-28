@@ -5,10 +5,10 @@ import static org.artorg.tools.phantomData.server.boot.BootUtils.prepareFileStru
 import static org.artorg.tools.phantomData.server.boot.BootUtils.shutdownServer;
 import static org.artorg.tools.phantomData.server.boot.BootUtils.startingServer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
 import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
 import org.artorg.tools.phantomData.client.connectors.FileConnector;
@@ -19,6 +19,7 @@ import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.connectors.property.BooleanPropertyConnector;
 import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;
 import org.artorg.tools.phantomData.client.control.MainController;
+import org.artorg.tools.phantomData.client.tables.PhantomTable;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.FileType;
@@ -32,7 +33,7 @@ import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class MainTest extends Application {
@@ -53,17 +54,24 @@ public class MainTest extends Application {
     
     @Override
 	public void start(Stage stage) throws Exception {
-			FXMLLoader loader = new FXMLLoader(Main.class.getResource("Main.fxml"));
-			MainController controller = new MainController();
-			loader.setController(controller);
-			Pane root = loader.load();
-			Scene scene = new Scene(root,1400,1400);
-			scene.getStylesheets().add(Main.class.getResource("application.css").toExternalForm());
-			stage.setScene(scene);
-			stage.setWidth(root.getPrefWidth());
-			stage.setHeight(root.getPrefHeight()+50);
-			stage.setTitle("Phantom database");
-			stage.show();
+//    	FXMLLoader loader = new FXMLLoader(org.artorg.tools.phantomData.client.Main.class.getResource("Table.fxml"));
+//		MainController<PhantomTable,Phantom,Integer> controller = new MainController<PhantomTable,Phantom,Integer>();
+//		loader.setController(controller);
+//		AnchorPane pane = null;
+//		try {
+//			pane = loader.load();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		
+//		Scene scene = new Scene(pane);
+//		scene.getStylesheets().add(org.artorg.tools.phantomData.client.Main.class.getResource("application.css").toExternalForm());
+//		stage.setScene(scene);
+//		stage.setTitle("Phantom Database");
+//		stage.setWidth(800);
+//		stage.setHeight(500);
+//		
+//		stage.show();
 	}
     
     @Override

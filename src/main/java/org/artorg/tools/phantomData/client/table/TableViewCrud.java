@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.artorg.tools.phantomData.client.table.control.FilterMenuButton;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -90,20 +91,13 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 			TableColumn<ITEM, String> column = new TableColumn<ITEM, String>(columnNames.get(col));
 			column.setSortable(false);
 			
-			
 			final int localCol = col;
 			FilterMenuButton filterMenuButton = new FilterMenuButton();
 			filterMenuButton.setText(columnNames.get(col));
-			filterMenuButton.setTable(table, localCol, () -> {
-				table.applyFilter();
-			}); 
+			filterMenuButton.setTable(table, localCol, () -> table.applyFilter()); 
 			filterMenuButtons.add(filterMenuButton);
 			
 			column.setCellFactory(TextFieldTableCell.forTableColumn());
-			
-//			column.setCellValueFactory(cellData -> new PropertyValueFactory<ITEM,String>(
-////		    		String.valueOf(table.getFilteredValue(cellData.getValue(), j))));
-			
 		    column.setCellValueFactory(cellData -> new SimpleStringProperty(
 		    		String.valueOf(table.getFilteredValue(cellData.getValue(), localCol))));
 		    column.setOnEditCommit(
@@ -124,6 +118,7 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	    tableView.setItems(items);
 	    autoResizeColumns();
 	    super.refresh();
+	    Platform.runLater(() -> showFilterButtons());
 	}
 	
 	public void showFilterButtons() {
@@ -143,7 +138,6 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
             }
         }
     }
-	
 	
 	@Override
 	public void reload() {

@@ -1,10 +1,8 @@
 package org.artorg.tools.phantomData.client.control;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.artorg.tools.phantomData.client.graphics.Scene3D;
 import org.artorg.tools.phantomData.client.table.FilterTable;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.table.TableGui;
@@ -18,29 +16,31 @@ import org.artorg.tools.phantomData.client.tables.LiteratureBaseTable;
 import org.artorg.tools.phantomData.client.tables.PhantomTable;
 import org.artorg.tools.phantomData.client.tables.PropertyFieldTable;
 import org.artorg.tools.phantomData.client.tables.SpecialTable;
-import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TableView;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-public class MainController {
+public class MainController
 
+//<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
+//		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+//		ID_TYPE> 
+		{
+	private FilterTable<?, ?, ?> table;
+	private TableGui<?, ?, ?> view;
+	private Stage stage;
+
+	public MainController(Stage stage) {
+		this.stage = stage;
+	}
+	
     @FXML
     private ResourceBundle resources;
 
@@ -48,17 +48,11 @@ public class MainController {
     private URL location;
 
     @FXML
-    private AnchorPane parentPane, pane3d, paneSpreadsheet, paneTableView;
+    private AnchorPane rootPane;
 
     @FXML
-    private MenuBar menuBar;
-    
-    @FXML
-    private Menu menuFile, menuEdit, menuTables, menuView, menuHelp;
-
-    @FXML
-    private MenuItem menuItemImport, menuItemExport, menuItemSettings, menuItemClose, 
-    	menuItemSearch, menuItemAbout, menuItemNew, menuItemUndo, menuItemRedo, menuitemResetView;
+    private MenuItem menuItemSave, menuItemRefresh, menuItemClose,
+    	menuitemUndo, menuItemRedo, menuItemAbout;
     
     @FXML
     private MenuItem menuItemTablePhantoms, menuItemTableAnnulusDiameters, menuItemTableLiteratureBases, 
@@ -66,42 +60,47 @@ public class MainController {
     	menuItemTableFiles, menuItemTableFileTypes, menuItemTablePropertyFields;
     
     @FXML
-    private RadioMenuItem menuItemShowFilters, menuItemShow3d, menuItemShowTableBelow;
+    private TabPane tabPane;
     
     @FXML
-    private SplitPane splitPane;   
+    void about(ActionEvent event) {
+
+    }
+
+    @FXML
+    void close(ActionEvent event) {
+    	Platform.exit();
+    }
     
     @FXML
-    private TableView<PhantomFile> tableViewFiles;
+    void refresh(ActionEvent event) {
+    }
+
+    @FXML
+    void save(ActionEvent event) {
+    	table.getUndoManager().save();
+    }
+
+    @FXML
+    void undo(ActionEvent event) {
+    	table.getUndoManager().undo();
+    }
     
     @FXML
+    void redo(ActionEvent event) {
+    	table.getUndoManager().redo();
+    }
+
+    @SuppressWarnings("unchecked")
+	@FXML
     void initialize() {
-        assert parentPane != null : "fx:id=\"parentPane\" was not injected: check your FXML file 'Main.fxml'.";
-        assert splitPane != null : "fx:id=\"splitPane\" was not injected: check your FXML file 'Main.fxml'.";
-        assert paneSpreadsheet != null : "fx:id=\"pane3d\" was not injected: check your FXML file 'Main.fxml'.";
-        assert paneTableView != null : "fx:id=\"paneTableView\" was not injected: check your FXML file 'Main.fxml'.";
-        assert pane3d != null : "fx:id=\"pane3d\" was not injected: check your FXML file 'Main.fxml'.";
-        
-        assert menuBar != null : "fx:id=\"menuBar\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuFile != null : "fx:id=\"menuFile\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuEdit != null : "fx:id=\"menuEdit\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuTables != null : "fx:id=\"menuTables\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuView != null : "fx:id=\"menuView\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuHelp != null : "fx:id=\"MenuHelp\" was not injected: check your FXML file 'Main.fxml'.";
-        
-        assert menuItemNew != null : "fx:id=\"menuItemNew\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemImport != null : "fx:id=\"menuItemImport\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemExport != null : "fx:id=\"menuItemExport\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemSettings != null : "fx:id=\"menuItemSettings\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemClose != null : "fx:id=\"menuItemClose\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemSearch != null : "fx:id=\"menuItemSearch\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemAbout != null : "fx:id=\"menuItemAbout\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemUndo != null : "fx:id=\"menuItemUndo\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemRedo != null : "fx:id=\"menuItemRedo\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemShowFilters != null : "fx:id=\"menuItemShowFilters\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemShow3d != null : "fx:id=\"menuItemShow3d\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuitemResetView != null : "fx:id=\"menuitemResetView\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemShowTableBelow != null : "fx:id=\"menuItemShowTableBelow\" was not injected: check your FXML file 'Main.fxml'.";
+        assert rootPane != null : "fx:id=\"rootPane\" was not injected: check your FXML file 'Table.fxml'.";
+        assert menuItemSave != null : "fx:id=\"menuItemSave\" was not injected: check your FXML file 'Table.fxml'.";
+        assert menuItemRefresh != null : "fx:id=\"menuItemRefresh\" was not injected: check your FXML file 'Table.fxml'.";
+        assert menuItemClose != null : "fx:id=\"menuItemClose\" was not injected: check your FXML file 'Table.fxml'.";
+        assert menuitemUndo != null : "fx:id=\"menuitemUndo\" was not injected: check your FXML file 'Table.fxml'.";
+        assert menuItemRedo != null : "fx:id=\"menuItemRedo\" was not injected: check your FXML file 'Table.fxml'.";
+        assert menuItemAbout != null : "fx:id=\"menuItemAbout\" was not injected: check your FXML file 'Table.fxml'.";
         assert menuItemTablePhantoms != null : "fx:id=\"menuItemTablePhantoms\" was not injected: check your FXML file 'Main.fxml'.";
         assert menuItemTableAnnulusDiameters != null : "fx:id=\"menuItemTableAnnulusDiameter\" was not injected: check your FXML file 'Main.fxml'.";
         assert menuItemTableLiteratureBases != null : "fx:id=\"menuItemTableLiteratureBase\" was not injected: check your FXML file 'Main.fxml'.";
@@ -111,157 +110,80 @@ public class MainController {
         assert menuItemTableFiles != null : "fx:id=\"menuItemTableFiles\" was not injected: check your FXML file 'Main.fxml'.";
         assert menuItemTableFileTypes != null : "fx:id=\"menuItemTableFileTypes\" was not injected: check your FXML file 'Main.fxml'.";
         assert menuItemTablePropertyFields != null : "fx:id=\"menuItemTablePropertyField\" was not injected: check your FXML file 'Main.fxml'.";
+        assert tabPane != null : "fx:id=\"tabPane\" was not injected: check your FXML file 'Table.fxml'.";
         
-        assert tableViewFiles != null : "fx:id=\"tableViewFiles\" was not injected: check your FXML file 'Main.fxml'.";
-        
-        // init 3d pane
-        Scene3D scene3d = new Scene3D(pane3d);
-        
-        String workingDir = System.getProperty("user.dir");
-		String filePath = workingDir +"/src/main/resources/model.STL";
-		scene3d.loadFile(filePath);
-        
-//		// init spreadsheet
-////		StageTable<PhantomTable, Phantom, Integer> stageTable = new StageTable<PhantomTable, Phantom, Integer>();
-//		PhantomTable phantomTable = new PhantomTable();
-////		stageTable.setTable(phantomTable);
-//		SpreadsheetViewCrud<PhantomTable, Phantom, Integer> view = 
-//    			new SpreadsheetViewCrud<PhantomTable, Phantom, Integer>(); 
-////		stageTable.setView(view);
-//		
-////		phantomTable.readAllData();
-//		view.setTable(phantomTable);
-//		Region spreadsheet = view.getGraphic();
-//		
-//        paneSpreadsheet.getChildren().add(spreadsheet);
-//        AnchorPane.setTopAnchor(spreadsheet, 0.0);
-//        AnchorPane.setLeftAnchor(spreadsheet, 0.0);
-//        AnchorPane.setRightAnchor(spreadsheet, 0.0);
-//        AnchorPane.setBottomAnchor(spreadsheet, 0.0);
-//        paneSpreadsheet.setMinWidth(300);
-        
-        // init tableview
-        FileTable fileTable = new FileTable();
-        TableViewCrud<FileTable, PhantomFile, Integer> viewTable = 
-    			new TableViewCrud<FileTable, PhantomFile, Integer>();
-        
-//        fileTable.readAllData();
-        viewTable.setTable(fileTable);
-        Control tableView  = viewTable.getGraphic();
-        paneTableView.getChildren().add(tableView);
-        
-        AnchorPane.setTopAnchor(tableView, 0.0);
-        AnchorPane.setLeftAnchor(tableView, 0.0);
-        AnchorPane.setRightAnchor(tableView, 0.0);
-        AnchorPane.setBottomAnchor(tableView, 0.0);
+        initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new PhantomTable(), "Phantoms");
         
     }
     
-    @FXML
-    void about(ActionEvent event) throws IOException {
-			FXMLLoader loader = new FXMLLoader(org.artorg.tools.phantomData.client.Main.class.getResource("About.fxml"));
-			AboutController controller = new AboutController();
-			loader.setController(controller);
-			Pane pane = loader.load();
-			
-			Scene scene = new Scene(pane,400,400);
-			scene.getStylesheets().add(org.artorg.tools.phantomData.client.Main.class.getResource("application.css").toExternalForm());
-			Stage stage = new Stage();
-			stage.setScene(scene);
-			stage.setWidth(pane.getPrefWidth());
-			stage.setHeight(pane.getPrefHeight()+50);
-			stage.setMinWidth(pane.getPrefWidth());
-			stage.setMinHeight(pane.getPrefHeight()+50);
-			stage.show();
-		
-    }
-
-    @FXML
-    void addphantom(ActionEvent event) throws IOException {
-    	FXMLLoader loader = new FXMLLoader(org.artorg.tools.phantomData.client.Main.class.getResource("AddPhantom.fxml"));
-		AddPhantomController controller = new AddPhantomController();
-		loader.setController(controller);
-		Pane pane = loader.load();
-		
-		Scene scene = new Scene(pane,400,400);
-		scene.getStylesheets().add(org.artorg.tools.phantomData.client.Main.class.getResource("application.css").toExternalForm());
-		Stage stage = new Stage();
-		stage.setScene(scene);
-		stage.setWidth(pane.getPrefWidth());
-		stage.setHeight(pane.getPrefHeight()+50);
-		stage.setMinWidth(pane.getPrefWidth());
-		stage.setMinHeight(pane.getPrefHeight()+50);
-		stage.show();
-    }
-
-    @FXML
-    void close(ActionEvent event) {
-    	Platform.exit();
-    }
-
-    @FXML
-    void export(ActionEvent event) {
-
-    }
-
-    @FXML
-    void importing(ActionEvent event) {
-
-    }
-
-    @FXML
-    void search(ActionEvent event) {
-
-    }
-
-    @FXML
-    void settings(ActionEvent event) {
-
-    }
+    public <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
+	ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+	ID_TYPE> void setTable(FilterTable<TABLE, ITEM, ID_TYPE> table) {
+		this.table = table;
+	}
     
-    @FXML
+    public <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
+	ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+	ID_TYPE> void setContent(TableGui<TABLE, ITEM, ID_TYPE> view) {
+		view.setTable(table);
+		
+		view.refresh();
+		this.view = view;
+		
+	}
+    
+    @SuppressWarnings("unchecked")
+	@FXML
     void openTableFileTypes(ActionEvent event) {
-    	initTableHelperTableView(new FileTypeTable(), "Files");
+    	initTableHelperTableView<FileTable,File, Integer>((FilterTable<FileTable, File, Integer>) new FileTypeTable(), "Files");
     }
     
-    @FXML
+    @SuppressWarnings("unchecked")
+	@FXML
     void openTableFiles(ActionEvent event) {
-    	initTableHelperTableView(new FileTable(), "Files");
+    	initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new FileTable(), "Files");
     }
 
-    @FXML
+    @SuppressWarnings("unchecked")
+	@FXML
     void openTablePhantoms(ActionEvent event) {    	
-    	initTableHelperTableView(new PhantomTable(), "Phantoms");
+    	initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new PhantomTable(), "Phantoms");
     }
 
-    @FXML
+    @SuppressWarnings("unchecked")
+	@FXML
     void openTableProperties(ActionEvent event) {
-    	initTableHelperTableView(new BooleanPropertyTable(), "Boolean Properties");
+    	initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new BooleanPropertyTable(), "Boolean Properties");
     }
 
-    @FXML
+    @SuppressWarnings("unchecked")
+	@FXML
     void openTableSpecials(ActionEvent event) {
-    	initTableHelperTableView(new SpecialTable(), "Specials");
+    	initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new SpecialTable(), "Specials");
     }
 
-    @FXML
+    @SuppressWarnings("unchecked")
+	@FXML
     void openTableAnnulusDiameter(ActionEvent event) {
-    	initTableHelperTableView(new AnnulusDiameterTable(), "Annulus Diameter");
+    	initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new AnnulusDiameterTable(), "Annulus Diameter");
     }
     
-    @FXML
+    @SuppressWarnings("unchecked")
+	@FXML
     void openTableFabricationTypes(ActionEvent event) {
-    	initTableHelperTableView(new FabricationTypeTable(), "Fabrication Types");
+    	initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new FabricationTypeTable(), "Fabrication Types");
     }
 
-    @FXML
+    @SuppressWarnings("unchecked")
+	@FXML
     void openTableLiteratureBases(ActionEvent event) {
-    	initTableHelperTableView(new LiteratureBaseTable(), "Literature Bases");
+    	initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new LiteratureBaseTable(), "Literature Bases");
     }
     
-    @FXML
+    @SuppressWarnings("unchecked")
+	@FXML
     void openTablePropertyFields(ActionEvent event) {
-    	initTableHelperTableView(new PropertyFieldTable(), "Property Fields");
+    	initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new PropertyFieldTable(), "Property Fields");
     }
 	
 	 private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
@@ -271,38 +193,22 @@ public class MainController {
 				String name) {
 			TableViewCrud<TABLE, ITEM, ID_TYPE> view = new TableViewCrud<TABLE, ITEM, ID_TYPE>();
 			initTableHelper(view, table, name);
-			view.showFilterButtons();
 	}
 		
 	private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
-		ID_TYPE> void initTableHelper(
+	ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+	ID_TYPE> void initTableHelper(
 				TableGui<TABLE, ITEM , ID_TYPE> view,
 				FilterTable<TABLE, ITEM, ID_TYPE> table, 
 				String name) {
-	    	FXMLLoader loader = new FXMLLoader(org.artorg.tools.phantomData.client.Main.class.getResource("Table.fxml"));
-			TableController<TABLE,ITEM,ID_TYPE> controller = new TableController<TABLE,ITEM,ID_TYPE>();
-			loader.setController(controller);
-			AnchorPane pane = null;
-			try {
-				pane = loader.load();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			controller.setTable(table);
+			this.setTable(table);
 			view.setTable(table);
-			controller.setContent(view);
+			this.setContent(view);
 			
-			Scene scene = new Scene(pane);
-			scene.getStylesheets().add(org.artorg.tools.phantomData.client.Main.class.getResource("application.css").toExternalForm());
-			Stage stage = new Stage();
-			stage.setScene(scene);
-			stage.setTitle(name);
-			stage.setWidth(800);
-			stage.setHeight(500);
-			
-			
-			stage.show();
+			final Tab tab = new Tab(name);
+			tab.setContent(view.getGraphic());
+			tabPane.getTabs().add(tab);
+			tabPane.getSelectionModel().select(tab);
 		}
     
 }
