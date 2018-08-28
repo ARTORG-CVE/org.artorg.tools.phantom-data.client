@@ -11,12 +11,18 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.artorg.tools.phantomData.client.table.FilterTable;
+import org.artorg.tools.phantomData.client.table.Table;
+import org.artorg.tools.phantomData.client.table.TableGui;
+import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
@@ -130,6 +136,32 @@ public class FilterMenuButton extends MenuButton {
 		this.getItems().add(itemFilterAll);
 		this.getItems().add(new SeparatorMenuItem());
 		
+	}
+	
+	public <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
+			ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+			ID_TYPE> void setTable(FilterTable<TABLE, ITEM, ID_TYPE> 
+				filterTable, int col, Runnable refresh ) {
+		Supplier<List<String>> getters = () -> {
+			List<String> getterList = new ArrayList<String>();
+			for (int row = 0; row < filterTable.getNrows(); row++) {
+				final int localRow = row;
+				getterList.add(filterTable.getColumnFilteredValue(localRow, col));
+			}
+			return getterList;
+		};
+		setGetters(getters);
+		this.addEventHandler(ComboBox.ON_HIDDEN, event -> {
+			filterTable.setColumnItemFilterValues(col, this.getSelectedValues());
+			if (this.isSortComparatorSet())
+				filterTable.setSortComparator(this.getSortComparator(), 
+						item -> filterTable.getFilteredValue(item,col));
+			filterTable.setColumnTextFilterValues(col, this.getRegex());
+		    refresh.run();
+		});
+		this.addEventHandler(ComboBox.ON_SHOWING, event -> {
+			this.updateNodes();
+		});
 	}
 	
 	public void setImage(Image image) {

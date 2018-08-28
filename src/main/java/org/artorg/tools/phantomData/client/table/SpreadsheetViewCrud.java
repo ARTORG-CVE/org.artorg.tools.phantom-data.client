@@ -64,17 +64,19 @@ public class SpreadsheetViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM
 			FilterMenuButton filterMenuButton = new FilterMenuButton();
 			filterMenuButton.setGetters(createGetters);
 			filterMenuButton.setText(value);
-			filterMenuButton.addEventHandler(ComboBox.ON_HIDDEN, event -> {
-				table.setColumnItemFilterValues(localCol, filterMenuButton.getSelectedValues());
-				if (filterMenuButton.isSortComparatorSet())
-					table.setSortComparator(filterMenuButton.getSortComparator(), 
-							item -> table.getFilteredValue(item,localCol));
-				table.setColumnTextFilterValues(localCol, filterMenuButton.getRegex());
-			    refresh();
-			});
-			filterMenuButton.addEventHandler(ComboBox.ON_SHOWING, event -> {
-				filterMenuButton.updateNodes();
-			});
+			filterMenuButton.setTable(table, localCol, () -> refresh()); 
+			
+//			filterMenuButton.addEventHandler(ComboBox.ON_HIDDEN, event -> {
+//				table.setColumnItemFilterValues(localCol, filterMenuButton.getSelectedValues());
+//				if (filterMenuButton.isSortComparatorSet())
+//					table.setSortComparator(filterMenuButton.getSortComparator(), 
+//							item -> table.getFilteredValue(item,localCol));
+//				table.setColumnTextFilterValues(localCol, filterMenuButton.getRegex());
+//			    refresh();
+//			});
+//			filterMenuButton.addEventHandler(ComboBox.ON_SHOWING, event -> {
+//				filterMenuButton.updateNodes();
+//			});
 			
 			cell.setGraphic(filterMenuButton);
 			rowItemFilter.add(cell);

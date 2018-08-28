@@ -11,7 +11,9 @@ import org.artorg.tools.phantomData.client.table.FilterTable;
 import org.artorg.tools.phantomData.client.table.SpreadsheetViewCrud;
 import org.artorg.tools.phantomData.client.table.StageTable;
 import org.artorg.tools.phantomData.client.table.Table;
+import org.artorg.tools.phantomData.client.table.TableGui;
 import org.artorg.tools.phantomData.client.table.TableViewCrud;
+import org.artorg.tools.phantomData.client.table.control.CustomHeaderLabel;
 import org.artorg.tools.phantomData.client.tables.AnnulusDiameterTable;
 import org.artorg.tools.phantomData.client.tables.BooleanPropertyTable;
 import org.artorg.tools.phantomData.client.tables.FabricationTypeTable;
@@ -33,18 +35,29 @@ import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Control;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -243,7 +256,7 @@ public class MainController {
 
     @FXML
     void openTablePhantoms(ActionEvent event) {    	
-    	initTableHelperSpreadsheet(new PhantomTable(), "Phantoms");
+    	initTableHelperTableView(new PhantomTable(), "Phantoms");
     }
 
     @FXML
@@ -281,31 +294,84 @@ public class MainController {
 	ID_TYPE> void initTableHelperSpreadsheet(
 			FilterTable<TABLE, ITEM, ID_TYPE> table, 
 			String name) {
-    	FXMLLoader loader = new FXMLLoader(org.artorg.tools.phantomData.client.Main.class.getResource("Table.fxml"));
-		TableController<TABLE,ITEM,ID_TYPE> controller = new TableController<TABLE,ITEM,ID_TYPE>();
-		loader.setController(controller);
-		AnchorPane pane = null;
-		try {
-			pane = loader.load();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		controller.setTable(table);
-		SpreadsheetViewCrud<TABLE, ITEM, ID_TYPE> view = 
-				new SpreadsheetViewCrud<TABLE, ITEM, ID_TYPE>();
-		view.setTable(table);
-		controller.setContent(view);
-		
-		Scene scene = new Scene(pane);
-		scene.getStylesheets().add(org.artorg.tools.phantomData.client.Main.class.getResource("application.css").toExternalForm());
-		Stage stage = new Stage();
-		stage.setScene(scene);
-		stage.setTitle(name);
-		stage.setWidth(800);
-		stage.setHeight(500);
-		
-		
-		stage.show();
+		initTableHelper(new SpreadsheetViewCrud<TABLE, ITEM, ID_TYPE>(), table, name);
 	}
+	
+	 private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
+		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+		ID_TYPE> void initTableHelperTableView(
+				FilterTable<TABLE, ITEM, ID_TYPE> table, 
+				String name) {
+			TableViewCrud<TABLE, ITEM, ID_TYPE> view = new TableViewCrud<TABLE, ITEM, ID_TYPE>();
+//			initTableHelper(view, table, name);
+			
+			
+			FXMLLoader loader = new FXMLLoader(org.artorg.tools.phantomData.client.Main.class.getResource("Table.fxml"));
+			TableController<TABLE,ITEM,ID_TYPE> controller = new TableController<TABLE,ITEM,ID_TYPE>();
+			loader.setController(controller);
+			AnchorPane pane = null;
+			try {
+				pane = loader.load();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			controller.setTable(table);
+			view.setTable(table);
+			controller.setContent(view);
+			
+			Scene scene = new Scene(pane);
+			scene.getStylesheets().add(org.artorg.tools.phantomData.client.Main.class.getResource("application.css").toExternalForm());
+			Stage stage = new Stage();
+			stage.setScene(scene);
+			stage.setTitle(name);
+			stage.setWidth(800);
+			stage.setHeight(500);
+			
+			
+			
+			stage.show();
+			
+			view.installMod();
+			
+	}
+		
+	private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
+		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+		ID_TYPE> void initTableHelper(
+				TableGui<TABLE, ITEM , ID_TYPE> view,
+				FilterTable<TABLE, ITEM, ID_TYPE> table, 
+				String name) {
+	    	FXMLLoader loader = new FXMLLoader(org.artorg.tools.phantomData.client.Main.class.getResource("Table.fxml"));
+			TableController<TABLE,ITEM,ID_TYPE> controller = new TableController<TABLE,ITEM,ID_TYPE>();
+			loader.setController(controller);
+			AnchorPane pane = null;
+			try {
+				pane = loader.load();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			controller.setTable(table);
+			view.setTable(table);
+			controller.setContent(view);
+			
+			Scene scene = new Scene(pane);
+			scene.getStylesheets().add(org.artorg.tools.phantomData.client.Main.class.getResource("application.css").toExternalForm());
+			Stage stage = new Stage();
+			stage.setScene(scene);
+			stage.setTitle(name);
+			stage.setWidth(800);
+			stage.setHeight(500);
+			
+			
+			stage.show();
+		}
+		
+		public <ITEM> void installMod(TableView<ITEM> table) {
+	        for (Node n : table.lookupAll(".column-header > .label")) {
+	            if (n instanceof Label) {
+	                new CustomHeaderLabel((Label) n);
+	            }
+	        }
+	    }
     
 }

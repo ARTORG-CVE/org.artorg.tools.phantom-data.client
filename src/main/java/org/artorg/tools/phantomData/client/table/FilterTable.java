@@ -1,6 +1,7 @@
 package org.artorg.tools.phantomData.client.table;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -9,6 +10,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
 import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
@@ -68,6 +70,13 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		}
 		columnIndexMapper = i -> mappedColumnIndexes.get(i);
 		
+	}
+	
+	@Override
+	public void readAllData() {
+		super.readAllData();
+		filteredItems.clear();
+		filteredItems.addAll(super.getItems());
 	}
 	
 	@Override
@@ -141,9 +150,6 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	}
 	
 	public void setColumnTextFilterValues(int columnIndex, String searchText) {
-		System.out.println(String.format("columnIndex: %d, mappedColIndex: %d, searchText: %s" 
-				,columnIndex, columnIndexMapper.apply(columnIndex), searchText));
-		
 		final Pattern p = Pattern.compile("(?i)" +searchText);
 		if (searchText.isEmpty())
 			columnTextFilterPredicates.set(columnIndexMapper.apply(columnIndex), item -> true);
@@ -153,28 +159,70 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	}
 	
 	public void applyFilter() {
-//		Predicate<ITEM> itemFilter = mappedColumnIndexes.stream()
-//				.filter(i -> i<columnItemFilterPredicates.size())
-//				.map(i -> columnItemFilterPredicates.get(i))
-//				.reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
-//		Predicate<ITEM> textFilter = mappedColumnIndexes.stream()
-//				.filter(i -> i<columnTextFilterPredicates.size())
-//				.map(i -> columnTextFilterPredicates.get(i))
-//				.reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
+		Predicate<ITEM> itemFilter = mappedColumnIndexes.stream()
+				.filter(i -> i<columnItemFilterPredicates.size())
+				.map(i -> columnItemFilterPredicates.get(i))
+				.reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
+		Predicate<ITEM> textFilter = mappedColumnIndexes.stream()
+				.filter(i -> i<columnTextFilterPredicates.size())
+				.map(i -> columnTextFilterPredicates.get(i))
+				.reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
 		
 //		for (int i=0; i<nFilteredCols; i++) {
 //			columnItemFilterPredicates.get(columnIndexMapper.apply(i))
 //		}
 //		
-		Predicate<ITEM> itemFilter = columnItemFilterPredicates.stream().reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
-		Predicate<ITEM> textFilter = columnTextFilterPredicates.stream().reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
+//		Predicate<ITEM> itemFilter = columnItemFilterPredicates.stream().reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
+//		Predicate<ITEM> textFilter = columnTextFilterPredicates.stream().reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
 //		
 		
 //		filterPredicate = itemFilter;
 		filterPredicate = itemFilter.and(textFilter);
-		this.filteredItems = FXCollections.observableArrayList();
+//		this.filteredItems = FXCollections.observableArrayList();
+		this.filteredItems.clear();
 		this.filteredItems.addAll(items.stream().filter(filterPredicate).sorted(sortComparator)
 				.collect(Collectors.toList()));
+	}
+	
+	@Override
+	public String toString() {
+		int nRows = this.getFilteredNrows();
+		int nCols = this.getFilteredNcols();
+		if (nRows == 0 || nCols == 0) return "";
+		String[][] content = new String[nRows][nCols];
+		
+		for(int row=0; row<nRows; row++) 
+			for(int col=0; col<nCols; col++)
+				content[row][col] = this.getFilteredValue(row, col);
+		
+		int[] columnWidth = new int[nCols];
+		for(int col=0; col<nCols; col++) {
+			int maxLength = 0;
+			for(int row=0; row<nRows; row++) {
+				if (content[row][col].length() > maxLength)
+					maxLength = content[row][col].length();
+			}
+			columnWidth[col] = maxLength;
+		}
+		
+		List<String> columnStrings = new ArrayList<String>();
+		
+		for(int col=0; col<nCols; col++) {
+			content[0][col] = content[0][col] +StringUtils
+					.repeat(" ", columnWidth[col] - content[0][col].length());	
+		}
+		columnStrings.add(Arrays.stream(content[0]).collect(Collectors.joining("|")));
+		columnStrings.add(StringUtils.repeat("-", columnStrings.get(0).length()));
+		
+		
+		for(int row=1; row<nRows; row++) {
+			for(int j=0; j<nCols; j++)
+				content[row][j] = content[row][j] +StringUtils
+					.repeat(" ", columnWidth[j] - content[row][j].length());
+			columnStrings.add(Arrays.stream(content[row]).collect(Collectors.joining("|")));
+		}
+		
+		return columnStrings.stream().collect(Collectors.joining("\n"));
 	}
 
 }

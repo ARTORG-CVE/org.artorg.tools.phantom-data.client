@@ -1,19 +1,24 @@
 package org.artorg.tools.phantomData.client.table;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.artorg.tools.phantomData.client.commandPattern.UndoManager;
 import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
 import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.TextField;
 
 public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
@@ -98,10 +103,51 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		return items.size();
 	}
 	
-	@Override
+//	@Override
+//	public String toString() {
+//		return items.stream().map(item -> item.toString())
+//				.collect(Collectors.joining("\n"));
+//	}
+	
+    @Override
 	public String toString() {
-		return items.stream().map(item -> item.toString())
-				.collect(Collectors.joining("\n"));
+		int nRows = this.getNrows();
+		int nCols = this.getNcols();
+		if (nRows == 0 || nCols == 0) return "";
+		String[][] content = new String[nRows][nCols];
+		
+		for(int row=0; row<nRows; row++) 
+			for(int col=0; col<nCols; col++)
+				content[row][col] = this.getValue(row, col);
+		
+		int[] columnWidth = new int[nCols];
+		for(int col=0; col<nCols; col++) {
+			int maxLength = 0;
+			for(int row=0; row<nRows; row++) {
+				if (content[row][col].length() > maxLength)
+					maxLength = content[row][col].length();
+			}
+			columnWidth[col] = maxLength;
+		}
+		
+		List<String> columnStrings = new ArrayList<String>();
+		
+		for(int col=0; col<nCols; col++) {
+			content[0][col] = content[0][col] +StringUtils
+					.repeat(" ", columnWidth[col] - content[0][col].length());	
+		}
+		columnStrings.add(Arrays.stream(content[0]).collect(Collectors.joining("|")));
+		columnStrings.add(StringUtils.repeat("-", columnStrings.get(0).length()));
+		
+		
+		for(int row=1; row<nRows; row++) {
+			for(int j=0; j<nCols; j++)
+				content[row][j] = content[row][j] +StringUtils
+					.repeat(" ", columnWidth[j] - content[row][j].length());
+			columnStrings.add(Arrays.stream(content[row]).collect(Collectors.joining("|")));
+		}
+		
+		return columnStrings.stream().collect(Collectors.joining("\n"));
 	}
 	
 	// Getters
