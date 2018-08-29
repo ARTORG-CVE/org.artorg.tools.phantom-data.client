@@ -107,6 +107,7 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		    	        	ITEM item = ((ITEM) t.getTableView().getItems().get(
 			    	                t.getTablePosition().getRow()));
 		    	        	table.setFilteredValue(item, localCol, t.getNewValue());
+		    	        	System.out.println(table.toString());
 		    	        }
 		    	    }
 		    	);
