@@ -18,6 +18,7 @@ import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
 import org.artorg.tools.phantomData.client.connectors.PhantomConnector;
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.connectors.property.BooleanPropertyConnector;
+import org.artorg.tools.phantomData.client.connectors.property.IntegerPropertyConnector;
 import org.artorg.tools.phantomData.client.connectors.property.PropertyContainerConnector;
 import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;
 import org.artorg.tools.phantomData.client.control.MainController;
@@ -30,6 +31,7 @@ import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.model.Special;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
+import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyContainer;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
@@ -86,7 +88,8 @@ public class MainTest extends Application {
 	private static FabricationTypeConnector fTypeConn = FabricationTypeConnector.get(); 
 	private static LiteratureBaseConnector litBaseConn = LiteratureBaseConnector.get();
 	private static PropertyFieldConnector fieldConn = PropertyFieldConnector.get();
-	private static BooleanPropertyConnector propConn = BooleanPropertyConnector.get();
+	private static BooleanPropertyConnector boolPropConn = BooleanPropertyConnector.get();
+	private static IntegerPropertyConnector intPropConn = IntegerPropertyConnector.get();
 	private static SpecialConnector specConn = SpecialConnector.get();
 	private static PropertyContainerConnector propContConn = PropertyContainerConnector.get();
 	private static PhantomConnector phantomConn = PhantomConnector.get();
@@ -125,37 +128,51 @@ public class MainTest extends Application {
 	private static void initSpecial() {
 		PropertyField field1 = new PropertyField("hasLeaflets", "has leaflets?");
 		PropertyField field2 = new PropertyField("hasCoronaries", "has coronaries?");
+		PropertyField field3 = new PropertyField("nSimulations", "num. of simulations?");
 		fieldConn.create(field1);
 		fieldConn.create(field2);
+		fieldConn.create(field3);
 		field1 = fieldConn.readById(1);
 		field2 = fieldConn.readById(2);
+		field3 = fieldConn.readById(3);
 		
-		propConn.create(new BooleanProperty(field1, true));
-		propConn.create(new BooleanProperty(field1, false));
-		propConn.create(new BooleanProperty(field2, true));
-		propConn.create(new BooleanProperty(field2, false));
+		boolPropConn.create(new BooleanProperty(field1, true));
+		boolPropConn.create(new BooleanProperty(field1, false));
+		boolPropConn.create(new BooleanProperty(field2, true));
+		boolPropConn.create(new BooleanProperty(field2, false));
+		intPropConn.create(new IntegerProperty(field3, 20));
 		
 		Collection<BooleanProperty> list1 = new ArrayList<BooleanProperty>();
-		list1.add(propConn.readById(1));
-		list1.add(propConn.readById(4));
-		PropertyContainer pc1 = new PropertyContainer(list1);
+		list1.add(boolPropConn.readById(1));
+		list1.add(boolPropConn.readById(4));
+		PropertyContainer pc1 = new PropertyContainer();
+		pc1.setBooleanProperties(list1);
 		propContConn.create(pc1);
 		specConn.create(new Special("L", pc1));
 		
 		Collection<BooleanProperty> list2 = new ArrayList<BooleanProperty>();
-		list2.add(propConn.readById(2));
-		list2.add(propConn.readById(3));
-		PropertyContainer pc2 = new PropertyContainer(list2);
+		list2.add(boolPropConn.readById(2));
+		list2.add(boolPropConn.readById(3));
+		PropertyContainer pc2 = new PropertyContainer();
+		pc2.setBooleanProperties(list2);
 		propContConn.create(pc2);
 		specConn.create(new Special("C", pc2));
 		
 		Collection<BooleanProperty> list3 = new ArrayList<BooleanProperty>();
-		list3.add(propConn.readById(2));
-		list3.add(propConn.readById(4));
-		PropertyContainer pc3 = new PropertyContainer(list3);
+		list3.add(boolPropConn.readById(2));
+		list3.add(boolPropConn.readById(4));
+		PropertyContainer pc3 = new PropertyContainer();
 		pc3.setBooleanProperties(list3);
 		propContConn.create(pc3);
 		specConn.create(new Special("N", pc3));
+		
+		Collection<IntegerProperty> list4 = new ArrayList<IntegerProperty>();
+		list4.add(intPropConn.readById(1));
+		PropertyContainer pc4 = new PropertyContainer();
+		pc4.setIntegerProperties(list4);
+		propContConn.create(pc4);
+		specConn.create(new Special("ZZ", pc4));
+		
 	}
 	
 	private static void initFiles() {

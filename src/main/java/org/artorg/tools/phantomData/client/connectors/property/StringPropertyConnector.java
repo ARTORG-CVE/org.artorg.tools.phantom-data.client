@@ -1,38 +1,38 @@
 package org.artorg.tools.phantomData.client.connectors.property;
 
 import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
-import org.artorg.tools.phantomData.server.controller.property.BooleanPropertyController;
-import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
+import org.artorg.tools.phantomData.server.controller.property.StringPropertyController;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
+import org.artorg.tools.phantomData.server.model.property.StringProperty;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class BooleanPropertyConnector extends HttpDatabaseCrud<BooleanProperty, Integer> {
+public class StringPropertyConnector extends HttpDatabaseCrud<StringProperty, Integer> {
 
-	private static final BooleanPropertyConnector connector;
+	private static final StringPropertyConnector connector;
 	
 	static {
-		connector = new BooleanPropertyConnector();
+		connector = new StringPropertyConnector();
 	}
 	
-	public static BooleanPropertyConnector get() {
+	public static StringPropertyConnector get() {
 		return connector;
 	}
 	
-	private BooleanPropertyConnector() {}
+	private StringPropertyConnector() {}
 	
 	@Override
 	public Class<?> getControllerClass() {
-		return BooleanPropertyController.class;
+		return StringPropertyController.class;
 	}
 
 	@Override
 	public Class<?> getArrayModelClass() {
-		return BooleanProperty[].class;
+		return StringProperty[].class;
 	}
 
 	@Override
 	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
-		return BooleanProperty.class;
+		return StringProperty.class;
 	}
 
 	private final String annoStringReadByPropertyField;
@@ -45,7 +45,7 @@ public class BooleanPropertyConnector extends HttpDatabaseCrud<BooleanProperty, 
 		annoStringReadByPropertyField = super.getAnnotationStringRead("PROPERTY_FIELD");
 	}
 	
-	public BooleanProperty readFirstByPropertyFieldName(PropertyField propertyField) {
+	public StringProperty readFirstByPropertyFieldName(PropertyField propertyField) {
 		return readByAttribute(propertyField.getId(), getAnnoStringReadByPropertyField());
 	}
 	

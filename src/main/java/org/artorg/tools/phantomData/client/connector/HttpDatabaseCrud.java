@@ -321,7 +321,7 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<ID_TYPE>, ID
 	
 	private void handleException(Exception e) {
 		if (e instanceof HttpServerErrorException) {
-			System.err.println("///// EXCEPTION HANDLER 77777");
+			System.err.println("///// EXCEPTION HANDLER //////");
 			e = (HttpServerErrorException)e;
 			System.out.println(e.toString());
 			System.out.println(e.getMessage());

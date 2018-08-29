@@ -3,6 +3,7 @@ package org.artorg.tools.phantomData.client.connectors.property;
 import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.server.controller.property.DatePropertyController;
 import org.artorg.tools.phantomData.server.model.property.DateProperty;
+import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 public class DatePropertyConnector extends HttpDatabaseCrud<DateProperty, Integer> {
@@ -32,6 +33,20 @@ public class DatePropertyConnector extends HttpDatabaseCrud<DateProperty, Intege
 	@Override
 	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
 		return DateProperty.class;
+	}
+	
+	private final String annoStringReadByPropertyField;
+	
+	public final String getAnnoStringReadByPropertyField() {
+		return annoStringReadByPropertyField;
+	}
+	
+	{
+		annoStringReadByPropertyField = super.getAnnotationStringRead("PROPERTY_FIELD");
+	}
+	
+	public DateProperty readFirstByPropertyFieldName(PropertyField propertyField) {
+		return readByAttribute(propertyField.getId(), getAnnoStringReadByPropertyField());
 	}
 
 }
