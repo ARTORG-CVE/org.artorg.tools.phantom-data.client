@@ -30,7 +30,7 @@ public class SpecialConnector extends HttpDatabaseCrud<Special, Integer> {
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<Special, Integer>> getModelClass() {
+	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
 		return Special.class;
 	}
 	

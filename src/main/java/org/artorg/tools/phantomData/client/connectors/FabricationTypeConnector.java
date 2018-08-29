@@ -1,6 +1,5 @@
 package org.artorg.tools.phantomData.client.connectors;
 
-import org.artorg.tools.phantomData.client.commandPattern.UndoManager;
 import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.server.controller.FabricationTypeController;
 import org.artorg.tools.phantomData.server.model.FabricationType;
@@ -31,7 +30,7 @@ public class FabricationTypeConnector extends HttpDatabaseCrud<FabricationType, 
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<FabricationType, Integer>> getModelClass() {
+	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
 		return FabricationType.class;
 	}
 	

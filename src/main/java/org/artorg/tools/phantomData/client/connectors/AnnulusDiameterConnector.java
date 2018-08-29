@@ -29,7 +29,7 @@ public class AnnulusDiameterConnector extends HttpDatabaseCrud<AnnulusDiameter, 
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<AnnulusDiameter, Integer>> getModelClass() {
+	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
 		return AnnulusDiameter.class;
 	}
 	

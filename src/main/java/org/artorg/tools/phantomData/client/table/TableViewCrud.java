@@ -23,7 +23,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.text.Text;
 
 public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+		ITEM extends DatabasePersistent<ID_TYPE>, 
 		ID_TYPE> extends TableGui<TABLE, ITEM , ID_TYPE> {
 	
 	private final TableView<ITEM> tableView;

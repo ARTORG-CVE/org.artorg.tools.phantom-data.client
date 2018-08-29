@@ -30,7 +30,7 @@ public class LiteratureBaseConnector extends HttpDatabaseCrud<LiteratureBase, In
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<LiteratureBase, Integer>> getModelClass() {
+	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
 		return LiteratureBase.class;
 	}
 	

@@ -30,7 +30,7 @@ public class PropertyFieldConnector extends HttpDatabaseCrud<PropertyField, Inte
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<PropertyField, Integer>> getModelClass() {
+	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
 		return PropertyField.class;
 	}
 

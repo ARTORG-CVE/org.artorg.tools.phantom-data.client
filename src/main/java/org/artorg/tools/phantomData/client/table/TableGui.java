@@ -9,7 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Control;
 
 public abstract class TableGui<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+		ITEM extends DatabasePersistent<ID_TYPE>, 
 		ID_TYPE> {
 	
 	private List<Runnable> refreshListener;

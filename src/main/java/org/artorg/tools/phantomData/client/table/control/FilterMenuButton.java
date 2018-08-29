@@ -139,7 +139,7 @@ public class FilterMenuButton extends MenuButton {
 	}
 	
 	public <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-			ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+			ITEM extends DatabasePersistent<ID_TYPE>, 
 			ID_TYPE> void setTable(FilterTable<TABLE, ITEM, ID_TYPE> 
 				filterTable, int col, Runnable refresh ) {
 		Supplier<List<String>> getters = () -> {

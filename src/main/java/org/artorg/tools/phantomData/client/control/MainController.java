@@ -27,19 +27,10 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-public class MainController
-
-//<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-//		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
-//		ID_TYPE> 
-		{
+public class MainController {
 	private FilterTable<?, ?, ?> table;
-	private TableGui<?, ?, ?> view;
-	private Stage stage;
 
-	public MainController(Stage stage) {
-		this.stage = stage;
-	}
+	public MainController(Stage stage) {}
 	
     @FXML
     private ResourceBundle resources;
@@ -90,8 +81,7 @@ public class MainController
     void redo(ActionEvent event) {
     	table.getUndoManager().redo();
     }
-
-    @SuppressWarnings("unchecked")
+    
 	@FXML
     void initialize() {
         assert rootPane != null : "fx:id=\"rootPane\" was not injected: check your FXML file 'Table.fxml'.";
@@ -112,82 +102,72 @@ public class MainController
         assert menuItemTablePropertyFields != null : "fx:id=\"menuItemTablePropertyField\" was not injected: check your FXML file 'Main.fxml'.";
         assert tabPane != null : "fx:id=\"tabPane\" was not injected: check your FXML file 'Table.fxml'.";
         
-        initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new PhantomTable(), "Phantoms");
+        initTableHelperTableView(new PhantomTable(), "Phantoms");
         
     }
     
     public <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-	ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+	ITEM extends DatabasePersistent<ID_TYPE>, 
 	ID_TYPE> void setTable(FilterTable<TABLE, ITEM, ID_TYPE> table) {
 		this.table = table;
 	}
     
-    public <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-	ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
-	ID_TYPE> void setContent(TableGui<TABLE, ITEM, ID_TYPE> view) {
-		view.setTable(table);
-		
-		view.refresh();
-		this.view = view;
-		
-	}
+//    public <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
+//	ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+//	ID_TYPE> void setContent(TableGui<TABLE, ITEM, ID_TYPE> view) {
+//		view.setTable((FilterTable<TABLE, ITEM, ID_TYPE>) table);
+//		
+//		view.refresh();
+//		
+//	}
     
-    @SuppressWarnings("unchecked")
 	@FXML
     void openTableFileTypes(ActionEvent event) {
-    	initTableHelperTableView<FileTable,File, Integer>((FilterTable<FileTable, File, Integer>) new FileTypeTable(), "Files");
+    	initTableHelperTableView(new FileTypeTable(), "Files");
     }
     
-    @SuppressWarnings("unchecked")
 	@FXML
     void openTableFiles(ActionEvent event) {
-    	initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new FileTable(), "Files");
+    	initTableHelperTableView(new FileTable(), "Files");
     }
-
-    @SuppressWarnings("unchecked")
+    
 	@FXML
     void openTablePhantoms(ActionEvent event) {    	
-    	initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new PhantomTable(), "Phantoms");
+    	initTableHelperTableView(new PhantomTable(), "Phantoms");
     }
-
-    @SuppressWarnings("unchecked")
+    
 	@FXML
     void openTableProperties(ActionEvent event) {
-    	initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new BooleanPropertyTable(), "Boolean Properties");
+    	initTableHelperTableView(new BooleanPropertyTable(), "Boolean Properties");
     }
-
-    @SuppressWarnings("unchecked")
+    
 	@FXML
     void openTableSpecials(ActionEvent event) {
-    	initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new SpecialTable(), "Specials");
+    	initTableHelperTableView(new SpecialTable(), "Specials");
     }
-
-    @SuppressWarnings("unchecked")
+    
 	@FXML
     void openTableAnnulusDiameter(ActionEvent event) {
-    	initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new AnnulusDiameterTable(), "Annulus Diameter");
+    	initTableHelperTableView(new AnnulusDiameterTable(), "Annulus Diameter");
     }
     
-    @SuppressWarnings("unchecked")
 	@FXML
     void openTableFabricationTypes(ActionEvent event) {
-    	initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new FabricationTypeTable(), "Fabrication Types");
-    }
-
-    @SuppressWarnings("unchecked")
-	@FXML
-    void openTableLiteratureBases(ActionEvent event) {
-    	initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new LiteratureBaseTable(), "Literature Bases");
+    	initTableHelperTableView(new FabricationTypeTable(), "Fabrication Types");
     }
     
-    @SuppressWarnings("unchecked")
+	@FXML
+    void openTableLiteratureBases(ActionEvent event) {
+    	initTableHelperTableView(new LiteratureBaseTable(), "Literature Bases");
+    }
+    
 	@FXML
     void openTablePropertyFields(ActionEvent event) {
-    	initTableHelperTableView((FilterTable<TABLE, ITEM, ID_TYPE>) new PropertyFieldTable(), "Property Fields");
+    	initTableHelperTableView(new PropertyFieldTable(), "Property Fields");
     }
 	
 	 private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+		ITEM extends DatabasePersistent<ID_TYPE>, 
 		ID_TYPE> void initTableHelperTableView(
 				FilterTable<TABLE, ITEM, ID_TYPE> table, 
 				String name) {
@@ -196,14 +176,13 @@ public class MainController
 	}
 		
 	private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-	ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+	ITEM extends DatabasePersistent<ID_TYPE>, 
 	ID_TYPE> void initTableHelper(
 				TableGui<TABLE, ITEM , ID_TYPE> view,
 				FilterTable<TABLE, ITEM, ID_TYPE> table, 
 				String name) {
 			this.setTable(table);
 			view.setTable(table);
-			this.setContent(view);
 			
 			final Tab tab = new Tab(name);
 			tab.setContent(view.getGraphic());

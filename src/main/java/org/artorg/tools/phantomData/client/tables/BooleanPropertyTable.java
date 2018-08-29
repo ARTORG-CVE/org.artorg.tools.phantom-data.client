@@ -34,8 +34,8 @@ public class BooleanPropertyTable extends FilterTable<BooleanPropertyTable, Bool
 				PropertyFieldConnector.get()));
 		columns.add(new Column<BooleanProperty, BooleanProperty, Integer>(
 				"value", item -> item, 
-				path -> String.valueOf(path.getBool()), 
-				(path,value) -> path.setBool(Boolean.valueOf(value)),
+				path -> String.valueOf(path.getValue()), 
+				(path,value) -> path.setValue(Boolean.valueOf(value)),
 				BooleanPropertyConnector.get()));
 		return columns;
 	}

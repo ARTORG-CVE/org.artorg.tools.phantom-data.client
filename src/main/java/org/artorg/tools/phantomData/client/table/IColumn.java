@@ -2,7 +2,7 @@ package org.artorg.tools.phantomData.client.table;
 
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public abstract class IColumn<ITEM extends DatabasePersistent<ITEM, ?>, SUB_ID_TYPE> {
+public abstract class IColumn<ITEM extends DatabasePersistent<?>, SUB_ID_TYPE> {
 	private boolean visible;
 	private boolean editable;
 	private boolean filterable;

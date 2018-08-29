@@ -7,8 +7,8 @@ import java.util.function.Function;
 import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class ColumnOptional<ITEM extends DatabasePersistent<ITEM, ?>, 
-		PATH extends DatabasePersistent<PATH, SUB_ID_TYPE>, 
+public class ColumnOptional<ITEM extends DatabasePersistent<?>, 
+		PATH extends DatabasePersistent<SUB_ID_TYPE>, 
 		SUB_ID_TYPE> extends IColumn<ITEM, SUB_ID_TYPE> {
 	private final Function<ITEM, Optional<PATH>> itemToPropertyGetter;
 	private final Function<PATH, String> propertyToValueGetter;

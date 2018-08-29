@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-public abstract class HttpDatabaseCrud<T extends DatabasePersistent<T, ID_TYPE>, ID_TYPE> {
+public abstract class HttpDatabaseCrud<T extends DatabasePersistent<ID_TYPE>, ID_TYPE> {
 	private final Function<Method, String[]> stringAnnosFuncCreate;
 	private final Function<Method, String[]> stringAnnosFuncRead;
 	private final Function<Method, String[]> stringAnnosFuncUpdate;
@@ -62,7 +62,7 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<T, ID_TYPE>,
 	
 	public abstract Class<?> getControllerClass();
 	public abstract Class<?> getArrayModelClass();
-	public abstract Class<? extends DatabasePersistent<T, ID_TYPE>> getModelClass();
+	public abstract Class<? extends DatabasePersistent<ID_TYPE>> getModelClass();
 	
 	public final String getAnnoStringControlClass() {return annoStringControlClass;}
 	public final String getAnnoStringRead() {return annoStringRead;}

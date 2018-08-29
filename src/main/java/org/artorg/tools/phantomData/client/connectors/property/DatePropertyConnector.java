@@ -30,7 +30,7 @@ public class DatePropertyConnector extends HttpDatabaseCrud<DateProperty, Intege
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<DateProperty, Integer>> getModelClass() {
+	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
 		return DateProperty.class;
 	}
 

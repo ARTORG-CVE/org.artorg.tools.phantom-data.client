@@ -29,7 +29,7 @@ public class BooleanPropertyConnector extends HttpDatabaseCrud<BooleanProperty, 
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<BooleanProperty, Integer>> getModelClass() {
+	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
 		return BooleanProperty.class;
 	}
 

@@ -18,7 +18,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-		ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
+		ITEM extends DatabasePersistent<ID_TYPE>, 
 		ID_TYPE> {
 	protected final ObservableList<ITEM> items;
 	private final List<IColumn<ITEM, ?>> columns;

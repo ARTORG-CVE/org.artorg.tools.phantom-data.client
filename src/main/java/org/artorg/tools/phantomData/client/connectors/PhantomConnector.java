@@ -33,7 +33,7 @@ public class PhantomConnector extends HttpDatabaseCrud<Phantom, Integer> {
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<Phantom, Integer>> getModelClass() {
+	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
 		return Phantom.class;
 	}
 	

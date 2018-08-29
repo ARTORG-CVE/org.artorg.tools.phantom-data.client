@@ -30,7 +30,7 @@ public class FileConnector extends HttpDatabaseCrud<PhantomFile, Integer> {
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<PhantomFile, Integer>> getModelClass() {
+	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
 		return PhantomFile.class;
 	}
 	

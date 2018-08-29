@@ -40,8 +40,8 @@ public class SpecialTable extends FilterTable<SpecialTable, Special, Integer> {
 				.forEach(entry -> columns.add(new ColumnOptional<Special, BooleanProperty, Integer>(entry.getValue(),
 						item -> item.getBooleanProperties().stream()
 								.filter(p -> p.getPropertyField().getId() == entry.getKey()).findFirst(),
-						path -> String.valueOf(path.getBool()),
-						(path, value) -> path.setBool(Boolean.valueOf((String) value)), "",
+						path -> String.valueOf(path.getValue()),
+						(path, value) -> path.setValue(Boolean.valueOf((String) value)), "",
 						BooleanPropertyConnector.get())));
 
 		return columns;
