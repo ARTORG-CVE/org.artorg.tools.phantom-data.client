@@ -7,6 +7,7 @@ import static org.artorg.tools.phantomData.server.boot.BootUtils.shutdownServer;
 import static org.artorg.tools.phantomData.server.boot.BootUtils.startingServer;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
@@ -17,6 +18,7 @@ import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
 import org.artorg.tools.phantomData.client.connectors.PhantomConnector;
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.connectors.property.BooleanPropertyConnector;
+import org.artorg.tools.phantomData.client.connectors.property.PropertyContainerConnector;
 import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
@@ -26,6 +28,7 @@ import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.model.Special;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
+import org.artorg.tools.phantomData.server.model.property.PropertyContainer;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 public class InitDatabaseTest {
@@ -117,20 +120,31 @@ public class InitDatabaseTest {
 		propConn.create(new BooleanProperty(field2, false));
 
 		SpecialConnector specConn = SpecialConnector.get();
-		List<BooleanProperty> list1 = new ArrayList<BooleanProperty>();
+		PropertyContainerConnector propContConn = PropertyContainerConnector.get();
+		
+		Collection<BooleanProperty> list1 = new ArrayList<BooleanProperty>();
 		list1.add(propConn.readById(1));
 		list1.add(propConn.readById(4));
-		specConn.create(new Special("L", list1));
+		PropertyContainer pc1 = new PropertyContainer();
+		pc1.setBooleanProperties(list1);
+		propContConn.create(pc1);
+		specConn.create(new Special("L", pc1));
 		
-		List<BooleanProperty> list2 = new ArrayList<BooleanProperty>();
+		Collection<BooleanProperty> list2 = new ArrayList<BooleanProperty>();
 		list2.add(propConn.readById(2));
 		list2.add(propConn.readById(3));
-		specConn.create(new Special("C", list2));
+		PropertyContainer pc2 = new PropertyContainer();
+		pc2.setBooleanProperties(list2);
+		propContConn.create(pc2);
+		specConn.create(new Special("C", pc2));
 		
-		List<BooleanProperty> list3 = new ArrayList<BooleanProperty>();
+		Collection<BooleanProperty> list3 = new ArrayList<BooleanProperty>();
 		list3.add(propConn.readById(2));
 		list3.add(propConn.readById(4));
-		specConn.create(new Special("N", list3));
+		PropertyContainer pc3 = new PropertyContainer();
+		pc3.setBooleanProperties(list3);
+		propContConn.create(pc3);
+		specConn.create(new Special("N", pc3));
 		
 		specConn.delete(2);
 		
@@ -138,7 +152,10 @@ public class InitDatabaseTest {
 		
 		List<BooleanProperty> list4 = new ArrayList<BooleanProperty>();
 		list4.add(propConn.readById(1));
-		specConn.update(new Special("Z", list4), 1);
+		PropertyContainer pc4 = new PropertyContainer();
+		pc4.setBooleanProperties(list4);
+		propContConn.create(pc4);
+		specConn.update(new Special("Z", pc4), 1);
 		
 		System.out.println(specConn.toString());
 		

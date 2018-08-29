@@ -7,6 +7,7 @@ import static org.artorg.tools.phantomData.server.boot.BootUtils.startingServer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
@@ -17,6 +18,7 @@ import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
 import org.artorg.tools.phantomData.client.connectors.PhantomConnector;
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.connectors.property.BooleanPropertyConnector;
+import org.artorg.tools.phantomData.client.connectors.property.PropertyContainerConnector;
 import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;
 import org.artorg.tools.phantomData.client.control.MainController;
 import org.artorg.tools.phantomData.client.tables.PhantomTable;
@@ -28,6 +30,7 @@ import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.model.Special;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
+import org.artorg.tools.phantomData.server.model.property.PropertyContainer;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 import javafx.application.Application;
@@ -85,6 +88,7 @@ public class MainTest extends Application {
 	private static PropertyFieldConnector fieldConn = PropertyFieldConnector.get();
 	private static BooleanPropertyConnector propConn = BooleanPropertyConnector.get();
 	private static SpecialConnector specConn = SpecialConnector.get();
+	private static PropertyContainerConnector propContConn = PropertyContainerConnector.get();
 	private static PhantomConnector phantomConn = PhantomConnector.get();
 	
 	public static void initDatabase() {
@@ -131,20 +135,27 @@ public class MainTest extends Application {
 		propConn.create(new BooleanProperty(field2, true));
 		propConn.create(new BooleanProperty(field2, false));
 		
-		List<BooleanProperty> list1 = new ArrayList<BooleanProperty>();
+		Collection<BooleanProperty> list1 = new ArrayList<BooleanProperty>();
 		list1.add(propConn.readById(1));
 		list1.add(propConn.readById(4));
-		specConn.create(new Special("L", list1));
+		PropertyContainer pc1 = new PropertyContainer(list1);
+		propContConn.create(pc1);
+		specConn.create(new Special("L", pc1));
 		
-		List<BooleanProperty> list2 = new ArrayList<BooleanProperty>();
+		Collection<BooleanProperty> list2 = new ArrayList<BooleanProperty>();
 		list2.add(propConn.readById(2));
 		list2.add(propConn.readById(3));
-		specConn.create(new Special("C", list2));
+		PropertyContainer pc2 = new PropertyContainer(list2);
+		propContConn.create(pc2);
+		specConn.create(new Special("C", pc2));
 		
-		List<BooleanProperty> list3 = new ArrayList<BooleanProperty>();
+		Collection<BooleanProperty> list3 = new ArrayList<BooleanProperty>();
 		list3.add(propConn.readById(2));
 		list3.add(propConn.readById(4));
-		specConn.create(new Special("N", list3));
+		PropertyContainer pc3 = new PropertyContainer(list3);
+		pc3.setBooleanProperties(list3);
+		propContConn.create(pc3);
+		specConn.create(new Special("N", pc3));
 	}
 	
 	private static void initFiles() {

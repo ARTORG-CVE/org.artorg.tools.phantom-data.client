@@ -31,14 +31,14 @@ public class SpecialTable extends FilterTable<SpecialTable, Special, Integer> {
 				(path, value) -> path.setShortcut(value), SpecialConnector.get()));
 
 		Map<Integer, String> map = new HashMap<Integer, String>();
-		Set<BooleanProperty> set = getItems().stream().flatMap(s -> s.getBooleanProperties().stream())
+		Set<BooleanProperty> set = getItems().stream().flatMap(s -> s.getPropertyContainer().getBooleanProperties().stream())
 				.collect(Collectors.toSet());
 		set.stream().sorted((p1, p2) -> p1.getPropertyField().getId().compareTo(p2.getPropertyField().getId()))
 				.forEach(p -> map.put(p.getPropertyField().getId(), p.getPropertyField().getDescription()));
 
 		map.entrySet().stream()
 				.forEach(entry -> columns.add(new ColumnOptional<Special, BooleanProperty, Integer>(entry.getValue(),
-						item -> item.getBooleanProperties().stream()
+						item -> item.getPropertyContainer().getBooleanProperties().stream()
 								.filter(p -> p.getPropertyField().getId() == entry.getKey()).findFirst(),
 						path -> String.valueOf(path.getValue()),
 						(path, value) -> path.setValue(Boolean.valueOf((String) value)), "",
