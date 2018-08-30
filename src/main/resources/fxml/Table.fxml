@@ -4,7 +4,6 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
-<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -49,7 +48,7 @@
 						</Menu>
 					</menus>
 				</MenuBar>
-            <TabPane fx:id="tabPane" VBox.vgrow="ALWAYS" />
+            <AnchorPane fx:id="contentPane" VBox.vgrow="ALWAYS" />
 			</children>
 		</VBox>
 	</children>

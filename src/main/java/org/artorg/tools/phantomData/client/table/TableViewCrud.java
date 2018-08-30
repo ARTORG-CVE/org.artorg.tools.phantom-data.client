@@ -3,9 +3,14 @@ package org.artorg.tools.phantomData.client.table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.table.control.FilterMenuButton;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+
+import com.sun.javafx.scene.control.skin.NestedTableColumnHeader;
+import com.sun.javafx.scene.control.skin.TableColumnHeader;
+import com.sun.javafx.scene.control.skin.TableHeaderRow;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -13,6 +18,7 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
@@ -21,6 +27,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
@@ -121,23 +128,24 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	    tableView.setItems(items);
 	    autoResizeColumns();
 	    super.refresh();
+	    
 	    Platform.runLater(() -> showFilterButtons());
 	}
 	
 	public void showFilterButtons() {
         for (Node n : tableView.lookupAll(".column-header > .label")) {
             if (n instanceof Label) {
-            	Label parent = (Label)n;
-            	String columnName = parent.getText();
+            	Label label = (Label)n;
+            	
+            	String columnName = label.getText();
             	Optional<FilterMenuButton> filterMenuButton = filterMenuButtons.stream()
             			.filter(f -> f.getText().equals(columnName))
             			.findFirst();
             	if(filterMenuButton.isPresent()) {
-            		parent.setGraphic(filterMenuButton.get());
-            		
-            		filterMenuButton.get().prefWidthProperty().bind(parent.widthProperty());
+            		filterMenuButton.get().prefWidthProperty().bind(label.widthProperty());
             		filterMenuButton.get().getStyleClass().add("filter-menu-button");
-            		parent.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            		label.setGraphic(filterMenuButton.get());
+            		label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);	
             	}
             	
             }

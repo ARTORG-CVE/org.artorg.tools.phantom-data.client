@@ -18,7 +18,14 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 	
-    public static void main( String[] args ) {		
+    public static void main( String[] args ) {	
+    	try {
+			BootUtils.showStartupFrame();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
     	BootUtils.runWithConsoleFrame(() -> {
 	    	new Thread(() -> startingServer(args)).start();
 			
@@ -31,7 +38,11 @@ public class Main extends Application {
 			logInfos();
     	});
 		
+    	try {
     	launch(args);
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    	}
     	
     }
     
@@ -58,7 +69,7 @@ public class Main extends Application {
 		stage.show();
 		stage.requestFocus();
 		stage.toFront();
-		BootUtils.closeConsoleFrame();
+//		BootUtils.closeConsoleFrame();
 		
 	}
     

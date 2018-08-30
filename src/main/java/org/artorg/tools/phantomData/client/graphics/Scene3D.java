@@ -87,7 +87,7 @@ public class Scene3D {
         handleKeyboard(subscene, world);
         handleMouse(subscene, world);
         handleMouseZoom(subscene, world);
-        buildAxes();
+//        buildAxes();
         
         subscene.setCamera(camera);
 		subscene.heightProperty().bind(pane3d.heightProperty());

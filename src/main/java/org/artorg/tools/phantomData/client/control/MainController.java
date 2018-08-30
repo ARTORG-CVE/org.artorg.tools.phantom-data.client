@@ -1,8 +1,11 @@
 package org.artorg.tools.phantomData.client.control;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.artorg.tools.phantomData.client.boot.BootUtils;
+import org.artorg.tools.phantomData.client.graphics.Scene3D;
 import org.artorg.tools.phantomData.client.table.FilterTable;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.table.TableGui;
@@ -16,21 +19,36 @@ import org.artorg.tools.phantomData.client.tables.LiteratureBaseTable;
 import org.artorg.tools.phantomData.client.tables.PhantomTable;
 import org.artorg.tools.phantomData.client.tables.PropertyFieldTable;
 import org.artorg.tools.phantomData.client.tables.SpecialTable;
+import org.artorg.tools.phantomData.server.model.Phantom;
+import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class MainController {
 	private FilterTable<?, ?, ?> table;
+	private Stage stage;
+	private TabPane tabPane;
 
-	public MainController(Stage stage) {}
+	{
+		tabPane = new TabPane();
+	}
+	
+	public MainController(Stage stage) {
+		this.stage = stage;
+	}
 	
     @FXML
     private ResourceBundle resources;
@@ -39,7 +57,7 @@ public class MainController {
     private URL location;
 
     @FXML
-    private AnchorPane rootPane;
+    private AnchorPane rootPane, contentPane;
 
     @FXML
     private MenuItem menuItemSave, menuItemRefresh, menuItemClose,
@@ -49,9 +67,6 @@ public class MainController {
     private MenuItem menuItemTablePhantoms, menuItemTableAnnulusDiameters, menuItemTableLiteratureBases, 
     	menuItemTableFabricationTypes, menuItemTableSpecials, menuItemTableProperties,
     	menuItemTableFiles, menuItemTableFileTypes, menuItemTablePropertyFields;
-    
-    @FXML
-    private TabPane tabPane;
     
     @FXML
     void about(ActionEvent event) {
@@ -100,9 +115,15 @@ public class MainController {
         assert menuItemTableFiles != null : "fx:id=\"menuItemTableFiles\" was not injected: check your FXML file 'Main.fxml'.";
         assert menuItemTableFileTypes != null : "fx:id=\"menuItemTableFileTypes\" was not injected: check your FXML file 'Main.fxml'.";
         assert menuItemTablePropertyFields != null : "fx:id=\"menuItemTablePropertyField\" was not injected: check your FXML file 'Main.fxml'.";
-        assert tabPane != null : "fx:id=\"tabPane\" was not injected: check your FXML file 'Table.fxml'.";
+        assert contentPane != null : "fx:id=\"contentPane\" was not injected: check your FXML file 'Table.fxml'.";
         
-        initTableHelperTableView(new PhantomTable(), "Phantoms");
+        openTablePhantoms(null);
+        
+        contentPane.getChildren().add(tabPane);
+        AnchorPane.setBottomAnchor(tabPane, 0.0);
+        AnchorPane.setLeftAnchor(tabPane, 0.0);
+        AnchorPane.setRightAnchor(tabPane, 0.0);
+        AnchorPane.setTopAnchor(tabPane, 0.0);
         
     }
     
@@ -133,7 +154,40 @@ public class MainController {
     
 	@FXML
     void openTablePhantoms(ActionEvent event) {    	
-    	initTableHelperTableView(new PhantomTable(), "Phantoms");
+		Tab tab = initTableHelperTableView(new PhantomTable(), "Phantoms");
+        
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/PhantomLayout.fxml"));
+        PhantomViewController controller = new PhantomViewController();
+		loader.setController(controller);
+		AnchorPane phantomLayout = null;
+		try {
+			phantomLayout = loader.load();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		Node tableView = tab.getContent();
+		controller.setMainTablePane(tableView);
+        AnchorPane.setBottomAnchor(phantomLayout, 0.0);
+        AnchorPane.setLeftAnchor(phantomLayout, 0.0);
+        AnchorPane.setRightAnchor(phantomLayout, 0.0);
+        AnchorPane.setTopAnchor(phantomLayout, 0.0);
+        tab.setContent(phantomLayout);
+        
+     // init 3d pane
+        Scene3D scene3d = new Scene3D(controller.getPane3d());
+        
+        String workingDir = System.getProperty("user.dir");
+		String filePath = workingDir +"/src/main/resources/model.STL";
+		scene3d.loadFile(filePath);
+		
+		
+		TableViewCrud<FileTable,PhantomFile,Integer> filesTable = createTableViewCrud(new FileTable(), "Files");
+    	controller.getBottomTablePane().getChildren().add(filesTable.getGraphic());
+    	AnchorPane.setBottomAnchor(filesTable.getGraphic(), 0.0);
+    	  AnchorPane.setLeftAnchor(filesTable.getGraphic(), 0.0);
+          AnchorPane.setRightAnchor(filesTable.getGraphic(), 0.0);
+          AnchorPane.setTopAnchor(filesTable.getGraphic(), 0.0);
     }
     
 	@FXML
@@ -168,16 +222,16 @@ public class MainController {
 	
 	 private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 		ITEM extends DatabasePersistent<ID_TYPE>, 
-		ID_TYPE> void initTableHelperTableView(
+		ID_TYPE> Tab initTableHelperTableView(
 				FilterTable<TABLE, ITEM, ID_TYPE> table, 
 				String name) {
 			TableViewCrud<TABLE, ITEM, ID_TYPE> view = new TableViewCrud<TABLE, ITEM, ID_TYPE>();
-			initTableHelper(view, table, name);
+			return initTableHelper(view, table, name);
 	}
 		
 	private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 	ITEM extends DatabasePersistent<ID_TYPE>, 
-	ID_TYPE> void initTableHelper(
+	ID_TYPE> Tab initTableHelper(
 				TableGui<TABLE, ITEM , ID_TYPE> view,
 				FilterTable<TABLE, ITEM, ID_TYPE> table, 
 				String name) {
@@ -188,6 +242,18 @@ public class MainController {
 			tab.setContent(view.getGraphic());
 			tabPane.getTabs().add(tab);
 			tabPane.getSelectionModel().select(tab);
+			return tab;
+		}
+	
+	private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
+	ITEM extends DatabasePersistent<ID_TYPE>, 
+	ID_TYPE> TableViewCrud<TABLE, ITEM, ID_TYPE> createTableViewCrud(
+				FilterTable<TABLE, ITEM, ID_TYPE> table, 
+				String name) {
+			this.setTable(table);
+			TableViewCrud<TABLE, ITEM, ID_TYPE> view = new TableViewCrud<TABLE, ITEM, ID_TYPE>();
+			view.setTable(table);
+			return view;
 		}
     
 }
