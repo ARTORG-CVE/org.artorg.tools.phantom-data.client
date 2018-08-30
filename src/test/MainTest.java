@@ -1,5 +1,6 @@
 import static org.artorg.tools.phantomData.server.boot.BootUtils.deleteDatabase;
 import static org.artorg.tools.phantomData.server.boot.BootUtils.deleteFileStructure;
+import static org.artorg.tools.phantomData.server.boot.BootUtils.isConnected;
 import static org.artorg.tools.phantomData.server.boot.BootUtils.logInfos;
 import static org.artorg.tools.phantomData.server.boot.BootUtils.prepareFileStructure;
 import static org.artorg.tools.phantomData.server.boot.BootUtils.shutdownServer;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.artorg.tools.phantomData.client.boot.BootUtils;
 import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
 import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
 import org.artorg.tools.phantomData.client.connectors.FileConnector;
@@ -22,7 +24,6 @@ import org.artorg.tools.phantomData.client.connectors.property.IntegerPropertyCo
 import org.artorg.tools.phantomData.client.connectors.property.PropertyContainerConnector;
 import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;
 import org.artorg.tools.phantomData.client.control.MainController;
-import org.artorg.tools.phantomData.client.tables.PhantomTable;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.FileType;
@@ -44,39 +45,43 @@ import javafx.stage.Stage;
 public class MainTest extends Application {
 	
     public static void main( String[] args ) {
-    	shutdownServer();
-		deleteDatabase();
-		deleteFileStructure();
-		prepareFileStructure();
-		logInfos();
-		startingServer(args);
-		
-		initDatabase();
- 
+    	BootUtils.runWithConsoleFrame(() -> {
+	    	shutdownServer();
+			deleteDatabase();
+			deleteFileStructure();
+			prepareFileStructure();
+			logInfos();
+			startingServer(args);
+			initDatabase();
+    	});
     	
     	launch(args);
     }
     
     @Override
 	public void start(Stage stage) throws Exception {
-//    	FXMLLoader loader = new FXMLLoader(org.artorg.tools.phantomData.client.Main.class.getResource("Table.fxml"));
-//		MainController<PhantomTable,Phantom,Integer> controller = new MainController<PhantomTable,Phantom,Integer>();
-//		loader.setController(controller);
-//		AnchorPane pane = null;
-//		try {
-//			pane = loader.load();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		Scene scene = new Scene(pane);
-//		scene.getStylesheets().add(org.artorg.tools.phantomData.client.Main.class.getResource("application.css").toExternalForm());
-//		stage.setScene(scene);
-//		stage.setTitle("Phantom Database");
-//		stage.setWidth(800);
-//		stage.setHeight(500);
-//		
-//		stage.show();
+    	FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/Table.fxml"));
+    	
+		MainController controller = new MainController(stage);
+		loader.setController(controller);
+		
+		AnchorPane pane = null;
+		try {
+			pane = loader.load();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    	Scene scene = new Scene(pane);
+		scene.getStylesheets().add(getClass().getClassLoader().getResource("css/application.css").toExternalForm());
+		
+		stage.setScene(scene);
+		stage.setTitle("Phantom Database");
+		stage.setWidth(800);
+		stage.setHeight(500);
+		stage.show();
+		stage.requestFocus();
+		stage.toFront();
+		BootUtils.closeConsoleFrame();
 	}
     
     @Override

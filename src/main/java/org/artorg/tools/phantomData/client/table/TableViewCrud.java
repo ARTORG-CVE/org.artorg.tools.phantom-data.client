@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Control;
@@ -21,6 +22,7 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 		ITEM extends DatabasePersistent<ID_TYPE>, 
@@ -46,16 +48,16 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		tableView.setColumnResizePolicy( TableView.UNCONSTRAINED_RESIZE_POLICY);
 	    tableView.getColumns().stream().forEach( (column) -> {
 	        Text t = new Text( column.getText() );
-	        double max = t.getLayoutBounds().getWidth();
+	        double max = t.getLayoutBounds().getWidth()+45.0;
 	        for ( int i = 0; i < tableView.getItems().size(); i++ ) {
 	            if ( column.getCellData( i ) != null ) {
 	                t = new Text( column.getCellData( i ).toString() );
-	                double calcwidth = t.getLayoutBounds().getWidth();
+	                double calcwidth = t.getLayoutBounds().getWidth()+10;
 	                if ( calcwidth > max )
 	                    max = calcwidth;
 	            }
 	        }
-	        column.setPrefWidth( max + 35.0d );
+	        column.setPrefWidth( max);
 	    } );
 	}
 
@@ -132,10 +134,12 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
             			.findFirst();
             	if(filterMenuButton.isPresent()) {
             		parent.setGraphic(filterMenuButton.get());
-            		filterMenuButton.get().textProperty().bind(parent.textProperty());
+            		
+            		filterMenuButton.get().prefWidthProperty().bind(parent.widthProperty());
             		filterMenuButton.get().getStyleClass().add("filter-menu-button");
+            		parent.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
             	}
-            	parent.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            	
             }
         }
     }

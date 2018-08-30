@@ -1,8 +1,5 @@
 package org.artorg.tools.phantomData.client.table.control;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -11,9 +8,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.table.FilterTable;
 import org.artorg.tools.phantomData.client.table.Table;
-import org.artorg.tools.phantomData.client.table.TableGui;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.application.Platform;
@@ -45,20 +42,9 @@ public class FilterMenuButton extends MenuButton {
 	private String regex;
 	
 	static {
-		InputStream normalStream = null;
-		try {
-			normalStream = new FileInputStream(new File("src/main/resources/arrow.png"));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		InputStream normalStream = Main.class.getClassLoader().getResourceAsStream("img/arrow.png");
 		imgNormal = new Image(normalStream);
-
-		InputStream filterStream = null;
-		try {
-			filterStream = new FileInputStream(new File("src/main/resources/filter.png"));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		InputStream filterStream = Main.class.getClassLoader().getResourceAsStream("img/filter.png");
 		imgFilter = new Image(filterStream);
 	}
 	
