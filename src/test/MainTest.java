@@ -45,7 +45,7 @@ import javafx.stage.Stage;
 public class MainTest extends Application {
 	
     public static void main( String[] args ) {
-    	BootUtils.runWithConsoleFrame(() -> {
+    	BootUtils.launch(300, () -> {
 	    	shutdownServer();
 			deleteDatabase();
 			deleteFileStructure();
@@ -81,7 +81,6 @@ public class MainTest extends Application {
 		stage.show();
 		stage.requestFocus();
 		stage.toFront();
-		BootUtils.closeConsoleFrame();
 	}
     
     @Override

@@ -2,26 +2,23 @@ package org.artorg.tools.phantomData.client.boot;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -29,165 +26,162 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.border.EtchedBorder;
 import javax.swing.text.DefaultCaret;
 
 import org.artorg.tools.phantomData.client.Main;
 
-public class BootUtils extends org.artorg.tools.phantomData.server.boot.BootUtils{
+public class BootUtils extends org.artorg.tools.phantomData.server.boot.BootUtils {
 	private static String text = "";
 	private static JFrame consoleframe;
 	private static JFrame startupFrame;
-	private static PrintStream defaultOut;
-	private static PrintStream defaultErr;
-	private static boolean errorOccured; 
 	private static JProgressBar progressBar;
 	private static JTextArea textArea;
-	
-	static {
-		
-		textArea = new JTextArea();
-	}
-	
-	public static boolean runWithConsoleFrame(Runnable rc) {
-		consoleframe = new JFrame();
-		
-		
-		
-		if (!isConnected())
-			showConsoleFrame();
-		
-		try {
-			rc.run();
+	private static double progress;
+	private static int nLines;
+	private static JLabel progressLabel;
 
-			return true;
+	static {
+		startupFrame = new JFrame();
+		consoleframe = new JFrame();
+		textArea = new JTextArea();
+		progressBar = new JProgressBar();
+		progressLabel = new JLabel();
+		text = "";
+		progress = 0.0;
+	}
+
+	public static boolean launch(int nConsoleLines, Runnable rc) {
+		BootUtils.nLines = nConsoleLines - 1;
+		try {
+			
+			if (!isConnected())
+				showStartupFrame();
+			redirectConsoleOuptut();
+			createConsoleFrame();
+			
+			rc.run();
+			startupFrame.setVisible(false);
+			startupFrame.dispose();
+
 		} catch (Exception e) {
 			e.printStackTrace();
+			consoleframe.setVisible(true);
 		}
+
 		return false;
-		
 	}
-	
-	public static void closeConsoleFrame() {
-//		if (!errorOccured && consoleframe != null) {
-//			consoleframe.setVisible(false);
-//			consoleframe.dispose();
-//			System.setOut(defaultOut);
-//			System.setErr(defaultErr);
-//		}
+
+	public static void showConsoleFrame() {
+		consoleframe.setVisible(true);
 	}
-	
-	public static void showStartupFrame() throws IOException {
-		startupFrame = new JFrame();
+
+	private static void showStartupFrame() {
 		startupFrame.setSize(300, 300);
 		startupFrame.setTitle("Phantom Database");
 		startupFrame.setResizable(false);
 		startupFrame.setUndecorated(true);
 		startupFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-	    Container content = startupFrame.getContentPane();
-	    content.setLayout(new BorderLayout());
-	    
-	    BufferedImage myPicture = ImageIO.read(Main.class.getClassLoader().getResourceAsStream("img/startup.png"));
+
+		Container content = startupFrame.getContentPane();
+		content.setLayout(new BorderLayout());
+
+		BufferedImage myPicture = null;
+		try {
+			myPicture = ImageIO
+					.read(Main.class.getClassLoader().getResourceAsStream("img/startup.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		JLabel startupImageLabel = new JLabel(new ImageIcon(myPicture));
-	    content.add(startupImageLabel, BorderLayout.NORTH);
+		content.add(startupImageLabel, BorderLayout.NORTH);
+
+		JPanel progressPanel = new JPanel();
+		progressPanel.setLayout(new BorderLayout());
 		
-		JPanel test = new JPanel();
-		test.setLayout(new BorderLayout());
-	    JLabel label = new JLabel();
-	    label.setText("Test");
-	    progressBar = new JProgressBar();
+		progressLabel.setText("Launching Application...");
+		progressLabel.setFont(new Font("monospaced", Font.PLAIN, 11));
+		
 		progressBar.setValue(0);
 		progressBar.setForeground(Color.green);
-		test.add(label, BorderLayout.WEST);
-		test.add(progressBar, BorderLayout.PAGE_END);
-		content.add(test, BorderLayout.PAGE_END);
-		
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-	    int x = (int) ((dimension.getWidth() - startupFrame.getWidth()) / 2);
-	    int y = (int) ((dimension.getHeight() - startupFrame.getHeight()) / 2);
-	    startupFrame.setLocation(x, y);
-	    startupFrame.pack();
-	    startupFrame.setVisible(true);
-	    redirectConsoleOuptut();
+		progressPanel.add(progressLabel, BorderLayout.WEST);
+		progressPanel.add(progressBar, BorderLayout.PAGE_END);
+		content.add(progressPanel, BorderLayout.PAGE_END);
+
+		alignFrame(startupFrame);
+		startupFrame.pack();
+		startupFrame.setVisible(true);
+
+	}
+
+	private static void redirectConsoleOuptut() {
+		System.setOut(addPrintStream(System.out));
+		System.setErr(addPrintStream(System.err));
 	}
 	
-	private static void redirectConsoleOuptut() {
-		defaultOut = System.out;
-		defaultErr = System.err;
+	private static PrintStream addPrintStream(PrintStream defaultPrintStream) {
+		Pattern pattern = Pattern.compile("[^:]: (.*)");
 		
-		System.setOut(new PrintStream(new OutputStream() {
+		return new PrintStream(new OutputStream() {
 			@Override
 			public void write(int b) throws IOException {
-			  text = text +String.valueOf((char) b);
-			  if (text.endsWith("\n") || text.endsWith("\r")) {
-				  List<String> lines = lineSplitter(text);
-				  
-				  progressBar.setValue(progressBar.getValue()+1);
-				  int start = lines.size() - 2000;
-						if (start < 0)
-							start = 0;
+				char c = (char) b;
+				text = text + String.valueOf(c);
+				if (text.endsWith("\n")) {
+					List<String> consoleLines = lineSplitter(text);	
+					while (consoleLines.size() > 2000 )
+						consoleLines.remove(0);
+					text = consoleLines.stream()
+							.collect(Collectors.joining("\n")) +"\n";
+					
+					progress = progress + 100.0 / nLines;
+					progressBar.setValue((int) progress);
 
-						final String output2 = lines.subList(start, lines.size()).stream()
-								.collect(Collectors.joining("\n"));
-						textArea.setText(output2);
+					String newLine = consoleLines.get(consoleLines.size()-1);
+					if (consoleLines.size() > 0) {
+						if (consoleLines.size() < 9)
+							progressLabel.setText("Launching Spring Boot...");
+						
+						Matcher m = pattern.matcher(newLine);
+						if (m.find())
+							progressLabel.setText(m.group(1));
 					}
+					
+					if (consoleframe.isVisible())
+						textArea.setText(text);
+					
+					defaultPrintStream.println(newLine);
 				}
-			}));
-		
-			System.setErr(new PrintStream(new OutputStream() {
-				@Override
-				public void write(int b) throws IOException {
-				  text = text +String.valueOf((char) b);
-				  if (text.endsWith("\n") || text.endsWith("\r")) {
-					  List<String> lines = lineSplitter(text);
-					  errorOccured = true;
-					  int start = lines.size() - 2000;
-							if (start < 0)
-								start = 0;
-		
-							final String output2 = lines.subList(start, lines.size()).stream()
-									.collect(Collectors.joining("\n"));
-							textArea.setText(output2);
-						}
-					}
-				}));
+			}
+		});
 	}
-	
-	
-    private static void showConsoleFrame() {
+
+	private static void createConsoleFrame() {
 		consoleframe.setSize(1200, 440);
 		consoleframe.setTitle("Phantom Data Server");
-//		frame.setResizable(false);
-//		frame.setUndecorated(true);			
-		
-		
 		textArea.setEditable(false);
 		textArea.setFont(new Font("monospaced", Font.PLAIN, 12));
-		DefaultCaret caret = (DefaultCaret)textArea.getCaret();
+		DefaultCaret caret = (DefaultCaret) textArea.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		JScrollPane scrollV = new JScrollPane(textArea);
 		scrollV.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		scrollV.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		consoleframe.add(scrollV);
-//		frame.add(textArea);
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-	    int x = (int) ((dimension.getWidth() - consoleframe.getWidth()) / 2);
-	    int y = (int) ((dimension.getHeight() - consoleframe.getHeight()) / 2);
-	    consoleframe.setLocation(x, y);
-    	consoleframe.setVisible(true);
-		
-    	
-		
-    }
-    
-    private static List<String> lineSplitter(String s) {
+		alignFrame(consoleframe);
+	}
+
+	private static List<String> lineSplitter(String s) {
 		List<String> list = new ArrayList<String>();
 		BufferedReader reader = new BufferedReader(new StringReader(s));
 		reader.lines().forEach(line -> list.add(line));
-		if (s.endsWith("\r") || s.endsWith("\n")) list.add("");
-		
+
 		return list;
-    }
+	}
+
+	private static void alignFrame(JFrame frame) {
+		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
+		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
+		frame.setLocation(x, y);
+	}
 
 }
