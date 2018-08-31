@@ -1,5 +1,6 @@
 package org.artorg.tools.phantomData.client.graphics;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -113,15 +114,15 @@ public class Scene3D {
     		pane3d);		
     }
     
-    public void loadFile(String filePath) {
+    public void loadFile(File file) {
     	if (group == null) {
-    		group = fileImporter.importFile(filePath);
+    		group = fileImporter.importFile(file);
     		world.getChildren().addAll(group);
     		group.getChildren().addAll(createLightSources());
 			buildCamera(group);
     	}
     	else
-    		group = fileImporter.importFile(filePath);
+    		group = fileImporter.importFile(file);
     }
 	
 	 private void buildCamera(Group group) {

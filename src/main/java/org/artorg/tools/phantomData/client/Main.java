@@ -5,13 +5,11 @@ import static org.artorg.tools.phantomData.server.boot.BootUtils.logInfos;
 import static org.artorg.tools.phantomData.server.boot.BootUtils.prepareFileStructure;
 import static org.artorg.tools.phantomData.server.boot.BootUtils.startingServer;
 
-import java.io.IOException;
-
-import org.artorg.tools.phantomData.client.boot.BootUtils;
+import org.artorg.tools.phantomData.client.boot.Launcher;
 import org.artorg.tools.phantomData.client.control.MainController;
+import org.artorg.tools.phantomData.client.io.ResourceReader;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -19,7 +17,8 @@ import javafx.stage.Stage;
 public class Main extends Application {
 	
     public static void main( String[] args ) {	
-    	BootUtils.launch(192, () -> {
+    	Launcher launcher = new Launcher();
+    	launcher.launch(192, () -> {
 	    	new Thread(() -> startingServer(args)).start();
 			
 			while(!isConnected()) {
@@ -34,7 +33,7 @@ public class Main extends Application {
     	try {
     		launch(args);
     	} catch(Exception e) {
-    		
+    		launcher.showConsoleFrame();
     		e.printStackTrace();
     	}
     	
@@ -42,19 +41,11 @@ public class Main extends Application {
     
     @Override
 	public void start(Stage stage) throws Exception {
-    	FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/Table.fxml"));
-    	
 		MainController controller = new MainController(stage);
-		loader.setController(controller);
+		AnchorPane pane = ResourceReader.<AnchorPane>loadFXML("fxml/Table.fxml", controller);
 		
-		AnchorPane pane = null;
-		try {
-			pane = loader.load();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
     	Scene scene = new Scene(pane);
-		scene.getStylesheets().add(getClass().getClassLoader().getResource("css/application.css").toExternalForm());
+		scene.getStylesheets().add(ResourceReader.readCSSstylesheet("css/application.css"));
 		
 		stage.setScene(scene);
 		stage.setTitle("Phantom Database");

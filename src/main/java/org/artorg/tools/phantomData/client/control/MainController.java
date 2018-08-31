@@ -1,11 +1,11 @@
 package org.artorg.tools.phantomData.client.control;
 
-import java.io.IOException;
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.artorg.tools.phantomData.client.boot.BootUtils;
 import org.artorg.tools.phantomData.client.graphics.Scene3D;
+import org.artorg.tools.phantomData.client.io.ResourceReader;
 import org.artorg.tools.phantomData.client.table.FilterTable;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.table.TableGui;
@@ -19,21 +19,16 @@ import org.artorg.tools.phantomData.client.tables.LiteratureBaseTable;
 import org.artorg.tools.phantomData.client.tables.PhantomTable;
 import org.artorg.tools.phantomData.client.tables.PropertyFieldTable;
 import org.artorg.tools.phantomData.client.tables.SpecialTable;
-import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -80,6 +75,7 @@ public class MainController {
     
     @FXML
     void refresh(ActionEvent event) {
+    	
     }
 
     @FXML
@@ -133,15 +129,6 @@ public class MainController {
 		this.table = table;
 	}
     
-//    public <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-//	ITEM extends DatabasePersistent<ITEM, ID_TYPE>, 
-//	ID_TYPE> void setContent(TableGui<TABLE, ITEM, ID_TYPE> view) {
-//		view.setTable((FilterTable<TABLE, ITEM, ID_TYPE>) table);
-//		
-//		view.refresh();
-//		
-//	}
-    
 	@FXML
     void openTableFileTypes(ActionEvent event) {
     	initTableHelperTableView(new FileTypeTable(), "Files");
@@ -156,15 +143,8 @@ public class MainController {
     void openTablePhantoms(ActionEvent event) {    	
 		Tab tab = initTableHelperTableView(new PhantomTable(), "Phantoms");
         
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/PhantomLayout.fxml"));
-        PhantomViewController controller = new PhantomViewController();
-		loader.setController(controller);
-		AnchorPane phantomLayout = null;
-		try {
-			phantomLayout = loader.load();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		PhantomViewController controller = new PhantomViewController();
+		AnchorPane phantomLayout = ResourceReader.<AnchorPane>loadFXML("fxml/PhantomLayout.fxml", controller);
 		
 		Node tableView = tab.getContent();
 		controller.setMainTablePane(tableView);
@@ -176,10 +156,8 @@ public class MainController {
         
      // init 3d pane
         Scene3D scene3d = new Scene3D(controller.getPane3d());
-        
-        String workingDir = System.getProperty("user.dir");
-		String filePath = workingDir +"/src/main/resources/model.STL";
-		scene3d.loadFile(filePath);
+		File file = ResourceReader.readAsFile("model.stl");
+		scene3d.loadFile(file);
 		
 		
 		TableViewCrud<FileTable,PhantomFile,Integer> filesTable = createTableViewCrud(new FileTable(), "Files");

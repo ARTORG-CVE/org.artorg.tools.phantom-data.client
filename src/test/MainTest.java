@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.boot.BootUtils;
+import org.artorg.tools.phantomData.client.boot.Launcher;
 import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
 import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
 import org.artorg.tools.phantomData.client.connectors.FileConnector;
@@ -45,17 +45,17 @@ import javafx.stage.Stage;
 public class MainTest extends Application {
 	
     public static void main( String[] args ) {
-    	BootUtils.launch(300, () -> {
-	    	shutdownServer();
-			deleteDatabase();
-			deleteFileStructure();
-			prepareFileStructure();
-			logInfos();
-			startingServer(args);
-			initDatabase();
-    	});
-    	
-    	launch(args);
+//    	Launcher.launch(300, () -> {
+//	    	shutdownServer();
+//			deleteDatabase();
+//			deleteFileStructure();
+//			prepareFileStructure();
+//			logInfos();
+//			startingServer(args);
+//			initDatabase();
+//    	});
+//    	
+//    	launch(args);
     }
     
     @Override

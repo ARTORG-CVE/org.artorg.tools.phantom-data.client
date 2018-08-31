@@ -34,36 +34,35 @@ public class FileImporter {
 			  Color.rgb(0, 190, 222));	// phantomColor
 	  }
 	  
-	  public Group importFile(String filePath) {
-		  return importStl(filePath);
+	  public Group importFile(File file) {
+		  return importStl(file);
 	  }
 	  
-	  public Group importStl(String filePath) {
-		  return createGroup(loadMeshViews(new StlMeshImporter(), filePath));
+	  public Group importStl(File file) {
+		  return createGroup(loadMeshViews(new StlMeshImporter(), file));
 	  }
 	  
-	  public Group import3ds(String filePath) {
-		  return createGroup(loadMeshViews(new TdsModelImporter(), filePath));
+	  public Group import3ds(File file) {
+		  return createGroup(loadMeshViews(new TdsModelImporter(), file));
 	  }
 	  
-	  public Group importCol(String filePath) {
-		  return createGroup(loadMeshViews(new ColModelImporter(), filePath));
+	  public Group importCol(File file) {
+		  return createGroup(loadMeshViews(new ColModelImporter(), file));
 	  }
 	  
-	  public Group importFxml(String filePath) {
-		  return createGroup(loadMeshViews(new FxmlModelImporter(), filePath));
+	  public Group importFxml(File file) {
+		  return createGroup(loadMeshViews(new FxmlModelImporter(), file));
 	  } 
 	  
-	  public Group importObj(String filePath) {
-		  return createGroup(loadMeshViews(new ObjModelImporter(), filePath));
+	  public Group importObj(File file) {
+		  return createGroup(loadMeshViews(new ObjModelImporter(), file));
 	  } 
 	  
-	  public Group importX3d(String filePath) {
-		  return createGroup(loadMeshViews(new X3dModelImporter(), filePath));
+	  public Group importX3d(File file) {
+		  return createGroup(loadMeshViews(new X3dModelImporter(), file));
 	  } 
 	  
-	  private MeshView[] loadMeshViews(Importer importer, String filePath) {
-	    File file = new File(filePath);
+	  private MeshView[] loadMeshViews(Importer importer, File file) {
 	    importer.read(file);
 	    Mesh mesh = (Mesh) importer.getImport();
 
