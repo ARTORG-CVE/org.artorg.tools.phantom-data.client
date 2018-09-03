@@ -11,10 +11,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.net.URI;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -40,7 +43,8 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
-import org.artorg.tools.phantomData.client.io.ResourceReader;
+import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.server.io.ResourceReader;
 
 public class Launcher extends org.artorg.tools.phantomData.server.boot.BootUtils {
 	private String text = "";
@@ -71,7 +75,20 @@ public class Launcher extends org.artorg.tools.phantomData.server.boot.BootUtils
 			redirectConsoleOuptut();
 			createConsoleFrame();
 			
-			rc.run();
+			String uriPath = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().toString();
+			Pattern pattern = Pattern.compile("jar:file:/(.*)[\\u002e]jar");
+			Matcher m = pattern.matcher(uriPath);
+			
+			File parentDir = null;
+			if(m.find()) {
+				parentDir = new File(m.group(1)).getParentFile();
+			} else {
+				parentDir = new File(System.getProperty("user.home") +"\\Desktop\\");
+			}
+			System.out.println(parentDir.getAbsolutePath());
+			
+			
+//			rc.run();
 			startupFrame.setVisible(false);
 			startupFrame.dispose();
 
@@ -204,6 +221,7 @@ public class Launcher extends org.artorg.tools.phantomData.server.boot.BootUtils
 		
 		consoleFrame.add(scrollV);
 		alignFrame(consoleFrame);
+		consoleFrame.setVisible(true);
 	}
 	
 	private void appendToPaneOut(JTextPane tp, String msg) {

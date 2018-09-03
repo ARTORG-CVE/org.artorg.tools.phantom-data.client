@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.graphics.Scene3D;
-import org.artorg.tools.phantomData.client.io.ResourceReader;
 import org.artorg.tools.phantomData.client.table.FilterTable;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.table.TableGui;
@@ -19,6 +18,8 @@ import org.artorg.tools.phantomData.client.tables.LiteratureBaseTable;
 import org.artorg.tools.phantomData.client.tables.PhantomTable;
 import org.artorg.tools.phantomData.client.tables.PropertyFieldTable;
 import org.artorg.tools.phantomData.client.tables.SpecialTable;
+import org.artorg.tools.phantomData.server.boot.BootUtils;
+import org.artorg.tools.phantomData.server.io.ResourceReader;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
@@ -70,6 +71,7 @@ public class MainController {
 
     @FXML
     void close(ActionEvent event) {
+    	BootUtils.shutdownServer();
     	Platform.exit();
     }
     

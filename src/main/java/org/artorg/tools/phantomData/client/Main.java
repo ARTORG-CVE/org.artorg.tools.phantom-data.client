@@ -7,7 +7,7 @@ import static org.artorg.tools.phantomData.server.boot.BootUtils.startingServer;
 
 import org.artorg.tools.phantomData.client.boot.Launcher;
 import org.artorg.tools.phantomData.client.control.MainController;
-import org.artorg.tools.phantomData.client.io.ResourceReader;
+import org.artorg.tools.phantomData.server.io.ResourceReader;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
