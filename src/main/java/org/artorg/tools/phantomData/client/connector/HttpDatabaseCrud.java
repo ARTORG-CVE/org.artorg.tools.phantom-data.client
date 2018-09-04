@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.artorg.tools.phantomData.server.boot.BootUtils;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -41,6 +40,16 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<ID_TYPE>, ID
 	private final String annoStringDelete;
 	private final String annoStringUpdate;
 	
+	
+	private static String urlLocalhost;
+	
+	public static String getUrlLocalhost() {
+		return urlLocalhost;
+	}
+	public static void setUrlLocalhost(String urlLocalhost) {
+		HttpDatabaseCrud.urlLocalhost = urlLocalhost;
+	}
+
 	{
 		stringAnnosFuncCreate = m -> m.getAnnotation(PostMapping.class).value();
 		stringAnnosFuncRead = m -> m.getAnnotation(GetMapping.class).value();
@@ -149,7 +158,7 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<ID_TYPE>, ID
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			RestTemplate restTemplate = new RestTemplate();
-			String url = BootUtils.URL_LOCALHOST + "/" 
+			String url = getUrlLocalhost() + "/" 
 					+ getAnnoStringControlClass() + "/" + getAnnoStringCreate();
 			HttpEntity<T> requestEntity = new HttpEntity<T>(t, headers);
 			URI uri = restTemplate.postForLocation(url, requestEntity);
@@ -177,7 +186,7 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<ID_TYPE>, ID
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			RestTemplate restTemplate = new RestTemplate();
-			String url = BootUtils.URL_LOCALHOST + "/" 
+			String url = getUrlLocalhost() + "/" 
 					+ getAnnoStringControlClass() + "/" + getAnnoStringDelete();
 			HttpEntity<T> requestEntity = new HttpEntity<T>(headers);
 			restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, Void.class, id);
@@ -193,7 +202,7 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<ID_TYPE>, ID
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			RestTemplate restTemplate = new RestTemplate();
-			String url = BootUtils.URL_LOCALHOST + "/" 
+			String url = getUrlLocalhost() + "/" 
 					+ getAnnoStringControlClass() + "/" + getAnnoStringDelete();
 			HttpEntity<T> requestEntity = new HttpEntity<T>(headers);
 			restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, Void.class, t.getId());
@@ -209,7 +218,7 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<ID_TYPE>, ID
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		RestTemplate restTemplate = new RestTemplate();
-		String url = BootUtils.URL_LOCALHOST + "/" 
+		String url = getUrlLocalhost() + "/" 
 				+ getAnnoStringControlClass() + "/" + getAnnoStringRead();
 		T result = (T) restTemplate.getForObject(url, getModelClass(), id);
 		result.setId(id);
@@ -221,7 +230,7 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<ID_TYPE>, ID
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		RestTemplate restTemplate = new RestTemplate();
-		String url = BootUtils.URL_LOCALHOST + "/" 
+		String url = getUrlLocalhost() + "/" 
 				+ getAnnoStringControlClass() + "/" + annString;
 		R result = (R) restTemplate.getForObject(url, getModelClass(), attribute);
 		return result;
@@ -250,7 +259,7 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<ID_TYPE>, ID
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			RestTemplate restTemplate = new RestTemplate();
-			String url = BootUtils.URL_LOCALHOST + "/" 
+			String url = getUrlLocalhost() + "/" 
 					+ getAnnoStringControlClass() + "/" + getAnnoStringUpdate();
 			HttpEntity<T> requestEntity = new HttpEntity<T>(t, headers);
 			restTemplate.put(url, requestEntity);
@@ -271,7 +280,7 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<ID_TYPE>, ID
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		RestTemplate restTemplate = new RestTemplate();
-		String url = BootUtils.URL_LOCALHOST + "/" + getAnnoStringControlClass() + "/" + getAnnoStringReadAll();
+		String url = getUrlLocalhost() + "/" + getAnnoStringControlClass() + "/" + getAnnoStringReadAll();
 		HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
 		ResponseEntity<?> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 				getArrayModelClass());

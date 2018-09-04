@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.graphics.Scene3D;
 import org.artorg.tools.phantomData.client.table.FilterTable;
 import org.artorg.tools.phantomData.client.table.Table;
@@ -18,7 +19,7 @@ import org.artorg.tools.phantomData.client.tables.LiteratureBaseTable;
 import org.artorg.tools.phantomData.client.tables.PhantomTable;
 import org.artorg.tools.phantomData.client.tables.PropertyFieldTable;
 import org.artorg.tools.phantomData.client.tables.SpecialTable;
-import org.artorg.tools.phantomData.server.boot.BootUtils;
+import org.artorg.tools.phantomData.server.boot.BootUtilsServer;
 import org.artorg.tools.phantomData.server.io.ResourceReader;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
@@ -37,6 +38,38 @@ public class MainController {
 	private FilterTable<?, ?, ?> table;
 	private Stage stage;
 	private TabPane tabPane;
+	
+	private String urlLocalhost = "http://localhost:8183";
+	private Class<?> mainClass = Main.class;
+	
+	
+//	public static Class<?> getMainClass() {
+//		return mainClass;
+//	}
+//
+//	public static void setMainClass(Class<?> mainClass) {
+//		MainController.mainClass = mainClass;
+//	}
+//
+//	public static String getUrlLocalhost() {
+//		return urlLocalhost;
+//	}
+//
+//	public static void setUrlLocalhost(String urlLocalhost) {
+//		System.out.println(urlLocalhost);
+//		MainController.urlLocalhost = urlLocalhost;
+//	}
+
+	public static String getUrlShutdownActuator() {
+		return urlShutdownActuator;
+	}
+
+	public static void setUrlShutdownActuator(String urlShutdownActuator) {
+		MainController.urlShutdownActuator = urlShutdownActuator;
+	}
+
+	private static String urlShutdownActuator;
+	
 
 	{
 		tabPane = new TabPane();
@@ -71,7 +104,7 @@ public class MainController {
 
     @FXML
     void close(ActionEvent event) {
-    	BootUtils.shutdownServer();
+    	BootUtilsServer.shutdownServer(urlLocalhost, urlShutdownActuator);
     	Platform.exit();
     }
     
@@ -146,7 +179,7 @@ public class MainController {
 		Tab tab = initTableHelperTableView(new PhantomTable(), "Phantoms");
         
 		PhantomViewController controller = new PhantomViewController();
-		AnchorPane phantomLayout = ResourceReader.<AnchorPane>loadFXML("fxml/PhantomLayout.fxml", controller);
+		AnchorPane phantomLayout = ResourceReader.loadFXML("fxml/PhantomLayout.fxml", controller);
 		
 		Node tableView = tab.getContent();
 		controller.setMainTablePane(tableView);
@@ -158,7 +191,7 @@ public class MainController {
         
      // init 3d pane
         Scene3D scene3d = new Scene3D(controller.getPane3d());
-		File file = ResourceReader.readAsFile("model.stl");
+		File file = ResourceReader.readAsFile("model.stl", mainClass);
 		scene3d.loadFile(file);
 		
 		
