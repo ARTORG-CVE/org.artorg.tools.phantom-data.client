@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.artorg.tools.phantomData.client.boot.LaunchConfigurationsClient;
 import org.artorg.tools.phantomData.client.control.MainController;
+import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.BootApplication;
 import org.artorg.tools.phantomData.server.boot.LaunchConfigurationsServer;
 import org.artorg.tools.phantomData.server.boot.ServerLauncher;
@@ -35,6 +36,8 @@ public class Main extends Application {
 //			logInfos();
 //    	});
 		
+		FxUtil.setMainFxClass(Main.class);
+		
     	try {
     		launch(args);
     	} catch(Exception e) {
@@ -45,24 +48,12 @@ public class Main extends Application {
     }
     
     @Override
-	public void start(Stage stage) throws Exception {
-    	FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/Table.fxml"));
-    	
+	public void start(Stage stage) throws Exception {    	
 		MainController controller = new MainController(stage);
-		loader.setController(controller);
-		
-		AnchorPane pane = null;
-		try {
-			pane = loader.load();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-    	
-//		MainController controller = new MainController(stage);
-//		AnchorPane pane = ResourceReader.loadFXML("fxml\\Table.fxml", controller);
+		AnchorPane pane = FxUtil.loadFXML("fxml\\Table.fxml", controller);
 		
     	Scene scene = new Scene(pane);
-		scene.getStylesheets().add(ResourceReader.readCSSstylesheet("css/application.css", Main.class));
+		scene.getStylesheets().add(FxUtil.readCSSstylesheet("css/application.css"));
 		
 		stage.setScene(scene);
 		stage.setTitle("Phantom Database");

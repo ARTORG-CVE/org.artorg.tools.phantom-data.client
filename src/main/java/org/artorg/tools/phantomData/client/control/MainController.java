@@ -19,6 +19,7 @@ import org.artorg.tools.phantomData.client.tables.LiteratureBaseTable;
 import org.artorg.tools.phantomData.client.tables.PhantomTable;
 import org.artorg.tools.phantomData.client.tables.PropertyFieldTable;
 import org.artorg.tools.phantomData.client.tables.SpecialTable;
+import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.boot.BootUtilsServer;
 import org.artorg.tools.phantomData.server.io.ResourceReader;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
@@ -179,7 +180,7 @@ public class MainController {
 		Tab tab = initTableHelperTableView(new PhantomTable(), "Phantoms");
         
 		PhantomViewController controller = new PhantomViewController();
-		AnchorPane phantomLayout = ResourceReader.loadFXML("fxml/PhantomLayout.fxml", controller);
+		AnchorPane phantomLayout = FxUtil.loadFXML("fxml/PhantomLayout.fxml", controller);
 		
 		Node tableView = tab.getContent();
 		controller.setMainTablePane(tableView);
