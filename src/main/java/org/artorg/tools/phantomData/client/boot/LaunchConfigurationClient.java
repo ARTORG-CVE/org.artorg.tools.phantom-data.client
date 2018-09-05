@@ -20,8 +20,8 @@ public class LaunchConfigurationClient extends LaunchConfigurationServer {
 	}
 	
 	@Override
-	protected void setMainClass(Class<?> mainClass) {
-		super.setMainClass(mainClass);
+	protected void setBootApplicationClass(Class<?> mainClass) {
+		super.setBootApplicationClass(mainClass);
 //		MainController.setMainClass(mainClass);
 	}
 	

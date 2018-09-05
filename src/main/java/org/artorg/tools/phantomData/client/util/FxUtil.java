@@ -3,7 +3,7 @@ package org.artorg.tools.phantomData.client.util;
 import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 
-import static org.artorg.tools.phantomData.server.io.ResourceReader.*;
+import static org.artorg.tools.phantomData.server.io.IOutil.*;
 
 public class FxUtil {
 	private static Class<?> mainClass;

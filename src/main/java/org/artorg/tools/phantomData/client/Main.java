@@ -8,7 +8,7 @@ import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.BootApplication;
 import org.artorg.tools.phantomData.server.boot.LaunchConfigurationsServer;
 import org.artorg.tools.phantomData.server.boot.ServerLauncher;
-import org.artorg.tools.phantomData.server.io.ResourceReader;
+import org.artorg.tools.phantomData.server.io.IOutil;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

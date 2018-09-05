@@ -21,7 +21,7 @@ import org.artorg.tools.phantomData.client.tables.PropertyFieldTable;
 import org.artorg.tools.phantomData.client.tables.SpecialTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.boot.BootUtilsServer;
-import org.artorg.tools.phantomData.server.io.ResourceReader;
+import org.artorg.tools.phantomData.server.io.IOutil;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
@@ -192,7 +192,7 @@ public class MainController {
         
      // init 3d pane
         Scene3D scene3d = new Scene3D(controller.getPane3d());
-		File file = ResourceReader.readAsFile("model.stl", mainClass);
+		File file = IOutil.readAsFile("model.stl", mainClass);
 		scene3d.loadFile(file);
 		
 		
