@@ -1,11 +1,11 @@
 package org.artorg.tools.phantomData.client.boot;
 
-import static org.artorg.tools.phantomData.server.boot.BootUtilsServer.deleteDatabase;
-import static org.artorg.tools.phantomData.server.boot.BootUtilsServer.deleteFileStructure;
-import static org.artorg.tools.phantomData.server.boot.BootUtilsServer.isConnected;
-import static org.artorg.tools.phantomData.server.boot.BootUtilsServer.prepareFileStructure;
-import static org.artorg.tools.phantomData.server.boot.BootUtilsServer.shutdownServer;
-import static org.artorg.tools.phantomData.server.boot.BootUtilsServer.startingServer;
+import static org.artorg.tools.phantomData.server.boot.util.BootUtilsServer.deleteDatabase;
+import static org.artorg.tools.phantomData.server.boot.util.BootUtilsServer.deleteFileStructure;
+import static org.artorg.tools.phantomData.server.boot.util.BootUtilsServer.isConnected;
+import static org.artorg.tools.phantomData.server.boot.util.BootUtilsServer.prepareFileStructure;
+import static org.artorg.tools.phantomData.server.boot.util.BootUtilsServer.shutdownServer;
+import static org.artorg.tools.phantomData.server.boot.util.BootUtilsServer.startingServer;
 
 public class LaunchConfigurationsClient {
 	public static final LaunchConfigurationClient START_SERVER;

@@ -20,7 +20,7 @@ import org.artorg.tools.phantomData.client.tables.PhantomTable;
 import org.artorg.tools.phantomData.client.tables.PropertyFieldTable;
 import org.artorg.tools.phantomData.client.tables.SpecialTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.boot.BootUtilsServer;
+import org.artorg.tools.phantomData.server.boot.util.BootUtilsServer;
 import org.artorg.tools.phantomData.server.io.IOutil;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
@@ -41,7 +41,6 @@ public class MainController {
 	private TabPane tabPane;
 	
 	private String urlLocalhost = "http://localhost:8183";
-	private Class<?> mainClass = Main.class;
 	
 	
 //	public static Class<?> getMainClass() {
@@ -61,9 +60,9 @@ public class MainController {
 //		MainController.urlLocalhost = urlLocalhost;
 //	}
 
-	public static String getUrlShutdownActuator() {
-		return urlShutdownActuator;
-	}
+//	public static String getUrlShutdownActuator() {
+//		return urlShutdownActuator;
+//	}
 
 	public static void setUrlShutdownActuator(String urlShutdownActuator) {
 		MainController.urlShutdownActuator = urlShutdownActuator;
@@ -192,7 +191,7 @@ public class MainController {
         
      // init 3d pane
         Scene3D scene3d = new Scene3D(controller.getPane3d());
-		File file = IOutil.readAsFile("model.stl", mainClass);
+		File file = IOutil.readResourceAsFile("model.stl");
 		scene3d.loadFile(file);
 		
 		

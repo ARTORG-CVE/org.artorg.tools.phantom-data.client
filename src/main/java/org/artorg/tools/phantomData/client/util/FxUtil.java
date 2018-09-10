@@ -27,7 +27,7 @@ public class FxUtil {
 	}
 	
 	public static String readCSSstylesheet(String path) {
-		return readResource(path, getMainClass()).toExternalForm();
+		return readResource(path).toExternalForm();
 	}
 	
 	public static Class<?> getMainClass() {

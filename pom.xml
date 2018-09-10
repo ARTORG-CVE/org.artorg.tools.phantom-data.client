@@ -34,7 +34,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		<dependency>
 			<groupId>org.artorg.tools</groupId>
 			<artifactId>phantom-data-server</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.2</version>
 		</dependency>
 
 		<!-- REQUIRED - StringUtils -->
