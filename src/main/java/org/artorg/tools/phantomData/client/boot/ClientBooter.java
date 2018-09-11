@@ -2,14 +2,10 @@ package org.artorg.tools.phantomData.client.boot;
 
 import org.artorg.tools.phantomData.server.boot.ServerBooter;
 
-public interface ClientBooter {
+public abstract class ClientBooter extends MainFx {
 
-	boolean boot(String[] args);
+	public abstract void boot(String[] args);
 	
-	ServerBooter getServerBooter();
-	
-	LaunchConfigurationClient getLaunchConfigurationClient();
-	
-	ClientLauncher getClientLauncher();
+	public abstract ServerBooter getServerBooter();
 
 }

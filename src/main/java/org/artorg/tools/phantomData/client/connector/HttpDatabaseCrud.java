@@ -329,14 +329,19 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<ID_TYPE>, ID
 	}
 	
 	private void handleException(Exception e) {
+		if (e instanceof org.springframework.web.client.HttpClientErrorException) {
+			System.err.println("Move SpringBootApplication class in correct package! ex. org.artorg.tools.phantomData.server.BootApplication");
+			e.printStackTrace();
+			System.exit(0);
+		}
 		if (e instanceof HttpServerErrorException) {
 			System.err.println("///// EXCEPTION HANDLER //////");
 			e = (HttpServerErrorException)e;
 			System.out.println(e.toString());
 			System.out.println(e.getMessage());
 			System.out.println(e.getCause());
+			e.printStackTrace();
 		}
-		e.printStackTrace();
 	}
 	
 	

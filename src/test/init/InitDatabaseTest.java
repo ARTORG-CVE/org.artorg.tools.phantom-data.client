@@ -1,4 +1,4 @@
-//package init;
+package init;
 //import static org.artorg.tools.phantomData.server.boot.BootUtilsServer.deleteDatabase;
 //import static org.artorg.tools.phantomData.server.boot.BootUtilsServer.deleteFileStructure;
 //import static org.artorg.tools.phantomData.server.boot.BootUtilsServer.logInfos;
@@ -31,7 +31,7 @@
 //import org.artorg.tools.phantomData.server.model.property.PropertyContainer;
 //import org.artorg.tools.phantomData.server.model.property.PropertyField;
 //
-//public class InitDatabaseTest {
+public class InitDatabaseTest {
 //	
 //	
 //	public static void main(String[] args) {
@@ -242,4 +242,4 @@
 //	}
 //	
 //
-//}
+}
