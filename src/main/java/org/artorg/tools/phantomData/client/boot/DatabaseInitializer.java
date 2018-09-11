@@ -46,6 +46,14 @@ public class DatabaseInitializer {
 		initFiles();
 		initPhantoms();
 	}
+	
+	public static boolean isInitialized() {
+		try {
+			phantomConn.readById(1);
+			return true;
+		} catch (Exception e) {}
+		return false;
+	}
 
 	private static void initAnnulusDiameter() {
 		adConn.create(new AnnulusDiameter(21, 21.0));

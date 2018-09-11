@@ -8,19 +8,19 @@ import org.artorg.tools.phantomData.client.boot.MainFx;
 import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.client.connectors.PhantomConnector;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.DesktopSwingBootServer;
+import org.artorg.tools.phantomData.server.DesktopSwingResetBootServer;
 import org.artorg.tools.phantomData.server.boot.BootUtilsServer;
 import org.artorg.tools.phantomData.server.boot.ServerBooter;
 
-public class DesktopSwingBootApplication extends ClientBooter {
+public class DesktopSwingResetBootApplication extends ClientBooter {
 	private final ServerBooter booter; 
 	
 	{
-		booter = new DesktopSwingBootServer();
+		booter = new DesktopSwingResetBootServer();
 	}
 	
     public static void main(String[] args) {
-    	new DesktopSwingBootApplication().boot(args);
+    	new DesktopSwingResetBootApplication().boot(args);
     }
 
 	@Override
@@ -38,13 +38,10 @@ public class DesktopSwingBootApplication extends ClientBooter {
     	try {
     		HttpDatabaseCrud.setUrlLocalhost(booter.getServerConfig().getUrlLocalhost());
     		
-//    		System.out.println(PhantomConnector.get().existById(1));
-    		
-//    		if (!isInitialized())
-//				initDatabase();
-    		
     		System.out.println(PhantomConnector.get().existById(1));
     		
+    		if (!isInitialized())
+				initDatabase();
     		FxUtil.setMainFxClass(MainFx.class);
     		MainFx.launch(args);
     	} catch(Exception e) {
