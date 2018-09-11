@@ -8,7 +8,7 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
-import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.DesktopSwingBootApplication;
 
 import javafx.fxml.FXMLLoader;
 
@@ -16,7 +16,7 @@ public class ResourceReader {
 	
 	public static BufferedImage readAsBufferedImage(String path) {
 		try {
-			return ImageIO.read(Main.class.getClassLoader().getResourceAsStream(path));
+			return ImageIO.read(DesktopSwingBootApplication.class.getClassLoader().getResourceAsStream(path));
 		} catch (IOException e) {}
 		throw new IllegalArgumentException();
 	}
@@ -24,7 +24,7 @@ public class ResourceReader {
 	public static File readAsFile(String path) {
 		try {
 			File file = File.createTempFile("model", "stl");
-			InputStream inputStream = Main.class.getClassLoader().getResourceAsStream(path);
+			InputStream inputStream = DesktopSwingBootApplication.class.getClassLoader().getResourceAsStream(path);
 			FileUtils.copyInputStreamToFile(inputStream, file);
 			return file;
 		} catch (IOException e1) {};
@@ -32,7 +32,7 @@ public class ResourceReader {
 	}
 	
 	public static <T> T loadFXML(String path, Object controller) {
-		FXMLLoader loader = new FXMLLoader(Main.class.getClassLoader().getResource(path));
+		FXMLLoader loader = new FXMLLoader(DesktopSwingBootApplication.class.getClassLoader().getResource(path));
 		loader.setController(controller);
 		try {
 			return loader.<T>load();
@@ -41,7 +41,7 @@ public class ResourceReader {
 	}
 	
 	public static String readCSSstylesheet(String path) {
-		return Main.class.getClassLoader().getResource(path).toExternalForm();
+		return DesktopSwingBootApplication.class.getClassLoader().getResource(path).toExternalForm();
 	}
 	
 }

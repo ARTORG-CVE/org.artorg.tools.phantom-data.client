@@ -4,7 +4,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.DesktopSwingBootApplication;
 import org.artorg.tools.phantomData.client.graphics.Scene3D;
 import org.artorg.tools.phantomData.client.table.FilterTable;
 import org.artorg.tools.phantomData.client.table.Table;
@@ -20,7 +20,7 @@ import org.artorg.tools.phantomData.client.tables.PhantomTable;
 import org.artorg.tools.phantomData.client.tables.PropertyFieldTable;
 import org.artorg.tools.phantomData.client.tables.SpecialTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.boot.util.BootUtilsServer;
+import org.artorg.tools.phantomData.server.boot.BootUtilsServer;
 import org.artorg.tools.phantomData.server.io.IOutil;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
