@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 public abstract class HttpDatabaseCrud<T extends DatabasePersistent<ID_TYPE>, ID_TYPE> {
@@ -212,16 +211,6 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<ID_TYPE>, ID
 			handleException(e);
 		}
 		return false;
-	}
-	
-	public boolean existById(ID_TYPE id) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		RestTemplate restTemplate = new RestTemplate();
-		String url = getUrlLocalhost() + "/" 
-				+ getAnnoStringControlClass() + "/EXIST/" + getAnnoStringRead();
-		Boolean result = restTemplate.getForObject(url, Boolean.class, id);
-		return result;
 	}
 	
 	@SuppressWarnings("unchecked")

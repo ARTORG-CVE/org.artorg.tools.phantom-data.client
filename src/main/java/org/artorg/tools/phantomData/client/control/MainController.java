@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.DesktopSwingBootApplication;
+import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.graphics.Scene3D;
 import org.artorg.tools.phantomData.client.table.FilterTable;
 import org.artorg.tools.phantomData.client.table.Table;
@@ -27,6 +28,7 @@ import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.MenuItem;
@@ -34,14 +36,15 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class MainController {
 	private FilterTable<?, ?, ?> table;
 	private Stage stage;
 	private TabPane tabPane;
 	
-	private String urlLocalhost = "http://localhost:8183";
-	
+	private static String urlLocalhost = "http://localhost:8183";
+	private static String urlShutdownActuator = "http://localhost:" + "8183" +"/actuator/shutdown";
 	
 //	public static Class<?> getMainClass() {
 //		return mainClass;
@@ -68,7 +71,7 @@ public class MainController {
 		MainController.urlShutdownActuator = urlShutdownActuator;
 	}
 
-	private static String urlShutdownActuator;
+	
 	
 
 	{
@@ -104,8 +107,17 @@ public class MainController {
 
     @FXML
     void close(ActionEvent event) {
-    	BootUtilsServer.shutdownServer(urlLocalhost, urlShutdownActuator);
+    	close();
+    }
+    
+    private void close() {
+    	stage.hide();
+    	
+    	if (Main.getClientBooter().getServerBooter().getServerConfig().isServerStartedEmbedded())
+    		BootUtilsServer.shutdownServer(urlLocalhost, urlShutdownActuator);
+    	
     	Platform.exit();
+    	System.exit(0);
     }
     
     @FXML
@@ -155,6 +167,13 @@ public class MainController {
         AnchorPane.setLeftAnchor(tabPane, 0.0);
         AnchorPane.setRightAnchor(tabPane, 0.0);
         AnchorPane.setTopAnchor(tabPane, 0.0);
+        
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+            	close();
+            }
+        });
         
     }
     
