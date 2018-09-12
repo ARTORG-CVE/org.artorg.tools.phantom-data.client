@@ -21,7 +21,6 @@ import org.artorg.tools.phantomData.client.tables.PhantomTable;
 import org.artorg.tools.phantomData.client.tables.PropertyFieldTable;
 import org.artorg.tools.phantomData.client.tables.SpecialTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.boot.BootUtilsServer;
 import org.artorg.tools.phantomData.server.io.IOutil;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
@@ -43,35 +42,26 @@ public class MainController {
 	private Stage stage;
 	private TabPane tabPane;
 	
-	private static String urlLocalhost = "http://localhost:8183";
-	private static String urlShutdownActuator = "http://localhost:" + "8183" +"/actuator/shutdown";
+	private static String urlLocalhost;
+	private static String urlShutdownActuator;
 	
-//	public static Class<?> getMainClass() {
-//		return mainClass;
-//	}
-//
-//	public static void setMainClass(Class<?> mainClass) {
-//		MainController.mainClass = mainClass;
-//	}
-//
-//	public static String getUrlLocalhost() {
-//		return urlLocalhost;
-//	}
-//
-//	public static void setUrlLocalhost(String urlLocalhost) {
-//		System.out.println(urlLocalhost);
-//		MainController.urlLocalhost = urlLocalhost;
-//	}
 
-//	public static String getUrlShutdownActuator() {
-//		return urlShutdownActuator;
-//	}
+	public static String getUrlLocalhost() {
+		return urlLocalhost;
+	}
+
+	public static void setUrlLocalhost(String urlLocalhost) {
+		System.out.println(urlLocalhost);
+		MainController.urlLocalhost = urlLocalhost;
+	}
+
+	public static String getUrlShutdownActuator() {
+		return urlShutdownActuator;
+	}
 
 	public static void setUrlShutdownActuator(String urlShutdownActuator) {
 		MainController.urlShutdownActuator = urlShutdownActuator;
 	}
-
-	
 	
 
 	{
@@ -113,10 +103,11 @@ public class MainController {
     private void close() {
     	stage.hide();
     	
-    	if (Main.getClientBooter().getServerBooter().getServerConfig().isServerStartedEmbedded())
-    		BootUtilsServer.shutdownServer(urlLocalhost, urlShutdownActuator);
+    	if (Main.getClientBooter().getServerBooter().isServerStartedEmbedded())
+    		Main.getClientBooter().getServerBooter().shutdownSpringServer();
     	
     	Platform.exit();
+    	
     	System.exit(0);
     }
     
