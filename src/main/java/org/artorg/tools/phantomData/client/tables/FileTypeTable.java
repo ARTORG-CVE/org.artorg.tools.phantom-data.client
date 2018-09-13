@@ -31,4 +31,9 @@ public class FileTypeTable extends FilterTable<FileTypeTable, FileType, Integer>
 				FileTypeConnector.get()));
 		return columns;
 	}
+
+	@Override
+	public String getTableName() {
+		return "File Types";
+	}
 }

@@ -8,7 +8,6 @@ import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConn
 import org.artorg.tools.phantomData.client.scene.control.table.Column;
 import org.artorg.tools.phantomData.client.scene.control.table.FilterTable;
 import org.artorg.tools.phantomData.client.scene.control.table.IColumn;
-import org.artorg.tools.phantomData.client.scene.control.table.Table;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
@@ -38,6 +37,11 @@ public class BooleanPropertyTable extends FilterTable<BooleanPropertyTable, Bool
 				(path,value) -> path.setValue(Boolean.valueOf(value)),
 				BooleanPropertyConnector.get()));
 		return columns;
+	}
+
+	@Override
+	public String getTableName() {
+		return "Boolean Properties";
 	}
 
 }

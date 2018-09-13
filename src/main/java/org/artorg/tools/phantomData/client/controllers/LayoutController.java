@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.scene.Scene3D;
-import org.artorg.tools.phantomData.client.scene.control.MainTable;
+import org.artorg.tools.phantomData.client.scene.control.MainTabPane;
 import org.artorg.tools.phantomData.client.scene.control.SecondTable;
 import org.artorg.tools.phantomData.client.scene.control.table.FilterTable;
 import org.artorg.tools.phantomData.client.scene.control.table.Table;
@@ -15,7 +15,7 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 
 public class LayoutController {
-	private MainTable mainTable;
+	private MainTabPane mainTable;
 	private SecondTable secondTable;
 	private Scene3D scene3d;
 	
@@ -34,8 +34,8 @@ public class LayoutController {
         assert mainTablePane != null : "fx:id=\"mainTablePane\" was not injected: check your FXML file 'PhantomLayout.fxml'.";
         assert pane3d != null : "fx:id=\"pane3d\" was not injected: check your FXML file 'PhantomLayout.fxml'.";
         assert bottomTablePane != null : "fx:id=\"tableBottomPane\" was not injected: check your FXML file 'PhantomLayout.fxml'.";
-        
-        mainTable = new MainTable();
+
+        mainTable = new MainTabPane();
         mainTable.addTo(mainTablePane);
     	secondTable = new SecondTable();
     	secondTable.addTo(bottomTablePane);
@@ -45,9 +45,17 @@ public class LayoutController {
     
 	public <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 	ITEM extends DatabasePersistent<ID_TYPE>, 
-	ID_TYPE> void setMainTable(FilterTable<TABLE, ITEM, ID_TYPE> table) {
-		mainTable.setTable(table);
+	ID_TYPE> void openMainTableTab(FilterTable<TABLE, ITEM, ID_TYPE> table) {
+		openMainTableTab(table, table.getTableName());
 	}
+	
+	public <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
+	ITEM extends DatabasePersistent<ID_TYPE>, 
+	ID_TYPE> void openMainTableTab(FilterTable<TABLE, ITEM, ID_TYPE> table, String name) {
+		mainTable.openTableTab(table, name);
+	}
+	
+	
 	
 	public <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 	ITEM extends DatabasePersistent<ID_TYPE>, 
@@ -57,10 +65,6 @@ public class LayoutController {
 	
 	public void set3dFile(File file) {
 		scene3d.loadFile(file);
-	}
-	
-	public MainTable getMainTable() {
-		return mainTable;
 	}
 
 	public SecondTable getSecondTable() {

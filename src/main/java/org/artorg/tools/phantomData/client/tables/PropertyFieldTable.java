@@ -37,4 +37,9 @@ public class PropertyFieldTable extends FilterTable<PropertyFieldTable,PropertyF
 		return columns;
 	}
 
+	@Override
+	public String getTableName() {
+		return "Property Fields";
+	}
+
 }

@@ -8,7 +8,6 @@ import org.artorg.tools.phantomData.client.connectors.FileTypeConnector;
 import org.artorg.tools.phantomData.client.scene.control.table.Column;
 import org.artorg.tools.phantomData.client.scene.control.table.FilterTable;
 import org.artorg.tools.phantomData.client.scene.control.table.IColumn;
-import org.artorg.tools.phantomData.client.scene.control.table.Table;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 
@@ -49,5 +48,12 @@ public class FileTable extends FilterTable<FileTable, PhantomFile, Integer> {
 				FileTypeConnector.get()));
 		return columns;
 	}
+
+	@Override
+	public String getTableName() {
+		return "Files";
+	}
+	
+	
 
 }

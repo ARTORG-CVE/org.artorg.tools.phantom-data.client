@@ -6,7 +6,7 @@ import javafx.scene.control.Control;
 
 public interface TableGui<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
 		ITEM extends DatabasePersistent<ID_TYPE>, 
-		ID_TYPE> {
+		ID_TYPE> extends AddableToAnchorPane {
 	
 	void autoResizeColumns();
 	

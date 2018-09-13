@@ -37,4 +37,9 @@ public class FabricationTypeTable extends FilterTable<FabricationTypeTable, Fabr
 		return columns;
 	}
 
+	@Override
+	public String getTableName() {
+		return "Fabrication Types";
+	}
+
 }

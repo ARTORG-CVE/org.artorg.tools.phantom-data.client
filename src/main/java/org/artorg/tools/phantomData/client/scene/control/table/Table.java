@@ -34,6 +34,10 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		isIdColumnVisible = false;
 	}
 	
+	public abstract List<IColumn<ITEM, ?>> createColumns();
+	
+	public abstract String getTableName();
+	
 	public void setConnector(HttpDatabaseCrud<ITEM, ID_TYPE> connector) {
 		this.connector = connector;
 		this.columns.clear();
@@ -48,7 +52,15 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		items.addAll(itemSet);
 	}
 	
-	public abstract List<IColumn<ITEM, ?>> createColumns();
+	public Class<?> getItemClass() {
+		return connector.getModelClass();
+	}
+	
+	public String getItemName() {
+		return getItemClass().getSimpleName();
+	}
+	
+	
 	
 	public void setItems(ObservableList<ITEM> items) {
 		this.items.clear();

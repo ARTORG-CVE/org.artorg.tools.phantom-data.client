@@ -6,21 +6,10 @@
     -fx-background-insets: 0, 0 1 1 0, 1 2 2 1;
 }
 
-.button{
-    -fx-background-color: transparent;
-}
-
 .filter-menu-button {
  	-fx-background-color: transparent;
 }
 
 .table-view {
 	-fx-focus-color: transparent;
-}
-
-.tab-button {
-    -fx-border-width: 0;
-    -fx-background-radius: 0;
-    -fx-background-color: transparent;
-    -fx-content-display: graphic-only;
 }

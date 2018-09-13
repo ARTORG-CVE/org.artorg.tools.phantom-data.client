@@ -1,8 +1,10 @@
 package org.artorg.tools.phantomData.client.scene.control;
 
+import org.artorg.tools.phantomData.client.scene.control.table.AddableToAnchorPane;
+
 import javafx.scene.layout.AnchorPane;
 
-public class AnchorPaneAddableTo extends AnchorPane {
+public class AnchorPaneAddableTo extends AnchorPane implements AddableToAnchorPane {
 	
 	public void addTo(AnchorPane pane) {
 		pane.getChildren().add(this);

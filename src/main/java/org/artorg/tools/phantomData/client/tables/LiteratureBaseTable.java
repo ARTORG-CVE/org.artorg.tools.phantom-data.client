@@ -37,4 +37,9 @@ public class LiteratureBaseTable extends FilterTable<LiteratureBaseTable, Litera
 		return columns;
 	}
 
+	@Override
+	public String getTableName() {
+		return "Literature Bases";
+	}
+
 }

@@ -4,7 +4,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
@@ -12,19 +11,16 @@ import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
 import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.scene.Scene3D;
-import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
+import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.Phantom;
 
-import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
@@ -33,8 +29,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-public class AddPhantomController {
+public class AddPhantomController implements FXMLloadable<AnchorPane> {
 
+	@Override
+	public AnchorPane loadFXML() {
+		return FxUtil.loadFXML("fxml/AddPhantom.fxml", this);
+	}
+	
     @FXML
     private ResourceBundle resources;
 
@@ -165,5 +166,7 @@ public class AddPhantomController {
     	File file = fileChooser.showOpenDialog(new Stage());
     	textfield.setText(file.getAbsolutePath());
     }
+
+	
     
 }

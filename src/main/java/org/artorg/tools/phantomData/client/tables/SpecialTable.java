@@ -30,4 +30,9 @@ public class SpecialTable extends FilterTable<SpecialTable, Special, Integer> im
 		
 	}
 
+	@Override
+	public String getTableName() {
+		return "Specials";
+	}
+
 }

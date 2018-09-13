@@ -68,6 +68,11 @@ public class PhantomTable extends FilterTable<PhantomTable, Phantom, Integer> {
 				PhantomConnector.get()));
 		return columns;
 	}
+
+	@Override
+	public String getTableName() {
+		return "Phantoms";
+	}
 	
 	
 	

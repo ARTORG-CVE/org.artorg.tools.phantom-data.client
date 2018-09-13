@@ -1,17 +1,12 @@
 package org.artorg.tools.phantomData.client.controllers;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.artorg.tools.phantomData.client.DesktopSwingBootApplication;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.io.IOutil;
-import org.artorg.tools.phantomData.client.scene.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.table.FilterTable;
 import org.artorg.tools.phantomData.client.scene.control.table.Table;
-import org.artorg.tools.phantomData.client.scene.control.table.TableGui;
-import org.artorg.tools.phantomData.client.scene.control.table.TableViewCrud;
 import org.artorg.tools.phantomData.client.tables.AnnulusDiameterTable;
 import org.artorg.tools.phantomData.client.tables.BooleanPropertyTable;
 import org.artorg.tools.phantomData.client.tables.FabricationTypeTable;
@@ -22,21 +17,13 @@ import org.artorg.tools.phantomData.client.tables.PhantomTable;
 import org.artorg.tools.phantomData.client.tables.PropertyFieldTable;
 import org.artorg.tools.phantomData.client.tables.SpecialTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -46,7 +33,6 @@ public class MainController {
 	
 	private FilterTable<?, ?, ?> table;
 	private Stage stage;
-	private TabPane tabPane;
 	
 	private static String urlLocalhost;
 	private static String urlShutdownActuator;
@@ -67,11 +53,6 @@ public class MainController {
 
 	public static void setUrlShutdownActuator(String urlShutdownActuator) {
 		MainController.urlShutdownActuator = urlShutdownActuator;
-	}
-	
-
-	{
-		tabPane = new TabPane();
 	}
 	
 	public MainController(Stage stage) {
@@ -157,8 +138,6 @@ public class MainController {
         assert menuItemTablePropertyFields != null : "fx:id=\"menuItemTablePropertyField\" was not injected: check your FXML file 'Main.fxml'.";
         assert contentPane != null : "fx:id=\"contentPane\" was not injected: check your FXML file 'Table.fxml'.";
         
-        
-        
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
@@ -168,15 +147,11 @@ public class MainController {
         
         layoutController = new LayoutController();
         
-        contentPane.getChildren().add(tabPane);
-        AnchorPane.setBottomAnchor(tabPane, 0.0);
-        AnchorPane.setLeftAnchor(tabPane, 0.0);
-        AnchorPane.setRightAnchor(tabPane, 0.0);
-        AnchorPane.setTopAnchor(tabPane, 0.0);
-        
-        openTablePhantoms(null);
-        
-        
+        AnchorPane layout = FxUtil.loadFXML("fxml/PhantomLayout.fxml", layoutController);
+        FxUtil.addToAnchorPane(contentPane, layout);
+        layoutController.openMainTableTab(new PhantomTable(), "Phantoms");
+		layoutController.setSecondTable(new FileTable());
+		layoutController.set3dFile(IOutil.readResourceAsFile("model.stl"));
         
     }
     
@@ -188,121 +163,56 @@ public class MainController {
     
 	@FXML
     void openTableFileTypes(ActionEvent event) {
-    	initTableHelperTableView(new FileTypeTable(), "Files");
+		layoutController.openMainTableTab(new FileTypeTable());
     }
     
 	@FXML
     void openTableFiles(ActionEvent event) {
-    	initTableHelperTableView(new FileTable(), "Files");
+		layoutController.openMainTableTab(new FileTable());
     }
     
 	@FXML
     void openTablePhantoms(ActionEvent event) {    	
-		AnchorPane phantomLayout = FxUtil.loadFXML("fxml/PhantomLayout.fxml", layoutController);
-		layoutController.setMainTable(new PhantomTable());		
-		layoutController.setSecondTable(new FileTable());
-		layoutController.set3dFile(IOutil.readResourceAsFile("model.stl"));
-		
-		phantomLayout.getStylesheets().add(FxUtil.readCSSstylesheet("css/application.css"));
-		
-		final Tab tab = new Tab("Phantoms");
-        tab.setContent(phantomLayout);
-//        tab.close
-//        tab.setGraphic(createTabButton("img/filter.png"));
-//        ((Button) tab.getGraphic()).setOnAction(e -> System.out.println("I'll show the list of files!"));
-        
-        tabPane.getTabs().add(tab);
-		tabPane.getSelectionModel().select(tab);
-		
-		
-//		 ContextMenu cm = new ContextMenu();
-//	        MenuItem mi1 = new MenuItem("Menu 1");
-//	        cm.getItems().add(mi1);
-//	        MenuItem mi2 = new MenuItem("Menu 2");
-//	        cm.getItems().add(mi2);
-//	        
-//		tabPane.setContextMenu(cm);
-//		
-//		tabPane.applyCss();
-//		tabPane.setOnContextMenuRequested(e -> {
-//			TabPane temp = tabPane;
-//			System.out.println("context menu requested");
-//		});
+		layoutController.openMainTableTab(new PhantomTable());
     }
 	
-	private Button createTabButton(String iconName) {
-        Button button = new Button();
-        ImageView imageView = new ImageView(new Image(IOutil.readResourceAsStream(iconName),
-                16, 16, false, true));
-        button.setGraphic(imageView);
-        button.getStyleClass().add("tab-button");
-        return button;
-    }
+//	private Button createTabButton(String iconName) {
+//        Button button = new Button();
+//        ImageView imageView = new ImageView(new Image(IOutil.readResourceAsStream(iconName),
+//                16, 16, false, true));
+//        button.setGraphic(imageView);
+//        button.getStyleClass().add("tab-button");
+//        return button;
+//    }
     
 	@FXML
     void openTableProperties(ActionEvent event) {
-    	initTableHelperTableView(new BooleanPropertyTable(), "Boolean Properties");
+		layoutController.openMainTableTab(new BooleanPropertyTable());
     }
     
 	@FXML
     void openTableSpecials(ActionEvent event) {
-    	initTableHelperTableView(new SpecialTable(), "Specials");
+		layoutController.openMainTableTab(new SpecialTable());
     }
     
 	@FXML
     void openTableAnnulusDiameter(ActionEvent event) {
-    	initTableHelperTableView(new AnnulusDiameterTable(), "Annulus Diameter");
+		layoutController.openMainTableTab(new AnnulusDiameterTable());
     }
     
 	@FXML
     void openTableFabricationTypes(ActionEvent event) {
-    	initTableHelperTableView(new FabricationTypeTable(), "Fabrication Types");
+		layoutController.openMainTableTab(new FabricationTypeTable());
     }
     
 	@FXML
     void openTableLiteratureBases(ActionEvent event) {
-    	initTableHelperTableView(new LiteratureBaseTable(), "Literature Bases");
+		layoutController.openMainTableTab(new LiteratureBaseTable());
     }
     
 	@FXML
     void openTablePropertyFields(ActionEvent event) {
-    	initTableHelperTableView(new PropertyFieldTable(), "Property Fields");
+		layoutController.openMainTableTab(new PropertyFieldTable());
     }
-	
-	 private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-		ITEM extends DatabasePersistent<ID_TYPE>, 
-		ID_TYPE> Tab initTableHelperTableView(
-				FilterTable<TABLE, ITEM, ID_TYPE> table, 
-				String name) {
-			TableViewCrud<TABLE, ITEM, ID_TYPE> view = new TableViewCrud<TABLE, ITEM, ID_TYPE>();
-			return initTableHelper(view, table, name);
-	}
-		
-	private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-	ITEM extends DatabasePersistent<ID_TYPE>, 
-	ID_TYPE> Tab initTableHelper(
-				TableGui<TABLE, ITEM , ID_TYPE> view,
-				FilterTable<TABLE, ITEM, ID_TYPE> table, 
-				String name) {
-			this.setTable(table);
-			view.setTable(table);
-			
-			final Tab tab = new Tab(name);
-			tab.setContent(view.getGraphic());
-			tabPane.getTabs().add(tab);
-			tabPane.getSelectionModel().select(tab);
-			return tab;
-		}
-	
-	private <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-	ITEM extends DatabasePersistent<ID_TYPE>, 
-	ID_TYPE> TableViewCrud<TABLE, ITEM, ID_TYPE> createTableViewCrud(
-				FilterTable<TABLE, ITEM, ID_TYPE> table, 
-				String name) {
-			this.setTable(table);
-			TableViewCrud<TABLE, ITEM, ID_TYPE> view = new TableViewCrud<TABLE, ITEM, ID_TYPE>();
-			view.setTable(table);
-			return view;
-		}
     
 }

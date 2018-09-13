@@ -7,7 +7,6 @@ import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
 import org.artorg.tools.phantomData.client.scene.control.table.Column;
 import org.artorg.tools.phantomData.client.scene.control.table.FilterTable;
 import org.artorg.tools.phantomData.client.scene.control.table.IColumn;
-import org.artorg.tools.phantomData.client.scene.control.table.Table;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 
 public class AnnulusDiameterTable extends FilterTable<AnnulusDiameterTable, AnnulusDiameter, Integer> {
@@ -36,6 +35,11 @@ public class AnnulusDiameterTable extends FilterTable<AnnulusDiameterTable, Annu
 				(path,value) -> path.setValue(Double.valueOf(value)),
 				AnnulusDiameterConnector.get()));
 		return columns;
+	}
+
+	@Override
+	public String getTableName() {
+		return "Annulus Diameters";
 	}
 
 }
