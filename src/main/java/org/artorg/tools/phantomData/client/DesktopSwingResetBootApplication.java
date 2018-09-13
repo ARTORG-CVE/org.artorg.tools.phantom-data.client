@@ -6,7 +6,7 @@ import static org.artorg.tools.phantomData.client.boot.DatabaseInitializer.isIni
 import org.artorg.tools.phantomData.client.boot.ClientBooter;
 import org.artorg.tools.phantomData.client.boot.MainFx;
 import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
-import org.artorg.tools.phantomData.client.control.MainController;
+import org.artorg.tools.phantomData.client.controllers.MainController;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.DesktopSwingResetBootServer;
 

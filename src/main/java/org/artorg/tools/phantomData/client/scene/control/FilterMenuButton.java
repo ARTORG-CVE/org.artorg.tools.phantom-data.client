@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.table.control;
+package org.artorg.tools.phantomData.client.scene.control;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -8,9 +8,11 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.IOUtils;
 import org.artorg.tools.phantomData.client.DesktopSwingBootApplication;
-import org.artorg.tools.phantomData.client.table.FilterTable;
-import org.artorg.tools.phantomData.client.table.Table;
+import org.artorg.tools.phantomData.client.io.IOutil;
+import org.artorg.tools.phantomData.client.scene.control.table.FilterTable;
+import org.artorg.tools.phantomData.client.scene.control.table.Table;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.application.Platform;
@@ -42,10 +44,8 @@ public class FilterMenuButton extends MenuButton {
 	private String regex;
 	
 	static {
-		InputStream normalStream = DesktopSwingBootApplication.class.getClassLoader().getResourceAsStream("img/arrow.png");
-		imgNormal = new Image(normalStream);
-		InputStream filterStream = DesktopSwingBootApplication.class.getClassLoader().getResourceAsStream("img/filter.png");
-		imgFilter = new Image(filterStream);
+		imgNormal = IOutil.readResourceAsImage("img/arrow.png");
+		imgFilter = IOutil.readResourceAsImage("img/filter.png");
 	}
 	
 	{

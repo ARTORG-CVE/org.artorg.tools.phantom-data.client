@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.graphics;
+package org.artorg.tools.phantomData.client.scene;
 	
 import java.io.File;
 

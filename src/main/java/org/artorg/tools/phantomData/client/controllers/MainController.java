@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.control;
+package org.artorg.tools.phantomData.client.controllers;
 
 import java.io.File;
 import java.net.URL;
@@ -6,11 +6,12 @@ import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.DesktopSwingBootApplication;
 import org.artorg.tools.phantomData.client.Main;
-import org.artorg.tools.phantomData.client.graphics.Scene3D;
-import org.artorg.tools.phantomData.client.table.FilterTable;
-import org.artorg.tools.phantomData.client.table.Table;
-import org.artorg.tools.phantomData.client.table.TableGui;
-import org.artorg.tools.phantomData.client.table.TableViewCrud;
+import org.artorg.tools.phantomData.client.io.IOutil;
+import org.artorg.tools.phantomData.client.scene.Scene3D;
+import org.artorg.tools.phantomData.client.scene.control.table.FilterTable;
+import org.artorg.tools.phantomData.client.scene.control.table.Table;
+import org.artorg.tools.phantomData.client.scene.control.table.TableGui;
+import org.artorg.tools.phantomData.client.scene.control.table.TableViewCrud;
 import org.artorg.tools.phantomData.client.tables.AnnulusDiameterTable;
 import org.artorg.tools.phantomData.client.tables.BooleanPropertyTable;
 import org.artorg.tools.phantomData.client.tables.FabricationTypeTable;
@@ -21,7 +22,6 @@ import org.artorg.tools.phantomData.client.tables.PhantomTable;
 import org.artorg.tools.phantomData.client.tables.PropertyFieldTable;
 import org.artorg.tools.phantomData.client.tables.SpecialTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.io.IOutil;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
@@ -30,14 +30,20 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 public class MainController {
+	private LayoutController layoutController;
+	
 	private FilterTable<?, ?, ?> table;
 	private Stage stage;
 	private TabPane tabPane;
@@ -151,13 +157,7 @@ public class MainController {
         assert menuItemTablePropertyFields != null : "fx:id=\"menuItemTablePropertyField\" was not injected: check your FXML file 'Main.fxml'.";
         assert contentPane != null : "fx:id=\"contentPane\" was not injected: check your FXML file 'Table.fxml'.";
         
-        openTablePhantoms(null);
         
-        contentPane.getChildren().add(tabPane);
-        AnchorPane.setBottomAnchor(tabPane, 0.0);
-        AnchorPane.setLeftAnchor(tabPane, 0.0);
-        AnchorPane.setRightAnchor(tabPane, 0.0);
-        AnchorPane.setTopAnchor(tabPane, 0.0);
         
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
@@ -165,6 +165,18 @@ public class MainController {
             	close();
             }
         });
+        
+        layoutController = new LayoutController();
+        
+        contentPane.getChildren().add(tabPane);
+        AnchorPane.setBottomAnchor(tabPane, 0.0);
+        AnchorPane.setLeftAnchor(tabPane, 0.0);
+        AnchorPane.setRightAnchor(tabPane, 0.0);
+        AnchorPane.setTopAnchor(tabPane, 0.0);
+        
+        openTablePhantoms(null);
+        
+        
         
     }
     
@@ -186,31 +198,45 @@ public class MainController {
     
 	@FXML
     void openTablePhantoms(ActionEvent event) {    	
-		Tab tab = initTableHelperTableView(new PhantomTable(), "Phantoms");
-        
-		PhantomViewController controller = new PhantomViewController();
-		AnchorPane phantomLayout = FxUtil.loadFXML("fxml/PhantomLayout.fxml", controller);
+		AnchorPane phantomLayout = FxUtil.loadFXML("fxml/PhantomLayout.fxml", layoutController);
+		layoutController.setMainTable(new PhantomTable());		
+		layoutController.setSecondTable(new FileTable());
+		layoutController.set3dFile(IOutil.readResourceAsFile("model.stl"));
 		
-		Node tableView = tab.getContent();
-		controller.setMainTablePane(tableView);
-        AnchorPane.setBottomAnchor(phantomLayout, 0.0);
-        AnchorPane.setLeftAnchor(phantomLayout, 0.0);
-        AnchorPane.setRightAnchor(phantomLayout, 0.0);
-        AnchorPane.setTopAnchor(phantomLayout, 0.0);
+		phantomLayout.getStylesheets().add(FxUtil.readCSSstylesheet("css/application.css"));
+		
+		final Tab tab = new Tab("Phantoms");
         tab.setContent(phantomLayout);
+//        tab.close
+//        tab.setGraphic(createTabButton("img/filter.png"));
+//        ((Button) tab.getGraphic()).setOnAction(e -> System.out.println("I'll show the list of files!"));
         
-     // init 3d pane
-        Scene3D scene3d = new Scene3D(controller.getPane3d());
-		File file = IOutil.readResourceAsFile("model.stl");
-		scene3d.loadFile(file);
+        tabPane.getTabs().add(tab);
+		tabPane.getSelectionModel().select(tab);
 		
 		
-		TableViewCrud<FileTable,PhantomFile,Integer> filesTable = createTableViewCrud(new FileTable(), "Files");
-    	controller.getBottomTablePane().getChildren().add(filesTable.getGraphic());
-    	AnchorPane.setBottomAnchor(filesTable.getGraphic(), 0.0);
-    	  AnchorPane.setLeftAnchor(filesTable.getGraphic(), 0.0);
-          AnchorPane.setRightAnchor(filesTable.getGraphic(), 0.0);
-          AnchorPane.setTopAnchor(filesTable.getGraphic(), 0.0);
+//		 ContextMenu cm = new ContextMenu();
+//	        MenuItem mi1 = new MenuItem("Menu 1");
+//	        cm.getItems().add(mi1);
+//	        MenuItem mi2 = new MenuItem("Menu 2");
+//	        cm.getItems().add(mi2);
+//	        
+//		tabPane.setContextMenu(cm);
+//		
+//		tabPane.applyCss();
+//		tabPane.setOnContextMenuRequested(e -> {
+//			TabPane temp = tabPane;
+//			System.out.println("context menu requested");
+//		});
+    }
+	
+	private Button createTabButton(String iconName) {
+        Button button = new Button();
+        ImageView imageView = new ImageView(new Image(IOutil.readResourceAsStream(iconName),
+                16, 16, false, true));
+        button.setGraphic(imageView);
+        button.getStyleClass().add("tab-button");
+        return button;
     }
     
 	@FXML

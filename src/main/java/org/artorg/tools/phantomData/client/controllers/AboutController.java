@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.control;
+package org.artorg.tools.phantomData.client.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;

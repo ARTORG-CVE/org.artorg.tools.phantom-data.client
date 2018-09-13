@@ -1,8 +1,10 @@
-package org.artorg.tools.phantomData.client.graphics;
+package org.artorg.tools.phantomData.client.scene;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+
+import org.artorg.tools.phantomData.client.scene.control.AnchorPaneAddableTo;
 
 import javafx.event.EventHandler;
 import javafx.scene.AmbientLight;
@@ -17,12 +19,12 @@ import javafx.scene.SubScene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 
-public class Scene3D {
+public class Scene3D extends AnchorPaneAddableTo {
 	private static final Color lightColor = Color.rgb(244, 255, 250);
 	
 	private final Group root;
@@ -61,8 +63,7 @@ public class Scene3D {
     	    double rotationSpeed,
     	    double trackSpeed,
     	    int viewportSize,
-    	    Group root,
-    	    Pane pane3d) {
+    	    Group root) {
     	this.root = root;
     	this.world = new Xform();
     	this.camera = new PerspectiveCamera(true);
@@ -91,15 +92,21 @@ public class Scene3D {
 //        buildAxes();
         
         subscene.setCamera(camera);
-		subscene.heightProperty().bind(pane3d.heightProperty());
-        subscene.widthProperty().bind(pane3d.widthProperty());
-		pane3d.getChildren().add(subscene);
-		pane3d.setStyle("-fx-background-color: rgba(255, 255, 255, 0); -fx-background-radius: 10;");
-        pane3d.setMinWidth(300);
+		subscene.heightProperty().bind(super.heightProperty());
+        subscene.widthProperty().bind(super.widthProperty());
+		super.getChildren().add(subscene);
+		super.setStyle("-fx-background-color: rgba(255, 255, 255, 0); -fx-background-radius: 10;");
+        super.setMinWidth(300);
+        
+        AnchorPane.setBottomAnchor(subscene, 0.0);
+    	AnchorPane.setLeftAnchor(subscene, 0.0);
+    	AnchorPane.setRightAnchor(subscene, 0.0);
+    	AnchorPane.setTopAnchor(subscene, 0.0);
+        
 	    
     }
     
-    public Scene3D(Pane pane3d) {
+    public Scene3D() {
     	this(
     		-450,		// cameraInitialDistance
     		70.0, 		// cameraInitialAnlgeX
@@ -110,8 +117,7 @@ public class Scene3D {
     		2.0,		// rotationSpeed
     		0.3,		// trackSpeed
     		800,
-    		new Group(),
-    		pane3d);		
+    		new Group());		
     }
     
     public void loadFile(File file) {

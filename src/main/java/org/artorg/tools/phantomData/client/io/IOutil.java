@@ -11,8 +11,9 @@ import org.apache.commons.io.FileUtils;
 import org.artorg.tools.phantomData.client.DesktopSwingBootApplication;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.image.Image;
 
-public class ResourceReader {
+public class IOutil extends org.artorg.tools.phantomData.server.io.IOutil {
 	
 	public static BufferedImage readAsBufferedImage(String path) {
 		try {
@@ -42,6 +43,11 @@ public class ResourceReader {
 	
 	public static String readCSSstylesheet(String path) {
 		return DesktopSwingBootApplication.class.getClassLoader().getResource(path).toExternalForm();
+	}
+	
+	public static Image readResourceAsImage(String path) {
+		InputStream normalStream = readResourceAsStream("img/arrow.png");
+		return new Image(normalStream);
 	}
 	
 }

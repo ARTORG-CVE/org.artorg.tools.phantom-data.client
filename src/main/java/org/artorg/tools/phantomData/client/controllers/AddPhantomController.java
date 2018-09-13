@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.control;
+package org.artorg.tools.phantomData.client.controllers;
 
 import java.io.File;
 import java.net.URL;
@@ -11,7 +11,7 @@ import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
 import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
 import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
-import org.artorg.tools.phantomData.client.graphics.Scene3D;
+import org.artorg.tools.phantomData.client.scene.Scene3D;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.Phantom;
 
@@ -104,7 +104,8 @@ public class AddPhantomController {
         
         textFieldModelNumber.setText("1");
         
-        Scene3D scene3d = new Scene3D(pane3d);
+        Scene3D scene3d = new Scene3D();
+        scene3d.addTo(pane3d);
 
     }
     

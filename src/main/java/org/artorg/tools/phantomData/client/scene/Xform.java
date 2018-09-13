@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.graphics;
+package org.artorg.tools.phantomData.client.scene;
 
 /*
  * Copyright (c) 2013, 2014 Oracle and/or its affiliates.

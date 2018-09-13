@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;
-import org.artorg.tools.phantomData.client.table.Column;
-import org.artorg.tools.phantomData.client.table.FilterTable;
-import org.artorg.tools.phantomData.client.table.IColumn;
+import org.artorg.tools.phantomData.client.scene.control.table.Column;
+import org.artorg.tools.phantomData.client.scene.control.table.FilterTable;
+import org.artorg.tools.phantomData.client.scene.control.table.IColumn;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 public class PropertyFieldTable extends FilterTable<PropertyFieldTable,PropertyField, Integer> {

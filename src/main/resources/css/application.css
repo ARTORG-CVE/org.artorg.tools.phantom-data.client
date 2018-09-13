@@ -17,3 +17,10 @@
 .table-view {
 	-fx-focus-color: transparent;
 }
+
+.tab-button {
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+    -fx-content-display: graphic-only;
+}

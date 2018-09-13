@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.table;
+package org.artorg.tools.phantomData.client.scene.control.table;
 
 import java.text.DateFormat;
 import java.text.ParseException;

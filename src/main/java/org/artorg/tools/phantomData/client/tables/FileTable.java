@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.connectors.FileConnector;
 import org.artorg.tools.phantomData.client.connectors.FileTypeConnector;
-import org.artorg.tools.phantomData.client.table.Column;
-import org.artorg.tools.phantomData.client.table.FilterTable;
-import org.artorg.tools.phantomData.client.table.IColumn;
-import org.artorg.tools.phantomData.client.table.Table;
+import org.artorg.tools.phantomData.client.scene.control.table.Column;
+import org.artorg.tools.phantomData.client.scene.control.table.FilterTable;
+import org.artorg.tools.phantomData.client.scene.control.table.IColumn;
+import org.artorg.tools.phantomData.client.scene.control.table.Table;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 

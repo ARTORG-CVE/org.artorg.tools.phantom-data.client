@@ -1,6 +1,6 @@
 package org.artorg.tools.phantomData.client.boot;
 
-import org.artorg.tools.phantomData.client.control.MainController;
+import org.artorg.tools.phantomData.client.controllers.MainController;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 
 import javafx.application.Application;

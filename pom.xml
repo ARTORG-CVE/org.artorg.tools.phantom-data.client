@@ -31,6 +31,14 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	</properties>
 	
 	<dependencies>
+	
+	<dependency>
+    <groupId>com.panemu</groupId>
+    <artifactId>tiwulfx</artifactId>
+    <version>2.0</version>
+</dependency>
+	
+	
 		<dependency>
 			<groupId>org.artorg.tools</groupId>
 			<artifactId>phantom-data-server</artifactId>

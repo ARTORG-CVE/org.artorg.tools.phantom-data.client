@@ -2,6 +2,8 @@ package org.artorg.tools.phantomData.client.util;
 
 import java.io.IOException;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.layout.AnchorPane;
 
 import static org.artorg.tools.phantomData.server.io.IOutil.*;
 
@@ -34,6 +36,14 @@ public class FxUtil {
 		if (FxUtil.mainClass == null) 
 			throw new IllegalArgumentException();
 		return FxUtil.mainClass;
+	}
+	
+	public static void addToAnchorPane(AnchorPane parentPane, Node child) {
+		parentPane.getChildren().add(child);
+    	AnchorPane.setBottomAnchor(child, 0.0);
+    	AnchorPane.setLeftAnchor(child, 0.0);
+    	AnchorPane.setRightAnchor(child, 0.0);
+    	AnchorPane.setTopAnchor(child, 0.0);
 	}
 
 }
