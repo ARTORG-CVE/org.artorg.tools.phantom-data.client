@@ -4,6 +4,7 @@ import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.Phantom;
+import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 import javafx.scene.Node;
 
@@ -18,6 +19,8 @@ public class ItemFormFactory {
 			return new AddFabricationTypeController().loadFXML();
 		} else if (itemClass == LiteratureBase.class) {
 			return new AddLiteratureBaseController().loadFXML();
+		} else if (itemClass == PropertyField.class) {
+			return new AddPropertyFieldController().loadFXML();
 		}
 		throw new IllegalArgumentException();
 	}

@@ -1,18 +1,24 @@
 package org.artorg.tools.phantomData.client.controllers;
 
-import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
 import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
 import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
 import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
+import org.artorg.tools.phantomData.client.connectors.PhantomConnector;
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
-import org.artorg.tools.phantomData.client.scene.Scene3D;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
+import org.artorg.tools.phantomData.server.model.FabricationType;
+import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.Phantom;
+import org.artorg.tools.phantomData.server.model.Special;
+import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -20,16 +26,16 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableView;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class AddPhantomController implements FXMLloadable<AnchorPane> {
+	private static final PhantomConnector connector = PhantomConnector.get();
 
 	@Override
 	public AnchorPane loadFXML() {
@@ -46,127 +52,98 @@ public class AddPhantomController implements FXMLloadable<AnchorPane> {
     private Label labelId;
 
     @FXML
-    private ComboBox<Float> comboBoxAnnulus;
-    
-    @FXML
-    private ComboBox<String> comboBoxType, comboBoxLiterature, comboBoxSpecials;
-
-    @FXML
-    private CheckBox checkBoxLeaflets, checkBoxCoronairies;
-
-    @FXML
     private TextField textFieldModelNumber;
 
     @FXML
-    private TextField textFieldFilePath1, textFieldFilePath2, textFieldFilePath3;
+    private ComboBox<AnnulusDiameter> comboBoxAnnulus;
+    
+    @FXML
+    private ComboBox<FabricationType> comboBoxFabricationType;
+    
+    @FXML
+    private ComboBox<LiteratureBase> comboBoxLiterature;
+    
+    @FXML
+    private ComboBox<Special> comboBoxSpecials;
+    
+    @FXML
+    private Button buttonAdd;
 
     @FXML
-    private Button buttonOpenFileChooser1, buttonOpenFileChooser2, buttonOpenFileChooser3;
-
-    @FXML
-    private ComboBox<String> comboBoxFileType1, comboBoxFileType2, comboBoxFileType3;
-
-    @FXML
-    private Button buttonAddFile1, buttonAddFile2, buttonAddFile3, buttonAddPhantom;
-
-    @FXML
-    private AnchorPane pane3d;
-
-    @FXML
-    private TableView<Phantom> tableView;
+    void add(ActionEvent event) {
+    	PhantomConnector.get().create(createPhantom());
+    }
 
     @FXML
     void initialize() {
-        assert labelId != null : "fx:id=\"labelId\" was not injected: check your FXML file 'New.fxml'.";
-        assert comboBoxAnnulus != null : "fx:id=\"comboBoxAnnulus\" was not injected: check your FXML file 'New.fxml'.";
-        assert comboBoxType != null : "fx:id=\"comboBoxType\" was not injected: check your FXML file 'New.fxml'.";
-        assert comboBoxSpecials != null : "fx:id=\"comboBoxDesign\" was not injected: check your FXML file 'New.fxml'.";
-        assert checkBoxLeaflets != null : "fx:id=\"checkBoxLeaflets\" was not injected: check your FXML file 'New.fxml'.";
-        assert checkBoxCoronairies != null : "fx:id=\"checkBoxCoronairies\" was not injected: check your FXML file 'New.fxml'.";
-        assert comboBoxLiterature != null : "fx:id=\"comboBoxLiterature\" was not injected: check your FXML file 'New.fxml'.";
-        assert textFieldModelNumber != null : "fx:id=\"textFieldModelNumber\" was not injected: check your FXML file 'New.fxml'.";
-        assert textFieldFilePath1 != null : "fx:id=\"textFieldFilePath1\" was not injected: check your FXML file 'New.fxml'.";
-        assert buttonOpenFileChooser1 != null : "fx:id=\"buttonOpenFileChooser1\" was not injected: check your FXML file 'New.fxml'.";
-        assert comboBoxFileType1 != null : "fx:id=\"comboBoxFileType1\" was not injected: check your FXML file 'New.fxml'.";
-        assert buttonAddFile1 != null : "fx:id=\"buttonAddFile1\" was not injected: check your FXML file 'New.fxml'.";
-        assert textFieldFilePath2 != null : "fx:id=\"textFieldFilePath2\" was not injected: check your FXML file 'New.fxml'.";
-        assert buttonOpenFileChooser2 != null : "fx:id=\"buttonOpenFileChooser2\" was not injected: check your FXML file 'New.fxml'.";
-        assert comboBoxFileType2 != null : "fx:id=\"comboBoxFileType2\" was not injected: check your FXML file 'New.fxml'.";
-        assert textFieldFilePath3 != null : "fx:id=\"textFieldFilePath3\" was not injected: check your FXML file 'New.fxml'.";
-        assert buttonOpenFileChooser3 != null : "fx:id=\"buttonOpenFileChooser3\" was not injected: check your FXML file 'New.fxml'.";
-        assert comboBoxFileType3 != null : "fx:id=\"comboBoxFileType3\" was not injected: check your FXML file 'New.fxml'.";
-        assert buttonAddFile2 != null : "fx:id=\"buttonAddFile2\" was not injected: check your FXML file 'New.fxml'.";
-        assert buttonAddFile3 != null : "fx:id=\"buttonAddFile3\" was not injected: check your FXML file 'New.fxml'.";
-        assert buttonAddPhantom != null : "fx:id=\"buttonAddPhantom\" was not injected: check your FXML file 'New.fxml'.";
-        assert pane3d != null : "fx:id=\"pane3d\" was not injected: check your FXML file 'New.fxml'.";
-        assert tableView != null : "fx:id=\"tableView\" was not injected: check your FXML file 'New.fxml'.";
+        assert labelId != null : "fx:id=\"labelId\" was not injected: check your FXML file 'AddPhantom.fxml'.";
+        assert textFieldModelNumber != null : "fx:id=\"textFieldModelNumber\" was not injected: check your FXML file 'AddPhantom.fxml'.";
+        assert comboBoxAnnulus != null : "fx:id=\"comboBoxAnnulus\" was not injected: check your FXML file 'AddPhantom.fxml'.";
+        assert comboBoxFabricationType != null : "fx:id=\"comboBoxFabricationType\" was not injected: check your FXML file 'AddPhantom.fxml'.";
+        assert comboBoxLiterature != null : "fx:id=\"comboBoxLiterature\" was not injected: check your FXML file 'AddPhantom.fxml'.";
+        assert comboBoxSpecials != null : "fx:id=\"comboBoxSpecials\" was not injected: check your FXML file 'AddPhantom.fxml'.";
+        assert buttonAdd != null : "fx:id=\"buttonAdd\" was not injected: check your FXML file 'AddPhantom.fxml'.";
         
         updateComboBoxes();
         
         textFieldModelNumber.setText("1");
+        textFieldModelNumber.textProperty().addListener(event -> {
+        	try {
+        		updateId();
+        	} catch( Exception e) {}
+    	});
         
-        Scene3D scene3d = new Scene3D();
-        scene3d.addTo(pane3d);
+        updateId();
 
+    }
+    
+    private Phantom createPhantom() {
+    	AnnulusDiameter annulusDiameter = comboBoxAnnulus.getSelectionModel().getSelectedItem();
+    	FabricationType fabricationType = comboBoxFabricationType.getSelectionModel().getSelectedItem();
+    	LiteratureBase literatureBase = comboBoxLiterature.getSelectionModel().getSelectedItem();
+    	Special special = comboBoxSpecials.getSelectionModel().getSelectedItem();
+    	String sNumber = textFieldModelNumber.getText();
+    	int number = Integer.valueOf(sNumber);
+    	
+    	return new Phantom(annulusDiameter, fabricationType, literatureBase, special, number);
     }
     
     private void updateComboBoxes() {
-    	List<Float> annulusDiameters = AnnulusDiameterConnector.get().readAllAsStream()
-        		.distinct().map(ad -> ad.getValue().floatValue()).collect(Collectors.toList());
-        comboBoxAnnulus.setItems(FXCollections.observableList(annulusDiameters));
-        
-        comboBoxAnnulus.getSelectionModel().selectFirst();
-        comboBoxAnnulus.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-              updateId();
-            }
-          });
-        
-        List<String> fabricationType = FabricationTypeConnector.get().readAllAsStream()
-        		.distinct().map(ad -> ad.getValue()).collect(Collectors.toList());
-        comboBoxType.setItems(FXCollections.observableList(fabricationType));
-        comboBoxType.getSelectionModel().selectFirst();
-
-        List<String> literatureBases = LiteratureBaseConnector.get().readAllAsStream()
-        		.distinct().map(lb -> lb.getValue()).collect(Collectors.toList());
-        comboBoxLiterature.setItems(FXCollections.observableList(literatureBases));
-        comboBoxLiterature.getSelectionModel().selectFirst();
-        
-        List<String> specials = SpecialConnector.get().readAllAsStream()
-        		.distinct().map(s -> s.getShortcut()).collect(Collectors.toList());
-        comboBoxSpecials.setItems(FXCollections.observableList(specials));
-        comboBoxSpecials.getSelectionModel().selectFirst();
+        createComboBox(comboBoxAnnulus, AnnulusDiameterConnector.get(), d -> String.valueOf(d.getValue()));
+        createComboBox(comboBoxFabricationType, FabricationTypeConnector.get(), f -> f.getValue());
+        createComboBox(comboBoxLiterature, LiteratureBaseConnector.get(), l -> l.getValue());
+        createComboBox(comboBoxSpecials, SpecialConnector.get(), s -> s.getShortcut());
+    }
+    
+    private <T extends DatabasePersistent<ID_TYPE>, ID_TYPE> void createComboBox(ComboBox<T> comboBox, HttpDatabaseCrud<T, ID_TYPE> connector, Function<T,String> mapper) {
+    	List<T> fabricationType = connector.readAllAsStream()
+        		.distinct().collect(Collectors.toList());
+    	comboBox.setItems(FXCollections.observableList(fabricationType));
+    	comboBox.getSelectionModel().selectFirst();
+        Callback<ListView<T>, ListCell<T>> cellFactory = createComboBoxCellFactory(mapper);
+        comboBox.setButtonCell(cellFactory.call(null));
+        comboBox.setCellFactory(cellFactory);
+        comboBox.getSelectionModel().selectedIndexProperty().addListener(e -> updateId());
+    }
+    
+    private <T> Callback<ListView<T>, ListCell<T>> createComboBoxCellFactory(Function<T,String> mapper) {
+    	return param -> {
+        	return new ListCell<T>() {
+				@Override
+	            protected void updateItem(T item, boolean empty) {
+	                super.updateItem(item, empty);
+	                if (item == null || empty) {
+	                    setGraphic(null);
+	                } else {
+	                    setText(mapper.apply(item));
+	                }
+	            }
+			};
+        };
     }
     
     private void updateId() {
-    	
+    	labelId.setText(createPhantom().getProductId());
+    	System.out.println("update id");
     }
-    
-    @FXML
-    void openFileChooser1(ActionEvent event) {
-    	openFileChooser(textFieldFilePath1);
-    }
-
-    @FXML
-    void openFileChooser2(ActionEvent event) {
-    	openFileChooser(textFieldFilePath2);
-    }
-
-    @FXML
-    void openFileChooser3(ActionEvent event) {
-    	openFileChooser(textFieldFilePath3);
-    }
-    
-    private void openFileChooser(TextField textfield) {
-    	FileChooser fileChooser = new FileChooser();
-    	fileChooser.setTitle("Select phantom specific file");
-    	File desktopDir = new File(System.getProperty("user.home") +"\\Desktop\\");
-    	fileChooser.setInitialDirectory(desktopDir);
-    	File file = fileChooser.showOpenDialog(new Stage());
-    	textfield.setText(file.getAbsolutePath());
-    }
-
-	
-    
 }

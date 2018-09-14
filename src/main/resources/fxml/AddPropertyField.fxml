@@ -15,7 +15,7 @@
          <children>
             <GridPane maxWidth="300.0" prefWidth="220.0">
                <columnConstraints>
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="80.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="30.0" prefWidth="100.0" />
                   <ColumnConstraints hgrow="NEVER" maxWidth="20.0" minWidth="20.0" prefWidth="20.0" />
                   <ColumnConstraints hgrow="NEVER" maxWidth="90.0" minWidth="90.0" prefWidth="100.0" />
                </columnConstraints>
@@ -25,10 +25,10 @@
                   <RowConstraints prefHeight="10.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <TextField fx:id="textFieldName" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                  <Label text="Shortcut Letter" />
-                  <Label text="Name" GridPane.rowIndex="1" />
-                  <TextField fx:id="textFieldShortcut" GridPane.columnIndex="2" />
+                  <TextField fx:id="textFieldDescription" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <Label text="Name" />
+                  <Label text="Description" GridPane.rowIndex="1" />
+                  <TextField fx:id="textFieldName" GridPane.columnIndex="2" />
                </children>
             </GridPane>
             <Button fx:id="buttonAdd" maxWidth="300.0" mnemonicParsing="false" onAction="#add" text="add" />

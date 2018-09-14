@@ -3,7 +3,9 @@ package org.artorg.tools.phantomData.client.controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.server.model.LiteratureBase;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,7 +14,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
 public class AddLiteratureBaseController implements FXMLloadable<AnchorPane> {
-
+	private static final LiteratureBaseConnector connector = LiteratureBaseConnector.get();
+	
 	@Override
 	public AnchorPane loadFXML() {
 		return FxUtil.loadFXML("fxml/AddLiteratureBase.fxml", this);
@@ -38,7 +41,12 @@ public class AddLiteratureBaseController implements FXMLloadable<AnchorPane> {
 
     @FXML
     void add(ActionEvent event) {
-
+    	String shortcut = textFieldShortcut.getText();
+    	String value = textFieldName.getText();
+    	if (connector.create(new LiteratureBase(shortcut, value))) {
+    		textFieldName.setText("");
+    		textFieldShortcut.setText("");
+    	}
     }
 
     @FXML

@@ -3,7 +3,9 @@ package org.artorg.tools.phantomData.client.controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.server.model.FabricationType;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,6 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
 public class AddFabricationTypeController implements FXMLloadable<AnchorPane> {
+	private static final FabricationTypeConnector connector = FabricationTypeConnector.get();
 
 	@Override
 	public AnchorPane loadFXML() {
@@ -38,7 +41,13 @@ public class AddFabricationTypeController implements FXMLloadable<AnchorPane> {
 
     @FXML
     void add(ActionEvent event) {
-
+    	String shortcut = textFieldShortcut.getText();
+    	String value = textFieldName.getText();
+    	if (connector.create(new FabricationType(shortcut, value))) {
+    		textFieldName.setText("");
+    		textFieldShortcut.setText("");
+    	}
+    		
     }
 
     @FXML
