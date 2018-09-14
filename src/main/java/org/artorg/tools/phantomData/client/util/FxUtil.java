@@ -40,10 +40,14 @@ public class FxUtil {
 	
 	public static void addToAnchorPane(AnchorPane parentPane, Node child) {
 		parentPane.getChildren().add(child);
-    	AnchorPane.setBottomAnchor(child, 0.0);
-    	AnchorPane.setLeftAnchor(child, 0.0);
-    	AnchorPane.setRightAnchor(child, 0.0);
-    	AnchorPane.setTopAnchor(child, 0.0);
+		setAnchorZero(child);
+	}
+	
+	public static void setAnchorZero(Node node) {
+		AnchorPane.setBottomAnchor(node, 0.0);
+    	AnchorPane.setLeftAnchor(node, 0.0);
+    	AnchorPane.setRightAnchor(node, 0.0);
+    	AnchorPane.setTopAnchor(node, 0.0);
 	}
 
 }

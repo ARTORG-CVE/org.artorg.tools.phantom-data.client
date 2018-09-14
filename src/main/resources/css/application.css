@@ -13,3 +13,7 @@
 .table-view {
 	-fx-focus-color: transparent;
 }
+
+.split-pane *.split-pane-divider {
+    -fx-padding: 0 1 0 1;
+}

@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.scene.Scene3D;
-import org.artorg.tools.phantomData.client.scene.control.MainTabPane;
+import org.artorg.tools.phantomData.client.scene.control.MainTableTabPane;
 import org.artorg.tools.phantomData.client.scene.control.SecondTable;
 import org.artorg.tools.phantomData.client.scene.control.table.FilterTable;
 import org.artorg.tools.phantomData.client.scene.control.table.Table;
@@ -15,7 +15,7 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 
 public class LayoutController {
-	private MainTabPane mainTable;
+	private MainTableTabPane mainTable;
 	private SecondTable secondTable;
 	private Scene3D scene3d;
 	
@@ -35,7 +35,7 @@ public class LayoutController {
         assert pane3d != null : "fx:id=\"pane3d\" was not injected: check your FXML file 'PhantomLayout.fxml'.";
         assert bottomTablePane != null : "fx:id=\"tableBottomPane\" was not injected: check your FXML file 'PhantomLayout.fxml'.";
 
-        mainTable = new MainTabPane();
+        mainTable = new MainTableTabPane();
         mainTable.addTo(mainTablePane);
     	secondTable = new SecondTable();
     	secondTable.addTo(bottomTablePane);

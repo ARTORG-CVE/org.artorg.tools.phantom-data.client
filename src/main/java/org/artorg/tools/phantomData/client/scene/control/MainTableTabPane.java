@@ -8,21 +8,32 @@ import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.beans.binding.Bindings;
+import javafx.geometry.NodeOrientation;
+import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
-public class MainTabPane extends TabPane implements AddableToAnchorPane {
+public class MainTableTabPane extends SplitPane implements AddableToAnchorPane {
 	private TabPane tabPane;
+	private SplitPane splitPane;
 
 	{
-		tabPane = this;
+		tabPane = new TabPane();
+		splitPane = this;
+		splitPane.setOrientation(Orientation.HORIZONTAL);
+		splitPane.getItems().add(tabPane);
 	}
 
 	public <TABLE extends Table<TABLE, ITEM, ID_TYPE>, ITEM extends DatabasePersistent<ID_TYPE>, ID_TYPE> void openTableTab(
@@ -32,8 +43,8 @@ public class MainTabPane extends TabPane implements AddableToAnchorPane {
 
 		Tab tab = new Tab(name);
 		tab.setContent(mainTable);
-		super.getTabs().add(tab);
-		super.getSelectionModel().select(tab);
+		tabPane.getTabs().add(tab);
+		tabPane.getSelectionModel().select(tab);
 
 		mainTable.setRowFactory(new Callback<TableView<ITEM>, TableRow<ITEM>>() {
 			@Override
@@ -42,11 +53,26 @@ public class MainTabPane extends TabPane implements AddableToAnchorPane {
 				final ContextMenu rowMenu = new ContextMenu();
 				MenuItem editItem = new MenuItem("Add item");
 				editItem.setOnAction(event -> {
-					Node node = ItemFormFactory.createForm(table.getItemClass());
+					AnchorPane node = ItemFormFactory.createForm(table.getItemClass());
+					
+					
+					
+					
+					TabPane tabPane2 = new TabPane();
 					Tab tab = new Tab("Add " + table.getItemName());
 					tab.setContent(node);
-					tabPane.getTabs().add(tab);
-					tabPane.getSelectionModel().select(tab);
+					tabPane2.getTabs().add(tab);
+					tabPane2.getSelectionModel().select(tab);
+					tab.setOnClosed(closeEvent -> {
+						if (tabPane2.getTabs().size()==0)
+							splitPane.getItems().remove(tabPane2);
+					});
+					
+					
+//					tabPane2.setNodeOrientation(NodeOrientation.INHERIT);
+					splitPane.getItems().remove(tabPane);
+					splitPane.getItems().addAll(tabPane, tabPane2);
+					
 				});
 				MenuItem removeItem = new MenuItem("Delete");
 				removeItem.setOnAction(event -> {

@@ -32,6 +32,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
 
 public class AddPhantomController implements FXMLloadable<AnchorPane> {
@@ -94,6 +95,7 @@ public class AddPhantomController implements FXMLloadable<AnchorPane> {
     	});
         
         updateId();
+
 
     }
     
