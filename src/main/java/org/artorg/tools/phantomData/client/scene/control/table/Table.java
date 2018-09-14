@@ -45,6 +45,10 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		this.columns.addAll(createColumns());
 	}
 	
+	public HttpDatabaseCrud<ITEM, ID_TYPE> getConnector() {
+		return connector;
+	}
+	
 	public void readAllData() {
 		Set<ITEM> itemSet = new HashSet<ITEM>();
 		itemSet.addAll(connector.readAllAsSet());
