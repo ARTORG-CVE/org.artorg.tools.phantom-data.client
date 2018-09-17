@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.controllers;
+package org.artorg.tools.phantomData.client.controller;
 
 import javafx.scene.Node;
 

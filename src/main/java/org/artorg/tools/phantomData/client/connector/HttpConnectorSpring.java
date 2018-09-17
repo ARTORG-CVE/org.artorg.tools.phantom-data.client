@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-public abstract class HttpDatabaseCrud<T extends DatabasePersistent<ID_TYPE>, ID_TYPE> {
+public abstract class HttpConnectorSpring<T extends DatabasePersistent<ID_TYPE>, ID_TYPE> {
 	private final Function<Method, String[]> stringAnnosFuncCreate;
 	private final Function<Method, String[]> stringAnnosFuncRead;
 	private final Function<Method, String[]> stringAnnosFuncUpdate;
@@ -47,7 +47,7 @@ public abstract class HttpDatabaseCrud<T extends DatabasePersistent<ID_TYPE>, ID
 		return urlLocalhost;
 	}
 	public static void setUrlLocalhost(String urlLocalhost) {
-		HttpDatabaseCrud.urlLocalhost = urlLocalhost;
+		HttpConnectorSpring.urlLocalhost = urlLocalhost;
 	}
 
 	{

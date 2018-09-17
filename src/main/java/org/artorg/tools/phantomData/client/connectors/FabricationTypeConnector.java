@@ -1,11 +1,11 @@
 package org.artorg.tools.phantomData.client.connectors;
 
-import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.controller.FabricationTypeController;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class FabricationTypeConnector extends HttpDatabaseCrud<FabricationType, Integer> {
+public class FabricationTypeConnector extends HttpConnectorSpring<FabricationType, Integer> {
 
 	private static final FabricationTypeConnector connector;
 	

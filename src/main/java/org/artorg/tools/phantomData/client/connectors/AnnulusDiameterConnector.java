@@ -1,11 +1,11 @@
 package org.artorg.tools.phantomData.client.connectors;
 
-import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.controller.AnnulusDiameterController;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class AnnulusDiameterConnector extends HttpDatabaseCrud<AnnulusDiameter, Integer> {
+public class AnnulusDiameterConnector extends HttpConnectorSpring<AnnulusDiameter, Integer> {
 	private static final AnnulusDiameterConnector connector;
 	
 	static {

@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connectors.property.BooleanPropertyConnector;
 import org.artorg.tools.phantomData.client.connectors.property.DatePropertyConnector;
 import org.artorg.tools.phantomData.client.connectors.property.DoublePropertyConnector;
@@ -72,7 +72,7 @@ public interface PropertyColumns {
 					Function<ITEM,PropertyContainer> propContGetter, 
 					Function<PropertyContainer,Collection<PROPERTY_TYPE>> propsGetter, 
 					Function<PROPERTY_VALUE_TYPE, String> toStringFun, Function<String, PROPERTY_VALUE_TYPE> fromStringFun,
-					HttpDatabaseCrud<PROPERTY_TYPE , SUB_ID_TYPE> connector) {
+					HttpConnectorSpring<PROPERTY_TYPE , SUB_ID_TYPE> connector) {
 		{
 			Function<ITEM,Collection<PROPERTY_TYPE>> propertiesGetter = propContGetter.andThen(propsGetter);
 			Map<Integer, String> map = new HashMap<Integer, String>();

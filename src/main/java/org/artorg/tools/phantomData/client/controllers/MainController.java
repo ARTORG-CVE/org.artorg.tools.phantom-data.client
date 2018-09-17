@@ -5,8 +5,7 @@ import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.io.IOutil;
-import org.artorg.tools.phantomData.client.scene.control.table.FilterTable;
-import org.artorg.tools.phantomData.client.scene.control.table.Table;
+import org.artorg.tools.phantomData.client.scene.control.table.FilterTableSpringDb;
 import org.artorg.tools.phantomData.client.tables.AnnulusDiameterTable;
 import org.artorg.tools.phantomData.client.tables.BooleanPropertyTable;
 import org.artorg.tools.phantomData.client.tables.FabricationTypeTable;
@@ -31,7 +30,7 @@ import javafx.stage.WindowEvent;
 public class MainController {
 	private LayoutController layoutController;
 	
-	private FilterTable<?, ?, ?> table;
+	private FilterTableSpringDb<?, ?> table;
 	private Stage stage;
 	
 	private static String urlLocalhost;
@@ -150,14 +149,16 @@ public class MainController {
         AnchorPane layout = FxUtil.loadFXML("fxml/PhantomLayout.fxml", layoutController);
         FxUtil.addToAnchorPane(contentPane, layout);
         layoutController.openMainTableTab(new PhantomTable(), "Phantoms");
-		layoutController.setSecondTable(new FileTable());
+        try {
+        	layoutController.setSecondTable(new FileTable());
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
 		layoutController.set3dFile(IOutil.readResourceAsFile("model.stl"));
         
     }
     
-    public <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-	ITEM extends DatabasePersistent<ID_TYPE>, 
-	ID_TYPE> void setTable(FilterTable<TABLE, ITEM, ID_TYPE> table) {
+    public <ITEM extends DatabasePersistent<ID_TYPE>, ID_TYPE> void setTable(FilterTableSpringDb<ITEM, ID_TYPE> table) {
 		this.table = table;
 	}
     

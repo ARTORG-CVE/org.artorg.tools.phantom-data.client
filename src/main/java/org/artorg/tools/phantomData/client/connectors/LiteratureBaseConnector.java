@@ -1,11 +1,11 @@
 package org.artorg.tools.phantomData.client.connectors;
 
-import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.controller.LiteratureBaseController;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class LiteratureBaseConnector extends HttpDatabaseCrud<LiteratureBase, Integer> {
+public class LiteratureBaseConnector extends HttpConnectorSpring<LiteratureBase, Integer> {
 	
 	private static final LiteratureBaseConnector connector;
 	

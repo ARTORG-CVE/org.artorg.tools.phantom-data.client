@@ -19,7 +19,7 @@
             <GridPane maxWidth="1.7976931348623157E308">
               <columnConstraints>
                 <ColumnConstraints hgrow="ALWAYS" maxWidth="180.0" minWidth="140.0" prefWidth="160.0" />
-                  <ColumnConstraints fillWidth="false" hgrow="NEVER" maxWidth="1.7976931348623157E308" />
+                  <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="NEVER" />

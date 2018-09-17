@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 public class ColumnOptional<ITEM extends DatabasePersistent<?>, 
@@ -14,14 +14,14 @@ public class ColumnOptional<ITEM extends DatabasePersistent<?>,
 	private final Function<PATH, String> propertyToValueGetter;
 	private final BiConsumer<PATH, String> propertyToValueSetter;
 	private final String emptyValue;
-	private final HttpDatabaseCrud<PATH, SUB_ID_TYPE> connector;
+	private final HttpConnectorSpring<PATH, SUB_ID_TYPE> connector;
 	
 	public ColumnOptional( String columnName,
 			Function<ITEM, Optional<PATH>> itemToPropertyGetter, 
 			Function<PATH, String> propertyToValueGetter, 
 			BiConsumer<PATH, String> propertyToValueSetter,
 			String emptyValue,
-			HttpDatabaseCrud<PATH, SUB_ID_TYPE> connector
+			HttpConnectorSpring<PATH, SUB_ID_TYPE> connector
 			) {
 		super(columnName);
 		this.itemToPropertyGetter = itemToPropertyGetter;

@@ -7,8 +7,9 @@ import java.util.ResourceBundle;
 import org.artorg.tools.phantomData.client.scene.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.MainTableTabPane;
 import org.artorg.tools.phantomData.client.scene.control.SecondTable;
-import org.artorg.tools.phantomData.client.scene.control.table.FilterTable;
-import org.artorg.tools.phantomData.client.scene.control.table.Table;
+import org.artorg.tools.phantomData.client.scene.control.table.FilterTableSpringDb;
+import org.artorg.tools.phantomData.client.scene.control.table.TableSpringDb;
+import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.fxml.FXML;
@@ -43,23 +44,20 @@ public class LayoutController {
     	scene3d.addTo(pane3d);
     }
     
-	public <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-	ITEM extends DatabasePersistent<ID_TYPE>, 
-	ID_TYPE> void openMainTableTab(FilterTable<TABLE, ITEM, ID_TYPE> table) {
-		openMainTableTab(table, table.getTableName());
+	public <ITEM extends DatabasePersistent<ID_TYPE>, 
+	ID_TYPE> void openMainTableTab(TableViewSpring<ITEM, ID_TYPE> table) {
+		openMainTableTab(table, table.getFilterTable().getTableName());
 	}
 	
-	public <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-	ITEM extends DatabasePersistent<ID_TYPE>, 
-	ID_TYPE> void openMainTableTab(FilterTable<TABLE, ITEM, ID_TYPE> table, String name) {
+	public <ITEM extends DatabasePersistent<ID_TYPE>, ID_TYPE> void openMainTableTab(
+			TableViewSpring<ITEM, ID_TYPE> table, String name) {
 		mainTable.openTableTab(table, name);
 	}
 	
 	
 	
-	public <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-	ITEM extends DatabasePersistent<ID_TYPE>, 
-	ID_TYPE> void setSecondTable(FilterTable<TABLE, ITEM, ID_TYPE> table) {
+	public <ITEM extends DatabasePersistent<ID_TYPE>, ID_TYPE> void setSecondTable(
+			TableViewSpring<ITEM, ID_TYPE> table) {
 		secondTable.setTable(table);
 	}
 	

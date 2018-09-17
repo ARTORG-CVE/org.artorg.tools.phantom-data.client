@@ -1,10 +1,12 @@
-package org.artorg.tools.phantomData.client.controllers;
+package org.artorg.tools.phantomData.client.controllers.editTable;
 
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
 import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
 import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
+import org.artorg.tools.phantomData.client.connectors.PhantomConnector;
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
-import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.client.controller.AddEditController;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
@@ -14,11 +16,8 @@ import org.artorg.tools.phantomData.server.model.Special;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 
-public class AddPhantomController2 extends AddItemController {
+public class AddPhantomController extends AddEditController<Phantom, Integer> {
 	private Label labelIdValue;
     private ComboBox<AnnulusDiameter> comboBoxAnnulus;
     private ComboBox<FabricationType> comboBoxFabricationType;
@@ -33,45 +32,44 @@ public class AddPhantomController2 extends AddItemController {
 		comboBoxLiterature = new ComboBox<LiteratureBase>();
 		comboBoxSpecials = new ComboBox<Special>();
 		textFieldModelNumber = new TextField();
-	}
-	
-	public AnchorPane create() {
-		AnchorPane pane = new AnchorPane();
-		VBox vBox = new VBox();
-		GridPane gridPane = new GridPane();
 		
-		super.setGridPane(gridPane);
+		labelIdValue.setDisable(true);
 		
 		super.addProperty("Id", labelIdValue);
 		super.addProperty("Annulus diameter [mm]", comboBoxAnnulus);
 		super.addProperty("Fabrication Type", comboBoxFabricationType);
 		super.addProperty("Literarure Base", comboBoxLiterature);
 		super.addProperty("Special", comboBoxSpecials);
-		super.addProperty("Phantom specific Number", textFieldModelNumber);
+		super.addProperty("Phantom specific Number", textFieldModelNumber, () -> updateId());
 		
-		pane.getChildren().add(vBox);
-		vBox.getChildren().add(gridPane);
-		
-		FxUtil.setAnchorZero(vBox);
-		gridPane.prefWidthProperty().bind(pane.widthProperty());
-		
-		updateComboBoxes();
+		createComboBoxes();
         
-        textFieldModelNumber.setText("1");
-        textFieldModelNumber.textProperty().addListener(event -> {
-        	try {
-        		updateId();
-        	} catch( Exception e) {}
-    	});
-        
-        updateId();
-		
-		return pane;
-		
+        super.init();
 	}
 	
-	private Phantom createPhantom() {
-    	AnnulusDiameter annulusDiameter = comboBoxAnnulus.getSelectionModel().getSelectedItem();
+	private void updateId() {
+    	labelIdValue.setText(createItem().getProductId());
+    }
+	
+	private void createComboBoxes() {
+        createComboBox(comboBoxAnnulus, AnnulusDiameterConnector.get(), d -> String.valueOf(d.getValue()), item -> updateId());
+        createComboBox(comboBoxFabricationType, FabricationTypeConnector.get(), f -> f.getValue(), item -> updateId());
+        createComboBox(comboBoxLiterature, LiteratureBaseConnector.get(), l -> l.getValue(), item -> updateId());
+        createComboBox(comboBoxSpecials, SpecialConnector.get(), s -> s.getShortcut(), item -> updateId());
+    }
+	
+	@Override
+	public void initDefaultValues() {
+		comboBoxAnnulus.getSelectionModel().clearSelection();
+		comboBoxFabricationType.getSelectionModel().clearSelection();
+		comboBoxLiterature.getSelectionModel().clearSelection();
+		comboBoxSpecials.getSelectionModel().clearSelection();
+		textFieldModelNumber.setText("1");
+	}
+
+	@Override
+	public Phantom createItem() {
+		AnnulusDiameter annulusDiameter = comboBoxAnnulus.getSelectionModel().getSelectedItem();
     	FabricationType fabricationType = comboBoxFabricationType.getSelectionModel().getSelectedItem();
     	LiteratureBase literatureBase = comboBoxLiterature.getSelectionModel().getSelectedItem();
     	Special special = comboBoxSpecials.getSelectionModel().getSelectedItem();
@@ -79,17 +77,11 @@ public class AddPhantomController2 extends AddItemController {
     	int number = Integer.valueOf(sNumber);
     	
     	return new Phantom(annulusDiameter, fabricationType, literatureBase, special, number);
-    }
-    
-    private void updateComboBoxes() {
-        createComboBox(comboBoxAnnulus, AnnulusDiameterConnector.get(), d -> String.valueOf(d.getValue()), item -> updateId());
-        createComboBox(comboBoxFabricationType, FabricationTypeConnector.get(), f -> f.getValue(), item -> updateId());
-        createComboBox(comboBoxLiterature, LiteratureBaseConnector.get(), l -> l.getValue(), item -> updateId());
-        createComboBox(comboBoxSpecials, SpecialConnector.get(), s -> s.getShortcut(), item -> updateId());
-    }
-    
-    private void updateId() {
-    	labelIdValue.setText(createPhantom().getProductId());
-    }
+	}
+
+	@Override
+	public HttpConnectorSpring<Phantom, Integer> getConnector() {
+		return PhantomConnector.get();
+	}
     
 }

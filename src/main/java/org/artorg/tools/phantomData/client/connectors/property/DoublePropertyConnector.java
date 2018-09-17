@@ -1,12 +1,12 @@
 package org.artorg.tools.phantomData.client.connectors.property;
 
-import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.controller.property.DoublePropertyController;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class DoublePropertyConnector extends HttpDatabaseCrud<DoubleProperty, Integer> {
+public class DoublePropertyConnector extends HttpConnectorSpring<DoubleProperty, Integer> {
 
 	private static final DoublePropertyConnector connector;
 	

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.artorg.tools.phantomData.client.controller.AddEditController;
 import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
@@ -24,24 +25,26 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
-public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-		ITEM extends DatabasePersistent<ID_TYPE>, 
-		ID_TYPE> extends TableView<ITEM> implements TableGui<TABLE, ITEM , ID_TYPE> {
+public abstract class TableViewSpring<ITEM extends DatabasePersistent<ID_TYPE>, 
+		ID_TYPE> extends TableView<ITEM> {
 	
-	private FilterTable<TABLE, ITEM, ID_TYPE> table;
+	private FilterTableSpringDb<ITEM, ID_TYPE> filterTable;
 	private List<FilterMenuButton> filterMenuButtons;
+	private AddEditController<ITEM, ID_TYPE> addEditController;
 	
 	{
 		super.setEditable(true);
 		filterMenuButtons = new ArrayList<FilterMenuButton>();
+		setAddEditController(createAddEditController());
 	}
 	
-	public void setTable(FilterTable<TABLE, ITEM, ID_TYPE> table) {
-		this.table = table;
+	protected abstract AddEditController<ITEM, ID_TYPE> createAddEditController();
+	
+	public void setTable(FilterTableSpringDb<ITEM, ID_TYPE> table) {
+		this.filterTable = table;
 		reload();
 	}
 	
-	@Override
 	public void autoResizeColumns() {
 		super.setColumnResizePolicy( TableView.UNCONSTRAINED_RESIZE_POLICY);
 	    super.getColumns().stream().forEach( (column) -> {
@@ -59,11 +62,10 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	    } );
 	}
 
-	public Table<TABLE, ITEM, ID_TYPE> getTable() {
-		return table;
+	public FilterTableSpringDb<ITEM, ID_TYPE> getFilterTable() {
+		return filterTable;
 	}
-
-	@Override
+	
 	public Control getGraphic() {
 		return this;
 	}
@@ -84,9 +86,9 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	    headerColumn.setSortable(false);
 	    columns.add(headerColumn);
 	    
-		List<String> columnNames = table.getFilteredColumnNames();
+		List<String> columnNames = filterTable.getFilteredColumnNames();
 		
-		int nCols = table.getFilteredNcols();
+		int nCols = filterTable.getFilteredNcols();
 		for ( int col=0; col<nCols; col++) {
 			TableColumn<ITEM, String> column = new TableColumn<ITEM, String>(columnNames.get(col));
 			column.setSortable(false);
@@ -94,20 +96,20 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 			final int localCol = col;
 			FilterMenuButton filterMenuButton = new FilterMenuButton();
 			filterMenuButton.setText(columnNames.get(col));
-			filterMenuButton.setTable(table, localCol, () -> table.applyFilter()); 
+			filterMenuButton.setTable(filterTable, localCol, () -> filterTable.applyFilter()); 
 			filterMenuButtons.add(filterMenuButton);
 			
 			column.setCellFactory(TextFieldTableCell.forTableColumn());
 		    column.setCellValueFactory(cellData -> new SimpleStringProperty(
-		    		String.valueOf(table.getFilteredValue(cellData.getValue(), localCol))));
+		    		String.valueOf(filterTable.getFilteredValue(cellData.getValue(), localCol))));
 		    column.setOnEditCommit(
 		    	    new EventHandler<CellEditEvent<ITEM, String>>() {
 		    	        @Override
 		    	        public void handle(CellEditEvent<ITEM, String> t) {
 		    	        	ITEM item = ((ITEM) t.getTableView().getItems().get(
 			    	                t.getTablePosition().getRow()));
-		    	        	table.setFilteredValue(item, localCol, t.getNewValue());
-		    	        	System.out.println(table.toString());
+		    	        	filterTable.setFilteredValue(item, localCol, t.getNewValue());
+		    	        	System.out.println(filterTable.toString());
 		    	        }
 		    	    }
 		    	);
@@ -115,7 +117,7 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		}
 		
 	    super.getColumns().addAll(columns);
-	    ObservableList<ITEM> items = table.getItems();
+	    ObservableList<ITEM> items = filterTable.getItems();
 	    super.setItems(items);
 	    autoResizeColumns();
 	    
@@ -142,16 +144,22 @@ public class TableViewCrud<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
         }
     }
 	
-	@Override
 	public void reload() {
-		table.readAllData();
+		filterTable.readAllData();
 		refresh();
 	}
-
-	@Override
+	
 	public void addTo(AnchorPane pane) {
 		FxUtil.addToAnchorPane(pane, this);
 		
+	}
+
+	public AddEditController<ITEM, ID_TYPE> getAddEditController() {
+		return addEditController;
+	}
+
+	public void setAddEditController(AddEditController<ITEM, ID_TYPE> addEditController) {
+		this.addEditController = addEditController;
 	}
 	
 }

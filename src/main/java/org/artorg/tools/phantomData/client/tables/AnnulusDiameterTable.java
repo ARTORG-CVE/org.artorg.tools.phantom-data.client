@@ -1,45 +1,20 @@
 package org.artorg.tools.phantomData.client.tables;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
-import org.artorg.tools.phantomData.client.scene.control.table.Column;
-import org.artorg.tools.phantomData.client.scene.control.table.FilterTable;
-import org.artorg.tools.phantomData.client.scene.control.table.IColumn;
+import org.artorg.tools.phantomData.client.controller.AddEditController;
+import org.artorg.tools.phantomData.client.controllers.editTable.AddAnnulusDiameterController;
+import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
+import org.artorg.tools.phantomData.client.tables.filterable.AnnulusDiameterFilterTable;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 
-public class AnnulusDiameterTable extends FilterTable<AnnulusDiameterTable, AnnulusDiameter, Integer> {
-	
+public class AnnulusDiameterTable extends TableViewSpring<AnnulusDiameter, Integer> {
+
 	{
-		this.setConnector(AnnulusDiameterConnector.get());
+		this.setTable(new AnnulusDiameterFilterTable());
 	}
 	
 	@Override
-	public List<IColumn<AnnulusDiameter, ?>> createColumns() {
-		List<IColumn<AnnulusDiameter, ?>> columns =
-				new ArrayList<IColumn<AnnulusDiameter, ?>>();
-		columns.add(new Column<AnnulusDiameter, AnnulusDiameter, Integer>(
-				"id", item -> item, 
-				path -> String.valueOf(path.getId()), 
-				(path,value) -> path.setId(Integer.valueOf(value)),
-				AnnulusDiameterConnector.get()));
-		columns.add(new Column<AnnulusDiameter, AnnulusDiameter, Integer>(
-				"shortcut", item -> item, 
-				path -> String.valueOf(path.getShortcut()), 
-				(path,value) -> path.setShortcut(Integer.valueOf(value)),
-				AnnulusDiameterConnector.get()));
-		columns.add(new Column<AnnulusDiameter, AnnulusDiameter, Integer>(
-				"value", item -> item, 
-				path -> String.valueOf(path.getValue()), 
-				(path,value) -> path.setValue(Double.valueOf(value)),
-				AnnulusDiameterConnector.get()));
-		return columns;
+	protected AddEditController<AnnulusDiameter, Integer> createAddEditController() {
+		return new AddAnnulusDiameterController();
 	}
-
-	@Override
-	public String getTableName() {
-		return "Annulus Diameters";
-	}
-
+	
 }

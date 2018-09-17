@@ -1,11 +1,11 @@
 package org.artorg.tools.phantomData.client.connectors;
 
-import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.controller.SpecialController;
 import org.artorg.tools.phantomData.server.model.Special;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class SpecialConnector extends HttpDatabaseCrud<Special, Integer> {
+public class SpecialConnector extends HttpConnectorSpring<Special, Integer> {
 	
 	private static final SpecialConnector connector;
 	

@@ -1,11 +1,11 @@
 package org.artorg.tools.phantomData.client.connectors.property;
 
-import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.controller.property.PropertyContainerController;
 import org.artorg.tools.phantomData.server.model.property.PropertyContainer;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class PropertyContainerConnector extends HttpDatabaseCrud<PropertyContainer, Integer> {
+public class PropertyContainerConnector extends HttpConnectorSpring<PropertyContainer, Integer> {
 
 	private static final PropertyContainerConnector connector;
 	

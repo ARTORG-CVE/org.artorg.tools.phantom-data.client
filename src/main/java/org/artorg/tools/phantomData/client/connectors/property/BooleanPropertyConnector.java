@@ -1,12 +1,12 @@
 package org.artorg.tools.phantomData.client.connectors.property;
 
-import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.controller.property.BooleanPropertyController;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class BooleanPropertyConnector extends HttpDatabaseCrud<BooleanProperty, Integer> {
+public class BooleanPropertyConnector extends HttpConnectorSpring<BooleanProperty, Integer> {
 
 	private static final BooleanPropertyConnector connector;
 	

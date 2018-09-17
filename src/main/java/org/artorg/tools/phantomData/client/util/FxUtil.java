@@ -25,7 +25,7 @@ public class FxUtil {
 		try {
 			return loader.<T>load();
 		} catch (IOException e) {}
-		throw new IllegalArgumentException();
+		throw new IllegalArgumentException("path: " +path);
 	}
 	
 	public static String readCSSstylesheet(String path) {

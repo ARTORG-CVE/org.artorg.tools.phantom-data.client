@@ -1,39 +1,21 @@
 package org.artorg.tools.phantomData.client.tables;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.artorg.tools.phantomData.client.connectors.FileTypeConnector;
-import org.artorg.tools.phantomData.client.scene.control.table.Column;
-import org.artorg.tools.phantomData.client.scene.control.table.FilterTable;
-import org.artorg.tools.phantomData.client.scene.control.table.IColumn;
+import org.artorg.tools.phantomData.client.controller.AddEditController;
+import org.artorg.tools.phantomData.client.controllers.editTable.AddFileTypeController;
+import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
+import org.artorg.tools.phantomData.client.tables.filterable.AnnulusDiameterFilterTable;
+import org.artorg.tools.phantomData.client.tables.filterable.FileTypeFilterTable;
 import org.artorg.tools.phantomData.server.model.FileType;
 
-public class FileTypeTable extends FilterTable<FileTypeTable, FileType, Integer> {
+public class FileTypeTable extends TableViewSpring<FileType, Integer> {
 
 	{
-		this.setConnector(FileTypeConnector.get());
+		this.setTable(new FileTypeFilterTable());
+	}
+	
+	@Override
+	protected AddEditController<FileType, Integer> createAddEditController() {
+		return new AddFileTypeController();
 	}
 
-	@Override
-	public List<IColumn<FileType, ?>> createColumns() {
-		List<IColumn<FileType, ?>> columns =
-				new ArrayList<IColumn<FileType, ?>>();
-		columns.add(new Column<FileType, FileType, Integer>(
-				"id", item -> item, 
-				path -> String.valueOf(path.getId()), 
-				(path,value) -> path.setId(Integer.valueOf(value)),
-				FileTypeConnector.get()));
-		columns.add(new Column<FileType, FileType, Integer>(
-				"name", item -> item, 
-				path -> path.getName(), 
-				(path,value) -> path.setName((String) value),
-				FileTypeConnector.get()));
-		return columns;
-	}
-
-	@Override
-	public String getTableName() {
-		return "File Types";
-	}
 }

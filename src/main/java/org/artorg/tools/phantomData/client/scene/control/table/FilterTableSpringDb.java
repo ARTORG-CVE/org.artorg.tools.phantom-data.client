@@ -12,16 +12,15 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
-import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-		ITEM extends DatabasePersistent<ID_TYPE>, 
+public abstract class FilterTableSpringDb<ITEM extends DatabasePersistent<ID_TYPE>, 
 		ID_TYPE>
-		extends Table<TABLE, ITEM, ID_TYPE> {
+		extends TableSpringDb<ITEM, ID_TYPE> {
 	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
 	private List<Predicate<ITEM>> columnItemFilterPredicates;
@@ -46,12 +45,17 @@ public abstract class FilterTable<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 		mappedColumnIndexes = new ArrayList<>();
 	}
 	
+	
+	
+	
+	
+	
 	public void setSortComparator(Comparator<String> sortComparator, Function<ITEM, String> valueGetter) {
 		this.sortComparator = (item1, item2) -> sortComparator.compare(valueGetter.apply(item1),valueGetter.apply(item2));
 	}
 	
 	@Override
-	public void setConnector(HttpDatabaseCrud<ITEM, ID_TYPE> connector) {
+	public void setConnector(HttpConnectorSpring<ITEM, ID_TYPE> connector) {
 		super.setConnector(connector);
 		int nCols = getNcols();
 		

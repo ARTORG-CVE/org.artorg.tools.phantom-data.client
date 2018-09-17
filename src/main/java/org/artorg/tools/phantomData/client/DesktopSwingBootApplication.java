@@ -5,7 +5,7 @@ import static org.artorg.tools.phantomData.client.boot.DatabaseInitializer.isIni
 
 import org.artorg.tools.phantomData.client.boot.ClientBooter;
 import org.artorg.tools.phantomData.client.boot.MainFx;
-import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controllers.MainController;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.DesktopSwingBootServer;
@@ -26,7 +26,7 @@ public class DesktopSwingBootApplication extends ClientBooter {
 		}
     	
     	try {
-    		HttpDatabaseCrud.setUrlLocalhost(getServerBooter().getUrlLocalhost());
+    		HttpConnectorSpring.setUrlLocalhost(getServerBooter().getUrlLocalhost());
     		MainController.setUrlLocalhost(getServerBooter().getUrlLocalhost());
     		MainController.setUrlShutdownActuator(getServerBooter().getUrlShutdownActuator());
     		if (!isInitialized())

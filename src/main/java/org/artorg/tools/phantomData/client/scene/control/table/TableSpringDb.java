@@ -11,19 +11,17 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.artorg.tools.phantomData.client.commandPattern.UndoManager;
 import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
-import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-		ITEM extends DatabasePersistent<ID_TYPE>, 
-		ID_TYPE> {
+public abstract class TableSpringDb<ITEM extends DatabasePersistent<ID_TYPE>, ID_TYPE> {
 	protected final ObservableList<ITEM> items;
 	private final List<IColumn<ITEM, ?>> columns;
 	protected final UndoManager undoManager;
-	protected HttpDatabaseCrud<ITEM, ID_TYPE> connector;
+	protected HttpConnectorSpring<ITEM, ID_TYPE> connector;
 	private boolean isIdColumnVisible;
 	
 	{
@@ -38,14 +36,22 @@ public abstract class Table<TABLE extends Table<TABLE, ITEM, ID_TYPE>,
 	
 	public abstract String getTableName();
 	
-	public void setConnector(HttpDatabaseCrud<ITEM, ID_TYPE> connector) {
+	public void addItem(ITEM item) {
+		connector.create(item);
+	}
+	
+	public void editItem(ITEM item) {
+		
+	}
+	
+	public void setConnector(HttpConnectorSpring<ITEM, ID_TYPE> connector) {
 		this.connector = connector;
 		this.columns.clear();
 		readAllData();
 		this.columns.addAll(createColumns());
 	}
 	
-	public HttpDatabaseCrud<ITEM, ID_TYPE> getConnector() {
+	public HttpConnectorSpring<ITEM, ID_TYPE> getConnector() {
 		return connector;
 	}
 	

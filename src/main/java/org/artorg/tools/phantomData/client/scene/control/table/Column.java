@@ -3,7 +3,7 @@ package org.artorg.tools.phantomData.client.scene.control.table;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 public class Column<ITEM extends DatabasePersistent<?>, 
@@ -12,12 +12,12 @@ public class Column<ITEM extends DatabasePersistent<?>,
 	private final Function<ITEM, PATH> itemToPropertyGetter;
 	private final Function<PATH, String> propertyToValueGetter;
 	private final BiConsumer<PATH, String> propertyToValueSetter;
-	private final HttpDatabaseCrud<PATH, SUB_ID_TYPE> connector;
+	private final HttpConnectorSpring<PATH, SUB_ID_TYPE> connector;
 	
 	public Column(String columnName, Function<ITEM, PATH> itemToPropertyGetter, 
 			Function<PATH, String> propertyToValueGetter, 
 			BiConsumer<PATH, String> propertyToValueSetter,
-			HttpDatabaseCrud<PATH, SUB_ID_TYPE> connector
+			HttpConnectorSpring<PATH, SUB_ID_TYPE> connector
 			) {
 		super(columnName);
 		this.itemToPropertyGetter = itemToPropertyGetter;

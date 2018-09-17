@@ -1,38 +1,21 @@
 package org.artorg.tools.phantomData.client.tables;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
-import org.artorg.tools.phantomData.client.scene.control.table.Column;
-import org.artorg.tools.phantomData.client.scene.control.table.FilterTable;
-import org.artorg.tools.phantomData.client.scene.control.table.IColumn;
-import org.artorg.tools.phantomData.client.scene.control.table.PropertyColumns;
+import org.artorg.tools.phantomData.client.controller.AddEditController;
+import org.artorg.tools.phantomData.client.controllers.editTable.AddSpecialController;
+import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
+import org.artorg.tools.phantomData.client.tables.filterable.AnnulusDiameterFilterTable;
+import org.artorg.tools.phantomData.client.tables.filterable.SpecialFilterTable;
 import org.artorg.tools.phantomData.server.model.Special;
 
-public class SpecialTable extends FilterTable<SpecialTable, Special, Integer> implements PropertyColumns {
+public class SpecialTable extends TableViewSpring<Special, Integer> {
 
 	{
-		this.setConnector(SpecialConnector.get());
+		this.setTable(new SpecialFilterTable());
 	}
-
+	
 	@Override
-	public List<IColumn<Special, ?>> createColumns() {
-		List<IColumn<Special, ?>> columns = new ArrayList<IColumn<Special, ?>>();
-		columns.add(new Column<Special, Special, Integer>("id", item -> item, path -> String.valueOf(path.getId()),
-				(path, value) -> path.setId(Integer.valueOf((String) value)), SpecialConnector.get()));
-		columns.add(new Column<Special, Special, Integer>("shortcut", item -> item, path -> path.getShortcut(),
-				(path, value) -> path.setShortcut(value), SpecialConnector.get()));
-
-		createPropertyColumns(columns, this.getItems(), item -> item.getPropertyContainer());
-		
-		return columns;
-		
-	}
-
-	@Override
-	public String getTableName() {
-		return "Specials";
+	protected AddEditController<Special, Integer> createAddEditController() {
+		return new AddSpecialController();
 	}
 
 }

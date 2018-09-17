@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
 import org.artorg.tools.phantomData.client.DesktopSwingBootApplication;
 import org.artorg.tools.phantomData.client.io.IOutil;
-import org.artorg.tools.phantomData.client.scene.control.table.FilterTable;
-import org.artorg.tools.phantomData.client.scene.control.table.Table;
+import org.artorg.tools.phantomData.client.scene.control.table.FilterTableSpringDb;
+import org.artorg.tools.phantomData.client.scene.control.table.TableSpringDb;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.application.Platform;
@@ -124,9 +124,7 @@ public class FilterMenuButton extends MenuButton {
 		
 	}
 	
-	public <TABLE extends Table<TABLE, ITEM, ID_TYPE>, 
-			ITEM extends DatabasePersistent<ID_TYPE>, 
-			ID_TYPE> void setTable(FilterTable<TABLE, ITEM, ID_TYPE> 
+	public <ITEM extends DatabasePersistent<ID_TYPE>, ID_TYPE> void setTable(FilterTableSpringDb<ITEM, ID_TYPE> 
 				filterTable, int col, Runnable refresh ) {
 		Supplier<List<String>> getters = () -> {
 			List<String> getterList = new ArrayList<String>();

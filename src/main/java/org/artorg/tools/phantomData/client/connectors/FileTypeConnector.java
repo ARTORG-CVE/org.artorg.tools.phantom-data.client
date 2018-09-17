@@ -1,11 +1,11 @@
 package org.artorg.tools.phantomData.client.connectors;
 
-import org.artorg.tools.phantomData.client.connector.HttpDatabaseCrud;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.controller.FileTypeController;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class FileTypeConnector extends HttpDatabaseCrud<FileType, Integer> {
+public class FileTypeConnector extends HttpConnectorSpring<FileType, Integer> {
 
 	private static final FileTypeConnector connector;
 	
