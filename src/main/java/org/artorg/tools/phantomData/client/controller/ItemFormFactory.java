@@ -1,7 +1,6 @@
 package org.artorg.tools.phantomData.client.controller;
 
 import org.artorg.tools.phantomData.client.controllers.editTable.AddAnnulusDiameterController;
-import org.artorg.tools.phantomData.client.controllers.editTable.AddBooleanPropertyController;
 import org.artorg.tools.phantomData.client.controllers.editTable.AddFabricationTypeController;
 import org.artorg.tools.phantomData.client.controllers.editTable.AddFileController;
 import org.artorg.tools.phantomData.client.controllers.editTable.AddFileTypeController;
@@ -9,6 +8,10 @@ import org.artorg.tools.phantomData.client.controllers.editTable.AddLiteratureBa
 import org.artorg.tools.phantomData.client.controllers.editTable.AddPhantomController;
 import org.artorg.tools.phantomData.client.controllers.editTable.AddPropertyFieldController;
 import org.artorg.tools.phantomData.client.controllers.editTable.AddSpecialController;
+import org.artorg.tools.phantomData.client.controllers.editTable.property.AddBooleanPropertyController;
+import org.artorg.tools.phantomData.client.controllers.editTable.property.AddDoublePropertyController;
+import org.artorg.tools.phantomData.client.controllers.editTable.property.AddIntegerPropertyController;
+import org.artorg.tools.phantomData.client.controllers.editTable.property.AddStringPropertyController;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.FileType;
@@ -17,7 +20,10 @@ import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.model.Special;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
+import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
+import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
+import org.artorg.tools.phantomData.server.model.property.StringProperty;
 
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
@@ -37,12 +43,20 @@ public class ItemFormFactory {
 			return new AddPropertyFieldController().create(null);
 		} else if (itemClass == Special.class) {
 			return new AddSpecialController().create(null);
-		} else if (itemClass == BooleanProperty.class) {
-			return new AddBooleanPropertyController().create(null);
+		
 		} else if (itemClass == PhantomFile.class) {
 			return new AddFileController().create(null);
 		} else if (itemClass == FileType.class) {
 			return new AddFileTypeController().create(null);
+		
+		} else if (itemClass == BooleanProperty.class) {
+			return new AddBooleanPropertyController().create(null);
+		} else if (itemClass == DoubleProperty.class) {
+			return new AddDoublePropertyController().create(null);
+		} else if (itemClass == IntegerProperty.class) {
+			return new AddIntegerPropertyController().create(null);
+		} else if (itemClass == StringProperty.class) {
+			return new AddStringPropertyController().create(null);
 		}
 		
 		

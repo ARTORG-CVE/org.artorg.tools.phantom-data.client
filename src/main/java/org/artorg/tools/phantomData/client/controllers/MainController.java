@@ -7,7 +7,6 @@ import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.io.IOutil;
 import org.artorg.tools.phantomData.client.scene.control.table.FilterTableSpringDb;
 import org.artorg.tools.phantomData.client.tables.AnnulusDiameterTable;
-import org.artorg.tools.phantomData.client.tables.BooleanPropertyTable;
 import org.artorg.tools.phantomData.client.tables.FabricationTypeTable;
 import org.artorg.tools.phantomData.client.tables.FileTable;
 import org.artorg.tools.phantomData.client.tables.FileTypeTable;
@@ -15,6 +14,10 @@ import org.artorg.tools.phantomData.client.tables.LiteratureBaseTable;
 import org.artorg.tools.phantomData.client.tables.PhantomTable;
 import org.artorg.tools.phantomData.client.tables.PropertyFieldTable;
 import org.artorg.tools.phantomData.client.tables.SpecialTable;
+import org.artorg.tools.phantomData.client.tables.property.BooleanPropertyTable;
+import org.artorg.tools.phantomData.client.tables.property.DoublePropertyTable;
+import org.artorg.tools.phantomData.client.tables.property.IntegerPropertyTable;
+import org.artorg.tools.phantomData.client.tables.property.StringPropertyTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
@@ -75,6 +78,10 @@ public class MainController {
     private MenuItem menuItemTablePhantoms, menuItemTableAnnulusDiameters, menuItemTableLiteratureBases, 
     	menuItemTableFabricationTypes, menuItemTableSpecials, menuItemTableProperties,
     	menuItemTableFiles, menuItemTableFileTypes, menuItemTablePropertyFields;
+    
+    @FXML
+    private MenuItem menuItemTableBooleanProperties, menuItemTableDoubleProperties,
+    	menuItemTableIntegerProperties, menuItemTableStringProperties;
     
     @FXML
     void about(ActionEvent event) {
@@ -214,6 +221,26 @@ public class MainController {
 	@FXML
     void openTablePropertyFields(ActionEvent event) {
 		layoutController.openMainTableTab(new PropertyFieldTable());
+    }
+	
+	@FXML
+    void openTableBooleanProperties(ActionEvent event) {
+		layoutController.openMainTableTab(new BooleanPropertyTable());
+    }
+
+    @FXML
+    void openTableDoubleProperties(ActionEvent event) {
+    	layoutController.openMainTableTab(new DoublePropertyTable());
+    }
+    
+    @FXML
+    void openTableIntegerProperties(ActionEvent event) {
+    	layoutController.openMainTableTab(new IntegerPropertyTable());
+    }
+
+    @FXML
+    void openTableStringProperties(ActionEvent event) {
+    	layoutController.openMainTableTab(new StringPropertyTable());
     }
     
 }

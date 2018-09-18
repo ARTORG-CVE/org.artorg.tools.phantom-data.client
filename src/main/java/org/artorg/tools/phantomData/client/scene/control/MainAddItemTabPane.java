@@ -1,5 +1,7 @@
 package org.artorg.tools.phantomData.client.scene.control;
 
-public class MainAddItemTabPane {
+import javafx.scene.control.TabPane;
+
+public class MainAddItemTabPane extends TabPane {
 
 }

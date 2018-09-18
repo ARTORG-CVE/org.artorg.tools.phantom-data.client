@@ -39,6 +39,11 @@
 								<SeparatorMenuItem mnemonicParsing="false" />
 								<MenuItem fx:id="menuItemTableFiles" mnemonicParsing="false" onAction="#openTableFiles" text="Files" />
 								<MenuItem fx:id="menuItemTableFileTypes" mnemonicParsing="false" onAction="#openTableFileTypes" text="File Types" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="menuItemTableBooleanProperties" mnemonicParsing="false" onAction="#openTableBooleanProperties" text="Boolean Properties" />
+                        <MenuItem fx:id="menuItemTableDoubleProperties" mnemonicParsing="false" onAction="#openTableDoubleProperties" text="Double Properties" />
+                        <MenuItem fx:id="menuItemTableIntegerProperties" mnemonicParsing="false" onAction="#openTableIntegerProperties" text="Integer Properties" />
+                        <MenuItem fx:id="menuItemTableStringProperties" mnemonicParsing="false" onAction="#openTableStringProperties" text="String Properties" />
 							</items>
 						</Menu>
 						<Menu mnemonicParsing="false" text="Help">
