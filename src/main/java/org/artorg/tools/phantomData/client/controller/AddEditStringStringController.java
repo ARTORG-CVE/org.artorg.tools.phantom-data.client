@@ -19,15 +19,9 @@ public abstract class AddEditStringStringController<ITEM extends DatabasePersist
 		super.addProperty(name1, textFieldRow1);
 		super.addProperty(name2, textFieldRow2);
 		
-		super.init();
+		super.create();
 	}
-
-	@Override
-	public void initDefaultValues() {
-		textFieldRow1.setText("");
-		textFieldRow2.setText("");
-	}
-
+	
 	public abstract BiFunction<String,String,ITEM> getItemConstructor();
 	
 	@Override

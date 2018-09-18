@@ -44,7 +44,7 @@ public class AddPhantomController extends AddEditController<Phantom, Integer> {
 		
 		createComboBoxes();
         
-        super.init();
+        super.create();
 	}
 	
 	private void updateId() {

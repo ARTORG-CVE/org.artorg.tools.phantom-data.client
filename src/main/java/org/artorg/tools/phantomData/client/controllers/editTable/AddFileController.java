@@ -29,7 +29,7 @@ public class AddFileController extends AddEditController<PhantomFile, Integer> {
 		
 		createComboBox(comboBoxFileType, FileTypeConnector.get(), d -> String.valueOf(d.getName()));
 		
-		super.init();
+		super.create();
 		
 	}
 	

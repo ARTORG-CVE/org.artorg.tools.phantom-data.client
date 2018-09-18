@@ -16,7 +16,7 @@ public class AddSpecialController extends AddEditController<Special, Integer> {
 		
 		super.addProperty("Shortcut", textFieldShortcut);
 		
-		super.init();
+		super.create();
 	}
 	
 

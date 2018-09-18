@@ -23,7 +23,7 @@ public class AddStringPropertyController extends AddEditController<StringPropert
 		
 		createComboBox(comboBoxPropertyField, PropertyFieldConnector.get(), d -> String.valueOf(d.getName()));
 		
-		super.init();
+		super.create();
 	}
 	
 	@Override

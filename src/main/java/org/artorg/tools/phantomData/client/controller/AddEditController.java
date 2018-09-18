@@ -15,7 +15,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
@@ -43,14 +45,29 @@ public abstract class AddEditController<ITEM extends DatabasePersistent<ID_TYPE>
 		System.out.println("AddEditController: ");
 	}
 	
-	public abstract void initDefaultValues();
-	
 	public abstract ITEM createItem();
 	
 	protected abstract HttpConnectorSpring<ITEM, ID_TYPE> getConnector();
 	
+	protected abstract void addPropertyEntries(List<PropertyEntry> entries);
+	
+	protected abstract void setTemplate(ITEM item);
+	
+//	protected abstract Function<Object[], ITEM> createFactory();
+	
 	public void applyButton() {
 		getConnector().create(createItem());
+	}
+	
+	protected void initDefaultValues(List<Node> nodes) {
+		nodes.forEach(node -> {
+			if (node instanceof ComboBox)
+				((ComboBox<?>)node).getSelectionModel().clearSelection();
+			else if (node instanceof TextField)
+				((TextField)node).setText("");
+			else if (node instanceof CheckBox)
+				((CheckBox)node).setSelected(false);
+		});
 	}
 	
 	protected <T extends DatabasePersistent<SUB_ID_TYPE>, SUB_ID_TYPE> void createComboBox(ComboBox<T> comboBox, 
@@ -110,11 +127,19 @@ public abstract class AddEditController<ITEM extends DatabasePersistent<ID_TYPE>
 		node.setMaxWidth(Double.MAX_VALUE);
     }
     
-    protected AnchorPane create(ITEM item) {
-		return rootPane;
+    public AnchorPane create() {
+    	List<PropertyEntry> entries = new ArrayList<PropertyEntry>(); 
+		addPropertyEntries(entries); 
+		return create(entries, null);
     }
     
-    protected void init() {
+    public AnchorPane create(ITEM item) {
+    	List<PropertyEntry> entries = new ArrayList<PropertyEntry>(); 
+		addPropertyEntries(entries); 
+		return create(entries, item);
+    }
+    
+    private AnchorPane create(List<PropertyEntry> entries, ITEM item) {
     	final RowConstraints row = new RowConstraints();
     	row.setVgrow(Priority.NEVER);
     	row.setPrefHeight(30.0);
@@ -168,11 +193,13 @@ public abstract class AddEditController<ITEM extends DatabasePersistent<ID_TYPE>
 		spacePane.setPrefHeight(10.0);
 		vBox.getChildren().add(spacePane);
 		
+		List<Node> rightNodes = entries.stream().map(e -> e.getRightNode()).collect(Collectors.toList());
+		
 		applyButton.setText("Add");
 		applyButton.setMaxWidth(Double.MAX_VALUE);
 		applyButton.setOnAction(event -> {
 			applyButton();
-			initDefaultValues();
+			initDefaultValues(rightNodes);
 		});
 		VBox.setVgrow(applyButton, Priority.ALWAYS);
 		vBox.getChildren().add(applyButton);
@@ -180,7 +207,12 @@ public abstract class AddEditController<ITEM extends DatabasePersistent<ID_TYPE>
 		FxUtil.setAnchorZero(vBox);
 		rootPane.setPadding(new Insets(10, 10, 10, 10));
 		
-		initDefaultValues();
+		initDefaultValues(rightNodes);
+		
+		if (item != null)
+    		setTemplate(item);
+		
+		return rootPane;
     }
     
     public GridPane getGridPane() {

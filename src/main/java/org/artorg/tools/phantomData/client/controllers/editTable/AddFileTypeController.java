@@ -15,7 +15,7 @@ public class AddFileTypeController extends AddEditController<FileType, Integer> 
 		
 		super.addProperty("Name", textFieldName);
 		
-		super.init();
+		super.create();
 	}
 	
 	

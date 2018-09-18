@@ -20,7 +20,7 @@ public class AddAnnulusDiameterController extends AddEditController<AnnulusDiame
 		super.addProperty("Shortcut [mm]", labelShortcut);
 		super.addProperty("Diameter [mm]", textFieldValue, () -> updateLabel());
 		
-		super.init();
+		super.create();
 	}
 
 	private void updateLabel() {
