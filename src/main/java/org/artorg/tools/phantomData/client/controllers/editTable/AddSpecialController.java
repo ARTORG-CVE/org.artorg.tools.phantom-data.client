@@ -1,7 +1,6 @@
 package org.artorg.tools.phantomData.client.controllers.editTable;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
@@ -12,7 +11,7 @@ import org.artorg.tools.phantomData.server.model.property.PropertyContainer;
 
 import javafx.scene.control.TextField;
 
-public class AddSpecialController extends AddEditController<Special, UUID> {
+public class AddSpecialController extends AddEditController<Special> {
 	private TextField textFieldShortcut; 
 	
 	{
@@ -27,7 +26,7 @@ public class AddSpecialController extends AddEditController<Special, UUID> {
 	}
 
 	@Override
-	protected HttpConnectorSpring<Special, UUID> getConnector() {
+	protected HttpConnectorSpring<Special> getConnector() {
 		return SpecialConnector.get();
 	}
 

@@ -49,8 +49,7 @@ public class DatabaseInitializer {
 	
 	public static boolean isInitialized() {
 		try {
-			phantomConn.readById(1);
-			return true;
+			return  (phantomConn.readAll().length>0);
 		} catch (Exception e) {}
 		return false;
 	}
@@ -61,10 +60,13 @@ public class DatabaseInitializer {
 	}
 
 	private static void initFabricationtype() {
-		fTypeConn.create(new FabricationType("A", "Small, thin"));
+		FabricationType fType1 = new FabricationType("A", "Small, thin"); 
+		fTypeConn.create(fType1);
 		fTypeConn.create(new FabricationType("B", "Small, thick"));
 		fTypeConn.create(new FabricationType("C", "Tomo, thin"));
 		fTypeConn.create(new FabricationType("D", "Tomo, thick"));
+		
+		System.out.println(fTypeConn.read(fType1));
 	}
 
 	private static void initLiteratureBase() {
@@ -84,42 +86,53 @@ public class DatabaseInitializer {
 		fieldConn.create(field1);
 		fieldConn.create(field2);
 		fieldConn.create(field3);
-		field1 = fieldConn.readById(1);
-		field2 = fieldConn.readById(2);
-		field3 = fieldConn.readById(3);
+		field1 = fieldConn.read(field1);
+		field2 = fieldConn.read(field2);
+		field3 = fieldConn.read(field3);
 
-		boolPropConn.create(new BooleanProperty(field1, true));
-		boolPropConn.create(new BooleanProperty(field1, false));
-		boolPropConn.create(new BooleanProperty(field2, true));
-		boolPropConn.create(new BooleanProperty(field2, false));
-		intPropConn.create(new IntegerProperty(field3, 20));
+		BooleanProperty bool1 = new BooleanProperty(field1, true); 
+		BooleanProperty bool2 = new BooleanProperty(field1, false);
+		BooleanProperty bool3 = new BooleanProperty(field2, true);
+		BooleanProperty bool4 = new BooleanProperty(field2, false);
+		boolPropConn.create(bool1);
+		boolPropConn.create(bool2);
+		boolPropConn.create(bool3);
+		boolPropConn.create(bool4);
+		bool1 = boolPropConn.read(bool1);
+		bool2 = boolPropConn.read(bool2);
+		bool3 = boolPropConn.read(bool3);
+		bool4 = boolPropConn.read(bool4);
+		
+		IntegerProperty int1 = new IntegerProperty(field3, 20); 
+		intPropConn.create(int1);
+		int1 = intPropConn.read(int1);
 
 		Collection<BooleanProperty> list1 = new ArrayList<BooleanProperty>();
-		list1.add(boolPropConn.readById(1));
-		list1.add(boolPropConn.readById(4));
+		list1.add(boolPropConn.read(bool1));
+		list1.add(boolPropConn.read(bool4));
 		PropertyContainer pc1 = new PropertyContainer();
 		pc1.setBooleanProperties(list1);
 		propContConn.create(pc1);
 		specConn.create(new Special("L", pc1));
 
 		Collection<BooleanProperty> list2 = new ArrayList<BooleanProperty>();
-		list2.add(boolPropConn.readById(2));
-		list2.add(boolPropConn.readById(3));
+		list2.add(boolPropConn.read(bool2));
+		list2.add(boolPropConn.read(bool3));
 		PropertyContainer pc2 = new PropertyContainer();
 		pc2.setBooleanProperties(list2);
 		propContConn.create(pc2);
 		specConn.create(new Special("C", pc2));
 
 		Collection<BooleanProperty> list3 = new ArrayList<BooleanProperty>();
-		list3.add(boolPropConn.readById(2));
-		list3.add(boolPropConn.readById(4));
+		list3.add(boolPropConn.read(bool2));
+		list3.add(boolPropConn.read(bool4));
 		PropertyContainer pc3 = new PropertyContainer();
 		pc3.setBooleanProperties(list3);
 		propContConn.create(pc3);
 		specConn.create(new Special("N", pc3));
 
 		Collection<IntegerProperty> list4 = new ArrayList<IntegerProperty>();
-		list4.add(intPropConn.readById(1));
+		list4.add(intPropConn.read(int1));
 		PropertyContainer pc4 = new PropertyContainer();
 		pc4.setIntegerProperties(list4);
 		propContConn.create(pc4);
@@ -129,15 +142,20 @@ public class DatabaseInitializer {
 
 	private static void initFiles() {
 		FileTypeConnector fileTypeConn = FileTypeConnector.get();
-		fileTypeConn.create(new FileType("phantom-specific-geometry-main-cad-model"));
-		fileTypeConn.create(new FileType("phantom-specific-geometry-fabrication-part"));
-		fileTypeConn.create(new FileType("thesis-master"));
-		fileTypeConn.create(new FileType("thesis-phd"));
+		FileType fileType1 = new FileType("phantom-specific-geometry-main-cad-model");
+		FileType fileType2 = new FileType("phantom-specific-geometry-fabrication-part");
+		FileType fileType3 = new FileType("thesis-master");
+		FileType fileType4 = new FileType("thesis-phd"); 
+		
+		fileTypeConn.create(fileType1);
+		fileTypeConn.create(fileType2);
+		fileTypeConn.create(fileType3);
+		fileTypeConn.create(fileType4);
 
 		FileConnector fileConn = FileConnector.get();
-		fileConn.create(new PhantomFile("", "model", "stl", fileTypeConn.readById(1)));
-		fileConn.create(new PhantomFile("", "model2", "stl", fileTypeConn.readById(1)));
-		fileConn.create(new PhantomFile("", "model3", "stl", fileTypeConn.readById(3)));
+		fileConn.create(new PhantomFile("", "model", "stl", fileTypeConn.read(fileType1)));
+		fileConn.create(new PhantomFile("", "model2", "stl", fileTypeConn.read(fileType1)));
+		fileConn.create(new PhantomFile("", "model3", "stl", fileTypeConn.read(fileType3)));
 
 		fileConn.readByName("model").create("D:/Users/Marc/Desktop/test1.stl");
 		fileConn.readByName("model").toString();

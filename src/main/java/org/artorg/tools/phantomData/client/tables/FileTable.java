@@ -6,14 +6,14 @@ import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.tables.filterable.FileFilterTable;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 
-public class FileTable extends TableViewSpring<PhantomFile, Integer> {
+public class FileTable extends TableViewSpring<PhantomFile> {
 
 	{
 		this.setTable(new FileFilterTable());
 	}
 	
 	@Override
-	public AddEditController<PhantomFile, Integer> createAddEditController() {
+	public AddEditController<PhantomFile> createAddEditController() {
 		return new AddFileController();
 	}
 

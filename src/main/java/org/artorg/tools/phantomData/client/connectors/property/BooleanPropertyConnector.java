@@ -6,7 +6,7 @@ import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class BooleanPropertyConnector extends HttpConnectorSpring<BooleanProperty, Integer> {
+public class BooleanPropertyConnector extends HttpConnectorSpring<BooleanProperty> {
 
 	private static final BooleanPropertyConnector connector;
 	
@@ -31,7 +31,7 @@ public class BooleanPropertyConnector extends HttpConnectorSpring<BooleanPropert
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
+	public Class<? extends DatabasePersistent> getModelClass() {
 		return BooleanProperty.class;
 	}
 

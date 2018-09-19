@@ -6,18 +6,17 @@ import java.util.function.Function;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class Column<ITEM extends DatabasePersistent<?>, 
-		PATH extends DatabasePersistent<SUB_ID_TYPE>, 
-		SUB_ID_TYPE> extends IColumn<ITEM, SUB_ID_TYPE> {
+public class Column<ITEM extends DatabasePersistent, 
+		PATH extends DatabasePersistent> extends IColumn<ITEM> {
 	private final Function<ITEM, PATH> itemToPropertyGetter;
 	private final Function<PATH, String> propertyToValueGetter;
 	private final BiConsumer<PATH, String> propertyToValueSetter;
-	private final HttpConnectorSpring<PATH, SUB_ID_TYPE> connector;
+	private final HttpConnectorSpring<PATH> connector;
 	
 	public Column(String columnName, Function<ITEM, PATH> itemToPropertyGetter, 
 			Function<PATH, String> propertyToValueGetter, 
 			BiConsumer<PATH, String> propertyToValueSetter,
-			HttpConnectorSpring<PATH, SUB_ID_TYPE> connector
+			HttpConnectorSpring<PATH> connector
 			) {
 		super(columnName);
 		this.itemToPropertyGetter = itemToPropertyGetter;

@@ -7,13 +7,12 @@ import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 import javafx.scene.layout.AnchorPane;
 
 public class SecondTable extends AnchorPaneAddableTo {
-	private FilterTableSpringDb<?, ?> table;
+	private FilterTableSpringDb<?> table;
 //	private TableViewSpring<?, ?> view;
 	
-	public <ITEM extends DatabasePersistent<ID_TYPE>, 
-		ID_TYPE> 
+	public <ITEM extends DatabasePersistent> 
 		void setTable(
-			TableViewSpring<ITEM, ID_TYPE> table) {
+			TableViewSpring<ITEM> table) {
 //		this.table = table;
 //		TableViewSpring<ITEM, ID_TYPE> view = new TableViewSpring<ITEM, ID_TYPE>();
 //		view.setTable(table);

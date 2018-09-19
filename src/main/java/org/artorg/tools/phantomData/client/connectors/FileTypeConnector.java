@@ -5,7 +5,7 @@ import org.artorg.tools.phantomData.server.controller.FileTypeController;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class FileTypeConnector extends HttpConnectorSpring<FileType, Integer> {
+public class FileTypeConnector extends HttpConnectorSpring<FileType> {
 
 	private static final FileTypeConnector connector;
 	
@@ -30,7 +30,7 @@ public class FileTypeConnector extends HttpConnectorSpring<FileType, Integer> {
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
+	public Class<? extends DatabasePersistent> getModelClass() {
 		return FileType.class;
 	}
 

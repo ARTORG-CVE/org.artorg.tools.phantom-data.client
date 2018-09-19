@@ -18,9 +18,7 @@ import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public abstract class FilterTableSpringDb<ITEM extends DatabasePersistent<ID_TYPE>, 
-		ID_TYPE>
-		extends TableSpringDb<ITEM, ID_TYPE> {
+public abstract class FilterTableSpringDb<ITEM extends DatabasePersistent> extends TableSpringDb<ITEM> {
 	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
 	private List<Predicate<ITEM>> columnItemFilterPredicates;
@@ -35,32 +33,21 @@ public abstract class FilterTableSpringDb<ITEM extends DatabasePersistent<ID_TYP
 		filterPredicate = item -> true;
 		columnItemFilterPredicates = new ArrayList<Predicate<ITEM>>();
 		columnTextFilterPredicates = new ArrayList<Predicate<ITEM>>();
-		sortComparator = (i1,i2) -> {
-			if (i1.getId() instanceof Integer)
-				return ((Integer)i1.getId()).compareTo(((Integer)i2.getId()));
-			if (i1.getId() instanceof Long)
-				return ((Long)i1.getId()).compareTo(((Long)i2.getId()));
-			return i1.getId().toString().compareTo(i2.getId().toString());
-		};
+		sortComparator = (i1,i2) -> i1.getId().compareTo(i2.getId()); 
 		mappedColumnIndexes = new ArrayList<>();
 	}
-	
-	
-	
-	
-	
 	
 	public void setSortComparator(Comparator<String> sortComparator, Function<ITEM, String> valueGetter) {
 		this.sortComparator = (item1, item2) -> sortComparator.compare(valueGetter.apply(item1),valueGetter.apply(item2));
 	}
 	
 	@Override
-	public void setConnector(HttpConnectorSpring<ITEM, ID_TYPE> connector) {
+	public void setConnector(HttpConnectorSpring<ITEM> connector) {
 		super.setConnector(connector);
 		int nCols = getNcols();
 		
 		mappedColumnIndexes = new ArrayList<Integer>(nCols);
-		List<IColumn<ITEM, ?>> columns = super.getColumns();
+		List<IColumn<ITEM>> columns = super.getColumns();
 		for (int i=0; i<nCols; i++)
 			if (columns.get(i).isVisible())
 				mappedColumnIndexes.add(i);
@@ -93,7 +80,7 @@ public abstract class FilterTableSpringDb<ITEM extends DatabasePersistent<ID_TYP
 		return nFilteredCols;
 	}
 	
-	public List<IColumn<ITEM, ?>> getFilteredColumns() {
+	public List<IColumn<ITEM>> getFilteredColumns() {
 		return mappedColumnIndexes.stream().map(i -> getColumns().get(i)).collect(Collectors.toList());
 	}
 	
@@ -127,8 +114,8 @@ public abstract class FilterTableSpringDb<ITEM extends DatabasePersistent<ID_TYP
 	}
 	
 	public String getColumnFilteredValue(int row, int col) {
-		List<IColumn<ITEM, ?>> columns = getFilteredColumns();
-		IColumn<ITEM, ?> column = columns.get(col);
+		List<IColumn<ITEM>> columns = getFilteredColumns();
+		IColumn<ITEM> column = columns.get(col);
 		ObservableList<ITEM> items = super.getItems();
 		ITEM item = items.get(row);
 		column.get(item);

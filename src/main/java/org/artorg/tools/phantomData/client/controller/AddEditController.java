@@ -33,7 +33,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
-public abstract class AddEditController<ITEM extends DatabasePersistent<ID_TYPE>, ID_TYPE> {
+public abstract class AddEditController<ITEM extends DatabasePersistent> {
 	private GridPane gridPane;
 	private Button applyButton;
 	private int nRows = 0;
@@ -47,7 +47,7 @@ public abstract class AddEditController<ITEM extends DatabasePersistent<ID_TYPE>
 	
 	public abstract ITEM createItem();
 	
-	protected abstract HttpConnectorSpring<ITEM, ID_TYPE> getConnector();
+	protected abstract HttpConnectorSpring<ITEM> getConnector();
 	
 	protected abstract void addPropertyEntries(List<PropertyEntry> entries);
 	
@@ -74,8 +74,8 @@ public abstract class AddEditController<ITEM extends DatabasePersistent<ID_TYPE>
 				comboBox.getSelectionModel().select(i);
 	}
 	
-	protected <T extends DatabasePersistent<SUB_ID_TYPE>, SUB_ID_TYPE> void createComboBox(ComboBox<T> comboBox, 
-			HttpConnectorSpring<T, SUB_ID_TYPE> connector, Function<T,String> mapper, Consumer<T> selectedItemChangedConsumer) {
+	protected <T extends DatabasePersistent> void createComboBox(ComboBox<T> comboBox, 
+			HttpConnectorSpring<T> connector, Function<T,String> mapper, Consumer<T> selectedItemChangedConsumer) {
     	createComboBox(comboBox, connector, mapper);
         
         ChangeListener<T> listener = (observable, oldValue, newValue) -> {
@@ -86,8 +86,8 @@ public abstract class AddEditController<ITEM extends DatabasePersistent<ID_TYPE>
         comboBox.getSelectionModel().selectedItemProperty().addListener(listener);
     }
 	
-	protected <T extends DatabasePersistent<SUB_ID_TYPE>, SUB_ID_TYPE> void createComboBox(ComboBox<T> comboBox, 
-			HttpConnectorSpring<T, SUB_ID_TYPE> connector, Function<T,String> mapper) {
+	protected <T extends DatabasePersistent> void createComboBox(ComboBox<T> comboBox, 
+			HttpConnectorSpring<T> connector, Function<T,String> mapper) {
     	List<T> fabricationType = connector.readAllAsStream()
         		.distinct().collect(Collectors.toList());
     	comboBox.setItems(FXCollections.observableList(fabricationType));

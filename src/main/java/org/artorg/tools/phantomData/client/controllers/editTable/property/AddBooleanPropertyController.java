@@ -13,7 +13,7 @@ import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 
-public class AddBooleanPropertyController extends AddEditController<BooleanProperty, Integer> {
+public class AddBooleanPropertyController extends AddEditController<BooleanProperty> {
 	private ComboBox<PropertyField> comboBoxPropertyField;
 	private CheckBox checkBoxValue;
 
@@ -30,7 +30,7 @@ public class AddBooleanPropertyController extends AddEditController<BooleanPrope
 	}
 
 	@Override
-	protected HttpConnectorSpring<BooleanProperty, Integer> getConnector() {
+	protected HttpConnectorSpring<BooleanProperty> getConnector() {
 		return BooleanPropertyConnector.get();
 	}
 

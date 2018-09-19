@@ -5,7 +5,7 @@ import org.artorg.tools.phantomData.server.controller.AnnulusDiameterController;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class AnnulusDiameterConnector extends HttpConnectorSpring<AnnulusDiameter, Integer> {
+public class AnnulusDiameterConnector extends HttpConnectorSpring<AnnulusDiameter> {
 	private static final AnnulusDiameterConnector connector;
 	
 	static {
@@ -29,7 +29,7 @@ public class AnnulusDiameterConnector extends HttpConnectorSpring<AnnulusDiamete
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
+	public Class<? extends DatabasePersistent> getModelClass() {
 		return AnnulusDiameter.class;
 	}
 	

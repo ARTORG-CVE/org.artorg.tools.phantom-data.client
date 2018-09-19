@@ -6,14 +6,14 @@ import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.tables.filterable.property.IntegerPropertyFilterTable;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
 
-public class IntegerPropertyTable extends TableViewSpring<IntegerProperty, Integer> {
+public class IntegerPropertyTable extends TableViewSpring<IntegerProperty> {
 
 	{
 		this.setTable(new IntegerPropertyFilterTable());
 	}
 	
 	@Override
-	public AddEditController<IntegerProperty, Integer> createAddEditController() {
+	public AddEditController<IntegerProperty> createAddEditController() {
 		return new AddIntegerPropertyController();
 	}
 

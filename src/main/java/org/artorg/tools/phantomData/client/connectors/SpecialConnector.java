@@ -1,13 +1,11 @@
 package org.artorg.tools.phantomData.client.connectors;
 
-import java.util.UUID;
-
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.controller.SpecialController;
 import org.artorg.tools.phantomData.server.model.Special;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class SpecialConnector extends HttpConnectorSpring<Special, UUID> {
+public class SpecialConnector extends HttpConnectorSpring<Special> {
 	
 	private static final SpecialConnector connector;
 	
@@ -32,7 +30,7 @@ public class SpecialConnector extends HttpConnectorSpring<Special, UUID> {
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<UUID>> getModelClass() {
+	public Class<? extends DatabasePersistent> getModelClass() {
 		return Special.class;
 	}
 	

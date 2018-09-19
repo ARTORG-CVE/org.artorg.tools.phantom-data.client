@@ -10,7 +10,7 @@ import org.artorg.tools.phantomData.server.model.FileType;
 
 import javafx.scene.control.TextField;
 
-public class AddFileTypeController extends AddEditController<FileType, Integer> {
+public class AddFileTypeController extends AddEditController<FileType> {
 	private TextField textFieldName;
 	
 	{
@@ -24,7 +24,7 @@ public class AddFileTypeController extends AddEditController<FileType, Integer> 
 	}
 
 	@Override
-	protected HttpConnectorSpring<FileType, Integer> getConnector() {
+	protected HttpConnectorSpring<FileType> getConnector() {
 		return FileTypeConnector.get();
 	}
 

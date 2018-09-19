@@ -4,7 +4,7 @@ import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connectors.property.BooleanPropertyConnector;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 
-public class BooleanPropertyFilterTable extends PropertyFilterTable<BooleanProperty, Boolean, Integer> {
+public class BooleanPropertyFilterTable extends PropertyFilterTable<BooleanProperty, Boolean> {
 	
 	{
 		this.setConnector(BooleanPropertyConnector.get());
@@ -16,7 +16,7 @@ public class BooleanPropertyFilterTable extends PropertyFilterTable<BooleanPrope
 	}
 
 	@Override
-	protected HttpConnectorSpring<BooleanProperty, Integer> getPropertyConnector() {
+	protected HttpConnectorSpring<BooleanProperty> getPropertyConnector() {
 		return BooleanPropertyConnector.get();
 	}
 
@@ -28,11 +28,6 @@ public class BooleanPropertyFilterTable extends PropertyFilterTable<BooleanPrope
 	@Override
 	protected Boolean fromString(String s) {
 		return Boolean.valueOf(s);
-	}
-
-	@Override
-	protected Integer fromStringToId(String s) {
-		return Integer.valueOf(s);
 	}
 
 }

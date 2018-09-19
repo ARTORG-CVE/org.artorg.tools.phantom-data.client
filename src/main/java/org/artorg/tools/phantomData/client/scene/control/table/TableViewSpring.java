@@ -25,10 +25,9 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
-public abstract class TableViewSpring<ITEM extends DatabasePersistent<ID_TYPE>, 
-		ID_TYPE> extends TableView<ITEM> {
+public abstract class TableViewSpring<ITEM extends DatabasePersistent> extends TableView<ITEM> {
 	
-	private FilterTableSpringDb<ITEM, ID_TYPE> filterTable;
+	private FilterTableSpringDb<ITEM> filterTable;
 	private List<FilterMenuButton> filterMenuButtons;
 	
 	{
@@ -36,9 +35,9 @@ public abstract class TableViewSpring<ITEM extends DatabasePersistent<ID_TYPE>,
 		filterMenuButtons = new ArrayList<FilterMenuButton>();
 	}
 	
-	public abstract AddEditController<ITEM, ID_TYPE> createAddEditController();
+	public abstract AddEditController<ITEM> createAddEditController();
 	
-	public void setTable(FilterTableSpringDb<ITEM, ID_TYPE> table) {
+	public void setTable(FilterTableSpringDb<ITEM> table) {
 		this.filterTable = table;
 		reload();
 	}
@@ -60,7 +59,7 @@ public abstract class TableViewSpring<ITEM extends DatabasePersistent<ID_TYPE>,
 	    } );
 	}
 
-	public FilterTableSpringDb<ITEM, ID_TYPE> getFilterTable() {
+	public FilterTableSpringDb<ITEM> getFilterTable() {
 		return filterTable;
 	}
 	

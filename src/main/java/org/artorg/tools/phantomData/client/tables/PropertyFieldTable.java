@@ -6,14 +6,14 @@ import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.tables.filterable.PropertyFieldFilterTable;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
-public class PropertyFieldTable extends TableViewSpring<PropertyField, Integer> {
+public class PropertyFieldTable extends TableViewSpring<PropertyField> {
 
 	{
 		this.setTable(new PropertyFieldFilterTable());
 	}
 	
 	@Override
-	public AddEditController<PropertyField, Integer> createAddEditController() {
+	public AddEditController<PropertyField> createAddEditController() {
 		return new AddPropertyFieldController();
 	}
 

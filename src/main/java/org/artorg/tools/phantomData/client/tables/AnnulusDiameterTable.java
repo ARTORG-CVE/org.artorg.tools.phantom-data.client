@@ -6,14 +6,14 @@ import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.tables.filterable.AnnulusDiameterFilterTable;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 
-public class AnnulusDiameterTable extends TableViewSpring<AnnulusDiameter, Integer> {
+public class AnnulusDiameterTable extends TableViewSpring<AnnulusDiameter> {
 
 	{
 		this.setTable(new AnnulusDiameterFilterTable());
 	}
 	
 	@Override
-	public AddEditController<AnnulusDiameter, Integer> createAddEditController() {
+	public AddEditController<AnnulusDiameter> createAddEditController() {
 		return new AddAnnulusDiameterController();
 	}
 	

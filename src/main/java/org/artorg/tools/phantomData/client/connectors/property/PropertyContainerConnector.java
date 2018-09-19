@@ -5,7 +5,7 @@ import org.artorg.tools.phantomData.server.controller.property.PropertyContainer
 import org.artorg.tools.phantomData.server.model.property.PropertyContainer;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class PropertyContainerConnector extends HttpConnectorSpring<PropertyContainer, Integer> {
+public class PropertyContainerConnector extends HttpConnectorSpring<PropertyContainer> {
 
 	private static final PropertyContainerConnector connector;
 	
@@ -30,7 +30,7 @@ public class PropertyContainerConnector extends HttpConnectorSpring<PropertyCont
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
+	public Class<? extends DatabasePersistent> getModelClass() {
 		return PropertyContainer.class;
 	}
 	

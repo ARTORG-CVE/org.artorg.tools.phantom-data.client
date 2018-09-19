@@ -10,7 +10,7 @@ import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 import javafx.scene.control.TextField;
 
-public class AddPropertyFieldController extends AddEditController<PropertyField, Integer>{
+public class AddPropertyFieldController extends AddEditController<PropertyField>{
 	private TextField textFielName;
 	private TextField textFieldDescription;
 
@@ -20,7 +20,7 @@ public class AddPropertyFieldController extends AddEditController<PropertyField,
 	}
 	
 	@Override
-	protected HttpConnectorSpring<PropertyField, Integer> getConnector() {
+	protected HttpConnectorSpring<PropertyField> getConnector() {
 		return PropertyFieldConnector.get();
 	}
 	

@@ -4,7 +4,7 @@ import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connectors.property.IntegerPropertyConnector;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
 
-public class IntegerPropertyFilterTable extends PropertyFilterTable<IntegerProperty, Integer, Integer> {
+public class IntegerPropertyFilterTable extends PropertyFilterTable<IntegerProperty, Integer> {
 	
 	{
 		this.setConnector(IntegerPropertyConnector.get());
@@ -16,7 +16,7 @@ public class IntegerPropertyFilterTable extends PropertyFilterTable<IntegerPrope
 	}
 
 	@Override
-	protected HttpConnectorSpring<IntegerProperty, Integer> getPropertyConnector() {
+	protected HttpConnectorSpring<IntegerProperty> getPropertyConnector() {
 		return IntegerPropertyConnector.get();
 	}
 
@@ -27,11 +27,6 @@ public class IntegerPropertyFilterTable extends PropertyFilterTable<IntegerPrope
 
 	@Override
 	protected Integer fromString(String s) {
-		return Integer.valueOf(s);
-	}
-
-	@Override
-	protected Integer fromStringToId(String s) {
 		return Integer.valueOf(s);
 	}
 

@@ -6,7 +6,7 @@ import org.artorg.tools.phantomData.server.model.property.DateProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class DatePropertyConnector extends HttpConnectorSpring<DateProperty, Integer> {
+public class DatePropertyConnector extends HttpConnectorSpring<DateProperty> {
 
 	private static final DatePropertyConnector connector;
 	
@@ -31,7 +31,7 @@ public class DatePropertyConnector extends HttpConnectorSpring<DateProperty, Int
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
+	public Class<? extends DatabasePersistent> getModelClass() {
 		return DateProperty.class;
 	}
 	

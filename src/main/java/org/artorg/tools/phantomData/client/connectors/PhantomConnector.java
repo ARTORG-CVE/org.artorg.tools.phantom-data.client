@@ -5,7 +5,7 @@ import org.artorg.tools.phantomData.server.controller.PhantomController;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class PhantomConnector extends HttpConnectorSpring<Phantom, Integer> {
+public class PhantomConnector extends HttpConnectorSpring<Phantom> {
 	
 	private static final PhantomConnector connector;
 	
@@ -30,11 +30,8 @@ public class PhantomConnector extends HttpConnectorSpring<Phantom, Integer> {
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
+	public Class<? extends DatabasePersistent> getModelClass() {
 		return Phantom.class;
-	}
-	
-
-	
+	}	
 
 }

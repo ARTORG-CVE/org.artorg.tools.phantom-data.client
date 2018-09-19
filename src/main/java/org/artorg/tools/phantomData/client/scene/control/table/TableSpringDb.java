@@ -17,22 +17,22 @@ import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public abstract class TableSpringDb<ITEM extends DatabasePersistent<ID_TYPE>, ID_TYPE> {
+public abstract class TableSpringDb<ITEM extends DatabasePersistent> {
 	protected final ObservableList<ITEM> items;
-	private final List<IColumn<ITEM, ?>> columns;
+	private final List<IColumn<ITEM>> columns;
 	protected final UndoManager undoManager;
-	protected HttpConnectorSpring<ITEM, ID_TYPE> connector;
+	protected HttpConnectorSpring<ITEM> connector;
 	private boolean isIdColumnVisible;
 	
 	{
 		undoManager = new UndoManager();
 		items = FXCollections.observableArrayList();
 		
-		columns = new ArrayList<IColumn<ITEM, ?>>();
+		columns = new ArrayList<IColumn<ITEM>>();
 		isIdColumnVisible = false;
 	}
 	
-	public abstract List<IColumn<ITEM, ?>> createColumns();
+	public abstract List<IColumn<ITEM>> createColumns();
 	
 	public abstract String getTableName();
 	
@@ -44,14 +44,14 @@ public abstract class TableSpringDb<ITEM extends DatabasePersistent<ID_TYPE>, ID
 		
 	}
 	
-	public void setConnector(HttpConnectorSpring<ITEM, ID_TYPE> connector) {
+	public void setConnector(HttpConnectorSpring<ITEM> connector) {
 		this.connector = connector;
 		this.columns.clear();
 		readAllData();
 		this.columns.addAll(createColumns());
 	}
 	
-	public HttpConnectorSpring<ITEM, ID_TYPE> getConnector() {
+	public HttpConnectorSpring<ITEM> getConnector() {
 		return connector;
 	}
 	
@@ -181,7 +181,7 @@ public abstract class TableSpringDb<ITEM extends DatabasePersistent<ID_TYPE>, ID
 		this.isIdColumnVisible = isIdColumnVisible;
 	}
 	
-	protected List<IColumn<ITEM, ?>> getColumns() {
+	protected List<IColumn<ITEM>> getColumns() {
 		return columns;
 	}
 

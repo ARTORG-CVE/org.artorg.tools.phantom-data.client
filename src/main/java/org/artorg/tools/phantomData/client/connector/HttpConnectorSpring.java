@@ -2,19 +2,16 @@ package org.artorg.tools.phantomData.client.connector;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.artorg.tools.phantomData.server.model.Special;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -29,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-public abstract class HttpConnectorSpring<T extends DatabasePersistent<ID_TYPE>, ID_TYPE> {
+public abstract class HttpConnectorSpring<T extends DatabasePersistent> {
 	private final Function<Method, String[]> stringAnnosFuncCreate;
 	private final Function<Method, String[]> stringAnnosFuncRead;
 	private final Function<Method, String[]> stringAnnosFuncUpdate;
@@ -72,7 +69,7 @@ public abstract class HttpConnectorSpring<T extends DatabasePersistent<ID_TYPE>,
 	
 	public abstract Class<?> getControllerClass();
 	public abstract Class<?> getArrayModelClass();
-	public abstract Class<? extends DatabasePersistent<ID_TYPE>> getModelClass();
+	public abstract Class<? extends DatabasePersistent> getModelClass();
 	
 	public final String getAnnoStringControlClass() {return annoStringControlClass;}
 	public final String getAnnoStringRead() {return annoStringRead;}
@@ -151,8 +148,6 @@ public abstract class HttpConnectorSpring<T extends DatabasePersistent<ID_TYPE>,
 	public boolean create(T... t) {
 		return varArgHelper(this::create, t);
 	}
-
-	private static final Pattern idPattern = Pattern.compile(".*/([0-9]+)");
 	
 	public boolean create(T t) {
 		try {
@@ -162,12 +157,7 @@ public abstract class HttpConnectorSpring<T extends DatabasePersistent<ID_TYPE>,
 			String url = getUrlLocalhost() + "/" 
 					+ getAnnoStringControlClass() + "/" + getAnnoStringCreate();
 			HttpEntity<T> requestEntity = new HttpEntity<T>(t, headers);
-			URI uri = restTemplate.postForLocation(url, requestEntity);
-			if (!(t instanceof Special)) {
-				Matcher m = idPattern.matcher(uri.toString());
-				m.find();
-				t.setId(t.stringToID(m.group(1)));	
-			}
+			restTemplate.postForLocation(url, requestEntity);
 			return true;
 		} catch( Exception e) {
 			handleException(e);
@@ -184,7 +174,7 @@ public abstract class HttpConnectorSpring<T extends DatabasePersistent<ID_TYPE>,
 		return varArgHelper(this::delete, t);
 	}
 	
-	public boolean delete(ID_TYPE id) {
+	public boolean delete(UUID id) {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -216,8 +206,12 @@ public abstract class HttpConnectorSpring<T extends DatabasePersistent<ID_TYPE>,
 		return false;
 	}
 	
+	public T read(T t) {
+		return readById(t.getId());
+	}
+	
 	@SuppressWarnings("unchecked")
-	public T readById(ID_TYPE id) {
+	public T readById(UUID id) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		RestTemplate restTemplate = new RestTemplate();
@@ -252,7 +246,7 @@ public abstract class HttpConnectorSpring<T extends DatabasePersistent<ID_TYPE>,
 		return varArgHelper(this::update, t);
 	}
 	
-	public boolean update(T t, ID_TYPE id) {
+	public boolean update(T t, UUID id) {
 		t.setId(id);
 		return update(t);
 	}

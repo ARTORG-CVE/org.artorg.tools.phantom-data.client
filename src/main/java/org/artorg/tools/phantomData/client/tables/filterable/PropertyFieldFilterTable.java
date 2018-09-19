@@ -9,27 +9,27 @@ import org.artorg.tools.phantomData.client.scene.control.table.FilterTableSpring
 import org.artorg.tools.phantomData.client.scene.control.table.IColumn;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
-public class PropertyFieldFilterTable extends FilterTableSpringDb<PropertyField, Integer> {
+public class PropertyFieldFilterTable extends FilterTableSpringDb<PropertyField> {
 	
 	{
 		this.setConnector(PropertyFieldConnector.get());
 	}
 
 	@Override
-	public List<IColumn<PropertyField, ?>> createColumns() {
-		List<IColumn<PropertyField, ?>> columns =
-				new ArrayList<IColumn<PropertyField, ?>>();
-		columns.add(new Column<PropertyField, PropertyField, Integer>(
+	public List<IColumn<PropertyField>> createColumns() {
+		List<IColumn<PropertyField>> columns =
+				new ArrayList<IColumn<PropertyField>>();
+		columns.add(new Column<PropertyField, PropertyField>(
 				"id", item -> item, 
 				path -> String.valueOf(path.getId()), 
-				(path,value) -> path.setId(Integer.valueOf(value)),
+				(path,value) -> path.setId(value),
 				PropertyFieldConnector.get()));
-		columns.add(new Column<PropertyField, PropertyField, Integer>(
+		columns.add(new Column<PropertyField, PropertyField>(
 				"name", item -> item, 
 				path -> path.getName(), 
 				(path,value) -> path.setName((String) value),
 				PropertyFieldConnector.get()));
-		columns.add(new Column<PropertyField, PropertyField, Integer>(
+		columns.add(new Column<PropertyField, PropertyField>(
 				"description", item -> item, 
 				path -> path.getDescription(), 
 				(path,value) -> path.setDescription((String) value),

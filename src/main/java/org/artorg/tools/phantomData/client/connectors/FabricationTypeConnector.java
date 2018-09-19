@@ -5,7 +5,7 @@ import org.artorg.tools.phantomData.server.controller.FabricationTypeController;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class FabricationTypeConnector extends HttpConnectorSpring<FabricationType, Integer> {
+public class FabricationTypeConnector extends HttpConnectorSpring<FabricationType> {
 
 	private static final FabricationTypeConnector connector;
 	
@@ -30,7 +30,7 @@ public class FabricationTypeConnector extends HttpConnectorSpring<FabricationTyp
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
+	public Class<? extends DatabasePersistent> getModelClass() {
 		return FabricationType.class;
 	}
 	

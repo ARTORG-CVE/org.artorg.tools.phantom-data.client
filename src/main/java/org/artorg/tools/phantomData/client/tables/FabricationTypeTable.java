@@ -6,14 +6,14 @@ import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.tables.filterable.FabricationTypeFilterTable;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 
-public class FabricationTypeTable extends TableViewSpring<FabricationType, Integer> {
+public class FabricationTypeTable extends TableViewSpring<FabricationType> {
 
 	{
 		this.setTable(new FabricationTypeFilterTable());
 	}
 	
 	@Override
-	public AddEditController<FabricationType, Integer> createAddEditController() {
+	public AddEditController<FabricationType> createAddEditController() {
 		return new AddFabricationTypeController();
 	}
 

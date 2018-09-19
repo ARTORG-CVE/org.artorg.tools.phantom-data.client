@@ -42,20 +42,19 @@ public class LayoutController {
     	scene3d.addTo(pane3d);
     }
     
-	public <ITEM extends DatabasePersistent<ID_TYPE>, 
-	ID_TYPE> void openMainTableTab(TableViewSpring<ITEM, ID_TYPE> table) {
+	public <ITEM extends DatabasePersistent> void openMainTableTab(TableViewSpring<ITEM> table) {
 		openMainTableTab(table, table.getFilterTable().getTableName());
 	}
 	
-	public <ITEM extends DatabasePersistent<ID_TYPE>, ID_TYPE> void openMainTableTab(
-			TableViewSpring<ITEM, ID_TYPE> table, String name) {
+	public <ITEM extends DatabasePersistent> void openMainTableTab(
+			TableViewSpring<ITEM> table, String name) {
 		mainSplitPane.getMainTableTabPane().openTableTab(table, name);
 	}
 	
 	
 	
-	public <ITEM extends DatabasePersistent<ID_TYPE>, ID_TYPE> void setSecondTable(
-			TableViewSpring<ITEM, ID_TYPE> table) {
+	public <ITEM extends DatabasePersistent> void setSecondTable(
+			TableViewSpring<ITEM> table) {
 		secondTable.setTable(table);
 	}
 	

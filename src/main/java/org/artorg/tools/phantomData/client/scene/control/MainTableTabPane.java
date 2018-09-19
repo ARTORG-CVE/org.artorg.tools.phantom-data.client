@@ -28,8 +28,8 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 		this.mainSplitPane = splitPane;
 	}	
 
-	public <ITEM extends DatabasePersistent<ID_TYPE>, ID_TYPE> void openTableTab(
-			TableViewSpring<ITEM, ID_TYPE> tableViewSpring, String name) {
+	public <ITEM extends DatabasePersistent> void openTableTab(
+			TableViewSpring<ITEM> tableViewSpring, String name) {
 		Tab tab = new Tab(name);
 		tab.setContent(tableViewSpring);
 		tabPane.getTabs().add(tab);
@@ -44,7 +44,7 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 				MenuItem editItem = new MenuItem("Add item");
 				editItem.setOnAction(event -> {
 //					AnchorPane node = ItemFormFactory.createForm(tableViewSpring.getFilterTable().getItemClass());
-					AddEditController<ITEM, ID_TYPE> controller = tableViewSpring.createAddEditController();
+					AddEditController<ITEM> controller = tableViewSpring.createAddEditController();
 					AnchorPane node = controller.create(row.getItem());
 					mainSplitPane.addNewItemTab(node, "Add " + tableViewSpring.getFilterTable().getItemName());
 				});

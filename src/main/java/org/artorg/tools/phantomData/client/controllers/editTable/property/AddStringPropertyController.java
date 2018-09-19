@@ -13,7 +13,7 @@ import org.artorg.tools.phantomData.server.model.property.StringProperty;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 
-public class AddStringPropertyController extends AddEditController<StringProperty, Integer> {
+public class AddStringPropertyController extends AddEditController<StringProperty> {
 	private ComboBox<PropertyField> comboBoxPropertyField;
 	private TextField textFieldValue;
 	
@@ -30,7 +30,7 @@ public class AddStringPropertyController extends AddEditController<StringPropert
 	}
 
 	@Override
-	protected HttpConnectorSpring<StringProperty, Integer> getConnector() {
+	protected HttpConnectorSpring<StringProperty> getConnector() {
 		return StringPropertyConnector.get();
 	}
 

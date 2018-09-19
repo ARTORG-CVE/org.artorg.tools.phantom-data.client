@@ -10,7 +10,7 @@ import org.artorg.tools.phantomData.server.model.LiteratureBase;
 
 import javafx.scene.control.TextField;
 
-public class AddLiteratureBaseController extends AddEditController<LiteratureBase, Integer> {
+public class AddLiteratureBaseController extends AddEditController<LiteratureBase> {
 	private TextField textFieldShortcut;
 	private TextField textFieldValue;
 
@@ -20,7 +20,7 @@ public class AddLiteratureBaseController extends AddEditController<LiteratureBas
 	}
 	
 	@Override
-	protected HttpConnectorSpring<LiteratureBase, Integer> getConnector() {
+	protected HttpConnectorSpring<LiteratureBase> getConnector() {
 		return LiteratureBaseConnector.get();
 	}
 	

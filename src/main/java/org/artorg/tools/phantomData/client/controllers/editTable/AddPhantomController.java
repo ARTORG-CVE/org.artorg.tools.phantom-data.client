@@ -20,7 +20,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-public class AddPhantomController extends AddEditController<Phantom, Integer> {
+public class AddPhantomController extends AddEditController<Phantom> {
 	private Label labelIdValue;
     private ComboBox<AnnulusDiameter> comboBoxAnnulus;
     private ComboBox<FabricationType> comboBoxFabricationType;
@@ -69,7 +69,7 @@ public class AddPhantomController extends AddEditController<Phantom, Integer> {
 	}
 
 	@Override
-	public HttpConnectorSpring<Phantom, Integer> getConnector() {
+	public HttpConnectorSpring<Phantom> getConnector() {
 		return PhantomConnector.get();
 	}
 

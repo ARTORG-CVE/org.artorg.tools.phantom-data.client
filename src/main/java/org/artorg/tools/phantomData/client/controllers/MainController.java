@@ -33,7 +33,7 @@ import javafx.stage.WindowEvent;
 public class MainController {
 	private LayoutController layoutController;
 	
-	private FilterTableSpringDb<?, ?> table;
+	private FilterTableSpringDb<?> table;
 	private Stage stage;
 	
 	private static String urlLocalhost;
@@ -165,7 +165,7 @@ public class MainController {
         
     }
     
-    public <ITEM extends DatabasePersistent<ID_TYPE>, ID_TYPE> void setTable(FilterTableSpringDb<ITEM, ID_TYPE> table) {
+    public <ITEM extends DatabasePersistent> void setTable(FilterTableSpringDb<ITEM> table) {
 		this.table = table;
 	}
     

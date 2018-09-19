@@ -9,22 +9,22 @@ import org.artorg.tools.phantomData.client.scene.control.table.FilterTableSpring
 import org.artorg.tools.phantomData.client.scene.control.table.IColumn;
 import org.artorg.tools.phantomData.server.model.FileType;
 
-public class FileTypeFilterTable extends FilterTableSpringDb<FileType, Integer> {
+public class FileTypeFilterTable extends FilterTableSpringDb<FileType> {
 
 	{
 		this.setConnector(FileTypeConnector.get());
 	}
 
 	@Override
-	public List<IColumn<FileType, ?>> createColumns() {
-		List<IColumn<FileType, ?>> columns =
-				new ArrayList<IColumn<FileType, ?>>();
-		columns.add(new Column<FileType, FileType, Integer>(
+	public List<IColumn<FileType>> createColumns() {
+		List<IColumn<FileType>> columns =
+				new ArrayList<IColumn<FileType>>();
+		columns.add(new Column<FileType, FileType>(
 				"id", item -> item, 
 				path -> String.valueOf(path.getId()), 
-				(path,value) -> path.setId(Integer.valueOf(value)),
+				(path,value) -> path.setId(value),
 				FileTypeConnector.get()));
-		columns.add(new Column<FileType, FileType, Integer>(
+		columns.add(new Column<FileType, FileType>(
 				"name", item -> item, 
 				path -> path.getName(), 
 				(path,value) -> path.setName((String) value),

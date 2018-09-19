@@ -5,7 +5,7 @@ import org.artorg.tools.phantomData.server.controller.LiteratureBaseController;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-public class LiteratureBaseConnector extends HttpConnectorSpring<LiteratureBase, Integer> {
+public class LiteratureBaseConnector extends HttpConnectorSpring<LiteratureBase> {
 	
 	private static final LiteratureBaseConnector connector;
 	
@@ -30,7 +30,7 @@ public class LiteratureBaseConnector extends HttpConnectorSpring<LiteratureBase,
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent<Integer>> getModelClass() {
+	public Class<? extends DatabasePersistent> getModelClass() {
 		return LiteratureBase.class;
 	}
 	

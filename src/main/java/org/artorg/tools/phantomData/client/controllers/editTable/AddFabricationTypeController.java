@@ -10,7 +10,7 @@ import org.artorg.tools.phantomData.server.model.FabricationType;
 
 import javafx.scene.control.TextField;
 
-public class AddFabricationTypeController extends AddEditController<FabricationType, Integer> {
+public class AddFabricationTypeController extends AddEditController<FabricationType> {
 	private TextField textFieldShortcut;
 	private TextField textFieldValue;
 
@@ -20,7 +20,7 @@ public class AddFabricationTypeController extends AddEditController<FabricationT
 	}
 	
 	@Override
-	protected HttpConnectorSpring<FabricationType, Integer> getConnector() {
+	protected HttpConnectorSpring<FabricationType> getConnector() {
 		return FabricationTypeConnector.get();
 	}
 	

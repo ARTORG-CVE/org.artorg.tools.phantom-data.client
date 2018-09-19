@@ -13,7 +13,7 @@ import org.artorg.tools.phantomData.server.model.PhantomFile;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 
-public class AddFileController extends AddEditController<PhantomFile, Integer> {
+public class AddFileController extends AddEditController<PhantomFile> {
 	private TextField textFieldPath;
 	private TextField textFieldName;
 	private TextField textFieldExtension;
@@ -37,7 +37,7 @@ public class AddFileController extends AddEditController<PhantomFile, Integer> {
 	}
 
 	@Override
-	protected HttpConnectorSpring<PhantomFile, Integer> getConnector() {
+	protected HttpConnectorSpring<PhantomFile> getConnector() {
 		return FileConnector.get();
 	}
 

@@ -16,53 +16,52 @@ import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.Special;
-import java.util.UUID;
 
-public class PhantomFilterTable extends FilterTableSpringDb<Phantom, Integer> {
+public class PhantomFilterTable extends FilterTableSpringDb<Phantom> {
 
 	{
 		this.setConnector(PhantomConnector.get());
 	}
 
 	@Override
-	public List<IColumn<Phantom, ?>> createColumns() {
-		List<IColumn<Phantom, ?>> columns =
-				new ArrayList<IColumn<Phantom, ?>>();
-		IColumn<Phantom,?> column;
-		column = new Column<Phantom, Phantom, Integer>(
+	public List<IColumn<Phantom>> createColumns() {
+		List<IColumn<Phantom>> columns =
+				new ArrayList<IColumn<Phantom>>();
+		IColumn<Phantom> column;
+		column = new Column<Phantom, Phantom>(
 				"id", item -> item, 
 				path -> String.valueOf(path.getId()), 
-				(path,value) -> path.setId(Integer.valueOf(value)),
+				(path,value) -> path.setId(value),
 				PhantomConnector.get());
 		column.setVisibility(false);
 		columns.add(column);
-		columns.add(new Column<Phantom, Phantom, Integer>(
+		columns.add(new Column<Phantom, Phantom>(
 				"PID", item -> item, 
 				path -> path.getProductId(), 
 				(path,value) -> path.setProductId(value),
 				PhantomConnector.get()));
-		columns.add(new Column<Phantom, AnnulusDiameter, Integer>(
+		columns.add(new Column<Phantom, AnnulusDiameter>(
 				"annulus [mm]", item -> item.getAnnulusDiameter(), 
 				path -> String.valueOf(path.getValue()), 
 				(path,value) -> path.setValue(Double.valueOf(value)),
 				AnnulusDiameterConnector.get()));
-		columns.add(new Column<Phantom, FabricationType, Integer>(
+		columns.add(new Column<Phantom, FabricationType>(
 				"type", item -> item.getFabricationType(), 
 				path -> path.getValue(), 
 				(path,value) -> path.setValue(value),
 				FabricationTypeConnector.get()));
-		columns.add(new Column<Phantom, LiteratureBase, Integer>(
+		columns.add(new Column<Phantom, LiteratureBase>(
 				"literature", item -> item.getLiteratureBase(), 
 				path -> path.getValue(), 
 				(path,value) -> path.setValue(value),
 				LiteratureBaseConnector.get()));
-		column = new Column<Phantom, Special, UUID>(
+		column = new Column<Phantom, Special>(
 				"special", item -> item.getSpecial(), 
 				path -> path.getShortcut(), 
 				(path,value) -> path.setShortcut(value),
 				SpecialConnector.get());
 		columns.add(column);
-		columns.add(new Column<Phantom, Phantom, Integer>(
+		columns.add(new Column<Phantom, Phantom>(
 				"number", item -> item, 
 				path -> String.valueOf(path.getNumber()), 
 				(path,value) -> path.setNumber(Integer.valueOf(value)),

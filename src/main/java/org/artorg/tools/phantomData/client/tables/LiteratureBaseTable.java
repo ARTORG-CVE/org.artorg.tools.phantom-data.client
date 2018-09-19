@@ -6,14 +6,14 @@ import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.tables.filterable.LiteratureBaseFilterTable;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 
-public class LiteratureBaseTable extends TableViewSpring<LiteratureBase, Integer> {
+public class LiteratureBaseTable extends TableViewSpring<LiteratureBase> {
 
 	{
 		this.setTable(new LiteratureBaseFilterTable());
 	}
 	
 	@Override
-	public AddEditController<LiteratureBase, Integer> createAddEditController() {
+	public AddEditController<LiteratureBase> createAddEditController() {
 		return new AddLiteratureBaseController();
 	}
 	

@@ -9,27 +9,27 @@ import org.artorg.tools.phantomData.client.scene.control.table.FilterTableSpring
 import org.artorg.tools.phantomData.client.scene.control.table.IColumn;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 
-public class FabricationTypeFilterTable extends FilterTableSpringDb<FabricationType, Integer> {
+public class FabricationTypeFilterTable extends FilterTableSpringDb<FabricationType> {
 	
 	{
 		this.setConnector(FabricationTypeConnector.get());
 	}
 	
 	@Override
-	public List<IColumn<FabricationType, ?>> createColumns() {
-		List<IColumn<FabricationType, ?>> columns =
-				new ArrayList<IColumn<FabricationType, ?>>();
-		columns.add(new Column<FabricationType, FabricationType, Integer>(
+	public List<IColumn<FabricationType>> createColumns() {
+		List<IColumn<FabricationType>> columns =
+				new ArrayList<IColumn<FabricationType>>();
+		columns.add(new Column<FabricationType, FabricationType>(
 				"id", item -> item, 
 				path -> String.valueOf(path.getId()), 
-				(path,value) -> path.setId(Integer.valueOf(value)),
+				(path,value) -> path.setId(value),
 				FabricationTypeConnector.get()));
-		columns.add(new Column<FabricationType, FabricationType, Integer>(
+		columns.add(new Column<FabricationType, FabricationType>(
 				"shortcut", item -> item, 
 				path -> path.getShortcut(), 
 				(path,value) -> path.setShortcut(value),
 				FabricationTypeConnector.get()));
-		columns.add(new Column<FabricationType, FabricationType, Integer>(
+		columns.add(new Column<FabricationType, FabricationType>(
 				"value", item -> item, 
 				path -> path.getValue(), 
 				(path,value) -> path.setValue(value),

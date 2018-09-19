@@ -9,27 +9,27 @@ import org.artorg.tools.phantomData.client.scene.control.table.FilterTableSpring
 import org.artorg.tools.phantomData.client.scene.control.table.IColumn;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 
-public class AnnulusDiameterFilterTable extends FilterTableSpringDb<AnnulusDiameter, Integer> {
+public class AnnulusDiameterFilterTable extends FilterTableSpringDb<AnnulusDiameter> {
 	
 	{
 		this.setConnector(AnnulusDiameterConnector.get());
 	}
 	
 	@Override
-	public List<IColumn<AnnulusDiameter, ?>> createColumns() {
-		List<IColumn<AnnulusDiameter, ?>> columns =
-				new ArrayList<IColumn<AnnulusDiameter, ?>>();
-		columns.add(new Column<AnnulusDiameter, AnnulusDiameter, Integer>(
+	public List<IColumn<AnnulusDiameter>> createColumns() {
+		List<IColumn<AnnulusDiameter>> columns =
+				new ArrayList<IColumn<AnnulusDiameter>>();
+		columns.add(new Column<AnnulusDiameter, AnnulusDiameter>(
 				"id", item -> item, 
 				path -> String.valueOf(path.getId()), 
-				(path,value) -> path.setId(Integer.valueOf(value)),
+				(path,value) -> path.setId(value),
 				AnnulusDiameterConnector.get()));
-		columns.add(new Column<AnnulusDiameter, AnnulusDiameter, Integer>(
+		columns.add(new Column<AnnulusDiameter, AnnulusDiameter>(
 				"shortcut", item -> item, 
 				path -> String.valueOf(path.getShortcut()), 
 				(path,value) -> path.setShortcut(Integer.valueOf(value)),
 				AnnulusDiameterConnector.get()));
-		columns.add(new Column<AnnulusDiameter, AnnulusDiameter, Integer>(
+		columns.add(new Column<AnnulusDiameter, AnnulusDiameter>(
 				"value", item -> item, 
 				path -> String.valueOf(path.getValue()), 
 				(path,value) -> path.setValue(Double.valueOf(value)),

@@ -11,7 +11,7 @@ import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-public class AddAnnulusDiameterController extends AddEditController<AnnulusDiameter, Integer> {
+public class AddAnnulusDiameterController extends AddEditController<AnnulusDiameter> {
 	private Label labelShortcut;
 	private TextField textFieldValue;
 	
@@ -40,7 +40,7 @@ public class AddAnnulusDiameterController extends AddEditController<AnnulusDiame
 	}
 
 	@Override
-	protected HttpConnectorSpring<AnnulusDiameter, Integer> getConnector() {
+	protected HttpConnectorSpring<AnnulusDiameter> getConnector() {
 		return AnnulusDiameterConnector.get();
 	}
 
