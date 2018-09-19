@@ -2,6 +2,7 @@ package org.artorg.tools.phantomData.client.tables.filterable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.scene.control.table.Column;
@@ -10,7 +11,7 @@ import org.artorg.tools.phantomData.client.scene.control.table.IColumn;
 import org.artorg.tools.phantomData.client.scene.control.table.PropertyColumns;
 import org.artorg.tools.phantomData.server.model.Special;
 
-public class SpecialFilterTable extends FilterTableSpringDb<Special, Integer> implements PropertyColumns {
+public class SpecialFilterTable extends FilterTableSpringDb<Special, UUID> implements PropertyColumns {
 
 	{
 		this.setConnector(SpecialConnector.get());
@@ -19,9 +20,9 @@ public class SpecialFilterTable extends FilterTableSpringDb<Special, Integer> im
 	@Override
 	public List<IColumn<Special, ?>> createColumns() {
 		List<IColumn<Special, ?>> columns = new ArrayList<IColumn<Special, ?>>();
-		columns.add(new Column<Special, Special, Integer>("id", item -> item, path -> String.valueOf(path.getId()),
-				(path, value) -> path.setId(Integer.valueOf((String) value)), SpecialConnector.get()));
-		columns.add(new Column<Special, Special, Integer>("shortcut", item -> item, path -> path.getShortcut(),
+		columns.add(new Column<Special, Special, UUID>("id", item -> item, path -> String.valueOf(path.getId()),
+				(path, value) -> path.setId(UUID.fromString((String) value)), SpecialConnector.get()));
+		columns.add(new Column<Special, Special, UUID>("shortcut", item -> item, path -> path.getShortcut(),
 				(path, value) -> path.setShortcut(value), SpecialConnector.get()));
 
 		createPropertyColumns(columns, this.getItems(), item -> item.getPropertyContainer());

@@ -16,6 +16,7 @@ import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.Special;
+import java.util.UUID;
 
 public class PhantomFilterTable extends FilterTableSpringDb<Phantom, Integer> {
 
@@ -55,7 +56,7 @@ public class PhantomFilterTable extends FilterTableSpringDb<Phantom, Integer> {
 				path -> path.getValue(), 
 				(path,value) -> path.setValue(value),
 				LiteratureBaseConnector.get()));
-		column = new Column<Phantom, Special, Integer>(
+		column = new Column<Phantom, Special, UUID>(
 				"special", item -> item.getSpecial(), 
 				path -> path.getShortcut(), 
 				(path,value) -> path.setShortcut(value),

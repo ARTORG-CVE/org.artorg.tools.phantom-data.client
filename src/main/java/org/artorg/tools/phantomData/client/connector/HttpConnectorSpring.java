@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.artorg.tools.phantomData.server.model.Special;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -162,9 +163,11 @@ public abstract class HttpConnectorSpring<T extends DatabasePersistent<ID_TYPE>,
 					+ getAnnoStringControlClass() + "/" + getAnnoStringCreate();
 			HttpEntity<T> requestEntity = new HttpEntity<T>(t, headers);
 			URI uri = restTemplate.postForLocation(url, requestEntity);
-			Matcher m = idPattern.matcher(uri.toString());
-			m.find();
-			t.setId(t.stringToID(m.group(1)));
+			if (!(t instanceof Special)) {
+				Matcher m = idPattern.matcher(uri.toString());
+				m.find();
+				t.setId(t.stringToID(m.group(1)));	
+			}
 			return true;
 		} catch( Exception e) {
 			handleException(e);
@@ -342,6 +345,7 @@ public abstract class HttpConnectorSpring<T extends DatabasePersistent<ID_TYPE>,
 			System.out.println(e.getCause());
 			e.printStackTrace();
 		}
+		e.printStackTrace();
 	}
 	
 	
