@@ -13,7 +13,7 @@ public class DoublePropertyTable extends TableViewSpring<DoubleProperty, Integer
 	}
 	
 	@Override
-	protected AddEditController<DoubleProperty, Integer> createAddEditController() {
+	public AddEditController<DoubleProperty, Integer> createAddEditController() {
 		return new AddDoublePropertyController();
 	}
 

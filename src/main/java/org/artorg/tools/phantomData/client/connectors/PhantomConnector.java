@@ -5,9 +5,6 @@ import org.artorg.tools.phantomData.server.controller.PhantomController;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-
 public class PhantomConnector extends HttpConnectorSpring<Phantom, Integer> {
 	
 	private static final PhantomConnector connector;

@@ -1,5 +1,7 @@
 package org.artorg.tools.phantomData.client.controllers.editTable;
 
+import java.util.List;
+
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
 import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
@@ -7,6 +9,7 @@ import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
 import org.artorg.tools.phantomData.client.connectors.PhantomConnector;
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.controller.AddEditController;
+import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
@@ -34,17 +37,6 @@ public class AddPhantomController extends AddEditController<Phantom, Integer> {
 		textFieldModelNumber = new TextField();
 		
 		labelIdValue.setDisable(true);
-		
-		super.addProperty("Id", labelIdValue);
-		super.addProperty("Annulus diameter [mm]", comboBoxAnnulus);
-		super.addProperty("Fabrication Type", comboBoxFabricationType);
-		super.addProperty("Literarure Base", comboBoxLiterature);
-		super.addProperty("Special", comboBoxSpecials);
-		super.addProperty("Phantom specific Number", textFieldModelNumber, () -> updateId());
-		
-		createComboBoxes();
-        
-        super.create();
 	}
 	
 	private void updateId() {
@@ -60,10 +52,7 @@ public class AddPhantomController extends AddEditController<Phantom, Integer> {
 	
 	@Override
 	public void initDefaultValues() {
-		comboBoxAnnulus.getSelectionModel().clearSelection();
-		comboBoxFabricationType.getSelectionModel().clearSelection();
-		comboBoxLiterature.getSelectionModel().clearSelection();
-		comboBoxSpecials.getSelectionModel().clearSelection();
+		super.initDefaultValues();
 		textFieldModelNumber.setText("1");
 	}
 
@@ -82,6 +71,26 @@ public class AddPhantomController extends AddEditController<Phantom, Integer> {
 	@Override
 	public HttpConnectorSpring<Phantom, Integer> getConnector() {
 		return PhantomConnector.get();
+	}
+
+	@Override
+	protected void addPropertyEntries(List<PropertyEntry> entries) {
+		createComboBoxes();
+		entries.add(new PropertyEntry("Id", labelIdValue));
+		entries.add(new PropertyEntry("Annulus diameter [mm]", comboBoxAnnulus));
+		entries.add(new PropertyEntry("Fabrication Type", comboBoxFabricationType));
+		entries.add(new PropertyEntry("Literarure Base", comboBoxLiterature));
+		entries.add(new PropertyEntry("Special", comboBoxSpecials));
+		entries.add(new PropertyEntry("Phantom specific Number", textFieldModelNumber, () -> updateId()));
+	}
+
+	@Override
+	protected void setTemplate(Phantom item) {
+		super.selectComboBoxItem(comboBoxAnnulus, item.getAnnulusDiameter());
+		super.selectComboBoxItem(comboBoxFabricationType, item.getFabricationType());
+		super.selectComboBoxItem(comboBoxLiterature, item.getLiteratureBase());
+		super.selectComboBoxItem(comboBoxSpecials, item.getSpecial());
+		textFieldModelNumber.setText(Integer.toString(item.getNumber()));
 	}
     
 }

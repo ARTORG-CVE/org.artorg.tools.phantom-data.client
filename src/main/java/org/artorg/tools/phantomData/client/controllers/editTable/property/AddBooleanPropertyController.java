@@ -17,11 +17,15 @@ public class AddBooleanPropertyController extends AddEditController<BooleanPrope
 	private ComboBox<PropertyField> comboBoxPropertyField;
 	private CheckBox checkBoxValue;
 
+	{
+		comboBoxPropertyField = new ComboBox<PropertyField>();
+		checkBoxValue = new CheckBox();
+	}
+	
 	@Override
 	public BooleanProperty createItem() {
 		PropertyField propertyField = comboBoxPropertyField.getSelectionModel().getSelectedItem();
 		Boolean value = checkBoxValue.isSelected();
-		
 		return new BooleanProperty(propertyField, value);
 	}
 
@@ -31,20 +35,16 @@ public class AddBooleanPropertyController extends AddEditController<BooleanPrope
 	}
 
 	@Override
-	protected void setTemplate(BooleanProperty item) {
-		comboBoxPropertyField.getSelectionModel().select(item.getPropertyField());
-		checkBoxValue.setSelected(item.getValue());
-	}
-
-	@Override
 	protected void addPropertyEntries(List<PropertyEntry> entries) {
-		comboBoxPropertyField = new ComboBox<PropertyField>();
-		checkBoxValue = new CheckBox();
-		
 		createComboBox(comboBoxPropertyField, PropertyFieldConnector.get(), d -> String.valueOf(d.getName()));
-		
 		entries.add(new PropertyEntry("Property Field", comboBoxPropertyField));
 		entries.add(new PropertyEntry("Value", checkBoxValue));
+	}
+	
+	@Override
+	protected void setTemplate(BooleanProperty item) {
+		super.selectComboBoxItem(comboBoxPropertyField, item.getPropertyField());
+		checkBoxValue.setSelected(item.getValue());
 	}
 
 }

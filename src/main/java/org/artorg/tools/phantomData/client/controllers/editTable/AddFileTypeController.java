@@ -1,28 +1,20 @@
 package org.artorg.tools.phantomData.client.controllers.editTable;
 
+import java.util.List;
+
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connectors.FileTypeConnector;
 import org.artorg.tools.phantomData.client.controller.AddEditController;
+import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.server.model.FileType;
 
 import javafx.scene.control.TextField;
 
 public class AddFileTypeController extends AddEditController<FileType, Integer> {
-	TextField textFieldName;
+	private TextField textFieldName;
 	
 	{
 		textFieldName = new TextField();
-		
-		super.addProperty("Name", textFieldName);
-		
-		super.create();
-	}
-	
-	
-	@Override
-	public void initDefaultValues() {
-		textFieldName.setText("");
-		
 	}
 
 	@Override
@@ -35,6 +27,15 @@ public class AddFileTypeController extends AddEditController<FileType, Integer> 
 	protected HttpConnectorSpring<FileType, Integer> getConnector() {
 		return FileTypeConnector.get();
 	}
-	
+
+	@Override
+	protected void addPropertyEntries(List<PropertyEntry> entries) {
+		entries.add(new PropertyEntry("Name", textFieldName));
+	}
+
+	@Override
+	protected void setTemplate(FileType item) {
+		textFieldName.setText(item.getName());
+	}
 
 }

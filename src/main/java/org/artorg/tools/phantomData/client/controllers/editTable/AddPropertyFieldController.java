@@ -1,26 +1,46 @@
 package org.artorg.tools.phantomData.client.controllers.editTable;
 
-import java.util.function.BiFunction;
+import java.util.List;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;
-import org.artorg.tools.phantomData.client.controller.AddEditStringStringController;
+import org.artorg.tools.phantomData.client.controller.AddEditController;
+import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
-public class AddPropertyFieldController extends AddEditStringStringController<PropertyField, Integer>{
+import javafx.scene.control.TextField;
 
-	public AddPropertyFieldController() {
-		super("Name", "Description");
+public class AddPropertyFieldController extends AddEditController<PropertyField, Integer>{
+	private TextField textFielName;
+	private TextField textFieldDescription;
+
+	{
+		textFielName = new TextField();
+		textFieldDescription = new TextField();
 	}
-
-	@Override
-	public BiFunction<String, String, PropertyField> getItemConstructor() {
-		return PropertyField::new;
-	}
-
+	
 	@Override
 	protected HttpConnectorSpring<PropertyField, Integer> getConnector() {
 		return PropertyFieldConnector.get();
+	}
+	
+	@Override
+	protected void addPropertyEntries(List<PropertyEntry> entries) {
+		entries.add(new PropertyEntry("Name", textFielName));
+		entries.add(new PropertyEntry("Description", textFieldDescription));
+	}
+
+	@Override
+	protected void setTemplate(PropertyField item) {
+		textFielName.setText(item.getName());
+		textFieldDescription.setText(item.getDescription());
+	}
+
+	@Override
+	public PropertyField createItem() {
+		String name = textFielName.getText();
+		String description = textFieldDescription.getText();
+		return new PropertyField(name, description);
 	}
 
 }

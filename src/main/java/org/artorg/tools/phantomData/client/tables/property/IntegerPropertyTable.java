@@ -13,7 +13,7 @@ public class IntegerPropertyTable extends TableViewSpring<IntegerProperty, Integ
 	}
 	
 	@Override
-	protected AddEditController<IntegerProperty, Integer> createAddEditController() {
+	public AddEditController<IntegerProperty, Integer> createAddEditController() {
 		return new AddIntegerPropertyController();
 	}
 

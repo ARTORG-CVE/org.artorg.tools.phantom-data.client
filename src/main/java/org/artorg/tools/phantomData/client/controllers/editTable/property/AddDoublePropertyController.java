@@ -17,11 +17,15 @@ public class AddDoublePropertyController extends AddEditController<DoublePropert
 	private ComboBox<PropertyField> comboBoxPropertyField;
 	private TextField textFieldValue;
 	
+	{
+		comboBoxPropertyField = new ComboBox<PropertyField>();
+		textFieldValue = new TextField();
+	}
+	
 	@Override
 	public DoubleProperty createItem() {
 		PropertyField propertyField = comboBoxPropertyField.getSelectionModel().getSelectedItem();
 		Double value = Double.valueOf(textFieldValue.getText());
-		
 		return new DoubleProperty(propertyField, value);
 	}
 
@@ -32,18 +36,14 @@ public class AddDoublePropertyController extends AddEditController<DoublePropert
 
 	@Override
 	protected void addPropertyEntries(List<PropertyEntry> entries) {
-		comboBoxPropertyField = new ComboBox<PropertyField>();
-		textFieldValue = new TextField();
-		
 		createComboBox(comboBoxPropertyField, PropertyFieldConnector.get(), d -> String.valueOf(d.getName()));
-		
 		entries.add(new PropertyEntry("Property Field", comboBoxPropertyField));
 		entries.add(new PropertyEntry("Value", textFieldValue));
 	}
 
 	@Override
 	protected void setTemplate(DoubleProperty item) {
-		comboBoxPropertyField.getSelectionModel().select(item.getPropertyField());
+		super.selectComboBoxItem(comboBoxPropertyField, item.getPropertyField());
 		textFieldValue.setText(Double.toString(item.getValue()));
 	}
 

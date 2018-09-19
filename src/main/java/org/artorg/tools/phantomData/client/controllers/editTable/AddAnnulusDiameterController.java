@@ -1,8 +1,11 @@
 package org.artorg.tools.phantomData.client.controllers.editTable;
 
+import java.util.List;
+
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
 import org.artorg.tools.phantomData.client.controller.AddEditController;
+import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 
 import javafx.scene.control.Label;
@@ -16,11 +19,6 @@ public class AddAnnulusDiameterController extends AddEditController<AnnulusDiame
 		labelShortcut = new Label();
 		textFieldValue = new TextField();
 		labelShortcut.setDisable(true);
-		
-		super.addProperty("Shortcut [mm]", labelShortcut);
-		super.addProperty("Diameter [mm]", textFieldValue, () -> updateLabel());
-		
-		super.create();
 	}
 
 	private void updateLabel() {
@@ -32,20 +30,30 @@ public class AddAnnulusDiameterController extends AddEditController<AnnulusDiame
 	public void initDefaultValues() {
 		labelShortcut.setText("0");
 		textFieldValue.setText("0.0");
-		
 	}
 
 	@Override
 	public AnnulusDiameter createItem() {
 		Integer shortcut = Integer.valueOf(labelShortcut.getText());
 		Double value = Double.valueOf(textFieldValue.getText());
-		
 		return new AnnulusDiameter(shortcut, value);
 	}
 
 	@Override
 	protected HttpConnectorSpring<AnnulusDiameter, Integer> getConnector() {
 		return AnnulusDiameterConnector.get();
+	}
+
+	@Override
+	protected void addPropertyEntries(List<PropertyEntry> entries) {
+		entries.add(new PropertyEntry("Shortcut [mm]", labelShortcut));
+		entries.add(new PropertyEntry("Diameter [mm]", textFieldValue, () -> updateLabel()));
+	}
+
+	@Override
+	protected void setTemplate(AnnulusDiameter item) {
+		textFieldValue.setText(Double.toString(item.getValue()));
+		updateLabel();
 	}
 
 }

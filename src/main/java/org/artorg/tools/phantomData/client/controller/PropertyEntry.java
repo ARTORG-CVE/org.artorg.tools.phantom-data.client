@@ -1,12 +1,13 @@
 package org.artorg.tools.phantomData.client.controller;
 
 import javafx.scene.Node;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 public class PropertyEntry {
 	private Node leftNode;
-	private Node rightNode;
+	private Control rightNode;
 
 	public PropertyEntry(String labelText, TextField textField, Runnable rc) {
 		this(labelText, textField);
@@ -15,11 +16,11 @@ public class PropertyEntry {
     	});
 	}
 	
-	public PropertyEntry(String labelText, Node nodeRight) {
+	public PropertyEntry(String labelText, Control nodeRight) {
 		this(new Label(labelText), nodeRight);
 	}
 	
-	public PropertyEntry(Node leftNode, Node rightNode) {
+	public PropertyEntry(Node leftNode, Control rightNode) {
 		this.setLeftNode(leftNode);
 		this.rightNode = rightNode;
 	}
@@ -32,11 +33,11 @@ public class PropertyEntry {
 		this.leftNode = leftNode;
 	}
 	
-	public Node getRightNode() {
+	public Control getRightNode() {
 		return rightNode;
 	}
 
-	public void setRightNode(Node rightNode) {
+	public void setRightNode(Control rightNode) {
 		this.rightNode = rightNode;
 	}
 

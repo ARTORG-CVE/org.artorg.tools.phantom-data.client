@@ -30,15 +30,13 @@ public abstract class TableViewSpring<ITEM extends DatabasePersistent<ID_TYPE>,
 	
 	private FilterTableSpringDb<ITEM, ID_TYPE> filterTable;
 	private List<FilterMenuButton> filterMenuButtons;
-	private AddEditController<ITEM, ID_TYPE> addEditController;
 	
 	{
 		super.setEditable(true);
 		filterMenuButtons = new ArrayList<FilterMenuButton>();
-		setAddEditController(createAddEditController());
 	}
 	
-	protected abstract AddEditController<ITEM, ID_TYPE> createAddEditController();
+	public abstract AddEditController<ITEM, ID_TYPE> createAddEditController();
 	
 	public void setTable(FilterTableSpringDb<ITEM, ID_TYPE> table) {
 		this.filterTable = table;
@@ -151,15 +149,6 @@ public abstract class TableViewSpring<ITEM extends DatabasePersistent<ID_TYPE>,
 	
 	public void addTo(AnchorPane pane) {
 		FxUtil.addToAnchorPane(pane, this);
-		
-	}
-
-	public AddEditController<ITEM, ID_TYPE> getAddEditController() {
-		return addEditController;
-	}
-
-	public void setAddEditController(AddEditController<ITEM, ID_TYPE> addEditController) {
-		this.addEditController = addEditController;
 	}
 	
 }

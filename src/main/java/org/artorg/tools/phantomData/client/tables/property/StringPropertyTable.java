@@ -13,7 +13,7 @@ public class StringPropertyTable extends TableViewSpring<StringProperty, Integer
 	}
 	
 	@Override
-	protected AddEditController<StringProperty, Integer> createAddEditController() {
+	public AddEditController<StringProperty, Integer> createAddEditController() {
 		return new AddStringPropertyController();
 	}
 

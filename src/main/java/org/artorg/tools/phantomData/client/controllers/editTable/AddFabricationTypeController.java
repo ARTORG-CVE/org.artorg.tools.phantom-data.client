@@ -1,26 +1,46 @@
 package org.artorg.tools.phantomData.client.controllers.editTable;
 
-import java.util.function.BiFunction;
+import java.util.List;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
-import org.artorg.tools.phantomData.client.controller.AddEditStringStringController;
+import org.artorg.tools.phantomData.client.controller.AddEditController;
+import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 
-public class AddFabricationTypeController extends AddEditStringStringController<FabricationType, Integer> {
+import javafx.scene.control.TextField;
 
-	public AddFabricationTypeController() {
-		super("Shortcut", "Value");
+public class AddFabricationTypeController extends AddEditController<FabricationType, Integer> {
+	private TextField textFieldShortcut;
+	private TextField textFieldValue;
+
+	{
+		textFieldShortcut = new TextField();
+		textFieldValue = new TextField();
 	}
-
+	
 	@Override
 	protected HttpConnectorSpring<FabricationType, Integer> getConnector() {
 		return FabricationTypeConnector.get();
 	}
+	
+	@Override
+	protected void addPropertyEntries(List<PropertyEntry> entries) {
+		entries.add(new PropertyEntry("Shortcut", textFieldShortcut));
+		entries.add(new PropertyEntry("Name", textFieldValue));
+	}
 
 	@Override
-	public BiFunction<String, String, FabricationType> getItemConstructor() {
-		return FabricationType::new;
+	protected void setTemplate(FabricationType item) {
+		textFieldShortcut.setText(item.getShortcut());
+		textFieldValue.setText(item.getValue());
+	}
+
+	@Override
+	public FabricationType createItem() {
+		String shortcut = textFieldShortcut.getText();
+		String value = textFieldValue.getText();
+		return new FabricationType(shortcut, value);
 	}
 
 }

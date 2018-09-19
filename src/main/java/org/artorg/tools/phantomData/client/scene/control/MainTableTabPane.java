@@ -1,6 +1,6 @@
 package org.artorg.tools.phantomData.client.scene.control;
 
-import org.artorg.tools.phantomData.client.controller.ItemFormFactory;
+import org.artorg.tools.phantomData.client.controller.AddEditController;
 import org.artorg.tools.phantomData.client.scene.control.table.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.util.FxUtil;
@@ -39,11 +39,13 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 			@Override
 			public TableRow<ITEM> call(TableView<ITEM> tableView) {
 				final TableRow<ITEM> row = new TableRow<ITEM>();
+				
 				final ContextMenu rowMenu = new ContextMenu();
 				MenuItem editItem = new MenuItem("Add item");
 				editItem.setOnAction(event -> {
-					AnchorPane node = ItemFormFactory.createForm(tableViewSpring.getFilterTable().getItemClass());
-					tableViewSpring.getAddEditController();
+//					AnchorPane node = ItemFormFactory.createForm(tableViewSpring.getFilterTable().getItemClass());
+					AddEditController<ITEM, ID_TYPE> controller = tableViewSpring.createAddEditController();
+					AnchorPane node = controller.create(row.getItem());
 					mainSplitPane.addNewItemTab(node, "Add " + tableViewSpring.getFilterTable().getItemName());
 				});
 				MenuItem removeItem = new MenuItem("Delete");

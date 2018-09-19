@@ -13,7 +13,7 @@ public class BooleanPropertyTable extends TableViewSpring<BooleanProperty, Integ
 	}
 	
 	@Override
-	protected AddEditController<BooleanProperty, Integer> createAddEditController() {
+	public AddEditController<BooleanProperty, Integer> createAddEditController() {
 		return new AddBooleanPropertyController();
 	}
 
