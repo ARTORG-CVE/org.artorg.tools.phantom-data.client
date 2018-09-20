@@ -12,9 +12,7 @@ import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
@@ -104,8 +102,7 @@ public abstract class TableViewSpring<ITEM extends DatabasePersistent> extends T
 		}
 		
 	    super.getColumns().addAll(columns);
-	    ObservableList<ITEM> items = filterTable.getItems();
-	    super.setItems(items);
+	    super.setItems(filterTable.getItems());
 	    autoResizeColumns();
 	    
 	    Platform.runLater(() -> showFilterButtons());
@@ -138,8 +135,7 @@ public abstract class TableViewSpring<ITEM extends DatabasePersistent> extends T
 
 	@Override
 	public void refresh() {
-		super.setItems(FXCollections.observableArrayList(new ArrayList<ITEM>()));
-		super.getItems().addAll(filterTable.getItems());
+		super.refresh();
 	}
 	
 	public void showFilterButtons() {

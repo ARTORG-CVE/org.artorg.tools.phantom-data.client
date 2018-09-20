@@ -19,11 +19,11 @@ public class LiteratureBaseFilterTable extends FilterTableSpringDb<LiteratureBas
 	public List<IColumn<LiteratureBase>> createColumns() {
 		List<IColumn<LiteratureBase>> columns =
 				new ArrayList<IColumn<LiteratureBase>>();
-		columns.add(new Column<LiteratureBase, LiteratureBase>(
-				"id", item -> item, 
-				path -> String.valueOf(path.getId()), 
-				(path,value) -> path.setId(value),
-				LiteratureBaseConnector.get()));
+//		columns.add(new Column<LiteratureBase, LiteratureBase>(
+//				"id", item -> item, 
+//				path -> String.valueOf(path.getId()), 
+//				(path,value) -> path.setId(value),
+//				LiteratureBaseConnector.get()));
 		columns.add(new Column<LiteratureBase, LiteratureBase>(
 				"shortcut", item -> item, 
 				path -> path.getShortcut(), 

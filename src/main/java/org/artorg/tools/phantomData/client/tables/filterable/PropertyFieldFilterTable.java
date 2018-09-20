@@ -19,11 +19,11 @@ public class PropertyFieldFilterTable extends FilterTableSpringDb<PropertyField>
 	public List<IColumn<PropertyField>> createColumns() {
 		List<IColumn<PropertyField>> columns =
 				new ArrayList<IColumn<PropertyField>>();
-		columns.add(new Column<PropertyField, PropertyField>(
-				"id", item -> item, 
-				path -> String.valueOf(path.getId()), 
-				(path,value) -> path.setId(value),
-				PropertyFieldConnector.get()));
+//		columns.add(new Column<PropertyField, PropertyField>(
+//				"id", item -> item, 
+//				path -> String.valueOf(path.getId()), 
+//				(path,value) -> path.setId(value),
+//				PropertyFieldConnector.get()));
 		columns.add(new Column<PropertyField, PropertyField>(
 				"name", item -> item, 
 				path -> path.getName(), 

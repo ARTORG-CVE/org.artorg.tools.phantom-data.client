@@ -21,11 +21,11 @@ public class FileFilterTable extends FilterTableSpringDb<PhantomFile> {
 	public List<IColumn<PhantomFile>> createColumns() {
 		List<IColumn<PhantomFile>> columns =
 				new ArrayList<IColumn<PhantomFile>>();
-		columns.add(new Column<PhantomFile, PhantomFile>(
-				"id", item -> item, 
-				path -> String.valueOf(path.getId()), 
-				(path,value) -> path.setId(value),
-				FileConnector.get()));
+//		columns.add(new Column<PhantomFile, PhantomFile>(
+//				"id", item -> item, 
+//				path -> String.valueOf(path.getId()), 
+//				(path,value) -> path.setId(value),
+//				FileConnector.get()));
 		columns.add(new Column<PhantomFile, PhantomFile>(
 				"path", item -> item, 
 				path -> path.getPath(), 

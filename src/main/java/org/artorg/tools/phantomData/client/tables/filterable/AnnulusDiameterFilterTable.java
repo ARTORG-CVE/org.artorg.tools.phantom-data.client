@@ -19,11 +19,11 @@ public class AnnulusDiameterFilterTable extends FilterTableSpringDb<AnnulusDiame
 	public List<IColumn<AnnulusDiameter>> createColumns() {
 		List<IColumn<AnnulusDiameter>> columns =
 				new ArrayList<IColumn<AnnulusDiameter>>();
-		columns.add(new Column<AnnulusDiameter, AnnulusDiameter>(
-				"id", item -> item, 
-				path -> String.valueOf(path.getId()), 
-				(path,value) -> path.setId(value),
-				AnnulusDiameterConnector.get()));
+//		columns.add(new Column<AnnulusDiameter, AnnulusDiameter>(
+//				"id", item -> item, 
+//				path -> String.valueOf(path.getId()), 
+//				(path,value) -> path.setId(value),
+//				AnnulusDiameterConnector.get()));
 		columns.add(new Column<AnnulusDiameter, AnnulusDiameter>(
 				"shortcut", item -> item, 
 				path -> String.valueOf(path.getShortcut()), 

@@ -20,8 +20,8 @@ public class SpecialFilterTable extends FilterTableSpringDb<Special> implements 
 	@Override
 	public List<IColumn<Special>> createColumns() {
 		List<IColumn<Special>> columns = new ArrayList<IColumn<Special>>();
-		columns.add(new Column<Special, Special>("id", item -> item, path -> String.valueOf(path.getId()),
-				(path, value) -> path.setId(UUID.fromString((String) value)), SpecialConnector.get()));
+//		columns.add(new Column<Special, Special>("id", item -> item, path -> String.valueOf(path.getId()),
+//				(path, value) -> path.setId(UUID.fromString((String) value)), SpecialConnector.get()));
 		columns.add(new Column<Special, Special>("shortcut", item -> item, path -> path.getShortcut(),
 				(path, value) -> path.setShortcut(value), SpecialConnector.get()));
 

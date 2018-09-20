@@ -71,10 +71,12 @@ public abstract class AddEditController<ITEM extends DatabasePersistent> {
 		});
 	}
 	
-	protected <T> void selectComboBoxItem(ComboBox<T> comboBox, T item) {
+	protected <T extends Comparable<T>> void selectComboBoxItem(ComboBox<T> comboBox, T item) {
 		for (int i=0; i<comboBox.getItems().size(); i++)
-			if (comboBox.getItems().get(i) == item)
+			if (comboBox.getItems().get(i).compareTo(item) == 0) {
 				comboBox.getSelectionModel().select(i);
+				break;
+			}
 	}
 	
 	protected <T extends DatabasePersistent> void createComboBox(ComboBox<T> comboBox, 
@@ -176,8 +178,6 @@ public abstract class AddEditController<ITEM extends DatabasePersistent> {
 			
 			this.getTable().refresh();
 			getConnector().update(item);
-			
-			System.out.println(this.getTable().getFilterTable().toString());
 		});
 		
 		applyButton.setText("Save");

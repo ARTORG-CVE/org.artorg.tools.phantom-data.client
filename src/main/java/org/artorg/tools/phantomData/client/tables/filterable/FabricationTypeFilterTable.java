@@ -19,11 +19,11 @@ public class FabricationTypeFilterTable extends FilterTableSpringDb<FabricationT
 	public List<IColumn<FabricationType>> createColumns() {
 		List<IColumn<FabricationType>> columns =
 				new ArrayList<IColumn<FabricationType>>();
-		columns.add(new Column<FabricationType, FabricationType>(
-				"id", item -> item, 
-				path -> String.valueOf(path.getId()), 
-				(path,value) -> path.setId(value),
-				FabricationTypeConnector.get()));
+//		columns.add(new Column<FabricationType, FabricationType>(
+//				"id", item -> item, 
+//				path -> String.valueOf(path.getId()), 
+//				(path,value) -> path.setId(value),
+//				FabricationTypeConnector.get()));
 		columns.add(new Column<FabricationType, FabricationType>(
 				"shortcut", item -> item, 
 				path -> path.getShortcut(), 

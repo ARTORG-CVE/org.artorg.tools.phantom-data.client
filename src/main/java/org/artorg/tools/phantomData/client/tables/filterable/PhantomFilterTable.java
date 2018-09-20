@@ -28,13 +28,13 @@ public class PhantomFilterTable extends FilterTableSpringDb<Phantom> {
 		List<IColumn<Phantom>> columns =
 				new ArrayList<IColumn<Phantom>>();
 		IColumn<Phantom> column;
-		column = new Column<Phantom, Phantom>(
-				"id", item -> item, 
-				path -> String.valueOf(path.getId()), 
-				(path,value) -> path.setId(value),
-				PhantomConnector.get());
-		column.setVisibility(false);
-		columns.add(column);
+//		column = new Column<Phantom, Phantom>(
+//				"id", item -> item, 
+//				path -> String.valueOf(path.getId()), 
+//				(path,value) -> path.setId(value),
+//				PhantomConnector.get());
+//		column.setVisibility(false);
+//		columns.add(column);
 		columns.add(new Column<Phantom, Phantom>(
 				"PID", item -> item, 
 				path -> path.getProductId(), 
