@@ -43,4 +43,10 @@ public class AddLiteratureBaseController extends AddEditController<LiteratureBas
 		return new LiteratureBase(shortcut, value);
 	}
 
+	@Override
+	protected void copy(LiteratureBase from, LiteratureBase to) {
+		to.setShortcut(from.getShortcut());
+		to.setValue(from.getValue());
+	}
+
 }

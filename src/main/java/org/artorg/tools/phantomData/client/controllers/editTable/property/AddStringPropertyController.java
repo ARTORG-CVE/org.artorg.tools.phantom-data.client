@@ -7,6 +7,7 @@ import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConn
 import org.artorg.tools.phantomData.client.connectors.property.StringPropertyConnector;
 import org.artorg.tools.phantomData.client.controller.AddEditController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
+import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import org.artorg.tools.phantomData.server.model.property.StringProperty;
 
@@ -45,6 +46,12 @@ public class AddStringPropertyController extends AddEditController<StringPropert
 	protected void setTemplate(StringProperty item) {
 		super.selectComboBoxItem(comboBoxPropertyField, item.getPropertyField());
 		textFieldValue.setText(item.getValue());
+	}
+	
+	@Override
+	protected void copy(StringProperty from, StringProperty to) {
+		to.setPropertyField(from.getPropertyField());
+		to.setValue(from.getValue());
 	}
 
 }

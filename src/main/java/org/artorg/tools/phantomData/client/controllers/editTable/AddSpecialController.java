@@ -7,7 +7,6 @@ import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.controller.AddEditController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.server.model.Special;
-import org.artorg.tools.phantomData.server.model.property.PropertyContainer;
 
 import javafx.scene.control.TextField;
 
@@ -21,8 +20,7 @@ public class AddSpecialController extends AddEditController<Special> {
 	@Override
 	public Special createItem() {
 		String shortcut = textFieldShortcut.getText();
-		PropertyContainer propertyContainer = new PropertyContainer();
-		return new Special(shortcut, propertyContainer);
+		return new Special(shortcut);
 	}
 
 	@Override
@@ -38,6 +36,18 @@ public class AddSpecialController extends AddEditController<Special> {
 	@Override
 	protected void setTemplate(Special item) {
 		textFieldShortcut.setText(item.getShortcut());
+	}
+
+	@Override
+	protected void copy(Special from, Special to) {
+		to.setShortcut(from.getShortcut());
+		
+		to.setBooleanProperties(from.getBooleanProperties());
+		to.setDateProperties(from.getDateProperties());
+		to.setDoubleProperties(from.getDoubleProperties());
+		to.setIntegerProperties(from.getIntegerProperties());
+		to.setStringProperties(from.getStringProperties());
+		
 	}
 
 }

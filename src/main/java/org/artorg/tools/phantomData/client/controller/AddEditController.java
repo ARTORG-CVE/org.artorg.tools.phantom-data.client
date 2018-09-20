@@ -31,13 +31,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.util.Callback;
 
 public abstract class AddEditController<ITEM extends DatabasePersistent> {
 	private GridPane gridPane;
 	private Button applyButton;
 	private int nRows = 0;
-	private List<PropertyEntry> entries;
 	private List<Node> rightNodes;
 	
 	{
@@ -53,9 +53,7 @@ public abstract class AddEditController<ITEM extends DatabasePersistent> {
 	
 	protected abstract void setTemplate(ITEM item);
 	
-	public void applyButton() {
-		getConnector().create(createItem());
-	}
+	protected abstract void copy(ITEM from, ITEM to);
 	
 	protected void initDefaultValues() {
 		rightNodes.forEach(node -> {
@@ -132,17 +130,53 @@ public abstract class AddEditController<ITEM extends DatabasePersistent> {
     }
     
     public AnchorPane create() {
-    	entries = new ArrayList<PropertyEntry>(); 
-		addPropertyEntries(entries); 
-		return create(entries, null);
+		return create(null);
     }
     
     public AnchorPane create(ITEM item) {
-    	entries = new ArrayList<PropertyEntry>(); 
+    	List<PropertyEntry> entries = new ArrayList<PropertyEntry>();
 		addPropertyEntries(entries); 
+		createRightNodes(entries);
+		initDefaultValues();
 		AnchorPane pane = create(entries, item);
-		setTemplate(item);
+		if (item != null)
+			setTemplate(item);
+		applyButton.setOnAction(event -> {
+			ITEM item2 = createItem();
+			copy(item2,item);
+			getConnector().update(item);
+			this.initDefaultValues();
+		});
+		applyButton.setText("Create");
 		return pane;
+    }
+    
+    public AnchorPane edit(ITEM item) {
+    	List<PropertyEntry> entries = new ArrayList<PropertyEntry>(); 
+    	Label label = new Label();
+    	label.setText(item.getId().toString());
+    	label.setDisable(true);
+    	PropertyEntry idEntry = new PropertyEntry("Id", label);
+    	entries.add(idEntry);
+		addPropertyEntries(entries); 
+		createRightNodes(entries);
+		initDefaultValues();
+		AnchorPane pane = create(entries, item);
+		if (item != null)
+			setTemplate(item);
+
+		applyButton.setOnAction(event -> {
+			ITEM item2 = createItem();
+			copy(item2,item);
+			getConnector().update(item);
+		});
+		
+		applyButton.setText("Save");
+		return pane;
+    }
+    
+    private void createRightNodes(List<PropertyEntry> entries) {
+    	rightNodes = entries.stream().map(e -> e.getRightNode()).collect(Collectors.toList());
     }
     
     private AnchorPane create(List<PropertyEntry> entries, ITEM item) {
@@ -178,12 +212,14 @@ public abstract class AddEditController<ITEM extends DatabasePersistent> {
     		try {
 	    		double textWidth = 0;
 	    		for (int i=0; i<nRows; i++) {
-	    			double width = gridPane.getChildren().get(2*i).getLayoutBounds().getWidth();
+	    			Text text = new Text(((Label)gridPane.getChildren().get(2*i)).getText());
+	    			text.applyCss();
+	    			double width = text.getLayoutBounds().getWidth();
 	    			if (width > textWidth) textWidth = width;
 	    		}
 	    		
 	    		col1.setMinWidth(textWidth+5.0);
-	    		col1.setPrefWidth(textWidth+25.0);
+	    		col1.setPrefWidth(textWidth+10.0);
 	    		col1.setMaxWidth(textWidth+45.0);
 	    		
 	    		textWidth = 0;
@@ -208,14 +244,9 @@ public abstract class AddEditController<ITEM extends DatabasePersistent> {
 		spacePane.setPrefHeight(10.0);
 		vBox.getChildren().add(spacePane);
 		
-		rightNodes = entries.stream().map(e -> e.getRightNode()).collect(Collectors.toList());
 		
-		applyButton.setText("Add");
 		applyButton.setMaxWidth(Double.MAX_VALUE);
-		applyButton.setOnAction(event -> {
-			applyButton();
-			initDefaultValues();
-		});
+		
 		VBox.setVgrow(applyButton, Priority.ALWAYS);
 		vBox.getChildren().add(applyButton);
 		

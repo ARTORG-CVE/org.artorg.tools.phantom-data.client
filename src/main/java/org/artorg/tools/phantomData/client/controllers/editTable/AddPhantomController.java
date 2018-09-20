@@ -40,7 +40,9 @@ public class AddPhantomController extends AddEditController<Phantom> {
 	}
 	
 	private void updateId() {
-    	labelIdValue.setText(createItem().getProductId());
+		try {
+			labelIdValue.setText(createItem().getProductId());
+		} catch (Exception e) {}
     }
 	
 	private void createComboBoxes() {
@@ -76,7 +78,7 @@ public class AddPhantomController extends AddEditController<Phantom> {
 	@Override
 	protected void addPropertyEntries(List<PropertyEntry> entries) {
 		createComboBoxes();
-		entries.add(new PropertyEntry("Id", labelIdValue));
+		entries.add(new PropertyEntry("PID", labelIdValue));
 		entries.add(new PropertyEntry("Annulus diameter [mm]", comboBoxAnnulus));
 		entries.add(new PropertyEntry("Fabrication Type", comboBoxFabricationType));
 		entries.add(new PropertyEntry("Literarure Base", comboBoxLiterature));
@@ -91,6 +93,27 @@ public class AddPhantomController extends AddEditController<Phantom> {
 		super.selectComboBoxItem(comboBoxLiterature, item.getLiteratureBase());
 		super.selectComboBoxItem(comboBoxSpecials, item.getSpecial());
 		textFieldModelNumber.setText(Integer.toString(item.getNumber()));
+	}
+
+	@Override
+	protected void copy(Phantom from, Phantom to) {
+		
+		
+		to.setAnnulusDiameter(from.getAnnulusDiameter());
+		
+		to.setBooleanProperties(from.getBooleanProperties());
+		to.setDateProperties(from.getDateProperties());
+		to.setDoubleProperties(from.getDoubleProperties());
+		to.setIntegerProperties(from.getIntegerProperties());
+		to.setStringProperties(from.getStringProperties());
+		
+		to.setFabricationType(from.getFabricationType());
+		to.setFiles(from.getFiles());
+		to.setLiteratureBase(from.getLiteratureBase());
+		to.setNumber(from.getNumber());
+		to.setProductId(from.getProductId());
+		to.setSpecial(from.getSpecial());
+		
 	}
     
 }

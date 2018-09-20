@@ -43,4 +43,10 @@ public class AddFabricationTypeController extends AddEditController<FabricationT
 		return new FabricationType(shortcut, value);
 	}
 
+	@Override
+	protected void copy(FabricationType from, FabricationType to) {
+		to.setShortcut(from.getShortcut());
+		to.setValue(from.getValue());
+	}
+
 }

@@ -47,4 +47,10 @@ public class AddBooleanPropertyController extends AddEditController<BooleanPrope
 		checkBoxValue.setSelected(item.getValue());
 	}
 
+	@Override
+	protected void copy(BooleanProperty from, BooleanProperty to) {
+		to.setPropertyField(from.getPropertyField());
+		to.setValue(from.getValue());
+	}
+
 }

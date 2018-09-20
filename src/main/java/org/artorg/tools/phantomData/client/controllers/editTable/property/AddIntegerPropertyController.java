@@ -7,6 +7,7 @@ import org.artorg.tools.phantomData.client.connectors.property.IntegerPropertyCo
 import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;
 import org.artorg.tools.phantomData.client.controller.AddEditController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
+import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
@@ -46,5 +47,11 @@ public class AddIntegerPropertyController extends AddEditController<IntegerPrope
 		super.selectComboBoxItem(comboBoxPropertyField, item.getPropertyField());
 		textFieldValue.setText(Integer.toString(item.getValue()));
 	}
-
+	
+	@Override
+	protected void copy(IntegerProperty from, IntegerProperty to) {
+		to.setPropertyField(from.getPropertyField());
+		to.setValue(from.getValue());
+	}
+	
 }

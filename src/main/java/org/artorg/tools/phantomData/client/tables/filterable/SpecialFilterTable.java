@@ -25,7 +25,7 @@ public class SpecialFilterTable extends FilterTableSpringDb<Special> implements 
 		columns.add(new Column<Special, Special>("shortcut", item -> item, path -> path.getShortcut(),
 				(path, value) -> path.setShortcut(value), SpecialConnector.get()));
 
-		createPropertyColumns(columns, this.getItems(), item -> item.getPropertyContainer());
+		createPropertyColumns(columns, this.getItems());
 		
 		return columns;
 		

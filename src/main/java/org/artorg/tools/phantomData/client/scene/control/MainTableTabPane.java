@@ -41,9 +41,14 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 				final TableRow<ITEM> row = new TableRow<ITEM>();
 				
 				final ContextMenu rowMenu = new ContextMenu();
-				MenuItem editItem = new MenuItem("Add item");
+				MenuItem editItem = new MenuItem("Edit item");
 				editItem.setOnAction(event -> {
-//					AnchorPane node = ItemFormFactory.createForm(tableViewSpring.getFilterTable().getItemClass());
+					AddEditController<ITEM> controller = tableViewSpring.createAddEditController();
+					AnchorPane node = controller.edit(row.getItem());
+					mainSplitPane.addNewItemTab(node, "Edit " + tableViewSpring.getFilterTable().getItemName());
+				});
+				MenuItem addItem = new MenuItem("Add item");
+				addItem.setOnAction(event -> {
 					AddEditController<ITEM> controller = tableViewSpring.createAddEditController();
 					AnchorPane node = controller.create(row.getItem());
 					mainSplitPane.addNewItemTab(node, "Add " + tableViewSpring.getFilterTable().getItemName());
@@ -52,7 +57,7 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 				removeItem.setOnAction(event -> {
 					tableViewSpring.getItems().remove(row.getItem());
 				});
-				rowMenu.getItems().addAll(editItem, removeItem);
+				rowMenu.getItems().addAll(editItem, addItem, removeItem);
 
 				// only display context menu for non-null items:
 				row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
@@ -60,6 +65,19 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 				return row;
 			}
 		});
+		
+		ContextMenu contextMenu = new ContextMenu();
+		MenuItem editItem = new MenuItem("Add item");
+		editItem.setOnAction(event -> {
+			AddEditController<ITEM> controller = tableViewSpring.createAddEditController();
+			AnchorPane node = controller.create();
+			mainSplitPane.addNewItemTab(node, "Add " + tableViewSpring.getFilterTable().getItemName());
+		});
+		contextMenu.getItems().addAll(editItem);
+		
+		tableViewSpring.setContextMenu(contextMenu);
+		
+		
 	}
 
 	@Override

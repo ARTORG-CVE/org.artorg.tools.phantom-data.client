@@ -38,4 +38,9 @@ public class AddFileTypeController extends AddEditController<FileType> {
 		textFieldName.setText(item.getName());
 	}
 
+	@Override
+	protected void copy(FileType from, FileType to) {
+		to.setName(from.getName());
+	}
+
 }

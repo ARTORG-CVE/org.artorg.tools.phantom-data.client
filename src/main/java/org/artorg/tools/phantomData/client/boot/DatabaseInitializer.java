@@ -1,7 +1,6 @@
 package org.artorg.tools.phantomData.client.boot;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
@@ -13,7 +12,6 @@ import org.artorg.tools.phantomData.client.connectors.PhantomConnector;
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.connectors.property.BooleanPropertyConnector;
 import org.artorg.tools.phantomData.client.connectors.property.IntegerPropertyConnector;
-import org.artorg.tools.phantomData.client.connectors.property.PropertyContainerConnector;
 import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
@@ -24,7 +22,6 @@ import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.model.Special;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
-import org.artorg.tools.phantomData.server.model.property.PropertyContainer;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 public class DatabaseInitializer {
@@ -35,7 +32,6 @@ public class DatabaseInitializer {
 	private static BooleanPropertyConnector boolPropConn = BooleanPropertyConnector.get();
 	private static IntegerPropertyConnector intPropConn = IntegerPropertyConnector.get();
 	private static SpecialConnector specConn = SpecialConnector.get();
-	private static PropertyContainerConnector propContConn = PropertyContainerConnector.get();
 	private static PhantomConnector phantomConn = PhantomConnector.get();
 
 	public static void initDatabase() {
@@ -106,37 +102,25 @@ public class DatabaseInitializer {
 		IntegerProperty int1 = new IntegerProperty(field3, 20); 
 		intPropConn.create(int1);
 		int1 = intPropConn.read(int1);
-
-		Collection<BooleanProperty> list1 = new ArrayList<BooleanProperty>();
-		list1.add(boolPropConn.read(bool1));
-		list1.add(boolPropConn.read(bool4));
-		PropertyContainer pc1 = new PropertyContainer();
-		pc1.setBooleanProperties(list1);
-		propContConn.create(pc1);
-		specConn.create(new Special("L", pc1));
-
-		Collection<BooleanProperty> list2 = new ArrayList<BooleanProperty>();
-		list2.add(boolPropConn.read(bool2));
-		list2.add(boolPropConn.read(bool3));
-		PropertyContainer pc2 = new PropertyContainer();
-		pc2.setBooleanProperties(list2);
-		propContConn.create(pc2);
-		specConn.create(new Special("C", pc2));
-
-		Collection<BooleanProperty> list3 = new ArrayList<BooleanProperty>();
-		list3.add(boolPropConn.read(bool2));
-		list3.add(boolPropConn.read(bool4));
-		PropertyContainer pc3 = new PropertyContainer();
-		pc3.setBooleanProperties(list3);
-		propContConn.create(pc3);
-		specConn.create(new Special("N", pc3));
-
-		Collection<IntegerProperty> list4 = new ArrayList<IntegerProperty>();
-		list4.add(intPropConn.read(int1));
-		PropertyContainer pc4 = new PropertyContainer();
-		pc4.setIntegerProperties(list4);
-		propContConn.create(pc4);
-		specConn.create(new Special("ZZ", pc4));
+		
+		Special special1 = new Special("L");
+		special1.addProperty(bool1);
+		special1.addProperty(bool4);
+		specConn.create(special1);
+		
+		Special special2 = new Special("C");
+		special2.addProperty(bool2);
+		special2.addProperty(bool3);
+		specConn.create(special2);
+		
+		Special special3 = new Special("N");
+		special3.addProperty(bool2);
+		special3.addProperty(bool4);
+		specConn.create(special3);
+		
+		Special special4 = new Special("ZZ");
+		special4.addProperty(int1);
+		specConn.create(special4);
 
 	}
 

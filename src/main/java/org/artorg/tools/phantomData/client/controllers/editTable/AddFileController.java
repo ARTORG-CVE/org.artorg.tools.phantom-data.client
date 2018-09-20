@@ -58,4 +58,12 @@ public class AddFileController extends AddEditController<PhantomFile> {
 		super.selectComboBoxItem(comboBoxFileType, item.getFileType());
 	}
 
+	@Override
+	protected void copy(PhantomFile from, PhantomFile to) {
+		to.setExtension(from.getExtension());
+		to.setFileType(from.getFileType());
+		to.setName(from.getName());
+		to.setPath(from.getPath());
+	}
+
 }

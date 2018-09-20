@@ -28,22 +28,22 @@ import javafx.collections.ObservableList;
 
 public interface PropertyColumns {
 	
-	default <ITEM extends DatabasePersistent> 
+	default <ITEM extends PropertyContainer & DatabasePersistent> 
 		void createPropertyColumns(List<IColumn<ITEM>> columns, 
-				ObservableList<ITEM> items, Function<ITEM,PropertyContainer> propContGetter) {
-		createPropertyColumns(columns, items, propContGetter, 
+				ObservableList<ITEM> items) {
+		createPropertyColumns(columns, items, 
 				container -> container.getBooleanProperties(), 
 				bool -> String.valueOf(bool),
 				s -> Boolean.valueOf(s), BooleanPropertyConnector.get());
-		createPropertyColumns(columns, items, propContGetter, 
+		createPropertyColumns(columns, items, 
 				container -> container.getDoubleProperties(), 
 				bool -> String.valueOf(bool),
 				s -> Double.valueOf(s), DoublePropertyConnector.get());
-		createPropertyColumns(columns, items, propContGetter, 
+		createPropertyColumns(columns, items, 
 				container -> container.getIntegerProperties(), 
 				bool -> String.valueOf(bool),
 				s -> Integer.valueOf(s), IntegerPropertyConnector.get());
-		createPropertyColumns(columns, items, propContGetter, 
+		createPropertyColumns(columns, items, 
 				container -> container.getStringProperties(), 
 				s -> s,
 				s -> s, StringPropertyConnector.get());
@@ -57,7 +57,7 @@ public interface PropertyColumns {
 				};
 				throw new IllegalArgumentException();
 		};
-		createPropertyColumns(columns, items, propContGetter, 
+		createPropertyColumns(columns, items, 
 				container -> container.getDateProperties(), 
 				date -> String.valueOf(date),
 				stringDateFunc, DatePropertyConnector.get());
@@ -67,20 +67,19 @@ public interface PropertyColumns {
 			PROPERTY_TYPE extends Property<PROPERTY_VALUE_TYPE> & DatabasePersistent, 
 			PROPERTY_VALUE_TYPE extends Comparable<PROPERTY_VALUE_TYPE>> 
 			void createPropertyColumns(List<IColumn<ITEM>> columns, ObservableList<ITEM> items, 
-					Function<ITEM,PropertyContainer> propContGetter, 
-					Function<PropertyContainer,Collection<PROPERTY_TYPE>> propsGetter, 
+					Function<ITEM,Collection<PROPERTY_TYPE>> propsGetter, 
 					Function<PROPERTY_VALUE_TYPE, String> toStringFun, Function<String, PROPERTY_VALUE_TYPE> fromStringFun,
 					HttpConnectorSpring<PROPERTY_TYPE> connector) {
 		{
-			Function<ITEM,Collection<PROPERTY_TYPE>> propertiesGetter = propContGetter.andThen(propsGetter);
+
 			Map<UUID, String> map = new HashMap<UUID, String>();
-			Set<PROPERTY_TYPE> set = items.stream().flatMap(s -> propertiesGetter.apply(s).stream())
+			Set<PROPERTY_TYPE> set = items.stream().flatMap(s -> propsGetter.apply(s).stream())
 					.collect(Collectors.toSet());
 			set.stream().sorted((p1, p2) -> p1.getPropertyField().getId().compareTo(p2.getPropertyField().getId()))
 					.forEach(p -> map.put(p.getPropertyField().getId(), p.getPropertyField().getDescription()));
 			map.entrySet().stream()
 					.forEach(entry -> columns.add(new ColumnOptional<ITEM, PROPERTY_TYPE>(entry.getValue(),
-							item -> propertiesGetter.apply(item).stream()
+							item -> propsGetter.apply(item).stream()
 									.filter(p -> p.getPropertyField().getId() == entry.getKey()).findFirst(),
 							path -> toStringFun.apply(path.getValue()),
 							(path, value) -> path.setValue(fromStringFun.apply((String) value)), "",

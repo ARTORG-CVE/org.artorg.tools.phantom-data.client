@@ -47,4 +47,10 @@ public class AddDoublePropertyController extends AddEditController<DoublePropert
 		textFieldValue.setText(Double.toString(item.getValue()));
 	}
 
+	@Override
+	protected void copy(DoubleProperty from, DoubleProperty to) {
+		to.setPropertyField(from.getPropertyField());
+		to.setValue(from.getValue());
+	}
+
 }

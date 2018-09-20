@@ -43,4 +43,10 @@ public class AddPropertyFieldController extends AddEditController<PropertyField>
 		return new PropertyField(name, description);
 	}
 
+	@Override
+	protected void copy(PropertyField from, PropertyField to) {
+		to.setDescription(from.getDescription());
+		to.setName(from.getName());
+	}
+
 }

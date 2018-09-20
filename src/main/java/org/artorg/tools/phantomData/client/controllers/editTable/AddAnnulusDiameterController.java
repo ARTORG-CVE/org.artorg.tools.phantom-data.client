@@ -22,8 +22,10 @@ public class AddAnnulusDiameterController extends AddEditController<AnnulusDiame
 	}
 
 	private void updateLabel() {
-		Integer shortcut = Integer.valueOf(textFieldValue.getText());
-		labelShortcut.setText(String.valueOf(shortcut));
+		try {
+			Integer shortcut = Double.valueOf(textFieldValue.getText()).intValue();
+			labelShortcut.setText(String.valueOf(shortcut));
+		} catch (Exception e) {}
 	}
 	
 	@Override
@@ -54,6 +56,12 @@ public class AddAnnulusDiameterController extends AddEditController<AnnulusDiame
 	protected void setTemplate(AnnulusDiameter item) {
 		textFieldValue.setText(Double.toString(item.getValue()));
 		updateLabel();
+	}
+
+	@Override
+	protected void copy(AnnulusDiameter from, AnnulusDiameter to) {
+		to.setShortcut(from.getShortcut());
+		to.setValue(from.getValue());
 	}
 
 }
