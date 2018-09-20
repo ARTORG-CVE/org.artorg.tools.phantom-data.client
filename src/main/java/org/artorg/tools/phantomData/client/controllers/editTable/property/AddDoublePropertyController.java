@@ -2,11 +2,10 @@ package org.artorg.tools.phantomData.client.controllers.editTable.property;
 
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
-import org.artorg.tools.phantomData.client.connectors.property.DoublePropertyConnector;
 import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;
 import org.artorg.tools.phantomData.client.controller.AddEditController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
+import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
@@ -14,6 +13,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 
 public class AddDoublePropertyController extends AddEditController<DoubleProperty> {
+	private TableViewSpring<DoubleProperty> table;
 	private ComboBox<PropertyField> comboBoxPropertyField;
 	private TextField textFieldValue;
 	
@@ -22,16 +22,15 @@ public class AddDoublePropertyController extends AddEditController<DoublePropert
 		textFieldValue = new TextField();
 	}
 	
+	public AddDoublePropertyController(TableViewSpring<DoubleProperty> table) {
+		this.table = table;
+	}
+	
 	@Override
 	public DoubleProperty createItem() {
 		PropertyField propertyField = comboBoxPropertyField.getSelectionModel().getSelectedItem();
 		Double value = Double.valueOf(textFieldValue.getText());
 		return new DoubleProperty(propertyField, value);
-	}
-
-	@Override
-	protected HttpConnectorSpring<DoubleProperty> getConnector() {
-		return DoublePropertyConnector.get();
 	}
 
 	@Override
@@ -51,6 +50,11 @@ public class AddDoublePropertyController extends AddEditController<DoublePropert
 	protected void copy(DoubleProperty from, DoubleProperty to) {
 		to.setPropertyField(from.getPropertyField());
 		to.setValue(from.getValue());
+	}
+
+	@Override
+	protected TableViewSpring<DoubleProperty> getTable() {
+		return table;
 	}
 
 }

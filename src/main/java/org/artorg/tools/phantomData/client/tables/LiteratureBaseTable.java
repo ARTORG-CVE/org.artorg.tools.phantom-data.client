@@ -14,7 +14,7 @@ public class LiteratureBaseTable extends TableViewSpring<LiteratureBase> {
 	
 	@Override
 	public AddEditController<LiteratureBase> createAddEditController() {
-		return new AddLiteratureBaseController();
+		return new AddLiteratureBaseController(this);
 	}
 	
 

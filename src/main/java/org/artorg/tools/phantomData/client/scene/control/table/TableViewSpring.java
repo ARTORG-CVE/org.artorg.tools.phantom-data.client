@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controller.AddEditController;
 import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
 import org.artorg.tools.phantomData.client.util.FxUtil;
@@ -11,6 +12,8 @@ import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -26,49 +29,36 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
 public abstract class TableViewSpring<ITEM extends DatabasePersistent> extends TableView<ITEM> {
-	
 	private FilterTableSpringDb<ITEM> filterTable;
 	private List<FilterMenuButton> filterMenuButtons;
+	private ListChangeListener<ITEM> listenerChangedListenerRefresh;
 	
 	{
 		super.setEditable(true);
 		filterMenuButtons = new ArrayList<FilterMenuButton>();
+		listenerChangedListenerRefresh = new ListChangeListener<ITEM>() {
+			@Override
+			public void onChanged(Change<? extends ITEM> c) {
+				refresh();
+			}
+		};
 	}
 	
 	public abstract AddEditController<ITEM> createAddEditController();
 	
+	public HttpConnectorSpring<ITEM> getConnector() {
+		return filterTable.getConnector();
+	}
+	
 	public void setTable(FilterTableSpringDb<ITEM> table) {
 		this.filterTable = table;
+
 		reload();
+		initTable();
+		filterTable.getItems().addListener(listenerChangedListenerRefresh);
 	}
 	
-	public void autoResizeColumns() {
-		super.setColumnResizePolicy( TableView.UNCONSTRAINED_RESIZE_POLICY);
-	    super.getColumns().stream().forEach( (column) -> {
-	        Text t = new Text( column.getText() );
-	        double max = t.getLayoutBounds().getWidth()+45.0;
-	        for ( int i = 0; i < super.getItems().size(); i++ ) {
-	            if ( column.getCellData( i ) != null ) {
-	                t = new Text( column.getCellData( i ).toString() );
-	                double calcwidth = t.getLayoutBounds().getWidth()+10;
-	                if ( calcwidth > max )
-	                    max = calcwidth;
-	            }
-	        }
-	        column.setPrefWidth( max);
-	    } );
-	}
-
-	public FilterTableSpringDb<ITEM> getFilterTable() {
-		return filterTable;
-	}
-	
-	public Control getGraphic() {
-		return this;
-	}
-
-	@Override
-	public void refresh() {
+	private void initTable() {
 		super.getColumns().removeAll(super.getColumns());
 
 	    // creating columns
@@ -121,6 +111,37 @@ public abstract class TableViewSpring<ITEM extends DatabasePersistent> extends T
 	    Platform.runLater(() -> showFilterButtons());
 	}
 	
+	public void autoResizeColumns() {
+		super.setColumnResizePolicy( TableView.UNCONSTRAINED_RESIZE_POLICY);
+	    super.getColumns().stream().forEach( (column) -> {
+	        Text t = new Text( column.getText() );
+	        double max = t.getLayoutBounds().getWidth()+45.0;
+	        for ( int i = 0; i < super.getItems().size(); i++ ) {
+	            if ( column.getCellData( i ) != null ) {
+	                t = new Text( column.getCellData( i ).toString() );
+	                double calcwidth = t.getLayoutBounds().getWidth()+10;
+	                if ( calcwidth > max )
+	                    max = calcwidth;
+	            }
+	        }
+	        column.setPrefWidth( max);
+	    } );
+	}
+
+	public FilterTableSpringDb<ITEM> getFilterTable() {
+		return filterTable;
+	}
+	
+	public Control getGraphic() {
+		return this;
+	}
+
+	@Override
+	public void refresh() {
+		super.setItems(FXCollections.observableArrayList(new ArrayList<ITEM>()));
+		super.getItems().addAll(filterTable.getItems());
+	}
+	
 	public void showFilterButtons() {
         for (Node n : super.lookupAll(".column-header > .label")) {
             if (n instanceof Label) {
@@ -142,7 +163,10 @@ public abstract class TableViewSpring<ITEM extends DatabasePersistent> extends T
     }
 	
 	public void reload() {
+		filterTable.getItems().removeListener(listenerChangedListenerRefresh);
 		filterTable.readAllData();
+		super.setItems(filterTable.getItems());
+		filterTable.getItems().addListener(listenerChangedListenerRefresh);
 		refresh();
 	}
 	

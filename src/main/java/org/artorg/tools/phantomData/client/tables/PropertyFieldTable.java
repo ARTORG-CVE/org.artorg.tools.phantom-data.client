@@ -14,7 +14,7 @@ public class PropertyFieldTable extends TableViewSpring<PropertyField> {
 	
 	@Override
 	public AddEditController<PropertyField> createAddEditController() {
-		return new AddPropertyFieldController();
+		return new AddPropertyFieldController(this);
 	}
 
 }

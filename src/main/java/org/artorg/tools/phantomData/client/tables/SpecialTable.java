@@ -14,7 +14,7 @@ public class SpecialTable extends TableViewSpring<Special> {
 	
 	@Override
 	public AddEditController<Special> createAddEditController() {
-		return new AddSpecialController();
+		return new AddSpecialController(this);
 	}
 
 }

@@ -14,7 +14,7 @@ public class FabricationTypeTable extends TableViewSpring<FabricationType> {
 	
 	@Override
 	public AddEditController<FabricationType> createAddEditController() {
-		return new AddFabricationTypeController();
+		return new AddFabricationTypeController(this);
 	}
 
 }

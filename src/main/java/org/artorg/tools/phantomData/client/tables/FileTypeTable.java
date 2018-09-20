@@ -14,7 +14,7 @@ public class FileTypeTable extends TableViewSpring<FileType> {
 	
 	@Override
 	public AddEditController<FileType> createAddEditController() {
-		return new AddFileTypeController();
+		return new AddFileTypeController(this);
 	}
 
 }

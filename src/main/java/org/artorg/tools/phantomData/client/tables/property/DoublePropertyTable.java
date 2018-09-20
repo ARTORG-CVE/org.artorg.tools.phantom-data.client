@@ -14,7 +14,7 @@ public class DoublePropertyTable extends TableViewSpring<DoubleProperty> {
 	
 	@Override
 	public AddEditController<DoubleProperty> createAddEditController() {
-		return new AddDoublePropertyController();
+		return new AddDoublePropertyController(this);
 	}
 
 }

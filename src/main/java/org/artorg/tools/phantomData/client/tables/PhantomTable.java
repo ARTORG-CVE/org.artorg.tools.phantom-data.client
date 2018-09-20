@@ -14,7 +14,7 @@ public class PhantomTable extends TableViewSpring<Phantom> {
 	
 	@Override
 	public AddEditController<Phantom> createAddEditController() {
-		return new AddPhantomController();
+		return new AddPhantomController(this);
 	}
 
 }

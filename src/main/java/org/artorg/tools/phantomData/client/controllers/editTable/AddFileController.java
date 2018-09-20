@@ -2,11 +2,10 @@ package org.artorg.tools.phantomData.client.controllers.editTable;
 
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
-import org.artorg.tools.phantomData.client.connectors.FileConnector;
 import org.artorg.tools.phantomData.client.connectors.FileTypeConnector;
 import org.artorg.tools.phantomData.client.controller.AddEditController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
+import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 
@@ -14,6 +13,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 
 public class AddFileController extends AddEditController<PhantomFile> {
+	private TableViewSpring<PhantomFile> table;
 	private TextField textFieldPath;
 	private TextField textFieldName;
 	private TextField textFieldExtension;
@@ -25,6 +25,10 @@ public class AddFileController extends AddEditController<PhantomFile> {
 		textFieldExtension = new TextField();
 		comboBoxFileType = new ComboBox<FileType>();
 	}
+	
+	public AddFileController(TableViewSpring<PhantomFile> table) {
+		this.table = table;
+	}
 
 	@Override
 	public PhantomFile createItem() {
@@ -34,11 +38,6 @@ public class AddFileController extends AddEditController<PhantomFile> {
 		FileType fileType = comboBoxFileType.getSelectionModel().getSelectedItem();
 		
 		return new PhantomFile(path, name, extension, fileType);
-	}
-
-	@Override
-	protected HttpConnectorSpring<PhantomFile> getConnector() {
-		return FileConnector.get();
 	}
 
 	@Override
@@ -64,6 +63,11 @@ public class AddFileController extends AddEditController<PhantomFile> {
 		to.setFileType(from.getFileType());
 		to.setName(from.getName());
 		to.setPath(from.getPath());
+	}
+
+	@Override
+	protected TableViewSpring<PhantomFile> getTable() {
+		return table;
 	}
 
 }

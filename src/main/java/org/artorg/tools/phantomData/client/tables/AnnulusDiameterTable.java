@@ -14,7 +14,7 @@ public class AnnulusDiameterTable extends TableViewSpring<AnnulusDiameter> {
 	
 	@Override
 	public AddEditController<AnnulusDiameter> createAddEditController() {
-		return new AddAnnulusDiameterController();
+		return new AddAnnulusDiameterController(this);
 	}
 	
 }

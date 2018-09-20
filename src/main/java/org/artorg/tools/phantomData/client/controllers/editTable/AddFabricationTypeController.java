@@ -2,15 +2,15 @@ package org.artorg.tools.phantomData.client.controllers.editTable;
 
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
-import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
 import org.artorg.tools.phantomData.client.controller.AddEditController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
+import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 
 import javafx.scene.control.TextField;
 
 public class AddFabricationTypeController extends AddEditController<FabricationType> {
+	private TableViewSpring<FabricationType> table;
 	private TextField textFieldShortcut;
 	private TextField textFieldValue;
 
@@ -19,9 +19,8 @@ public class AddFabricationTypeController extends AddEditController<FabricationT
 		textFieldValue = new TextField();
 	}
 	
-	@Override
-	protected HttpConnectorSpring<FabricationType> getConnector() {
-		return FabricationTypeConnector.get();
+	public AddFabricationTypeController(TableViewSpring<FabricationType> table) {
+		this.table = table;
 	}
 	
 	@Override
@@ -47,6 +46,11 @@ public class AddFabricationTypeController extends AddEditController<FabricationT
 	protected void copy(FabricationType from, FabricationType to) {
 		to.setShortcut(from.getShortcut());
 		to.setValue(from.getValue());
+	}
+
+	@Override
+	protected TableViewSpring<FabricationType> getTable() {
+		return table;
 	}
 
 }

@@ -41,6 +41,10 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 				final TableRow<ITEM> row = new TableRow<ITEM>();
 				
 				final ContextMenu rowMenu = new ContextMenu();
+				MenuItem refreshItem = new MenuItem("Refresh");
+				refreshItem.setOnAction(event -> {
+					tableViewSpring.refresh();
+				});
 				MenuItem editItem = new MenuItem("Edit item");
 				editItem.setOnAction(event -> {
 					AddEditController<ITEM> controller = tableViewSpring.createAddEditController();
@@ -57,7 +61,7 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 				removeItem.setOnAction(event -> {
 					tableViewSpring.getItems().remove(row.getItem());
 				});
-				rowMenu.getItems().addAll(editItem, addItem, removeItem);
+				rowMenu.getItems().addAll(refreshItem, editItem, addItem, removeItem);
 
 				// only display context menu for non-null items:
 				row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))

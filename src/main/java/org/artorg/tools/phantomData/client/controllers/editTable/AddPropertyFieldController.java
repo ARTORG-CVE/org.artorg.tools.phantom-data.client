@@ -2,15 +2,15 @@ package org.artorg.tools.phantomData.client.controllers.editTable;
 
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
-import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;
 import org.artorg.tools.phantomData.client.controller.AddEditController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
+import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 import javafx.scene.control.TextField;
 
 public class AddPropertyFieldController extends AddEditController<PropertyField>{
+	private TableViewSpring<PropertyField> table;
 	private TextField textFielName;
 	private TextField textFieldDescription;
 
@@ -19,9 +19,8 @@ public class AddPropertyFieldController extends AddEditController<PropertyField>
 		textFieldDescription = new TextField();
 	}
 	
-	@Override
-	protected HttpConnectorSpring<PropertyField> getConnector() {
-		return PropertyFieldConnector.get();
+	public AddPropertyFieldController(TableViewSpring<PropertyField> table) {
+		this.table = table;
 	}
 	
 	@Override
@@ -47,6 +46,11 @@ public class AddPropertyFieldController extends AddEditController<PropertyField>
 	protected void copy(PropertyField from, PropertyField to) {
 		to.setDescription(from.getDescription());
 		to.setName(from.getName());
+	}
+
+	@Override
+	protected TableViewSpring<PropertyField> getTable() {
+		return table;
 	}
 
 }

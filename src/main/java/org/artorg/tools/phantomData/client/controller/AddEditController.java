@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
+import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
@@ -47,13 +48,17 @@ public abstract class AddEditController<ITEM extends DatabasePersistent> {
 	
 	public abstract ITEM createItem();
 	
-	protected abstract HttpConnectorSpring<ITEM> getConnector();
-	
 	protected abstract void addPropertyEntries(List<PropertyEntry> entries);
 	
 	protected abstract void setTemplate(ITEM item);
 	
 	protected abstract void copy(ITEM from, ITEM to);
+	
+	protected abstract TableViewSpring<ITEM> getTable();
+	
+	public final HttpConnectorSpring<ITEM> getConnector() {
+		return getTable().getConnector();
+	}
 	
 	protected void initDefaultValues() {
 		rightNodes.forEach(node -> {
@@ -142,9 +147,9 @@ public abstract class AddEditController<ITEM extends DatabasePersistent> {
 		if (item != null)
 			setTemplate(item);
 		applyButton.setOnAction(event -> {
-			ITEM item2 = createItem();
-			copy(item2,item);
-			getConnector().update(item);
+			ITEM newItem = createItem();
+			this.getTable().getItems().add(newItem);
+			getConnector().create(newItem);
 			this.initDefaultValues();
 		});
 		applyButton.setText("Create");
@@ -168,7 +173,11 @@ public abstract class AddEditController<ITEM extends DatabasePersistent> {
 		applyButton.setOnAction(event -> {
 			ITEM item2 = createItem();
 			copy(item2,item);
+			
+			this.getTable().refresh();
 			getConnector().update(item);
+			
+			System.out.println(this.getTable().getFilterTable().toString());
 		});
 		
 		applyButton.setText("Save");

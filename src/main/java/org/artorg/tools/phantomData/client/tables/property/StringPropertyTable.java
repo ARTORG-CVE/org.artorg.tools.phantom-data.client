@@ -14,7 +14,7 @@ public class StringPropertyTable extends TableViewSpring<StringProperty> {
 	
 	@Override
 	public AddEditController<StringProperty> createAddEditController() {
-		return new AddStringPropertyController();
+		return new AddStringPropertyController(this);
 	}
 
 }

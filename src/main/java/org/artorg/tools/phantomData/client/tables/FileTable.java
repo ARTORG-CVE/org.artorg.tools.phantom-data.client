@@ -14,7 +14,7 @@ public class FileTable extends TableViewSpring<PhantomFile> {
 	
 	@Override
 	public AddEditController<PhantomFile> createAddEditController() {
-		return new AddFileController();
+		return new AddFileController(this);
 	}
 
 }

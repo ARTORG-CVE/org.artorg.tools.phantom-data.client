@@ -2,14 +2,13 @@ package org.artorg.tools.phantomData.client.controllers.editTable;
 
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
 import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
 import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
-import org.artorg.tools.phantomData.client.connectors.PhantomConnector;
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.controller.AddEditController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
+import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
@@ -21,6 +20,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 public class AddPhantomController extends AddEditController<Phantom> {
+	private TableViewSpring<Phantom> table;
 	private Label labelIdValue;
     private ComboBox<AnnulusDiameter> comboBoxAnnulus;
     private ComboBox<FabricationType> comboBoxFabricationType;
@@ -37,6 +37,10 @@ public class AddPhantomController extends AddEditController<Phantom> {
 		textFieldModelNumber = new TextField();
 		
 		labelIdValue.setDisable(true);
+	}
+	
+	public AddPhantomController(TableViewSpring<Phantom> table) {
+		this.table = table;
 	}
 	
 	private void updateId() {
@@ -71,11 +75,6 @@ public class AddPhantomController extends AddEditController<Phantom> {
 	}
 
 	@Override
-	public HttpConnectorSpring<Phantom> getConnector() {
-		return PhantomConnector.get();
-	}
-
-	@Override
 	protected void addPropertyEntries(List<PropertyEntry> entries) {
 		createComboBoxes();
 		entries.add(new PropertyEntry("PID", labelIdValue));
@@ -97,16 +96,7 @@ public class AddPhantomController extends AddEditController<Phantom> {
 
 	@Override
 	protected void copy(Phantom from, Phantom to) {
-		
-		
 		to.setAnnulusDiameter(from.getAnnulusDiameter());
-		
-		to.setBooleanProperties(from.getBooleanProperties());
-		to.setDateProperties(from.getDateProperties());
-		to.setDoubleProperties(from.getDoubleProperties());
-		to.setIntegerProperties(from.getIntegerProperties());
-		to.setStringProperties(from.getStringProperties());
-		
 		to.setFabricationType(from.getFabricationType());
 		to.setFiles(from.getFiles());
 		to.setLiteratureBase(from.getLiteratureBase());
@@ -114,6 +104,16 @@ public class AddPhantomController extends AddEditController<Phantom> {
 		to.setProductId(from.getProductId());
 		to.setSpecial(from.getSpecial());
 		
+		to.setBooleanProperties(from.getBooleanProperties());
+		to.setDateProperties(from.getDateProperties());
+		to.setDoubleProperties(from.getDoubleProperties());
+		to.setIntegerProperties(from.getIntegerProperties());
+		to.setStringProperties(from.getStringProperties());
+	}
+	
+	@Override
+	protected TableViewSpring<Phantom> getTable() {
+		return table;
 	}
     
 }

@@ -14,7 +14,7 @@ public class BooleanPropertyTable extends TableViewSpring<BooleanProperty> {
 	
 	@Override
 	public AddEditController<BooleanProperty> createAddEditController() {
-		return new AddBooleanPropertyController();
+		return new AddBooleanPropertyController(this);
 	}
 
 }
