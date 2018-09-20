@@ -1,7 +1,7 @@
 package org.artorg.tools.phantomData.client.tables;
 
-import org.artorg.tools.phantomData.client.controller.AddEditController;
-import org.artorg.tools.phantomData.client.controllers.editTable.AddPhantomController;
+import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
+import org.artorg.tools.phantomData.client.controllers.editFactories.PhantomEditFactoryController;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.tables.filterable.PhantomFilterTable;
 import org.artorg.tools.phantomData.server.model.Phantom;
@@ -13,8 +13,8 @@ public class PhantomTable extends TableViewSpring<Phantom> {
 	}
 	
 	@Override
-	public AddEditController<Phantom> createAddEditController() {
-		return new AddPhantomController(this);
+	public ItemEditFactoryController<Phantom> createAddEditController() {
+		return new PhantomEditFactoryController(this);
 	}
 
 }

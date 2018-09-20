@@ -1,7 +1,7 @@
 package org.artorg.tools.phantomData.client.tables.property;
 
-import org.artorg.tools.phantomData.client.controller.AddEditController;
-import org.artorg.tools.phantomData.client.controllers.editTable.property.AddIntegerPropertyController;
+import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
+import org.artorg.tools.phantomData.client.controllers.editFactories.property.IntegerPropertyEditFactoryController;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.tables.filterable.property.IntegerPropertyFilterTable;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
@@ -13,8 +13,8 @@ public class IntegerPropertyTable extends TableViewSpring<IntegerProperty> {
 	}
 	
 	@Override
-	public AddEditController<IntegerProperty> createAddEditController() {
-		return new AddIntegerPropertyController(this);
+	public ItemEditFactoryController<IntegerProperty> createAddEditController() {
+		return new IntegerPropertyEditFactoryController(this);
 	}
 
 }

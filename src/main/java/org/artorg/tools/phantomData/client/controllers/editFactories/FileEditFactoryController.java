@@ -1,10 +1,12 @@
-package org.artorg.tools.phantomData.client.controllers.editTable;
+package org.artorg.tools.phantomData.client.controllers.editFactories;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.connectors.FileTypeConnector;
-import org.artorg.tools.phantomData.client.controller.AddEditController;
+import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
+import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
@@ -12,7 +14,7 @@ import org.artorg.tools.phantomData.server.model.PhantomFile;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 
-public class AddFileController extends AddEditController<PhantomFile> {
+public class FileEditFactoryController extends GroupedItemEditFactoryController<PhantomFile> {
 	private TableViewSpring<PhantomFile> table;
 	private TextField textFieldPath;
 	private TextField textFieldName;
@@ -26,7 +28,7 @@ public class AddFileController extends AddEditController<PhantomFile> {
 		comboBoxFileType = new ComboBox<FileType>();
 	}
 	
-	public AddFileController(TableViewSpring<PhantomFile> table) {
+	public FileEditFactoryController(TableViewSpring<PhantomFile> table) {
 		this.table = table;
 	}
 
@@ -38,15 +40,6 @@ public class AddFileController extends AddEditController<PhantomFile> {
 		FileType fileType = comboBoxFileType.getSelectionModel().getSelectedItem();
 		
 		return new PhantomFile(path, name, extension, fileType);
-	}
-
-	@Override
-	protected void addPropertyEntries(List<PropertyEntry> entries) {
-		createComboBox(comboBoxFileType, FileTypeConnector.get(), d -> String.valueOf(d.getName()));
-		entries.add(new PropertyEntry("Path", textFieldPath));
-		entries.add(new PropertyEntry("Name", textFieldName));
-		entries.add(new PropertyEntry("Extension", textFieldExtension));
-		entries.add(new PropertyEntry("File Type", comboBoxFileType));
 	}
 
 	@Override
@@ -68,6 +61,22 @@ public class AddFileController extends AddEditController<PhantomFile> {
 	@Override
 	protected TableViewSpring<PhantomFile> getTable() {
 		return table;
+	}
+
+	@Override
+	protected List<TitledPropertyPane> createProperties() {
+		List<TitledPropertyPane> panes = new ArrayList<TitledPropertyPane>();
+		
+		createComboBox(comboBoxFileType, FileTypeConnector.get(), d -> String.valueOf(d.getName()));
+		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
+		generalProperties.add(new PropertyEntry("Path", textFieldPath));
+		generalProperties.add(new PropertyEntry("Name", textFieldName));
+		generalProperties.add(new PropertyEntry("Extension", textFieldExtension));
+		generalProperties.add(new PropertyEntry("File Type", comboBoxFileType));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		panes.add(generalPane);
+		
+		return panes;
 	}
 
 }

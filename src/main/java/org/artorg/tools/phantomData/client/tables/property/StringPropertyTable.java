@@ -1,7 +1,7 @@
 package org.artorg.tools.phantomData.client.tables.property;
 
-import org.artorg.tools.phantomData.client.controller.AddEditController;
-import org.artorg.tools.phantomData.client.controllers.editTable.property.AddStringPropertyController;
+import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
+import org.artorg.tools.phantomData.client.controllers.editFactories.property.StringPropertyEditFactoryController;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.tables.filterable.property.StringPropertyFilterTable;
 import org.artorg.tools.phantomData.server.model.property.StringProperty;
@@ -13,8 +13,8 @@ public class StringPropertyTable extends TableViewSpring<StringProperty> {
 	}
 	
 	@Override
-	public AddEditController<StringProperty> createAddEditController() {
-		return new AddStringPropertyController(this);
+	public ItemEditFactoryController<StringProperty> createAddEditController() {
+		return new StringPropertyEditFactoryController(this);
 	}
 
 }

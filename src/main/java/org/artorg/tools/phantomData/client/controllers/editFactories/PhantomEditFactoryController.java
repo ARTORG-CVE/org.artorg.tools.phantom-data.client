@@ -1,13 +1,15 @@
-package org.artorg.tools.phantomData.client.controllers.editTable;
+package org.artorg.tools.phantomData.client.controllers.editFactories;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
 import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
 import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
-import org.artorg.tools.phantomData.client.controller.AddEditController;
+import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
+import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
@@ -19,7 +21,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-public class AddPhantomController extends AddEditController<Phantom> {
+public class PhantomEditFactoryController extends GroupedItemEditFactoryController<Phantom> {
 	private TableViewSpring<Phantom> table;
 	private Label labelIdValue;
     private ComboBox<AnnulusDiameter> comboBoxAnnulus;
@@ -39,7 +41,7 @@ public class AddPhantomController extends AddEditController<Phantom> {
 		labelIdValue.setDisable(true);
 	}
 	
-	public AddPhantomController(TableViewSpring<Phantom> table) {
+	public PhantomEditFactoryController(TableViewSpring<Phantom> table) {
 		this.table = table;
 	}
 	
@@ -75,17 +77,6 @@ public class AddPhantomController extends AddEditController<Phantom> {
 	}
 
 	@Override
-	protected void addPropertyEntries(List<PropertyEntry> entries) {
-		createComboBoxes();
-		entries.add(new PropertyEntry("PID", labelIdValue));
-		entries.add(new PropertyEntry("Annulus diameter [mm]", comboBoxAnnulus));
-		entries.add(new PropertyEntry("Fabrication Type", comboBoxFabricationType));
-		entries.add(new PropertyEntry("Literarure Base", comboBoxLiterature));
-		entries.add(new PropertyEntry("Special", comboBoxSpecials));
-		entries.add(new PropertyEntry("Phantom specific Number", textFieldModelNumber, () -> updateId()));
-	}
-
-	@Override
 	protected void setTemplate(Phantom item) {
 		super.selectComboBoxItem(comboBoxAnnulus, item.getAnnulusDiameter());
 		super.selectComboBoxItem(comboBoxFabricationType, item.getFabricationType());
@@ -114,6 +105,24 @@ public class AddPhantomController extends AddEditController<Phantom> {
 	@Override
 	protected TableViewSpring<Phantom> getTable() {
 		return table;
+	}
+
+	@Override
+	protected List<TitledPropertyPane> createProperties() {
+		List<TitledPropertyPane> panes = new ArrayList<TitledPropertyPane>();
+		
+		createComboBoxes();
+		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
+		generalProperties.add(new PropertyEntry("PID", labelIdValue));
+		generalProperties.add(new PropertyEntry("Annulus diameter [mm]", comboBoxAnnulus));
+		generalProperties.add(new PropertyEntry("Fabrication Type", comboBoxFabricationType));
+		generalProperties.add(new PropertyEntry("Literarure Base", comboBoxLiterature));
+		generalProperties.add(new PropertyEntry("Special", comboBoxSpecials));
+		generalProperties.add(new PropertyEntry("Phantom specific Number", textFieldModelNumber, () -> updateId()));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		panes.add(generalPane);
+		
+		return panes;
 	}
     
 }

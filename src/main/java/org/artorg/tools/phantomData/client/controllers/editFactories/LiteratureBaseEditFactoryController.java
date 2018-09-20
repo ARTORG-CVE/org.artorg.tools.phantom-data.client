@@ -1,15 +1,17 @@
-package org.artorg.tools.phantomData.client.controllers.editTable;
+package org.artorg.tools.phantomData.client.controllers.editFactories;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.controller.AddEditController;
+import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
+import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 
 import javafx.scene.control.TextField;
 
-public class AddLiteratureBaseController extends AddEditController<LiteratureBase> {
+public class LiteratureBaseEditFactoryController extends GroupedItemEditFactoryController<LiteratureBase> {
 	private TableViewSpring<LiteratureBase> table;
 	private TextField textFieldShortcut;
 	private TextField textFieldValue;
@@ -19,14 +21,8 @@ public class AddLiteratureBaseController extends AddEditController<LiteratureBas
 		textFieldValue = new TextField();
 	}
 	
-	public AddLiteratureBaseController(TableViewSpring<LiteratureBase> table) {
+	public LiteratureBaseEditFactoryController(TableViewSpring<LiteratureBase> table) {
 		this.table = table;
-	}
-	
-	@Override
-	protected void addPropertyEntries(List<PropertyEntry> entries) {
-		entries.add(new PropertyEntry("Shortcut", textFieldShortcut));
-		entries.add(new PropertyEntry("Name", textFieldValue));
 	}
 
 	@Override
@@ -51,6 +47,19 @@ public class AddLiteratureBaseController extends AddEditController<LiteratureBas
 	@Override
 	protected TableViewSpring<LiteratureBase> getTable() {
 		return table;
+	}
+
+	@Override
+	protected List<TitledPropertyPane> createProperties() {
+		List<TitledPropertyPane> panes = new ArrayList<TitledPropertyPane>();
+		
+		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
+		generalProperties.add(new PropertyEntry("Shortcut", textFieldShortcut));
+		generalProperties.add(new PropertyEntry("Name", textFieldValue));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		panes.add(generalPane);
+		
+		return panes;
 	}
 
 }

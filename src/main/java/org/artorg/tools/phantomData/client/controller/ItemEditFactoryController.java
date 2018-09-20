@@ -1,6 +1,5 @@
 package org.artorg.tools.phantomData.client.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -11,10 +10,8 @@ import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -26,18 +23,13 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.util.Callback;
 
-public abstract class AddEditController<ITEM extends DatabasePersistent> {
+public abstract class ItemEditFactoryController<ITEM extends DatabasePersistent> {
 	private GridPane gridPane;
-	private Button applyButton;
+	protected Button applyButton;
 	private int nRows = 0;
 	private List<Node> rightNodes;
 	
@@ -48,13 +40,17 @@ public abstract class AddEditController<ITEM extends DatabasePersistent> {
 	
 	public abstract ITEM createItem();
 	
-	protected abstract void addPropertyEntries(List<PropertyEntry> entries);
-	
 	protected abstract void setTemplate(ITEM item);
 	
 	protected abstract void copy(ITEM from, ITEM to);
 	
 	protected abstract TableViewSpring<ITEM> getTable();
+	
+	protected abstract AnchorPane createRootPane();
+	
+	protected abstract void addProperties();
+	
+	protected abstract List<PropertyEntry> getPropertyEntries();
 	
 	public final HttpConnectorSpring<ITEM> getConnector() {
 		return getTable().getConnector();
@@ -141,11 +137,10 @@ public abstract class AddEditController<ITEM extends DatabasePersistent> {
     }
     
     public AnchorPane create(ITEM item) {
-    	List<PropertyEntry> entries = new ArrayList<PropertyEntry>();
-		addPropertyEntries(entries); 
-		createRightNodes(entries);
+		addProperties(); 
+		createRightNodes(getPropertyEntries());
 		initDefaultValues();
-		AnchorPane pane = create(entries, item);
+		AnchorPane pane = createRootPane();
 		if (item != null)
 			setTemplate(item);
 		applyButton.setOnAction(event -> {
@@ -158,17 +153,16 @@ public abstract class AddEditController<ITEM extends DatabasePersistent> {
 		return pane;
     }
     
-    public AnchorPane edit(ITEM item) {
-    	List<PropertyEntry> entries = new ArrayList<PropertyEntry>(); 
+    public AnchorPane edit(ITEM item) { 
     	Label label = new Label();
     	label.setText(item.getId().toString());
     	label.setDisable(true);
     	PropertyEntry idEntry = new PropertyEntry("Id", label);
-    	entries.add(idEntry);
-		addPropertyEntries(entries); 
-		createRightNodes(entries);
+    	getPropertyEntries().add(idEntry);
+		addProperties(); 
+		createRightNodes(getPropertyEntries());
 		initDefaultValues();
-		AnchorPane pane = create(entries, item);
+		AnchorPane pane = createRootPane();
 		if (item != null)
 			setTemplate(item);
 
@@ -188,81 +182,16 @@ public abstract class AddEditController<ITEM extends DatabasePersistent> {
     	rightNodes = entries.stream().map(e -> e.getRightNode()).collect(Collectors.toList());
     }
     
-    private AnchorPane create(List<PropertyEntry> entries, ITEM item) {
-    	nRows = entries.size();
-    	for (int row=0; row<entries.size(); row++) {
-    		Control rightNode = entries.get(row).getRightNode();
-    		gridPane.add(entries.get(row).getLeftNode(), 0, row, 1, 1);
-    		gridPane.add(rightNode, 1, row, 1, 1);
-    		GridPane.setHgrow(rightNode, Priority.ALWAYS);
-    		rightNode.setMaxWidth(Double.MAX_VALUE);
-    	}
-    	
-    	final RowConstraints row = new RowConstraints();
-    	row.setVgrow(Priority.NEVER);
-    	row.setPrefHeight(30.0);
-    	row.setMinHeight(30.0);
-    	List<RowConstraints> rowConstraints = new ArrayList<RowConstraints>();
-    	for (int i=0; i<nRows; i++)
-    		rowConstraints.add(row);        
-        gridPane.getRowConstraints().addAll(rowConstraints);
-    	
-        final ColumnConstraints col1 = new ColumnConstraints();
-    	col1.setHgrow(Priority.ALWAYS);
-        final ColumnConstraints col2 = new ColumnConstraints();
-        col2.setMaxWidth(Double.MAX_VALUE);
-    	col2.setHgrow(Priority.ALWAYS);
-    	col2.setFillWidth(true);
-    	col2.setMaxWidth(Double.MAX_VALUE);
-    	col2.setHalignment(HPos.RIGHT);
-    	gridPane.getColumnConstraints().addAll(col1, col2);
-        
-    	Platform.runLater(() -> {
-    		try {
-	    		double textWidth = 0;
-	    		for (int i=0; i<nRows; i++) {
-	    			Text text = new Text(((Label)gridPane.getChildren().get(2*i)).getText());
-	    			text.applyCss();
-	    			double width = text.getLayoutBounds().getWidth();
-	    			if (width > textWidth) textWidth = width;
-	    		}
-	    		
-	    		col1.setMinWidth(textWidth+5.0);
-	    		col1.setPrefWidth(textWidth+10.0);
-	    		col1.setMaxWidth(textWidth+45.0);
-	    		
-	    		textWidth = 0;
-	    		for (int i=0; i<nRows; i++) {
-	    			double width = gridPane.getChildren().get(2*i+1).getLayoutBounds().getWidth();
-	    			if (width > textWidth) textWidth = width;
-	    		}
-	    		
-	    		col2.setPrefWidth(textWidth+25.0);
-    		} catch (Exception e) {
-    			e.printStackTrace();
-    		}
-    		
-		});
-    	
-        AnchorPane rootPane = new AnchorPane();
-		VBox vBox = new VBox();
-		rootPane.getChildren().add(vBox);
-		vBox.getChildren().add(gridPane);
-		
-		Pane spacePane = new Pane(); 
-		spacePane.setPrefHeight(10.0);
-		vBox.getChildren().add(spacePane);
-		
-		
-		applyButton.setMaxWidth(Double.MAX_VALUE);
-		
-		VBox.setVgrow(applyButton, Priority.ALWAYS);
-		vBox.getChildren().add(applyButton);
-		
-		FxUtil.setAnchorZero(vBox);
-		rootPane.setPadding(new Insets(10, 10, 10, 10));
-		
-		return rootPane;
+    protected AnchorPane createButtonPane(Button button) {
+    	button.setPrefHeight(25.0);
+    	button.setMaxWidth(Double.MAX_VALUE);
+		AnchorPane buttonPane = new AnchorPane();
+		buttonPane.setPrefHeight(button.getPrefHeight()+20);
+		buttonPane.setMaxHeight(buttonPane.getPrefHeight());
+		buttonPane.setPadding(new Insets(10, 10, 10, 10));
+		buttonPane.getChildren().add(button);
+		FxUtil.setAnchorZero(button);
+		return buttonPane;
     }
     
     public GridPane getGridPane() {
@@ -272,4 +201,5 @@ public abstract class AddEditController<ITEM extends DatabasePersistent> {
     protected void setGridPane(GridPane gridPane) {
     	this.gridPane = gridPane;
     }
+    
 }

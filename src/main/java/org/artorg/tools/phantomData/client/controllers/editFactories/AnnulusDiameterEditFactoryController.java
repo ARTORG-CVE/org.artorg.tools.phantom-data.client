@@ -1,16 +1,18 @@
-package org.artorg.tools.phantomData.client.controllers.editTable;
+package org.artorg.tools.phantomData.client.controllers.editFactories;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.controller.AddEditController;
+import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
+import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-public class AddAnnulusDiameterController extends AddEditController<AnnulusDiameter> {
+public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactoryController<AnnulusDiameter> {
 	private TableViewSpring<AnnulusDiameter> table;
 	private Label labelShortcut;
 	private TextField textFieldValue;
@@ -21,7 +23,7 @@ public class AddAnnulusDiameterController extends AddEditController<AnnulusDiame
 		labelShortcut.setDisable(true);
 	}
 	
-	public AddAnnulusDiameterController(TableViewSpring<AnnulusDiameter> table) {
+	public AnnulusDiameterEditFactoryController(TableViewSpring<AnnulusDiameter> table) {
 		this.table = table;
 	}
 
@@ -46,12 +48,6 @@ public class AddAnnulusDiameterController extends AddEditController<AnnulusDiame
 	}
 
 	@Override
-	protected void addPropertyEntries(List<PropertyEntry> entries) {
-		entries.add(new PropertyEntry("Shortcut [mm]", labelShortcut));
-		entries.add(new PropertyEntry("Diameter [mm]", textFieldValue, () -> updateLabel()));
-	}
-
-	@Override
 	protected void setTemplate(AnnulusDiameter item) {
 		textFieldValue.setText(Double.toString(item.getValue()));
 		updateLabel();
@@ -66,6 +62,19 @@ public class AddAnnulusDiameterController extends AddEditController<AnnulusDiame
 	@Override
 	protected TableViewSpring<AnnulusDiameter> getTable() {
 		return table;
+	}
+
+	@Override
+	protected List<TitledPropertyPane> createProperties() {
+		List<TitledPropertyPane> panes = new ArrayList<TitledPropertyPane>();
+		
+		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
+		generalProperties.add(new PropertyEntry("Shortcut [mm]", labelShortcut));
+		generalProperties.add(new PropertyEntry("Diameter [mm]", textFieldValue, () -> updateLabel()));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		panes.add(generalPane);
+		
+		return panes;
 	}
 
 }

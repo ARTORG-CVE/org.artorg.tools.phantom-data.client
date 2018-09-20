@@ -1,15 +1,17 @@
-package org.artorg.tools.phantomData.client.controllers.editTable;
+package org.artorg.tools.phantomData.client.controllers.editFactories;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.controller.AddEditController;
+import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
+import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.server.model.Special;
 
 import javafx.scene.control.TextField;
 
-public class AddSpecialController extends AddEditController<Special> {
+public class SpecialEditFactoryController extends GroupedItemEditFactoryController<Special> {
 	private TableViewSpring<Special> table;
 	private TextField textFieldShortcut; 
 	
@@ -17,7 +19,7 @@ public class AddSpecialController extends AddEditController<Special> {
 		textFieldShortcut = new TextField();
 	}
 	
-	public AddSpecialController(TableViewSpring<Special> table) {
+	public SpecialEditFactoryController(TableViewSpring<Special> table) {
 		this.table = table;
 	}
 
@@ -25,11 +27,6 @@ public class AddSpecialController extends AddEditController<Special> {
 	public Special createItem() {
 		String shortcut = textFieldShortcut.getText();
 		return new Special(shortcut);
-	}
-
-	@Override
-	protected void addPropertyEntries(List<PropertyEntry> entries) {
-		entries.add(new PropertyEntry("Shortcut", textFieldShortcut));
 	}
 
 	@Override
@@ -51,6 +48,18 @@ public class AddSpecialController extends AddEditController<Special> {
 	@Override
 	protected TableViewSpring<Special> getTable() {
 		return table;
+	}
+
+	@Override
+	protected List<TitledPropertyPane> createProperties() {
+		List<TitledPropertyPane> panes = new ArrayList<TitledPropertyPane>();
+		
+		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
+		generalProperties.add(new PropertyEntry("Shortcut", textFieldShortcut));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		panes.add(generalPane);
+		
+		return panes;
 	}
 
 }

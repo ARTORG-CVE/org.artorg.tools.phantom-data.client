@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
-import org.artorg.tools.phantomData.client.controller.AddEditController;
+import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
@@ -42,7 +42,7 @@ public abstract class TableViewSpring<ITEM extends DatabasePersistent> extends T
 		};
 	}
 	
-	public abstract AddEditController<ITEM> createAddEditController();
+	public abstract ItemEditFactoryController<ITEM> createAddEditController();
 	
 	public HttpConnectorSpring<ITEM> getConnector() {
 		return filterTable.getConnector();

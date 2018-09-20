@@ -1,7 +1,7 @@
 package org.artorg.tools.phantomData.client.tables;
 
-import org.artorg.tools.phantomData.client.controller.AddEditController;
-import org.artorg.tools.phantomData.client.controllers.editTable.AddFileTypeController;
+import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
+import org.artorg.tools.phantomData.client.controllers.editFactories.FileTypeEditFactoryController;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.tables.filterable.FileTypeFilterTable;
 import org.artorg.tools.phantomData.server.model.FileType;
@@ -13,8 +13,8 @@ public class FileTypeTable extends TableViewSpring<FileType> {
 	}
 	
 	@Override
-	public AddEditController<FileType> createAddEditController() {
-		return new AddFileTypeController(this);
+	public ItemEditFactoryController<FileType> createAddEditController() {
+		return new FileTypeEditFactoryController(this);
 	}
 
 }

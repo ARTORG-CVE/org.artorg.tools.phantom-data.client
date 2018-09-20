@@ -1,6 +1,6 @@
 package org.artorg.tools.phantomData.client.scene.control;
 
-import org.artorg.tools.phantomData.client.controller.AddEditController;
+import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.scene.control.table.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.util.FxUtil;
@@ -47,13 +47,13 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 				});
 				MenuItem editItem = new MenuItem("Edit item");
 				editItem.setOnAction(event -> {
-					AddEditController<ITEM> controller = tableViewSpring.createAddEditController();
+					ItemEditFactoryController<ITEM> controller = tableViewSpring.createAddEditController();
 					AnchorPane node = controller.edit(row.getItem());
 					mainSplitPane.addNewItemTab(node, "Edit " + tableViewSpring.getFilterTable().getItemName());
 				});
 				MenuItem addItem = new MenuItem("Add item");
 				addItem.setOnAction(event -> {
-					AddEditController<ITEM> controller = tableViewSpring.createAddEditController();
+					ItemEditFactoryController<ITEM> controller = tableViewSpring.createAddEditController();
 					AnchorPane node = controller.create(row.getItem());
 					mainSplitPane.addNewItemTab(node, "Add " + tableViewSpring.getFilterTable().getItemName());
 				});
@@ -73,7 +73,7 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 		ContextMenu contextMenu = new ContextMenu();
 		MenuItem editItem = new MenuItem("Add item");
 		editItem.setOnAction(event -> {
-			AddEditController<ITEM> controller = tableViewSpring.createAddEditController();
+			ItemEditFactoryController<ITEM> controller = tableViewSpring.createAddEditController();
 			AnchorPane node = controller.create();
 			mainSplitPane.addNewItemTab(node, "Add " + tableViewSpring.getFilterTable().getItemName());
 		});

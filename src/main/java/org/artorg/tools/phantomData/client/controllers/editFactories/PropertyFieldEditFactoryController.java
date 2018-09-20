@@ -1,15 +1,17 @@
-package org.artorg.tools.phantomData.client.controllers.editTable;
+package org.artorg.tools.phantomData.client.controllers.editFactories;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.controller.AddEditController;
+import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
+import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 import javafx.scene.control.TextField;
 
-public class AddPropertyFieldController extends AddEditController<PropertyField>{
+public class PropertyFieldEditFactoryController extends GroupedItemEditFactoryController<PropertyField>{
 	private TableViewSpring<PropertyField> table;
 	private TextField textFielName;
 	private TextField textFieldDescription;
@@ -19,14 +21,8 @@ public class AddPropertyFieldController extends AddEditController<PropertyField>
 		textFieldDescription = new TextField();
 	}
 	
-	public AddPropertyFieldController(TableViewSpring<PropertyField> table) {
+	public PropertyFieldEditFactoryController(TableViewSpring<PropertyField> table) {
 		this.table = table;
-	}
-	
-	@Override
-	protected void addPropertyEntries(List<PropertyEntry> entries) {
-		entries.add(new PropertyEntry("Name", textFielName));
-		entries.add(new PropertyEntry("Description", textFieldDescription));
 	}
 
 	@Override
@@ -51,6 +47,19 @@ public class AddPropertyFieldController extends AddEditController<PropertyField>
 	@Override
 	protected TableViewSpring<PropertyField> getTable() {
 		return table;
+	}
+
+	@Override
+	protected List<TitledPropertyPane> createProperties() {
+		List<TitledPropertyPane> panes = new ArrayList<TitledPropertyPane>();
+		
+		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
+		generalProperties.add(new PropertyEntry("Name", textFielName));
+		generalProperties.add(new PropertyEntry("Description", textFieldDescription));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		panes.add(generalPane);
+		
+		return panes;
 	}
 
 }
