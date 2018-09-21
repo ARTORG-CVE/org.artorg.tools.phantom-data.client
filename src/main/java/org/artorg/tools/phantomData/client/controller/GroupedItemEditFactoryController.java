@@ -6,29 +6,31 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 public abstract class GroupedItemEditFactoryController<ITEM extends DatabasePersistent> extends ItemEditFactoryController<ITEM> {
-	private List<TitledPropertyPane> panes;
+	private List<TitledPane> panes;
 	private List<PropertyEntry> entries;
 	
 	{
-		panes = new ArrayList<TitledPropertyPane>();
+		panes = new ArrayList<TitledPane>();
 		entries = new ArrayList<PropertyEntry>();
 	}
 	
-	protected abstract List<TitledPropertyPane> createProperties();
+	protected abstract List<TitledPane> createGroupedProperties();
 	
 	@Override
 	protected void addProperties() {
-		panes.addAll(createProperties());
-		panes.stream().forEach(p -> entries.addAll(p.getEntries()));
+		panes.addAll(createGroupedProperties());
+		panes.stream().filter(p -> p instanceof TitledPropertyPane)
+			.forEach(p -> entries.addAll(((TitledPropertyPane)p).getEntries()));
 	}
 	
 	@Override
-	protected List<PropertyEntry> getPropertyEntries() {
+	public List<PropertyEntry> getPropertyEntries() {
 		return entries;
 	}
 	

@@ -13,6 +13,7 @@ import org.artorg.tools.phantomData.server.model.PhantomFile;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 
 public class FileEditFactoryController extends GroupedItemEditFactoryController<PhantomFile> {
 	private TableViewSpring<PhantomFile> table;
@@ -64,8 +65,8 @@ public class FileEditFactoryController extends GroupedItemEditFactoryController<
 	}
 
 	@Override
-	protected List<TitledPropertyPane> createProperties() {
-		List<TitledPropertyPane> panes = new ArrayList<TitledPropertyPane>();
+	protected List<TitledPane> createGroupedProperties() {
+		List<TitledPane> panes = new ArrayList<TitledPane>();
 		
 		createComboBox(comboBoxFileType, FileTypeConnector.get(), d -> String.valueOf(d.getName()));
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();

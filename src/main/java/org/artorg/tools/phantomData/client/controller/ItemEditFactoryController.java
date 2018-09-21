@@ -50,7 +50,7 @@ public abstract class ItemEditFactoryController<ITEM extends DatabasePersistent>
 	
 	protected abstract void addProperties();
 	
-	protected abstract List<PropertyEntry> getPropertyEntries();
+	public abstract List<PropertyEntry> getPropertyEntries();
 	
 	public final HttpConnectorSpring<ITEM> getConnector() {
 		return getTable().getConnector();

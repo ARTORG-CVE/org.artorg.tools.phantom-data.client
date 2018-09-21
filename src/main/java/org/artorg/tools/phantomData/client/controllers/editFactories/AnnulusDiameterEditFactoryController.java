@@ -11,6 +11,7 @@ import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 
 public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactoryController<AnnulusDiameter> {
 	private TableViewSpring<AnnulusDiameter> table;
@@ -65,8 +66,8 @@ public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactory
 	}
 
 	@Override
-	protected List<TitledPropertyPane> createProperties() {
-		List<TitledPropertyPane> panes = new ArrayList<TitledPropertyPane>();
+	protected List<TitledPane> createGroupedProperties() {
+		List<TitledPane> panes = new ArrayList<TitledPane>();
 		
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
 		generalProperties.add(new PropertyEntry("Shortcut [mm]", labelShortcut));

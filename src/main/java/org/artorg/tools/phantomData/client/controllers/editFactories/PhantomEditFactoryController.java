@@ -5,21 +5,31 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
 import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
+import org.artorg.tools.phantomData.client.connectors.FileConnector;
 import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.scene.control.table.ListViewEditFactory;
+import org.artorg.tools.phantomData.client.scene.control.table.TableViewEditFactory;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
+import org.artorg.tools.phantomData.client.tables.FileTable;
+import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.Phantom;
+import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.model.Special;
 
+import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 
 public class PhantomEditFactoryController extends GroupedItemEditFactoryController<Phantom> {
 	private TableViewSpring<Phantom> table;
@@ -108,8 +118,8 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 	}
 
 	@Override
-	protected List<TitledPropertyPane> createProperties() {
-		List<TitledPropertyPane> panes = new ArrayList<TitledPropertyPane>();
+	protected List<TitledPane> createGroupedProperties() {
+		List<TitledPane> panes = new ArrayList<TitledPane>();
 		
 		createComboBoxes();
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
@@ -121,6 +131,22 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 		generalProperties.add(new PropertyEntry("Phantom specific Number", textFieldModelNumber, () -> updateId()));
 		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 		panes.add(generalPane);
+		
+
+		AnchorPane pane = new AnchorPane();
+		VBox vBox = new VBox();
+		TableViewEditFactory<PhantomFile> fileEditTable = new TableViewEditFactory<PhantomFile>();
+//		ListViewEditFactory<PhantomFile> fileEditTable = new ListViewEditFactory<PhantomFile>();
+		fileEditTable.setItems(FileConnector.get().readAllAsSet());
+		vBox.getChildren().add(fileEditTable);
+		
+		FxUtil.addToAnchorPane(pane, vBox);
+		
+		TitledPane filePane = new TitledPane();
+		filePane.setText("Files");
+		filePane.setContent(pane);
+		panes.add(filePane);
+		
 		
 		return panes;
 	}

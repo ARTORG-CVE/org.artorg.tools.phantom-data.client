@@ -10,6 +10,7 @@ import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 
 public class FabricationTypeEditFactoryController extends GroupedItemEditFactoryController<FabricationType> {
 	private TableViewSpring<FabricationType> table;
@@ -50,8 +51,8 @@ public class FabricationTypeEditFactoryController extends GroupedItemEditFactory
 	}
 
 	@Override
-	protected List<TitledPropertyPane> createProperties() {
-		List<TitledPropertyPane> panes = new ArrayList<TitledPropertyPane>();
+	protected List<TitledPane> createGroupedProperties() {
+		List<TitledPane> panes = new ArrayList<TitledPane>();
 		
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
 		generalProperties.add(new PropertyEntry("Shortcut", textFieldShortcut));

@@ -10,6 +10,7 @@ import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.server.model.FileType;
 
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 
 public class FileTypeEditFactoryController extends GroupedItemEditFactoryController<FileType> {
 	private TableViewSpring<FileType> table;
@@ -44,8 +45,8 @@ public class FileTypeEditFactoryController extends GroupedItemEditFactoryControl
 	}
 	
 	@Override
-	protected List<TitledPropertyPane> createProperties() {
-		List<TitledPropertyPane> panes = new ArrayList<TitledPropertyPane>();
+	protected List<TitledPane> createGroupedProperties() {
+		List<TitledPane> panes = new ArrayList<TitledPane>();
 		
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
 		generalProperties.add(new PropertyEntry("Name", textFieldName));

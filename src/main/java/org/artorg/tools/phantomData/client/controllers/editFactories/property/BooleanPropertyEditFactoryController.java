@@ -13,6 +13,7 @@ import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TitledPane;
 
 public class BooleanPropertyEditFactoryController extends GroupedItemEditFactoryController<BooleanProperty> {
 	private TableViewSpring<BooleanProperty> table;
@@ -53,8 +54,8 @@ public class BooleanPropertyEditFactoryController extends GroupedItemEditFactory
 	}
 	
 	@Override
-	protected List<TitledPropertyPane> createProperties() {
-		List<TitledPropertyPane> panes = new ArrayList<TitledPropertyPane>();
+	protected List<TitledPane> createGroupedProperties() {
+		List<TitledPane> panes = new ArrayList<TitledPane>();
 		
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
 		createComboBox(comboBoxPropertyField, PropertyFieldConnector.get(), d -> String.valueOf(d.getName()));
