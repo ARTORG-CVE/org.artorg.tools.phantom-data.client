@@ -4,7 +4,8 @@ import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
-import static huma.io.IOutil.*;
+
+import static org.artorg.tools.phantomData.client.io.IOutil.*;
 
 public class FxUtil {
 	private static Class<?> mainClass;
