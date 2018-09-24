@@ -30,7 +30,7 @@ public class LiteratureBaseConnector extends HttpConnectorSpring<LiteratureBase>
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent> getModelClass() {
+	public Class<LiteratureBase> getModelClass() {
 		return LiteratureBase.class;
 	}
 	

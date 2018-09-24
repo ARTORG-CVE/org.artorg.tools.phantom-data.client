@@ -31,7 +31,7 @@ public class DoublePropertyConnector extends HttpConnectorSpring<DoubleProperty>
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent> getModelClass() {
+	public Class<DoubleProperty> getModelClass() {
 		return DoubleProperty.class;
 	}
 

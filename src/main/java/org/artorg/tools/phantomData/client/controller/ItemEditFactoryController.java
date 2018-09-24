@@ -1,13 +1,17 @@
 package org.artorg.tools.phantomData.client.controller;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
+import org.artorg.tools.phantomData.client.scene.control.TitledTableViewSelector;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.client.util.Reflect;
+import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.beans.value.ChangeListener;
@@ -147,6 +151,19 @@ public abstract class ItemEditFactoryController<ITEM extends DatabasePersistent>
 			setTemplate(item);
 		applyButton.setOnAction(event -> {
 			ITEM newItem = createItem();
+			
+			
+			
+			
+			TitledTableViewSelector titledSelector =
+					new TitledTableViewSelector(getTable().getFilterTable().getTableName(), item, PhantomFile.class);			
+			Method m = Reflect.getMethodByGenericParamtype(item, PhantomFile.class);
+			Object args = titledSelector.getSelector().getSelectedItems(); 
+			Function<ITEM, Object> selectedFilesSetter = Reflect.compileFunctional(m, args); 
+			selectedFilesSetter.apply(newItem);	
+			
+			
+			
 			setSelectedChildItems(newItem);
 			this.getTable().getItems().add(newItem);
 			getConnector().create(newItem);

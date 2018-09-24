@@ -69,7 +69,7 @@ public abstract class HttpConnectorSpring<T extends DatabasePersistent> {
 	
 	public abstract Class<?> getControllerClass();
 	public abstract Class<?> getArrayModelClass();
-	public abstract Class<? extends DatabasePersistent> getModelClass();
+	public abstract Class<T> getModelClass();
 	
 	public final String getAnnoStringControlClass() {return annoStringControlClass;}
 	public final String getAnnoStringRead() {return annoStringRead;}
@@ -210,7 +210,6 @@ public abstract class HttpConnectorSpring<T extends DatabasePersistent> {
 		return readById(t.getId());
 	}
 	
-	@SuppressWarnings("unchecked")
 	public T readById(UUID id) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);

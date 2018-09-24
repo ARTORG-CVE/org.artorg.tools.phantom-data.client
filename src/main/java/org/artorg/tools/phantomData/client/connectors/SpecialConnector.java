@@ -30,7 +30,7 @@ public class SpecialConnector extends HttpConnectorSpring<Special> {
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent> getModelClass() {
+	public Class<Special> getModelClass() {
 		return Special.class;
 	}
 	

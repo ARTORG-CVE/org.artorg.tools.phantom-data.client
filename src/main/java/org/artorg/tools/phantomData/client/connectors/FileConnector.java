@@ -30,7 +30,7 @@ public class FileConnector extends HttpConnectorSpring<PhantomFile> {
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent> getModelClass() {
+	public Class<PhantomFile> getModelClass() {
 		return PhantomFile.class;
 	}
 	

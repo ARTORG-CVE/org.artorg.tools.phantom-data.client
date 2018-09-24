@@ -30,7 +30,7 @@ public class PropertyFieldConnector extends HttpConnectorSpring<PropertyField> {
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent> getModelClass() {
+	public Class<PropertyField> getModelClass() {
 		return PropertyField.class;
 	}
 

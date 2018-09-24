@@ -31,7 +31,7 @@ public class IntegerPropertyConnector extends HttpConnectorSpring<IntegerPropert
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent> getModelClass() {
+	public Class<IntegerProperty> getModelClass() {
 		return IntegerProperty.class;
 	}
 

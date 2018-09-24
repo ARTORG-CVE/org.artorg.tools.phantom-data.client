@@ -25,7 +25,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
-public class SplittedTableViewSelector<ITEM extends DatabasePersistent & Comparable<ITEM>> extends SplitPane {
+public class TableViewSelector<ITEM extends DatabasePersistent & Comparable<ITEM>> extends SplitPane {
 	private TableView<ITEM> tableView1;
 	private TableView<ITEM> tableView2;
 	private SplitPane splitPane;

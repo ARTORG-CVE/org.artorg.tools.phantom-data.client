@@ -30,7 +30,7 @@ public class FileTypeConnector extends HttpConnectorSpring<FileType> {
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent> getModelClass() {
+	public Class<FileType> getModelClass() {
 		return FileType.class;
 	}
 

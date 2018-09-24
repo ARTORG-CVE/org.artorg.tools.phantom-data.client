@@ -2,31 +2,65 @@ package org.artorg.tools.phantomData.client.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Reflect {
 
-	
+	public static <T> Function<T, Object> compileFunctional(Method m, Object... args) {
+		return o -> {
+			try {
+				return m.invoke(o, args);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
+			return null;
+		};
+	}
+
+	public static Method getMethodByGenericReturnType(Object item, Class<?> genericReturnType) {
+		List<Method> selectedMethods = Arrays.asList(item.getClass().getMethods()).stream()
+				.filter(m -> m.getParameterTypes().length == 0)
+				.filter(m -> Collection.class.isAssignableFrom(m.getReturnType()))
+				.filter(m -> Reflect.getGenericReturnTypeClass(m) == genericReturnType).collect(Collectors.toList());
+		if (selectedMethods.size() != 1)
+			throw new IllegalArgumentException();
+		return selectedMethods.get(0);
+	}
+
+	public static Method getMethodByGenericParamtype(Object item, Class<?> genericParamtype) {
+		List<Method> selectedMethods = Arrays.asList(item.getClass().getMethods()).stream()
+				.filter(m -> m.getGenericParameterTypes().length == 1).filter(m -> {
+					Type type = m.getGenericParameterTypes()[0];
+					Class<?> clazz = Reflect.getGenericTypeClass(type);
+					return clazz == genericParamtype;
+				}).collect(Collectors.toList());
+		if (selectedMethods.size() != 1)
+			throw new IllegalArgumentException();
+		return selectedMethods.get(0);
+	}
+
 	public static boolean isStatic(Method m) {
 		return Modifier.isStatic(m.getModifiers());
 	}
-	
-	
+
 	public static Class<?> getGenericReturnTypeClass(Method m) {
 		return getGenericTypeClass(m.getGenericReturnType());
 	}
-	
-	
+
 	public static Class<?> getGenericTypeClass(Type type) {
 		try {
 			ParameterizedType paramType = (ParameterizedType) type;
@@ -34,17 +68,15 @@ public class Reflect {
 			if (argTypes.length > 0)
 				if (argTypes[0] instanceof Class)
 					return ((Class<?>) argTypes[0]);
-		} catch (Exception e) {
-		}
+		} catch (Exception e) {}
 		return null;
 	}
-	
+
 	public static List<Class<?>> getSubclasses(Class<?> clazz, String packageName) {
 		List<Class<?>> classes = getClasses(packageName);
 		return classes.stream().filter(c -> clazz.isAssignableFrom(c)).filter(c -> c != clazz)
 				.collect(Collectors.toList());
 	}
-	
 
 	/**
 	 * Scans all classes accessible from the context class loader which belong to

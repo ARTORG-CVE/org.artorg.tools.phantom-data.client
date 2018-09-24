@@ -30,7 +30,7 @@ public class FabricationTypeConnector extends HttpConnectorSpring<FabricationTyp
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent> getModelClass() {
+	public Class<FabricationType> getModelClass() {
 		return FabricationType.class;
 	}
 	

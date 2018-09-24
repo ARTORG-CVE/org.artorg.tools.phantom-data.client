@@ -31,7 +31,7 @@ public class DatePropertyConnector extends HttpConnectorSpring<DateProperty> {
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent> getModelClass() {
+	public Class<DateProperty> getModelClass() {
 		return DateProperty.class;
 	}
 	

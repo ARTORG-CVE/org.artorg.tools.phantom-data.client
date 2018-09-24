@@ -31,7 +31,7 @@ public class StringPropertyConnector extends HttpConnectorSpring<StringProperty>
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent> getModelClass() {
+	public Class<StringProperty> getModelClass() {
 		return StringProperty.class;
 	}
 

@@ -30,7 +30,7 @@ public class PhantomConnector extends HttpConnectorSpring<Phantom> {
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent> getModelClass() {
+	public Class<Phantom> getModelClass() {
 		return Phantom.class;
 	}	
 

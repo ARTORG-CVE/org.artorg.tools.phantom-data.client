@@ -29,7 +29,7 @@ public class AnnulusDiameterConnector extends HttpConnectorSpring<AnnulusDiamete
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent> getModelClass() {
+	public Class<AnnulusDiameter> getModelClass() {
 		return AnnulusDiameter.class;
 	}
 	

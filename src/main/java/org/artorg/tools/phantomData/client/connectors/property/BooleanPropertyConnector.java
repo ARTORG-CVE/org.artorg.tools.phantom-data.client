@@ -31,7 +31,7 @@ public class BooleanPropertyConnector extends HttpConnectorSpring<BooleanPropert
 	}
 
 	@Override
-	public Class<? extends DatabasePersistent> getModelClass() {
+	public Class<BooleanProperty> getModelClass() {
 		return BooleanProperty.class;
 	}
 

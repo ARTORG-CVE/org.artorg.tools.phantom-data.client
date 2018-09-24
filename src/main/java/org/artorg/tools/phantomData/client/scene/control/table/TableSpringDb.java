@@ -62,7 +62,7 @@ public abstract class TableSpringDb<ITEM extends DatabasePersistent> {
 		items.addAll(itemSet);
 	}
 	
-	public Class<?> getItemClass() {
+	public Class<ITEM> getItemClass() {
 		return connector.getModelClass();
 	}
 	
