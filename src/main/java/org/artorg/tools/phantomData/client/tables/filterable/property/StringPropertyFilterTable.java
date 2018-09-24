@@ -6,10 +6,10 @@ import org.artorg.tools.phantomData.server.model.property.StringProperty;
 
 public class StringPropertyFilterTable extends PropertyFilterTable<StringProperty, String> {
 	
-	{
-		this.setConnector(StringPropertyConnector.get());
+	public StringPropertyFilterTable() {
+		super(StringProperty.class);
 	}
-
+	
 	@Override
 	public String getTableName() {
 		return "String Properties";

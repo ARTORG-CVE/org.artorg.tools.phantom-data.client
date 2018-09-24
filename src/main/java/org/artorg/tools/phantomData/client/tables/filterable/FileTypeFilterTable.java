@@ -11,19 +11,14 @@ import org.artorg.tools.phantomData.server.model.FileType;
 
 public class FileTypeFilterTable extends FilterTableSpringDb<FileType> {
 
-	{
-		this.setConnector(FileTypeConnector.get());
+	public FileTypeFilterTable() {
+		super(FileType.class);
 	}
 
 	@Override
 	public List<IColumn<FileType>> createColumns() {
 		List<IColumn<FileType>> columns =
 				new ArrayList<IColumn<FileType>>();
-//		columns.add(new Column<FileType, FileType>(
-//				"id", item -> item, 
-//				path -> String.valueOf(path.getId()), 
-//				(path,value) -> path.setId(value),
-//				FileTypeConnector.get()));
 		columns.add(new Column<FileType, FileType>(
 				"name", item -> item, 
 				path -> path.getName(), 

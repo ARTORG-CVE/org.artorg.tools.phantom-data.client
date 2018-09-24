@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
+import org.artorg.tools.phantomData.client.connectors.Connectors;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.collections.FXCollections;
@@ -27,6 +28,7 @@ public abstract class FilterTableSpringDb<ITEM extends DatabasePersistent> exten
 	private int nFilteredCols;
 	private List<Integer> mappedColumnIndexes;
 	private Function<Integer, Integer> columnIndexMapper;
+	private Class<ITEM> itemClass;
 	
 	{
 		filteredItems = FXCollections.observableArrayList();
@@ -35,6 +37,12 @@ public abstract class FilterTableSpringDb<ITEM extends DatabasePersistent> exten
 		columnTextFilterPredicates = new ArrayList<Predicate<ITEM>>();
 		sortComparator = (i1,i2) -> i1.getId().compareTo(i2.getId()); 
 		mappedColumnIndexes = new ArrayList<>();
+		
+	}
+	
+	public FilterTableSpringDb(Class<ITEM> itemClass) {
+		this.itemClass = itemClass;
+		this.setConnector(Connectors.getConnector(itemClass));
 	}
 	
 	public void setSortComparator(Comparator<String> sortComparator, Function<ITEM, String> valueGetter) {

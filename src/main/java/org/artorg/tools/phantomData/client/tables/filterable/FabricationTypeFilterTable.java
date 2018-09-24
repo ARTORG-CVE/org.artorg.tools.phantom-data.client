@@ -11,19 +11,14 @@ import org.artorg.tools.phantomData.server.model.FabricationType;
 
 public class FabricationTypeFilterTable extends FilterTableSpringDb<FabricationType> {
 	
-	{
-		this.setConnector(FabricationTypeConnector.get());
+	public FabricationTypeFilterTable() {
+		super(FabricationType.class);
 	}
 	
 	@Override
 	public List<IColumn<FabricationType>> createColumns() {
 		List<IColumn<FabricationType>> columns =
 				new ArrayList<IColumn<FabricationType>>();
-//		columns.add(new Column<FabricationType, FabricationType>(
-//				"id", item -> item, 
-//				path -> String.valueOf(path.getId()), 
-//				(path,value) -> path.setId(value),
-//				FabricationTypeConnector.get()));
 		columns.add(new Column<FabricationType, FabricationType>(
 				"shortcut", item -> item, 
 				path -> path.getShortcut(), 

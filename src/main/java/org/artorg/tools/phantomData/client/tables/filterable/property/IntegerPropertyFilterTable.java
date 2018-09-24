@@ -6,8 +6,8 @@ import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
 
 public class IntegerPropertyFilterTable extends PropertyFilterTable<IntegerProperty, Integer> {
 	
-	{
-		this.setConnector(IntegerPropertyConnector.get());
+	public IntegerPropertyFilterTable() {
+		super(IntegerProperty.class);
 	}
 
 	@Override

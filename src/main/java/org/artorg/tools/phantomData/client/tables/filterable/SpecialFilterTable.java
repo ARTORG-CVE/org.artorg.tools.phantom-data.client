@@ -12,15 +12,13 @@ import org.artorg.tools.phantomData.server.model.Special;
 
 public class SpecialFilterTable extends FilterTableSpringDb<Special> implements PropertyColumns {
 
-	{
-		this.setConnector(SpecialConnector.get());
+	public SpecialFilterTable() {
+		super(Special.class);
 	}
 
 	@Override
 	public List<IColumn<Special>> createColumns() {
 		List<IColumn<Special>> columns = new ArrayList<IColumn<Special>>();
-//		columns.add(new Column<Special, Special>("id", item -> item, path -> String.valueOf(path.getId()),
-//				(path, value) -> path.setId(UUID.fromString((String) value)), SpecialConnector.get()));
 		columns.add(new Column<Special, Special>("shortcut", item -> item, path -> path.getShortcut(),
 				(path, value) -> path.setShortcut(value), SpecialConnector.get()));
 

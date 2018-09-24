@@ -14,15 +14,14 @@ import org.artorg.tools.phantomData.server.model.property.PropertyField;
 public abstract class PropertyFilterTable<ITEM extends Property<VALUE>, VALUE extends Comparable<VALUE>> 
 		extends FilterTableSpringDb<ITEM> {
 
+	public PropertyFilterTable(Class<ITEM> itemClass) {
+		super(itemClass);
+	}
+
 	@Override
 	public List<IColumn<ITEM>> createColumns() {
 		List<IColumn<ITEM>> columns =
 				new ArrayList<IColumn<ITEM>>();
-//		columns.add(new Column<ITEM, ITEM>(
-//				"id", item -> item, 
-//				path -> String.valueOf(path.getId()), 
-//				(path,value) -> path.setId(UUID.fromString(value)),
-//				getPropertyConnector()));
 		columns.add(new Column<ITEM, PropertyField>(
 				"property field", item -> item.getPropertyField(), 
 				path -> path.getDescription(), 

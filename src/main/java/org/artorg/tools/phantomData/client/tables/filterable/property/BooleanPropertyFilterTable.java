@@ -6,10 +6,10 @@ import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 
 public class BooleanPropertyFilterTable extends PropertyFilterTable<BooleanProperty, Boolean> {
 	
-	{
-		this.setConnector(BooleanPropertyConnector.get());
+	public BooleanPropertyFilterTable() {
+		super(BooleanProperty.class);
 	}
-
+	
 	@Override
 	public String getTableName() {
 		return "Boolean Properties";

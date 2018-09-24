@@ -6,10 +6,10 @@ import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 
 public class DoublePropertyFilterTable extends PropertyFilterTable<DoubleProperty, Double> {
 	
-	{
-		this.setConnector(DoublePropertyConnector.get());
+	public DoublePropertyFilterTable() {
+		super(DoubleProperty.class);
 	}
-
+	
 	@Override
 	public String getTableName() {
 		return "Double Properties";
