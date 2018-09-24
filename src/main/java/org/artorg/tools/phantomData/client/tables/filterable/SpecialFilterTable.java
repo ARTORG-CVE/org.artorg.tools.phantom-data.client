@@ -2,7 +2,6 @@ package org.artorg.tools.phantomData.client.tables.filterable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.scene.control.table.Column;

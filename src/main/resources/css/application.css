@@ -23,3 +23,7 @@
     -fx-pref-height: 0;
     -fx-min-height: 0;
 }
+
+.titled-pane > *.content {
+    -fx-border-color: transparent;
+}

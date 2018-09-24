@@ -8,7 +8,9 @@ import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
+import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 
+import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
@@ -75,7 +77,15 @@ public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactory
 		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 		panes.add(generalPane);
 		
+		
+		
 		return panes;
+	}
+
+	@Override
+	protected void setSelectedChildItems(AnnulusDiameter item) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

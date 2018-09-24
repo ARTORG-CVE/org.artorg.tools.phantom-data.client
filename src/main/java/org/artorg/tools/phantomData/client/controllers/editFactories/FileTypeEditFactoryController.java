@@ -8,7 +8,9 @@ import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.server.model.FileType;
+import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 
+import javafx.collections.ObservableList;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
@@ -54,6 +56,12 @@ public class FileTypeEditFactoryController extends GroupedItemEditFactoryControl
 		panes.add(generalPane);
 		
 		return panes;
+	}
+	
+	@Override
+	protected void setSelectedChildItems(FileType item) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

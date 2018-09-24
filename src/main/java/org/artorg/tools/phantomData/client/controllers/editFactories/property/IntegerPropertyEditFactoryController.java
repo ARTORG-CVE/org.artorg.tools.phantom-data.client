@@ -8,9 +8,11 @@ import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryCont
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
+import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
+import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
@@ -65,6 +67,12 @@ public class IntegerPropertyEditFactoryController extends GroupedItemEditFactory
 		panes.add(generalPane);
 		
 		return panes;
+	}
+
+	@Override
+	protected void setSelectedChildItems(IntegerProperty item) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

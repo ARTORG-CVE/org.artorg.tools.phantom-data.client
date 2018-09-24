@@ -2,7 +2,6 @@ package org.artorg.tools.phantomData.client.tables.filterable.property;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;

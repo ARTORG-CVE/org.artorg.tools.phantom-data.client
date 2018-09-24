@@ -50,6 +50,8 @@ public abstract class ItemEditFactoryController<ITEM extends DatabasePersistent>
 	
 	protected abstract void addProperties(ITEM item);
 	
+	protected abstract void setSelectedChildItems(ITEM item);
+	
 	public abstract List<PropertyEntry> getPropertyEntries();
 	
 	public final HttpConnectorSpring<ITEM> getConnector() {
@@ -145,6 +147,7 @@ public abstract class ItemEditFactoryController<ITEM extends DatabasePersistent>
 			setTemplate(item);
 		applyButton.setOnAction(event -> {
 			ITEM newItem = createItem();
+			setSelectedChildItems(newItem);
 			this.getTable().getItems().add(newItem);
 			getConnector().create(newItem);
 			this.initDefaultValues();
@@ -169,7 +172,7 @@ public abstract class ItemEditFactoryController<ITEM extends DatabasePersistent>
 		applyButton.setOnAction(event -> {
 			ITEM item2 = createItem();
 			copy(item2,item);
-			
+			setSelectedChildItems(item);
 			this.getTable().refresh();
 			getConnector().update(item);
 		});
