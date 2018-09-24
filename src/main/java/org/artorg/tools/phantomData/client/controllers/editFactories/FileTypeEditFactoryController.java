@@ -45,7 +45,7 @@ public class FileTypeEditFactoryController extends GroupedItemEditFactoryControl
 	}
 	
 	@Override
-	protected List<TitledPane> createGroupedProperties() {
+	protected List<TitledPane> createGroupedProperties(FileType item) {
 		List<TitledPane> panes = new ArrayList<TitledPane>();
 		
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();

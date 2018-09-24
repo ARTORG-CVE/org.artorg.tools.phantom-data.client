@@ -18,11 +18,11 @@ public abstract class UngroupedItemEditFactoryController<ITEM extends DatabasePe
 		entries = new ArrayList<PropertyEntry>();
 	}
 	
-	protected abstract List<PropertyEntry> createUngroupedProperties();
+	protected abstract List<PropertyEntry> createUngroupedProperties(ITEM item);
 	
 	@Override
-	protected void addProperties() {
-		entries.addAll(createUngroupedProperties());
+	protected void addProperties(ITEM item) {
+		entries.addAll(createUngroupedProperties(item));
 	}
 	
 	@Override

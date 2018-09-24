@@ -65,7 +65,7 @@ public class FileEditFactoryController extends GroupedItemEditFactoryController<
 	}
 
 	@Override
-	protected List<TitledPane> createGroupedProperties() {
+	protected List<TitledPane> createGroupedProperties(PhantomFile item) {
 		List<TitledPane> panes = new ArrayList<TitledPane>();
 		
 		createComboBox(comboBoxFileType, FileTypeConnector.get(), d -> String.valueOf(d.getName()));

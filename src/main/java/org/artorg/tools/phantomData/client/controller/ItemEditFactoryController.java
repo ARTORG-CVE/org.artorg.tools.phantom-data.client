@@ -48,7 +48,7 @@ public abstract class ItemEditFactoryController<ITEM extends DatabasePersistent>
 	
 	protected abstract AnchorPane createRootPane();
 	
-	protected abstract void addProperties();
+	protected abstract void addProperties(ITEM item);
 	
 	public abstract List<PropertyEntry> getPropertyEntries();
 	
@@ -137,7 +137,7 @@ public abstract class ItemEditFactoryController<ITEM extends DatabasePersistent>
     }
     
     public AnchorPane create(ITEM item) {
-		addProperties(); 
+		addProperties(item); 
 		createRightNodes(getPropertyEntries());
 		initDefaultValues();
 		AnchorPane pane = createRootPane();
@@ -159,7 +159,7 @@ public abstract class ItemEditFactoryController<ITEM extends DatabasePersistent>
     	label.setDisable(true);
     	PropertyEntry idEntry = new PropertyEntry("Id", label);
     	getPropertyEntries().add(idEntry);
-		addProperties(); 
+		addProperties(item); 
 		createRightNodes(getPropertyEntries());
 		initDefaultValues();
 		AnchorPane pane = createRootPane();

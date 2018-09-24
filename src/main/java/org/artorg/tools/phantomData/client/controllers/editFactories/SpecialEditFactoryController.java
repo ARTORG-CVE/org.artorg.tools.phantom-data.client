@@ -52,7 +52,7 @@ public class SpecialEditFactoryController extends GroupedItemEditFactoryControll
 	}
 
 	@Override
-	protected List<TitledPane> createGroupedProperties() {
+	protected List<TitledPane> createGroupedProperties(Special item) {
 		List<TitledPane> panes = new ArrayList<TitledPane>();
 		
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();

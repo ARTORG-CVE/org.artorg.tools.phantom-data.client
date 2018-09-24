@@ -17,3 +17,9 @@
 .split-pane *.split-pane-divider {
     -fx-padding: 0 1 0 1;
 }
+
+.noheader .column-header-background {
+    -fx-max-height: 0;
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+}

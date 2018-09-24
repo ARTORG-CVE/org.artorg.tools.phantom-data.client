@@ -66,7 +66,7 @@ public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactory
 	}
 
 	@Override
-	protected List<TitledPane> createGroupedProperties() {
+	protected List<TitledPane> createGroupedProperties(AnnulusDiameter item) {
 		List<TitledPane> panes = new ArrayList<TitledPane>();
 		
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();

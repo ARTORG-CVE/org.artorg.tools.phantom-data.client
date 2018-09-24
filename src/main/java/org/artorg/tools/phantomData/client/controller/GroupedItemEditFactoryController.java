@@ -20,11 +20,11 @@ public abstract class GroupedItemEditFactoryController<ITEM extends DatabasePers
 		entries = new ArrayList<PropertyEntry>();
 	}
 	
-	protected abstract List<TitledPane> createGroupedProperties();
+	protected abstract List<TitledPane> createGroupedProperties(ITEM item);
 	
 	@Override
-	protected void addProperties() {
-		panes.addAll(createGroupedProperties());
+	protected void addProperties(ITEM item) {
+		panes.addAll(createGroupedProperties(item));
 		panes.stream().filter(p -> p instanceof TitledPropertyPane)
 			.forEach(p -> entries.addAll(((TitledPropertyPane)p).getEntries()));
 	}

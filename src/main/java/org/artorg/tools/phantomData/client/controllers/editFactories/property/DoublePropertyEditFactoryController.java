@@ -54,7 +54,7 @@ public class DoublePropertyEditFactoryController extends GroupedItemEditFactoryC
 	}
 
 	@Override
-	protected List<TitledPane> createGroupedProperties() {
+	protected List<TitledPane> createGroupedProperties(DoubleProperty item) {
 		List<TitledPane> panes = new ArrayList<TitledPane>();
 		
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
