@@ -1,22 +1,22 @@
 package org.artorg.tools.phantomData.client.controller;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
+import org.artorg.tools.phantomData.client.connectors.Connectors;
 import org.artorg.tools.phantomData.client.scene.control.TitledTableViewSelector;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
-import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
-import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.beans.value.ChangeListener;
@@ -41,7 +41,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM>>
 	protected Button applyButton;
 	private int nRows = 0;
 	private List<Node> rightNodes;
-	private List<ISelector<ITEM, ?>> selectors;
+	private List<ISelector<ITEM>> selectors;
 	
 	{
 		gridPane = new GridPane();
@@ -62,33 +62,62 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM>>
 	
 	public abstract List<PropertyEntry> getPropertyEntries();
 	
-	protected void setSelectedChildItems(ITEM item, ISelector<ITEM, ?> selector) {
+	protected void setSelectedChildItems(ITEM item, ISelector<ITEM> selector) {
 		Class<?> paramTypeClass = selector.getSelectedItems().getClass();
 		Object arg = selector.getSelectedItems();
 		Reflect.invokeGenericSetter(item, paramTypeClass, selector.getSubItemClass(), arg);
 	}
 	
-	public List<ISelector<ITEM, ?>> getSelectors() {
+	public List<ISelector<ITEM>> getSelectors() {
 		return selectors;
 	}
 	
-	private List<ISelector<ITEM, ?>> createSelectors(ITEM item) {
-		List<ISelector<ITEM, ?>> selectors = new ArrayList<ISelector<ITEM, ?>>();
+	@SuppressWarnings("unchecked")
+	private List<ISelector<ITEM>> createSelectors(ITEM item) {
+		List<ISelector<ITEM>> selectors = new ArrayList<ISelector<ITEM>>();
 		
-		if (Reflect.containsCollectionSetter(item, PhantomFile.class)) {
-			TitledTableViewSelector<ITEM, PhantomFile> titledSelector = new TitledTableViewSelector<ITEM, PhantomFile>();
-			titledSelector.getTitledPane().setText("Files");
-			titledSelector.setItem(item);
-			titledSelector.setSubItemClass(PhantomFile.class);
-			titledSelector.init();
-			selectors.add(titledSelector);
-		}
+		List<Class<?>> subItemClasses = Reflect.getCollectionSetterMethods(item.getClass())
+				.map(m -> {
+					Type type = m.getGenericParameterTypes()[0];
+					Class<?> cls = Reflect.getGenericTypeClass(type);
+					return cls;
+				})
+				.filter(c -> c != null)
+				.filter(c -> DbPersistent.class.isAssignableFrom(c))
+				.collect(Collectors.toList());
+		
+		subItemClasses.forEach(subItemClass -> {
+			if (Reflect.containsCollectionSetter(item, subItemClass)) {
+				HttpConnectorSpring<?> connector = Connectors.getConnector((Class<ITEM>) subItemClass);
+				Set<?> selectableItemSet = connector.readAllAsSet();
+				
+				if (selectableItemSet.size() > 0) {
+					TitledTableViewSelector<ITEM> titledSelector = new TitledTableViewSelector<ITEM>();
+					titledSelector.setSelectableItems(selectableItemSet);
+					
+					Method selectedMethod = Reflect.getMethodByGenericReturnType(item, subItemClass);
+					Function<ITEM, Collection<Object>> subItemGetter2; 
+					subItemGetter2 = i -> {
+						try {
+							return (Collection<Object>)(selectedMethod.invoke(i));
+						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+							e.printStackTrace();
+						}
+						return null;
+					};
+					titledSelector.setSelectedItems(subItemGetter2.apply(item).stream().collect(Collectors.toSet()));
+					
+					titledSelector.getTitledPane().setText(subItemClass.getSimpleName());
+					titledSelector.setSubItemClass((Class<?>) subItemClass);
+					titledSelector.init();
+					selectors.add(titledSelector);
+				}
+			}
+		});
 		
 		return selectors;
 	}
-	
-	
-	
+		
 	public final HttpConnectorSpring<ITEM> getConnector() {
 		return getTable().getConnector();
 	}

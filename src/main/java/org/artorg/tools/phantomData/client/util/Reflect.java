@@ -17,25 +17,44 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Reflect {
-
+	
+	public static Method getMethod(Stream<Method> stream) {
+		return stream.limit(2l).collect(Collectors2.toSingleton());
+	}
+	
+	
+	public static Method getMethod(Class<?> cls, Function<Stream<Method>, Stream<Method>> filteringStream) {
+		return getMethod(filteringStream.apply(Arrays.asList(cls.getMethods()).stream()));
+	}
+	
+	
+	public static Stream<Method> getMethods(Class<?> cls, Function<Stream<Method>, Stream<Method>> filteringStream) {
+		return filteringStream.apply(Arrays.asList(cls.getMethods()).stream());
+	}
+	
+	public static Stream<Method> getCollectionSetterMethods(Class<?> itemClass) {
+		return getMethods(itemClass, stream -> stream
+				.filter(m -> m.getReturnType() == Void.TYPE)
+				.filter(m -> Modifier.isPublic(m.getModifiers()))
+				.filter(m -> m.getParameterTypes().length == 1)
+				.filter(m -> Collection.class.isAssignableFrom(m.getParameterTypes()[0]))
+				.filter(m -> m.getGenericParameterTypes().length == 1));
+	}
+	
 	public static boolean containsCollectionSetter(Object item, Class<?> genericCollectionType) {
-		List<Method> selectedMethods = Arrays.asList(item.getClass().getMethods()).stream()
+		return getMethods(item.getClass(), stream -> stream
 				.filter(m -> m.getReturnType() == Void.TYPE)
 				.filter(m -> m.getParameterTypes().length == 1)
 				.filter(m -> Collection.class.isAssignableFrom(m.getParameterTypes()[0]))
-				.filter(m -> m.getGenericParameterTypes().length == 1).filter(m -> {
+				.filter(m -> m.getGenericParameterTypes().length == 1)
+				.filter(m -> {
 					Type type = m.getGenericParameterTypes()[0];
 					Class<?> clazz = Reflect.getGenericTypeClass(type);
 					return clazz == genericCollectionType;
-				})
-				.collect(Collectors.toList());
-		
-		if (selectedMethods.size() == 1)
-			return true;
-		
-		return false;
+				})).count() == 1;
 	}
 	
 	public static <T> Function<T, Object> compileFunctional(Method m, Object... args) {
@@ -58,41 +77,34 @@ public class Reflect {
 		}
 	}
 	
-	public static Method getSetterMethodBySingleGenericParamtype(Object item, Class<?> paramTypeClass, Class<?> genericParamtype) {
-		List<Method> selectedMethods = Arrays.asList(item.getClass().getMethods()).stream()
+	public static Method getSetterMethodBySingleGenericParamtype(Object item, Class<?> paramTypeClass, Class<?> genericParamtype) {		
+		return getMethod(item.getClass(), stream -> stream
 				.filter(m -> m.getReturnType() == Void.TYPE)
 				.filter(m -> m.getParameterTypes().length == 1)
 				.filter(m -> m.getParameterTypes()[0].isAssignableFrom(paramTypeClass))
-				.filter(m -> m.getGenericParameterTypes().length == 1).filter(m -> {
+				.filter(m -> m.getGenericParameterTypes().length == 1)
+				.filter(m -> {
 					Type type = m.getGenericParameterTypes()[0];
 					Class<?> clazz = Reflect.getGenericTypeClass(type);
 					return clazz == genericParamtype;
-				}).collect(Collectors.toList());
-		if (selectedMethods.size() != 1)
-			throw new IllegalArgumentException();
-		return selectedMethods.get(0);
+				}));
 	}
 
 	public static Method getMethodByGenericReturnType(Object item, Class<?> genericReturnType) {
-		List<Method> selectedMethods = Arrays.asList(item.getClass().getMethods()).stream()
+		return getMethod(item.getClass(), stream -> stream
 				.filter(m -> m.getParameterTypes().length == 0)
 				.filter(m -> Collection.class.isAssignableFrom(m.getReturnType()))
-				.filter(m -> Reflect.getGenericReturnTypeClass(m) == genericReturnType).collect(Collectors.toList());
-		if (selectedMethods.size() != 1)
-			throw new IllegalArgumentException();
-		return selectedMethods.get(0);
+				.filter(m -> Reflect.getGenericReturnTypeClass(m) == genericReturnType));
 	}
 
 	public static Method getMethodByGenericParamtype(Object item, Class<?> genericParamtype) {
-		List<Method> selectedMethods = Arrays.asList(item.getClass().getMethods()).stream()
-				.filter(m -> m.getGenericParameterTypes().length == 1).filter(m -> {
+		return getMethod(item.getClass(), stream -> stream
+				.filter(m -> m.getGenericParameterTypes().length == 1)
+				.filter(m -> {
 					Type type = m.getGenericParameterTypes()[0];
 					Class<?> clazz = Reflect.getGenericTypeClass(type);
 					return clazz == genericParamtype;
-				}).collect(Collectors.toList());
-		if (selectedMethods.size() != 1)
-			throw new IllegalArgumentException();
-		return selectedMethods.get(0);
+				}));
 	}
 
 	public static boolean isStatic(Method m) {

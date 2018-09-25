@@ -9,10 +9,8 @@ import javafx.scene.Node;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 
-public class TitledTableViewSelector
-		<ITEM extends DbPersistent<ITEM>, 
-		SUB_ITEM extends DbPersistent<SUB_ITEM>> extends TableViewSelector<ITEM,SUB_ITEM>
-		implements ISelector<ITEM, SUB_ITEM> {
+public class TitledTableViewSelector<ITEM extends DbPersistent<ITEM>> extends TableViewSelector<ITEM>
+		implements ISelector<ITEM> {
 	private final TitledPane titledPane;
 	
 	{
