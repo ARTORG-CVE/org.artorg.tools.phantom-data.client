@@ -2,12 +2,12 @@ package org.artorg.tools.phantomData.client.controller;
 
 import java.util.Set;
 
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 
-public interface ISelector<ITEM extends DatabasePersistent, SUB_ITEM extends DatabasePersistent> {
+public interface ISelector<ITEM extends DbPersistent, SUB_ITEM extends DbPersistent> {
 	
 	ITEM getItem();
 	

@@ -4,10 +4,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class Column<ITEM extends DatabasePersistent, 
-		PATH extends DatabasePersistent> extends IColumn<ITEM> {
+public class Column<ITEM extends DbPersistent, 
+		PATH extends DbPersistent> extends IColumn<ITEM> {
 	private final Function<ITEM, PATH> itemToPropertyGetter;
 	private final Function<PATH, String> propertyToValueGetter;
 	private final BiConsumer<PATH, String> propertyToValueSetter;

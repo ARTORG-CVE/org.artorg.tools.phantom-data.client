@@ -14,12 +14,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connectors.Connectors;
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public abstract class FilterTableSpringDb<ITEM extends DatabasePersistent> extends TableSpringDb<ITEM> {
+public abstract class FilterTableSpringDb<ITEM extends DbPersistent> extends TableSpringDb<ITEM> {
 	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
 	private List<Predicate<ITEM>> columnItemFilterPredicates;

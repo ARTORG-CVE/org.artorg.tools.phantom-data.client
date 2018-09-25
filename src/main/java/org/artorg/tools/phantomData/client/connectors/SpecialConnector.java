@@ -3,7 +3,7 @@ package org.artorg.tools.phantomData.client.connectors;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.controller.SpecialController;
 import org.artorg.tools.phantomData.server.model.Special;
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 public class SpecialConnector extends HttpConnectorSpring<Special> {
 	

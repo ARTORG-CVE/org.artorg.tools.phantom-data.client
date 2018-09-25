@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.util.Reflect;
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 public class Connectors {
 	private static Map<Class<?>,HttpConnectorSpring<?>> connectorMap;
@@ -36,7 +36,7 @@ public class Connectors {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <ITEM extends DatabasePersistent> HttpConnectorSpring<ITEM> getConnector(Class<ITEM> itemClass) {
+	public static <ITEM extends DbPersistent> HttpConnectorSpring<ITEM> getConnector(Class<ITEM> itemClass) {
 		return (HttpConnectorSpring<ITEM>) connectorMap.get(itemClass);
 	}
 

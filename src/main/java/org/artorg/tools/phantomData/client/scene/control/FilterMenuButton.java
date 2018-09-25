@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 import org.artorg.tools.phantomData.client.io.IOutil;
 import org.artorg.tools.phantomData.client.scene.control.table.FilterTableSpringDb;
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -120,7 +120,7 @@ public class FilterMenuButton extends MenuButton {
 		
 	}
 	
-	public <ITEM extends DatabasePersistent> void setTable(FilterTableSpringDb<ITEM> 
+	public <ITEM extends DbPersistent> void setTable(FilterTableSpringDb<ITEM> 
 				filterTable, int col, Runnable refresh ) {
 		Supplier<List<String>> getters = () -> {
 			List<String> getterList = new ArrayList<String>();

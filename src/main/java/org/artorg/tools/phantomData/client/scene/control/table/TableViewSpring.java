@@ -8,7 +8,7 @@ import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -26,7 +26,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
-public abstract class TableViewSpring<ITEM extends DatabasePersistent & Comparable<ITEM>> extends TableView<ITEM> {
+public abstract class TableViewSpring<ITEM extends DbPersistent<ITEM>> extends TableView<ITEM> {
 	private FilterTableSpringDb<ITEM> filterTable;
 	private List<FilterMenuButton> filterMenuButtons;
 	private ListChangeListener<ITEM> listenerChangedListenerRefresh;

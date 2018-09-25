@@ -12,12 +12,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.artorg.tools.phantomData.client.commandPattern.UndoManager;
 import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public abstract class TableSpringDb<ITEM extends DatabasePersistent> {
+public abstract class TableSpringDb<ITEM extends DbPersistent> {
 	protected final ObservableList<ITEM> items;
 	private final List<IColumn<ITEM>> columns;
 	protected final UndoManager undoManager;

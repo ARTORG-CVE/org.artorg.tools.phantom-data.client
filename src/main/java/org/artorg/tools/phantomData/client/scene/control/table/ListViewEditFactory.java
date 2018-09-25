@@ -2,7 +2,7 @@ package org.artorg.tools.phantomData.client.scene.control.table;
 
 import java.util.Set;
 
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,7 +11,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
 
-public class ListViewEditFactory<ITEM extends DatabasePersistent> extends ListView<ITEM> {
+public class ListViewEditFactory<ITEM extends DbPersistent> extends ListView<ITEM> {
 
 	private void initTable() {
 		super.setCellFactory(new Callback<ListView<ITEM>, ListCell<ITEM>>() {

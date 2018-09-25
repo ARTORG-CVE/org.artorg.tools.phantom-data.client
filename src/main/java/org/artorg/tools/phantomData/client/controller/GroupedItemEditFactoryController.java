@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-public abstract class GroupedItemEditFactoryController<ITEM extends DatabasePersistent & Comparable<ITEM>> extends ItemEditFactoryController<ITEM> {
+public abstract class GroupedItemEditFactoryController<ITEM extends DbPersistent<ITEM>> extends ItemEditFactoryController<ITEM> {
 	private List<TitledPane> panes;
 	private List<PropertyEntry> entries;
 	

@@ -1,8 +1,8 @@
 package org.artorg.tools.phantomData.client.scene.control.table;
 
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public abstract class IColumn<ITEM extends DatabasePersistent> {
+public abstract class IColumn<ITEM extends DbPersistent> {
 	private boolean visible;
 	private boolean editable;
 	private boolean filterable;

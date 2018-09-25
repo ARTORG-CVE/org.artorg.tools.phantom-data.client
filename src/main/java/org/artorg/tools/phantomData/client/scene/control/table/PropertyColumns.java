@@ -22,13 +22,13 @@ import org.artorg.tools.phantomData.client.connectors.property.IntegerPropertyCo
 import org.artorg.tools.phantomData.client.connectors.property.StringPropertyConnector;
 import org.artorg.tools.phantomData.server.model.property.Property;
 import org.artorg.tools.phantomData.server.model.property.PropertyContainer;
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.ObservableList;
 
 public interface PropertyColumns {
 	
-	default <ITEM extends PropertyContainer & DatabasePersistent> 
+	default <ITEM extends PropertyContainer & DbPersistent<ITEM>> 
 		void createPropertyColumns(List<IColumn<ITEM>> columns, 
 				ObservableList<ITEM> items) {
 		createPropertyColumns(columns, items, 
@@ -63,8 +63,8 @@ public interface PropertyColumns {
 				stringDateFunc, DatePropertyConnector.get());
 	}
 	
-	default <ITEM extends DatabasePersistent, 
-			PROPERTY_TYPE extends Property<PROPERTY_VALUE_TYPE> & DatabasePersistent, 
+	default <ITEM extends DbPersistent<ITEM>, 
+			PROPERTY_TYPE extends Property<PROPERTY_TYPE, PROPERTY_VALUE_TYPE>, 
 			PROPERTY_VALUE_TYPE extends Comparable<PROPERTY_VALUE_TYPE>> 
 			void createPropertyColumns(List<IColumn<ITEM>> columns, ObservableList<ITEM> items, 
 					Function<ITEM,Collection<PROPERTY_TYPE>> propsGetter, 

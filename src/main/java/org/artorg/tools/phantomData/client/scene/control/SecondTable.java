@@ -2,7 +2,7 @@ package org.artorg.tools.phantomData.client.scene.control;
 
 import org.artorg.tools.phantomData.client.scene.control.table.FilterTableSpringDb;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.scene.layout.AnchorPane;
 
@@ -10,7 +10,7 @@ public class SecondTable extends AnchorPaneAddableTo {
 	private FilterTableSpringDb<?> table;
 //	private TableViewSpring<?, ?> view;
 	
-	public <ITEM extends DatabasePersistent & Comparable<ITEM>> 
+	public <ITEM extends DbPersistent<ITEM>> 
 		void setTable(
 			TableViewSpring<ITEM> table) {
 //		this.table = table;

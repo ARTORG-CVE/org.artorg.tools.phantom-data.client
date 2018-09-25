@@ -12,7 +12,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-public abstract class HttpConnectorSpring<T extends DatabasePersistent> {
+public abstract class HttpConnectorSpring<T extends DbPersistent> {
 	private final Function<Method, String[]> stringAnnosFuncCreate;
 	private final Function<Method, String[]> stringAnnosFuncRead;
 	private final Function<Method, String[]> stringAnnosFuncUpdate;

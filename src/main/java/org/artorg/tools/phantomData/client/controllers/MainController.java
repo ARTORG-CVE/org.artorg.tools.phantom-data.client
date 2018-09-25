@@ -19,7 +19,7 @@ import org.artorg.tools.phantomData.client.tables.property.DoublePropertyTable;
 import org.artorg.tools.phantomData.client.tables.property.IntegerPropertyTable;
 import org.artorg.tools.phantomData.client.tables.property.StringPropertyTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -165,7 +165,7 @@ public class MainController {
         
     }
     
-    public <ITEM extends DatabasePersistent> void setTable(FilterTableSpringDb<ITEM> table) {
+    public <ITEM extends DbPersistent> void setTable(FilterTableSpringDb<ITEM> table) {
 		this.table = table;
 	}
     

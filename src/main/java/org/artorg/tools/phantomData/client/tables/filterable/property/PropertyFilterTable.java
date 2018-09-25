@@ -11,7 +11,7 @@ import org.artorg.tools.phantomData.client.scene.control.table.IColumn;
 import org.artorg.tools.phantomData.server.model.property.Property;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
-public abstract class PropertyFilterTable<ITEM extends Property<VALUE>, VALUE extends Comparable<VALUE>> 
+public abstract class PropertyFilterTable<ITEM extends Property<ITEM, VALUE>, VALUE extends Comparable<VALUE>> 
 		extends FilterTableSpringDb<ITEM> {
 
 	public PropertyFilterTable(Class<ITEM> itemClass) {

@@ -12,7 +12,7 @@ import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -31,7 +31,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.util.Callback;
 
-public abstract class ItemEditFactoryController<ITEM extends DatabasePersistent & Comparable<ITEM>> {
+public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM>> {
 	private GridPane gridPane;
 	protected Button applyButton;
 	private int nRows = 0;
@@ -81,7 +81,7 @@ public abstract class ItemEditFactoryController<ITEM extends DatabasePersistent 
 			}
 	}
 	
-	protected <T extends DatabasePersistent> void createComboBox(ComboBox<T> comboBox, 
+	protected <T extends DbPersistent<T>> void createComboBox(ComboBox<T> comboBox, 
 			HttpConnectorSpring<T> connector, Function<T,String> mapper, Consumer<T> selectedItemChangedConsumer) {
     	createComboBox(comboBox, connector, mapper);
         
@@ -93,7 +93,7 @@ public abstract class ItemEditFactoryController<ITEM extends DatabasePersistent 
         comboBox.getSelectionModel().selectedItemProperty().addListener(listener);
     }
 	
-	protected <T extends DatabasePersistent> void createComboBox(ComboBox<T> comboBox, 
+	protected <T extends DbPersistent<T>> void createComboBox(ComboBox<T> comboBox, 
 			HttpConnectorSpring<T> connector, Function<T,String> mapper) {
     	List<T> fabricationType = connector.readAllAsStream()
         		.distinct().collect(Collectors.toList());

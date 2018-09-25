@@ -4,7 +4,7 @@ import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.scene.control.table.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.ContextMenu;
@@ -28,7 +28,7 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 		this.mainSplitPane = splitPane;
 	}	
 
-	public <ITEM extends DatabasePersistent & Comparable<ITEM>> void openTableTab(
+	public <ITEM extends DbPersistent<ITEM>> void openTableTab(
 			TableViewSpring<ITEM> tableViewSpring, String name) {
 		Tab tab = new Tab(name);
 		tab.setContent(tableViewSpring);

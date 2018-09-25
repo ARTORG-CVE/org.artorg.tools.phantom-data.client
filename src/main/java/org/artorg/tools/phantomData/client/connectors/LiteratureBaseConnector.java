@@ -3,7 +3,7 @@ package org.artorg.tools.phantomData.client.connectors;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.controller.LiteratureBaseController;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 public class LiteratureBaseConnector extends HttpConnectorSpring<LiteratureBase> {
 	

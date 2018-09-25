@@ -14,7 +14,7 @@ import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connectors.Connectors;
 import org.artorg.tools.phantomData.client.controller.ISelector;
 import org.artorg.tools.phantomData.client.util.Reflect;
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -34,7 +34,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
-public class TableViewSelector<ITEM extends DatabasePersistent & Comparable<ITEM>, SUB_ITEM extends DatabasePersistent> implements ISelector<ITEM,SUB_ITEM> {
+public class TableViewSelector<ITEM extends DbPersistent<ITEM>, SUB_ITEM extends DbPersistent<SUB_ITEM>> implements ISelector<ITEM,SUB_ITEM> {
 	private TableView<SUB_ITEM> tableView1;
 	private TableView<SUB_ITEM> tableView2;
 	private SplitPane splitPane;

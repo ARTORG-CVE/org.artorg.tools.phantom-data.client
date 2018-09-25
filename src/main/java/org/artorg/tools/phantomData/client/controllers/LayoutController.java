@@ -8,7 +8,7 @@ import org.artorg.tools.phantomData.client.scene.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.MainSplitPane;
 import org.artorg.tools.phantomData.client.scene.control.SecondTable;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
-import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
@@ -42,16 +42,16 @@ public class LayoutController {
     	scene3d.addTo(pane3d);
     }
     
-	public <ITEM extends DatabasePersistent & Comparable<ITEM>> void openMainTableTab(TableViewSpring<ITEM> table) {
+	public <ITEM extends DbPersistent<ITEM>> void openMainTableTab(TableViewSpring<ITEM> table) {
 		openMainTableTab(table, table.getFilterTable().getTableName());
 	}
 	
-	public <ITEM extends DatabasePersistent & Comparable<ITEM>> void openMainTableTab(
+	public <ITEM extends DbPersistent<ITEM>> void openMainTableTab(
 			TableViewSpring<ITEM> table, String name) {
 		mainSplitPane.getMainTableTabPane().openTableTab(table, name);
 	}
 	
-	public <ITEM extends DatabasePersistent & Comparable<ITEM>> void setSecondTable(
+	public <ITEM extends DbPersistent<ITEM>> void setSecondTable(
 			TableViewSpring<ITEM> table) {
 		secondTable.setTable(table);
 	}
