@@ -31,7 +31,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.util.Callback;
 
-public abstract class ItemEditFactoryController<ITEM extends DatabasePersistent> {
+public abstract class ItemEditFactoryController<ITEM extends DatabasePersistent & Comparable<ITEM>> {
 	private GridPane gridPane;
 	protected Button applyButton;
 	private int nRows = 0;
@@ -155,10 +155,12 @@ public abstract class ItemEditFactoryController<ITEM extends DatabasePersistent>
 			
 			
 			
-			TitledTableViewSelector titledSelector =
-					new TitledTableViewSelector(getTable().getFilterTable().getTableName(), item, PhantomFile.class);			
+			TitledTableViewSelector<ITEM, PhantomFile> titledSelector =
+					new TitledTableViewSelector<ITEM, PhantomFile>();
+			titledSelector.getTitledPane().setText(getTable().getFilterTable().getTableName());
+			titledSelector.setSubItemClass(PhantomFile.class);
 			Method m = Reflect.getMethodByGenericParamtype(item, PhantomFile.class);
-			Object args = titledSelector.getSelector().getSelectedItems(); 
+			Object args = titledSelector.getSelectedItems(); 
 			Function<ITEM, Object> selectedFilesSetter = Reflect.compileFunctional(m, args); 
 			selectedFilesSetter.apply(newItem);	
 			

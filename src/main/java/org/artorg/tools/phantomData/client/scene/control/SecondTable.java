@@ -10,7 +10,7 @@ public class SecondTable extends AnchorPaneAddableTo {
 	private FilterTableSpringDb<?> table;
 //	private TableViewSpring<?, ?> view;
 	
-	public <ITEM extends DatabasePersistent> 
+	public <ITEM extends DatabasePersistent & Comparable<ITEM>> 
 		void setTable(
 			TableViewSpring<ITEM> table) {
 //		this.table = table;

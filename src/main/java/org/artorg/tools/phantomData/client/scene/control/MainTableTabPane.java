@@ -28,7 +28,7 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 		this.mainSplitPane = splitPane;
 	}	
 
-	public <ITEM extends DatabasePersistent> void openTableTab(
+	public <ITEM extends DatabasePersistent & Comparable<ITEM>> void openTableTab(
 			TableViewSpring<ITEM> tableViewSpring, String name) {
 		Tab tab = new Tab(name);
 		tab.setContent(tableViewSpring);

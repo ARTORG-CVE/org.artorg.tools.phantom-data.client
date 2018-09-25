@@ -32,7 +32,7 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
     private ComboBox<LiteratureBase> comboBoxLiterature;
     private ComboBox<Special> comboBoxSpecials;
 	private TextField textFieldModelNumber;
-	private TitledTableViewSelector titledSelector;
+	private TitledTableViewSelector<Phantom, PhantomFile> titledSelector;
 	
 	{
 		labelIdValue = new Label("id");
@@ -126,17 +126,22 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 		panes.add(generalPane);
 		
-		titledSelector = new TitledTableViewSelector("Files", item, PhantomFile.class);
-		panes.add(titledSelector);
+		titledSelector = new TitledTableViewSelector<Phantom, PhantomFile>();
+		titledSelector.getTitledPane().setText("Files");
+		titledSelector.setItem(item);
+		titledSelector.setSubItemClass(PhantomFile.class);
+		titledSelector.setItemClass(Phantom.class);
+		titledSelector.init();
+		
+		panes.add(titledSelector.getTitledPane());
 		
 		
 		return panes;
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	protected void setSelectedChildItems(Phantom item) {
-		item.setFiles((List<PhantomFile>) titledSelector.getSelector().getSelectedItems());
+		item.setFiles((List<PhantomFile>) titledSelector.getSelectedItems());
 	}
     
 }

@@ -26,7 +26,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
-public abstract class TableViewSpring<ITEM extends DatabasePersistent> extends TableView<ITEM> {
+public abstract class TableViewSpring<ITEM extends DatabasePersistent & Comparable<ITEM>> extends TableView<ITEM> {
 	private FilterTableSpringDb<ITEM> filterTable;
 	private List<FilterMenuButton> filterMenuButtons;
 	private ListChangeListener<ITEM> listenerChangedListenerRefresh;

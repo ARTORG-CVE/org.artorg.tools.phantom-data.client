@@ -1,11 +1,19 @@
 package org.artorg.tools.phantomData.client.scene.control.table;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
+import org.artorg.tools.phantomData.client.connectors.Connectors;
+import org.artorg.tools.phantomData.client.controller.ISelector;
+import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DatabasePersistent;
 
 import javafx.beans.binding.Bindings;
@@ -14,6 +22,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
@@ -25,17 +34,19 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
-public class TableViewSelector<ITEM extends DatabasePersistent & Comparable<ITEM>> extends SplitPane {
-	private TableView<ITEM> tableView1;
-	private TableView<ITEM> tableView2;
+public class TableViewSelector<ITEM extends DatabasePersistent & Comparable<ITEM>, SUB_ITEM extends DatabasePersistent> implements ISelector<ITEM,SUB_ITEM> {
+	private TableView<SUB_ITEM> tableView1;
+	private TableView<SUB_ITEM> tableView2;
 	private SplitPane splitPane;
 	private int height;
-	
+	private ITEM item;
+	private Class<ITEM> itemClass;
+	private Class<SUB_ITEM> subItemClass;
 	
 	{
-		tableView1 = new TableView<ITEM>();
-		tableView2 = new TableView<ITEM>();
-		splitPane = this;
+		tableView1 = new TableView<SUB_ITEM>();
+		tableView2 = new TableView<SUB_ITEM>();
+		splitPane = new SplitPane();
 		splitPane.setOrientation(Orientation.VERTICAL);
 		height = 200;
 		splitPane.setPrefHeight(height);
@@ -50,29 +61,45 @@ public class TableViewSelector<ITEM extends DatabasePersistent & Comparable<ITEM
 		tableView2.getStyleClass().add("noheader");
 	}
 	
-	public void setSelectableItems(Set<ITEM> set) {
-		ObservableList<ITEM> items = FXCollections.observableArrayList();
+	public void setSelectableItems(Set<SUB_ITEM> set) {
+		ObservableList<SUB_ITEM> items = FXCollections.observableArrayList();
 		items.addAll(set);
 		tableView1.setItems(items);
 	}
 	
-	public ObservableList<ITEM> getSelectableItems() {
+	public ObservableList<SUB_ITEM> getSelectableItems() {
 		return tableView1.getItems();
 	}
 	
-	public void setSelectedItems(Set<ITEM> set) {
-		ObservableList<ITEM> items = FXCollections.observableArrayList();
+	public void setSelectedItems(Set<SUB_ITEM> set) {
+		ObservableList<SUB_ITEM> items = FXCollections.observableArrayList();
 		items.addAll(set);
 		tableView2.setItems(items);
 	}
 	
-	public ObservableList<ITEM> getSelectedItems() {
+	public ObservableList<SUB_ITEM> getSelectedItems() {
 		return tableView2.getItems();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void init() {
+		HttpConnectorSpring<SUB_ITEM> connector = Connectors.getConnector(getSubItemClass());
+		setSelectableItems(connector.readAllAsSet());
+		
+		Method selectedMethod = Reflect.getMethodByGenericReturnType(getItem(), getSubItemClass());
+		Function<ITEM, Collection<SUB_ITEM>> subItemGetter2; 
+		subItemGetter2 = i -> {
+			try {
+				return (Collection<SUB_ITEM>)(selectedMethod.invoke(i));
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
+			return null;
+		};
+		setSelectedItems(subItemGetter2.apply(getItem()).stream().collect(Collectors.toSet()));
+		
 		tableView2.getItems().stream().forEach(item2 -> {
-			List<ITEM> doublettes = tableView1.getItems().stream()
+			List<SUB_ITEM> doublettes = tableView1.getItems().stream()
 					.filter(item1 -> item2.getId().compareTo(item1.getId()) == 0).collect(Collectors.toList());
 			tableView1.getItems().removeAll(doublettes);
 		});
@@ -86,21 +113,21 @@ public class TableViewSelector<ITEM extends DatabasePersistent & Comparable<ITEM
 			autoResizeColumns(tableView2);
 		}
 		
-		List<TableColumn<ITEM, ?>> columns1 = new ArrayList<TableColumn<ITEM, ?>>();
+		List<TableColumn<SUB_ITEM, ?>> columns1 = new ArrayList<TableColumn<SUB_ITEM, ?>>();
 		columns1.add(createButtonCellColumn("+", this::moveToSelected));
 		columns1.add(createValueColumn("Selectable Items"));
 		this.tableView1.getColumns().addAll(columns1);
 
 		
-		List<TableColumn<ITEM, ?>> columns2 = new ArrayList<TableColumn<ITEM, ?>>();
+		List<TableColumn<SUB_ITEM, ?>> columns2 = new ArrayList<TableColumn<SUB_ITEM, ?>>();
 		columns2.add(createButtonCellColumn("-", this::moveToSelectable));
 		columns2.add(createValueColumn("Selected Items"));
 		this.tableView2.getColumns().addAll(columns2);
 		
-		tableView1.setRowFactory(new Callback<TableView<ITEM>,TableRow<ITEM>>() {
+		tableView1.setRowFactory(new Callback<TableView<SUB_ITEM>,TableRow<SUB_ITEM>>() {
 			@Override
-			public TableRow<ITEM> call(TableView<ITEM> tableView) {
-				final TableRow<ITEM> row = new TableRow<ITEM>();
+			public TableRow<SUB_ITEM> call(TableView<SUB_ITEM> tableView) {
+				final TableRow<SUB_ITEM> row = new TableRow<SUB_ITEM>();
 			
 				ContextMenu rowMenu = new ContextMenu();
 				MenuItem addMenu = new MenuItem("Add");
@@ -115,10 +142,10 @@ public class TableViewSelector<ITEM extends DatabasePersistent & Comparable<ITEM
 			};
 		});
 		
-		tableView2.setRowFactory(new Callback<TableView<ITEM>,TableRow<ITEM>>() {
+		tableView2.setRowFactory(new Callback<TableView<SUB_ITEM>,TableRow<SUB_ITEM>>() {
 			@Override
-			public TableRow<ITEM> call(TableView<ITEM> tableView) {
-				final TableRow<ITEM> row = new TableRow<ITEM>();
+			public TableRow<SUB_ITEM> call(TableView<SUB_ITEM> tableView) {
+				final TableRow<SUB_ITEM> row = new TableRow<SUB_ITEM>();
 			
 				ContextMenu rowMenu = new ContextMenu();
 				MenuItem addMenu = new MenuItem("Remove");
@@ -135,7 +162,7 @@ public class TableViewSelector<ITEM extends DatabasePersistent & Comparable<ITEM
 		
 	}
 	
-	private void moveToSelected(ITEM item) {
+	public void moveToSelected(SUB_ITEM item) {
 		tableView1.getItems().remove(item);
 		tableView2.getItems().add(item);
 		if (tableView1.getItems().size() == 0) {
@@ -150,7 +177,7 @@ public class TableViewSelector<ITEM extends DatabasePersistent & Comparable<ITEM
 		autoResizeColumns(tableView2);
 	}
 	
-	private void moveToSelectable(ITEM item) {
+	public void moveToSelectable(SUB_ITEM item) {
 		tableView1.getItems().add(item);
 		tableView2.getItems().remove(item);
 		if (tableView2.getItems().size() == 0) {
@@ -167,13 +194,13 @@ public class TableViewSelector<ITEM extends DatabasePersistent & Comparable<ITEM
 		tableView2.refresh();
 	}
 	
-	private TableColumn<ITEM, Void> createButtonCellColumn(String text, Consumer<ITEM> consumer) {
-		TableColumn<ITEM, Void> column = new TableColumn<ITEM, Void>();
-		column.setCellFactory(new Callback<TableColumn<ITEM, Void>, TableCell<ITEM, Void>>() {
+	private TableColumn<SUB_ITEM, Void> createButtonCellColumn(String text, Consumer<SUB_ITEM> consumer) {
+		TableColumn<SUB_ITEM, Void> column = new TableColumn<SUB_ITEM, Void>();
+		column.setCellFactory(new Callback<TableColumn<SUB_ITEM, Void>, TableCell<SUB_ITEM, Void>>() {
 			@Override
-			public TableCell<ITEM, Void> call(final TableColumn<ITEM, Void> param) {
-				return new TableCell<ITEM, Void>() {
-					TableCell<ITEM, Void> cell = this;
+			public TableCell<SUB_ITEM, Void> call(final TableColumn<SUB_ITEM, Void> param) {
+				return new TableCell<SUB_ITEM, Void>() {
+					TableCell<SUB_ITEM, Void> cell = this;
 
 					@Override
 					public void updateItem(Void item, boolean empty) {
@@ -200,8 +227,8 @@ public class TableViewSelector<ITEM extends DatabasePersistent & Comparable<ITEM
 		return column;
 	}
 	
-	private TableColumn<ITEM, String> createValueColumn(String columnName) {
-		TableColumn<ITEM, String> column = new TableColumn<ITEM, String>(columnName);
+	private TableColumn<SUB_ITEM, String> createValueColumn(String columnName) {
+		TableColumn<SUB_ITEM, String> column = new TableColumn<SUB_ITEM, String>(columnName);
 		column.setSortable(false);
 
 		column.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -215,7 +242,7 @@ public class TableViewSelector<ITEM extends DatabasePersistent & Comparable<ITEM
 		tableView.getColumns().stream().forEach( (column) -> {
 	        Text t = new Text( column.getText() );
 	        double max = t.getLayoutBounds().getWidth()+45.0;
-	        for ( int i = 0; i < super.getItems().size(); i++ ) {
+	        for ( int i = 0; i < splitPane.getItems().size(); i++ ) {
 	            if ( column.getCellData( i ) != null ) {
 	                t = new Text( column.getCellData( i ).toString() );
 	                double calcwidth = t.getLayoutBounds().getWidth()+10;
@@ -226,6 +253,42 @@ public class TableViewSelector<ITEM extends DatabasePersistent & Comparable<ITEM
 	        column.setPrefWidth( max);
 	    } );
 		tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+	}
+
+	@Override
+	public Node getGraphic() {
+		return splitPane;
+	}
+
+	@Override
+	public Class<ITEM> getItemClass() {
+		return itemClass;
+	}
+
+	@Override
+	public ITEM getItem() {
+		return item;
+	}
+
+	@Override
+	public void setItem(ITEM item) {
+		this.item = item;
+	}
+
+	@Override
+	public void setItemClass(Class<ITEM> itemClass) {
+		this.itemClass = itemClass;
+		
+	}
+
+	@Override
+	public Class<SUB_ITEM> getSubItemClass() {
+		return this.subItemClass;
+	}
+
+	@Override
+	public void setSubItemClass(Class<SUB_ITEM> subItemClass) {
+		this.subItemClass = subItemClass;
 	}
 
 }
