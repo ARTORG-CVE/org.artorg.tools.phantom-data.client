@@ -20,6 +20,24 @@ import java.util.stream.Collectors;
 
 public class Reflect {
 
+	public static boolean containsCollectionSetter(Object item, Class<?> genericCollectionType) {
+		List<Method> selectedMethods = Arrays.asList(item.getClass().getMethods()).stream()
+				.filter(m -> m.getReturnType() == Void.TYPE)
+				.filter(m -> m.getParameterTypes().length == 1)
+				.filter(m -> Collection.class.isAssignableFrom(m.getParameterTypes()[0]))
+				.filter(m -> m.getGenericParameterTypes().length == 1).filter(m -> {
+					Type type = m.getGenericParameterTypes()[0];
+					Class<?> clazz = Reflect.getGenericTypeClass(type);
+					return clazz == genericCollectionType;
+				})
+				.collect(Collectors.toList());
+		
+		if (selectedMethods.size() == 1)
+			return true;
+		
+		return false;
+	}
+	
 	public static <T> Function<T, Object> compileFunctional(Method m, Object... args) {
 		return o -> {
 			try {
@@ -29,6 +47,30 @@ public class Reflect {
 			}
 			return null;
 		};
+	}
+	
+	public static void invokeGenericSetter(Object reference, Class<?> paramTypeClass, Class<?> genericParamtype, Object arg) {
+		Method m = getSetterMethodBySingleGenericParamtype(reference, paramTypeClass, genericParamtype);
+		try {
+			m.invoke(reference, arg);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static Method getSetterMethodBySingleGenericParamtype(Object item, Class<?> paramTypeClass, Class<?> genericParamtype) {
+		List<Method> selectedMethods = Arrays.asList(item.getClass().getMethods()).stream()
+				.filter(m -> m.getReturnType() == Void.TYPE)
+				.filter(m -> m.getParameterTypes().length == 1)
+				.filter(m -> m.getParameterTypes()[0].isAssignableFrom(paramTypeClass))
+				.filter(m -> m.getGenericParameterTypes().length == 1).filter(m -> {
+					Type type = m.getGenericParameterTypes()[0];
+					Class<?> clazz = Reflect.getGenericTypeClass(type);
+					return clazz == genericParamtype;
+				}).collect(Collectors.toList());
+		if (selectedMethods.size() != 1)
+			throw new IllegalArgumentException();
+		return selectedMethods.get(0);
 	}
 
 	public static Method getMethodByGenericReturnType(Object item, Class<?> genericReturnType) {

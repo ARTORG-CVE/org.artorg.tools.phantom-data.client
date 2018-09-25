@@ -69,10 +69,4 @@ public class StringPropertyEditFactoryController extends GroupedItemEditFactoryC
 		return panes;
 	}
 
-	@Override
-	protected void setSelectedChildItems(StringProperty item) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

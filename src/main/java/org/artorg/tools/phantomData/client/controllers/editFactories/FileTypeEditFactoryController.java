@@ -57,11 +57,5 @@ public class FileTypeEditFactoryController extends GroupedItemEditFactoryControl
 		
 		return panes;
 	}
-	
-	@Override
-	protected void setSelectedChildItems(FileType item) {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

@@ -17,7 +17,7 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public abstract class TableSpringDb<ITEM extends DbPersistent> {
+public abstract class TableSpringDb<ITEM extends DbPersistent<ITEM>> {
 	protected final ObservableList<ITEM> items;
 	private final List<IColumn<ITEM>> columns;
 	protected final UndoManager undoManager;

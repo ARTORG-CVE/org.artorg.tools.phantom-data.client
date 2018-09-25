@@ -19,7 +19,7 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public abstract class FilterTableSpringDb<ITEM extends DbPersistent> extends TableSpringDb<ITEM> {
+public abstract class FilterTableSpringDb<ITEM extends DbPersistent<ITEM>> extends TableSpringDb<ITEM> {
 	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
 	private List<Predicate<ITEM>> columnItemFilterPredicates;

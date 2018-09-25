@@ -65,10 +65,4 @@ public class PropertyFieldEditFactoryController extends GroupedItemEditFactoryCo
 		return panes;
 	}
 
-	@Override
-	protected void setSelectedChildItems(PropertyField item) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

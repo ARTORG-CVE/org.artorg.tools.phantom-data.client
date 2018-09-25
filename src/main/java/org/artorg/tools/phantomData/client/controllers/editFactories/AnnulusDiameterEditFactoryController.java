@@ -82,10 +82,4 @@ public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactory
 		return panes;
 	}
 
-	@Override
-	protected void setSelectedChildItems(AnnulusDiameter item) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

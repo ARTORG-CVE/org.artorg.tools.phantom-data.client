@@ -82,10 +82,4 @@ public class FileEditFactoryController extends GroupedItemEditFactoryController<
 		return panes;
 	}
 
-	@Override
-	protected void setSelectedChildItems(PhantomFile item) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

@@ -69,12 +69,4 @@ public class DoublePropertyEditFactoryController extends GroupedItemEditFactoryC
 		return panes;
 	}
 
-	@Override
-	protected void setSelectedChildItems(DoubleProperty item) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	
-
 }

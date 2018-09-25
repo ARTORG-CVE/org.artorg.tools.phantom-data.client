@@ -1,6 +1,10 @@
 package org.artorg.tools.phantomData.client.controller;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -11,6 +15,7 @@ import org.artorg.tools.phantomData.client.scene.control.TitledTableViewSelector
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
+import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -36,6 +41,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM>>
 	protected Button applyButton;
 	private int nRows = 0;
 	private List<Node> rightNodes;
+	private List<ISelector<ITEM, ?>> selectors;
 	
 	{
 		gridPane = new GridPane();
@@ -54,9 +60,34 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM>>
 	
 	protected abstract void addProperties(ITEM item);
 	
-	protected abstract void setSelectedChildItems(ITEM item);
-	
 	public abstract List<PropertyEntry> getPropertyEntries();
+	
+	protected void setSelectedChildItems(ITEM item, ISelector<ITEM, ?> selector) {
+		Class<?> paramTypeClass = selector.getSelectedItems().getClass();
+		Object arg = selector.getSelectedItems();
+		Reflect.invokeGenericSetter(item, paramTypeClass, selector.getSubItemClass(), arg);
+	}
+	
+	public List<ISelector<ITEM, ?>> getSelectors() {
+		return selectors;
+	}
+	
+	private List<ISelector<ITEM, ?>> createSelectors(ITEM item) {
+		List<ISelector<ITEM, ?>> selectors = new ArrayList<ISelector<ITEM, ?>>();
+		
+		if (Reflect.containsCollectionSetter(item, PhantomFile.class)) {
+			TitledTableViewSelector<ITEM, PhantomFile> titledSelector = new TitledTableViewSelector<ITEM, PhantomFile>();
+			titledSelector.getTitledPane().setText("Files");
+			titledSelector.setItem(item);
+			titledSelector.setSubItemClass(PhantomFile.class);
+			titledSelector.init();
+			selectors.add(titledSelector);
+		}
+		
+		return selectors;
+	}
+	
+	
 	
 	public final HttpConnectorSpring<ITEM> getConnector() {
 		return getTable().getConnector();
@@ -143,6 +174,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM>>
     }
     
     public AnchorPane create(ITEM item) {
+    	selectors = createSelectors(item);
 		addProperties(item); 
 		createRightNodes(getPropertyEntries());
 		initDefaultValues();
@@ -151,22 +183,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM>>
 			setTemplate(item);
 		applyButton.setOnAction(event -> {
 			ITEM newItem = createItem();
-			
-			
-			
-			
-			TitledTableViewSelector<ITEM, PhantomFile> titledSelector =
-					new TitledTableViewSelector<ITEM, PhantomFile>();
-			titledSelector.getTitledPane().setText(getTable().getFilterTable().getTableName());
-			titledSelector.setSubItemClass(PhantomFile.class);
-			Method m = Reflect.getMethodByGenericParamtype(item, PhantomFile.class);
-			Object args = titledSelector.getSelectedItems(); 
-			Function<ITEM, Object> selectedFilesSetter = Reflect.compileFunctional(m, args); 
-			selectedFilesSetter.apply(newItem);	
-			
-			
-			
-			setSelectedChildItems(newItem);
+			selectors.forEach(selector -> selector.setSelectedChildItems(item));
 			this.getTable().getItems().add(newItem);
 			getConnector().create(newItem);
 			this.initDefaultValues();
@@ -175,7 +192,8 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM>>
 		return pane;
     }
     
-    public AnchorPane edit(ITEM item) { 
+    public AnchorPane edit(ITEM item) {
+    	selectors = createSelectors(item);
     	Label label = new Label();
     	label.setText(item.getId().toString());
     	label.setDisable(true);
@@ -187,11 +205,10 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM>>
 		AnchorPane pane = createRootPane();
 		if (item != null)
 			setTemplate(item);
-
 		applyButton.setOnAction(event -> {
 			ITEM item2 = createItem();
 			copy(item2,item);
-			setSelectedChildItems(item);
+			selectors.forEach(selector -> selector.setSelectedChildItems(item));
 			this.getTable().refresh();
 			getConnector().update(item);
 		});

@@ -67,12 +67,4 @@ public class BooleanPropertyEditFactoryController extends GroupedItemEditFactory
 		return panes;
 	}
 
-	@Override
-	protected void setSelectedChildItems(BooleanProperty item) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	
-
 }

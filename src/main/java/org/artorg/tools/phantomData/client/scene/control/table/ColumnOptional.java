@@ -7,8 +7,8 @@ import java.util.function.Function;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class ColumnOptional<ITEM extends DbPersistent, 
-		PATH extends DbPersistent> extends IColumn<ITEM> {
+public class ColumnOptional<ITEM extends DbPersistent<ITEM>, 
+		PATH extends DbPersistent<PATH>> extends IColumn<ITEM> {
 	private final Function<ITEM, Optional<PATH>> itemToPropertyGetter;
 	private final Function<PATH, String> propertyToValueGetter;
 	private final BiConsumer<PATH, String> propertyToValueSetter;

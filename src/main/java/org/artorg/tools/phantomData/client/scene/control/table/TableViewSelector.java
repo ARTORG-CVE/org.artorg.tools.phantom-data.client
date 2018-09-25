@@ -40,7 +40,6 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM>, SUB_ITEM extends
 	private SplitPane splitPane;
 	private int height;
 	private ITEM item;
-	private Class<ITEM> itemClass;
 	private Class<SUB_ITEM> subItemClass;
 	
 	{
@@ -261,11 +260,6 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM>, SUB_ITEM extends
 	}
 
 	@Override
-	public Class<ITEM> getItemClass() {
-		return itemClass;
-	}
-
-	@Override
 	public ITEM getItem() {
 		return item;
 	}
@@ -276,19 +270,13 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM>, SUB_ITEM extends
 	}
 
 	@Override
-	public void setItemClass(Class<ITEM> itemClass) {
-		this.itemClass = itemClass;
-		
+	public void setSubItemClass(Class<SUB_ITEM> subItemClass) {
+		this.subItemClass = subItemClass;
 	}
 
 	@Override
 	public Class<SUB_ITEM> getSubItemClass() {
-		return this.subItemClass;
-	}
-
-	@Override
-	public void setSubItemClass(Class<SUB_ITEM> subItemClass) {
-		this.subItemClass = subItemClass;
+		return subItemClass;
 	}
 
 }

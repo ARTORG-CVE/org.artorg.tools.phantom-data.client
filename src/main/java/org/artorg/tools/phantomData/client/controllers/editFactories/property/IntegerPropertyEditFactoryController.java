@@ -69,10 +69,4 @@ public class IntegerPropertyEditFactoryController extends GroupedItemEditFactory
 		return panes;
 	}
 
-	@Override
-	protected void setSelectedChildItems(IntegerProperty item) {
-		// TODO Auto-generated method stub
-		
-	}
-	
 }

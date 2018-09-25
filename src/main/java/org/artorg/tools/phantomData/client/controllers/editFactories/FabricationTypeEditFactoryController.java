@@ -65,10 +65,4 @@ public class FabricationTypeEditFactoryController extends GroupedItemEditFactory
 		return panes;
 	}
 
-	@Override
-	protected void setSelectedChildItems(FabricationType item) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

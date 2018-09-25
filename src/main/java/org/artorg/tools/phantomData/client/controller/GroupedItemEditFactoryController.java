@@ -2,8 +2,11 @@ package org.artorg.tools.phantomData.client.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.scene.control.TitledTableViewSelector;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.scene.control.TitledPane;
@@ -22,11 +25,18 @@ public abstract class GroupedItemEditFactoryController<ITEM extends DbPersistent
 	
 	protected abstract List<TitledPane> createGroupedProperties(ITEM item);
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void addProperties(ITEM item) {
 		panes.addAll(createGroupedProperties(item));
 		panes.stream().filter(p -> p instanceof TitledPropertyPane)
 			.forEach(p -> entries.addAll(((TitledPropertyPane)p).getEntries()));
+		
+		List<ISelector<ITEM, ?>> selectors = this.getSelectors();
+		panes.addAll(selectors.stream()
+				.map(selector -> (TitledTableViewSelector<ITEM, PhantomFile>)selector)
+				.map(selector -> selector.getTitledPane()).collect(Collectors.toList()));
+		
 	}
 	
 	@Override
@@ -41,7 +51,6 @@ public abstract class GroupedItemEditFactoryController<ITEM extends DbPersistent
 
 		AnchorPane buttonPane = createButtonPane(applyButton);
 		
-		
 		rootPane.getChildren().add(vBox);
 		vBox.getChildren().addAll(panes);
 		vBox.getChildren().add(buttonPane);
@@ -51,6 +60,5 @@ public abstract class GroupedItemEditFactoryController<ITEM extends DbPersistent
 		
 		return rootPane;
     }
-	
 	
 }

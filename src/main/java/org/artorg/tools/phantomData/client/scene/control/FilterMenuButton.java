@@ -120,7 +120,7 @@ public class FilterMenuButton extends MenuButton {
 		
 	}
 	
-	public <ITEM extends DbPersistent> void setTable(FilterTableSpringDb<ITEM> 
+	public <ITEM extends DbPersistent<ITEM>> void setTable(FilterTableSpringDb<ITEM> 
 				filterTable, int col, Runnable refresh ) {
 		Supplier<List<String>> getters = () -> {
 			List<String> getterList = new ArrayList<String>();

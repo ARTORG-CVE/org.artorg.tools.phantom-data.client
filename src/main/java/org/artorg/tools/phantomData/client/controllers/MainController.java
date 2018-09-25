@@ -165,7 +165,7 @@ public class MainController {
         
     }
     
-    public <ITEM extends DbPersistent> void setTable(FilterTableSpringDb<ITEM> table) {
+    public <ITEM extends DbPersistent<ITEM>> void setTable(FilterTableSpringDb<ITEM> table) {
 		this.table = table;
 	}
     

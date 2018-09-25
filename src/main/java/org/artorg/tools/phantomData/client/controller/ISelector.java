@@ -2,24 +2,21 @@ package org.artorg.tools.phantomData.client.controller;
 
 import java.util.Set;
 
+import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 
-public interface ISelector<ITEM extends DbPersistent, SUB_ITEM extends DbPersistent> {
+public interface ISelector<ITEM extends DbPersistent<ITEM>, SUB_ITEM extends DbPersistent<SUB_ITEM>> {
 	
 	ITEM getItem();
 	
 	void setItem(ITEM item);
 	
-	Class<ITEM> getItemClass();
-	
-	Class<SUB_ITEM> getSubItemClass();
-	
 	void setSubItemClass(Class<SUB_ITEM> subItemClass);
 	
-	void setItemClass(Class<ITEM> itemClass);
+	Class<SUB_ITEM> getSubItemClass();
 	
 	ObservableList<SUB_ITEM> getSelectableItems();
 	
@@ -36,5 +33,11 @@ public interface ISelector<ITEM extends DbPersistent, SUB_ITEM extends DbPersist
 	Node getGraphic();
 	
 	void init();
+	
+	default void setSelectedChildItems(ITEM item) {
+		Class<?> paramTypeClass = getSelectedItems().getClass();
+		Object arg = getSelectedItems();
+		Reflect.invokeGenericSetter(item, paramTypeClass, getSubItemClass(), arg);
+	}
 	
 }

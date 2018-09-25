@@ -36,7 +36,7 @@ public class Connectors {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <ITEM extends DbPersistent> HttpConnectorSpring<ITEM> getConnector(Class<ITEM> itemClass) {
+	public static <ITEM extends DbPersistent<ITEM>> HttpConnectorSpring<ITEM> getConnector(Class<ITEM> itemClass) {
 		return (HttpConnectorSpring<ITEM>) connectorMap.get(itemClass);
 	}
 

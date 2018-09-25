@@ -64,11 +64,5 @@ public class LiteratureBaseEditFactoryController extends GroupedItemEditFactoryC
 		
 		return panes;
 	}
-
-	@Override
-	protected void setSelectedChildItems(LiteratureBase item) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	
 }

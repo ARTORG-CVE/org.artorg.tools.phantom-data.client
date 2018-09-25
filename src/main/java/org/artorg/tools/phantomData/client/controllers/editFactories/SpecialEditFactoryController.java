@@ -65,10 +65,4 @@ public class SpecialEditFactoryController extends GroupedItemEditFactoryControll
 		return panes;
 	}
 
-	@Override
-	protected void setSelectedChildItems(Special item) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

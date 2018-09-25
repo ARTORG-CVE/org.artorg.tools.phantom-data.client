@@ -10,13 +10,11 @@ import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.TitledTableViewSelector;
 import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.Phantom;
-import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.model.Special;
 
 import javafx.scene.control.ComboBox;
@@ -32,7 +30,6 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
     private ComboBox<LiteratureBase> comboBoxLiterature;
     private ComboBox<Special> comboBoxSpecials;
 	private TextField textFieldModelNumber;
-	private TitledTableViewSelector<Phantom, PhantomFile> titledSelector;
 	
 	{
 		labelIdValue = new Label("id");
@@ -126,22 +123,7 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 		panes.add(generalPane);
 		
-		titledSelector = new TitledTableViewSelector<Phantom, PhantomFile>();
-		titledSelector.getTitledPane().setText("Files");
-		titledSelector.setItem(item);
-		titledSelector.setSubItemClass(PhantomFile.class);
-		titledSelector.setItemClass(Phantom.class);
-		titledSelector.init();
-		
-		panes.add(titledSelector.getTitledPane());
-		
-		
 		return panes;
 	}
 	
-	@Override
-	protected void setSelectedChildItems(Phantom item) {
-		item.setFiles((List<PhantomFile>) titledSelector.getSelectedItems());
-	}
-    
 }
