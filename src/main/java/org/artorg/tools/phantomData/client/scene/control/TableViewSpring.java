@@ -26,7 +26,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
 public abstract class TableViewSpring<ITEM extends DbPersistent<ITEM>> extends TableView<ITEM> {
-	private FilterTableSpringDb<ITEM> filterTable;
+	private FilterableTable<ITEM> filterTable;
 	private List<FilterMenuButton> filterMenuButtons;
 	private ListChangeListener<ITEM> listenerChangedListenerRefresh;
 	
@@ -47,7 +47,7 @@ public abstract class TableViewSpring<ITEM extends DbPersistent<ITEM>> extends T
 		return filterTable.getConnector();
 	}
 	
-	public void setTable(FilterTableSpringDb<ITEM> table) {
+	public void setTable(FilterableTable<ITEM> table) {
 		this.filterTable = table;
 
 		reload();
@@ -124,7 +124,7 @@ public abstract class TableViewSpring<ITEM extends DbPersistent<ITEM>> extends T
 	    } );
 	}
 
-	public FilterTableSpringDb<ITEM> getFilterTable() {
+	public FilterableTable<ITEM> getFilterTable() {
 		return filterTable;
 	}
 	

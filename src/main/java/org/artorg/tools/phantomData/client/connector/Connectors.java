@@ -35,8 +35,11 @@ public class Connectors {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <ITEM extends DbPersistent<ITEM>> HttpConnectorSpring<ITEM> getConnector(Class<ITEM> itemClass) {
-		return (HttpConnectorSpring<ITEM>) connectorMap.get(itemClass);
+	public static <ITEM> HttpConnectorSpring<ITEM> getConnector(Class<ITEM> itemClass) {
+		HttpConnectorSpring<ITEM> connector = (HttpConnectorSpring<ITEM>) connectorMap.get(itemClass);
+		if (connector == null) throw new IllegalArgumentException();
+		
+		return connector;
 	}
 
 }

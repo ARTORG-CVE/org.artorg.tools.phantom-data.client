@@ -119,7 +119,7 @@ public class FilterMenuButton extends MenuButton {
 		
 	}
 	
-	public <ITEM extends DbPersistent<ITEM>> void setTable(FilterTableSpringDb<ITEM> 
+	public <ITEM> void setTable(FilterableTable<ITEM> 
 				filterTable, int col, Runnable refresh ) {
 		Supplier<List<String>> getters = () -> {
 			List<String> getterList = new ArrayList<String>();
@@ -134,7 +134,7 @@ public class FilterMenuButton extends MenuButton {
 			filterTable.setColumnItemFilterValues(col, this.getSelectedValues());
 			if (this.isSortComparatorSet())
 				filterTable.setSortComparator(this.getSortComparator(), 
-						item -> filterTable.getFilteredValue(item,col));
+						item -> filterTable.getFilteredValue(item, col));
 			filterTable.setColumnTextFilterValues(col, this.getRegex());
 		    refresh.run();
 		});

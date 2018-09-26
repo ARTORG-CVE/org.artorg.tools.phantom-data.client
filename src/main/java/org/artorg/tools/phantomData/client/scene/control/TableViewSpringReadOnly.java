@@ -20,19 +20,19 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 
 public class TableViewSpringReadOnly<ITEM> extends TableView<ITEM> {	
-	private FilterTableSpringDb2<ITEM> filterTable;
-	private List<FilterMenuButton2> filterMenuButtons;
+	private FilterableTable<ITEM> filterTable;
+	private List<FilterMenuButton> filterMenuButtons;
 	
-	public List<FilterMenuButton2> getFilterMenuButtons() {
+	public List<FilterMenuButton> getFilterMenuButtons() {
 		return filterMenuButtons;
 	}
 
 	{
 		super.setEditable(true);
-		filterMenuButtons = new ArrayList<FilterMenuButton2>();
+		filterMenuButtons = new ArrayList<FilterMenuButton>();
 	}
 	
-	public void setTable(FilterTableSpringDb2<ITEM> table) {
+	public void setTable(FilterableTable<ITEM> table) {
 		this.filterTable = table;
 
 		reload();
@@ -62,7 +62,7 @@ public class TableViewSpringReadOnly<ITEM> extends TableView<ITEM> {
 			column.setSortable(false);
 			
 			final int localCol = col;
-			FilterMenuButton2 filterMenuButton = new FilterMenuButton2();
+			FilterMenuButton filterMenuButton = new FilterMenuButton();
 			filterMenuButton.setText(columnNames.get(col));
 			filterMenuButton.setTable(filterTable, localCol, () -> filterTable.applyFilter()); 
 			filterMenuButtons.add(filterMenuButton);
@@ -79,7 +79,7 @@ public class TableViewSpringReadOnly<ITEM> extends TableView<ITEM> {
 	    Platform.runLater(() -> showFilterButtons());
 	}
 
-	public FilterTableSpringDb2<ITEM> getFilterTable() {
+	public FilterableTable<ITEM> getFilterTable() {
 		return filterTable;
 	}
 	
@@ -93,7 +93,7 @@ public class TableViewSpringReadOnly<ITEM> extends TableView<ITEM> {
             	Label label = (Label)n;
             	
             	String columnName = label.getText();
-            	Optional<FilterMenuButton2> filterMenuButton = filterMenuButtons.stream()
+            	Optional<FilterMenuButton> filterMenuButton = filterMenuButtons.stream()
             			.filter(f -> f.getText().equals(columnName))
             			.findFirst();
             	if(filterMenuButton.isPresent()) {

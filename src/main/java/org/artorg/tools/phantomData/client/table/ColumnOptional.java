@@ -48,7 +48,7 @@ public class ColumnOptional<ITEM extends DbPersistent<ITEM>,
 	public boolean update(ITEM item) {
 		System.out.println("updated value in database :)");
 		Optional<PATH> path = itemToPropertyGetter.apply(item);
-		HttpConnectorSpring<PATH> connector = Connectors.getConnector(item.getClass());
+		HttpConnectorSpring<PATH> connector = (HttpConnectorSpring<PATH>) Connectors.getConnector(item.getClass());
 		if (path.isPresent()) 
 			return connector.update(path.get());
 		return false;

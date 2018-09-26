@@ -67,11 +67,11 @@ public class TableViewSelector<ITEM, SUB_ITEM> implements ISelector<ITEM, SUB_IT
 		return tableView2.getItems();
 	}
 	
-	public void setTable1(FilterTableSpringDb2<SUB_ITEM> table) {
+	public void setTable1(FilterableTable<SUB_ITEM> table) {
 		this.tableView1.setTable(table);
 	}
 	
-	public void setTable2(FilterTableSpringDb2<SUB_ITEM> table) {
+	public void setTable2(FilterableTable<SUB_ITEM> table) {
 		this.tableView2.setTable(table);
 	}
 	
@@ -104,7 +104,7 @@ public class TableViewSelector<ITEM, SUB_ITEM> implements ISelector<ITEM, SUB_IT
 	}
 	
 	private void addFilterMenuButtonToColumn(TableViewSpringReadOnly<SUB_ITEM> tableView, int col, String columnName) {
-		FilterMenuButton2 filterMenuButton = new FilterMenuButton2();
+		FilterMenuButton filterMenuButton = new FilterMenuButton();
 		filterMenuButton.setText(columnName);
 		filterMenuButton.setTable(tableView.getFilterTable(), col, () -> tableView.getFilterTable().applyFilter()); 
 		tableView.getFilterMenuButtons().add(filterMenuButton);

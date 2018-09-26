@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring2;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -19,7 +19,7 @@ import javafx.collections.ObservableList;
 public abstract class TableSpringDb2<ITEM> {
 	protected final ObservableList<ITEM> items;
 	private final List<IColumn<ITEM>> columns;
-	protected HttpConnectorSpring2<ITEM> connector;
+	protected HttpConnectorSpring<ITEM> connector;
 	private boolean isIdColumnVisible;
 	
 	{
@@ -33,14 +33,14 @@ public abstract class TableSpringDb2<ITEM> {
 	
 	public abstract String getTableName();
 	
-	public void setConnector(HttpConnectorSpring2<ITEM> connector) {
+	public void setConnector(HttpConnectorSpring<ITEM> connector) {
 		this.connector = connector;
 		this.columns.clear();
 		readAllData();
 		this.columns.addAll(createColumns());
 	}
 	
-	public HttpConnectorSpring2<ITEM> getConnector() {
+	public HttpConnectorSpring<ITEM> getConnector() {
 		return connector;
 	}
 	

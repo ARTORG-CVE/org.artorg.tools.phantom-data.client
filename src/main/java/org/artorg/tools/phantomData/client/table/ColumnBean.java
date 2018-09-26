@@ -9,15 +9,14 @@ import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class Column2<ITEM extends DbPersistent<ITEM>, 
-		PATH extends DbPersistent<PATH>> extends Column<ITEM, PATH>  {
+public class ColumnBean<ITEM extends DbPersistent<ITEM>, 
+		PATH extends DbPersistent<PATH>> extends IColumn<ITEM>  {
 	private final Function<ITEM, PATH> itemToPropertyGetter;
 	private final Function<PATH, String> propertyToValueGetter;
 	private final BiConsumer<PATH, String> propertyToValueSetter;
 	
-	public Column2(String columnName, Function<ITEM, PATH> itemToPropertyGetter, Class<PATH> pathClass, String propertyName) {
-		super(columnName, null, null, null);
-		
+	public ColumnBean(String columnName, Function<ITEM, PATH> itemToPropertyGetter, Class<PATH> pathClass, String propertyName) {
+		super(columnName);
 		this.itemToPropertyGetter = itemToPropertyGetter;
 		this.propertyToValueGetter = getValueGetter(pathClass, propertyName);
 		this.propertyToValueSetter = getValueSetter(pathClass, propertyName);
@@ -58,7 +57,7 @@ public class Column2<ITEM extends DbPersistent<ITEM>,
 	@Override
 	public boolean update(ITEM item) {
 		System.out.println("updated value in database :)");
-		HttpConnectorSpring<PATH> connector = Connectors.getConnector(item.getClass());
+		HttpConnectorSpring<PATH> connector = (HttpConnectorSpring<PATH>) Connectors.getConnector(item.getClass());
 		return connector.update(itemToPropertyGetter.apply(item));
 	}
 

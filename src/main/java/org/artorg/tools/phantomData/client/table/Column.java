@@ -36,7 +36,7 @@ public class Column<ITEM extends DbPersistent<ITEM>,
 	@Override
 	public boolean update(ITEM item) {
 		System.out.println("updated value in database :)");
-		HttpConnectorSpring<PATH> connector = Connectors.getConnector(item.getClass());
+		HttpConnectorSpring<PATH> connector = (HttpConnectorSpring<PATH>) Connectors.getConnector(item.getClass());
 		return connector.update(itemToPropertyGetter.apply(item));
 	}
 

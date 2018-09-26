@@ -20,7 +20,7 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public abstract class FilterTableSpringDb<ITEM extends DbPersistent<ITEM>> extends TableSpringDb<ITEM> {
+public class FilterTableSpringDb<ITEM extends DbPersistent<ITEM>> extends TableSpringDb<ITEM> implements FilterableTable<ITEM> {
 	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
 	private List<Predicate<ITEM>> columnItemFilterPredicates;
@@ -46,6 +46,7 @@ public abstract class FilterTableSpringDb<ITEM extends DbPersistent<ITEM>> exten
 	public void setItemClass(Class<ITEM> itemClass) {
 		this.itemClass = itemClass;
 		this.setConnector(Connectors.getConnector(itemClass));
+		
 	}
 	
 	
@@ -224,6 +225,18 @@ public abstract class FilterTableSpringDb<ITEM extends DbPersistent<ITEM>> exten
 		}
 		
 		return columnStrings.stream().collect(Collectors.joining("\n"));
+	}
+
+	@Override
+	public List<IColumn<ITEM>> createColumns() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getTableName() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

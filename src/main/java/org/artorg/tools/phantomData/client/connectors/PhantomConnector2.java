@@ -1,12 +1,12 @@
 package org.artorg.tools.phantomData.client.connectors;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring2;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.controller.PhantomController;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class PhantomConnector2 extends HttpConnectorSpring2<Phantom> {
+public class PhantomConnector2 extends HttpConnectorSpring<Phantom> {
 	
 	private static final PhantomConnector2 connector;
 	

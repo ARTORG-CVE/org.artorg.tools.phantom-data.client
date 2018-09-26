@@ -11,9 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.artorg.tools.phantomData.client.connector.Connectors;
-import org.artorg.tools.phantomData.client.connector.Connectors2;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring2;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -21,7 +19,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 @SuppressWarnings("unchecked")
-public abstract class FilterTableSpringDb2<ITEM> extends TableSpringDb2<ITEM> {
+public class FilterTableSpringDb2<ITEM> extends TableSpringDb2<ITEM> implements FilterableTable<ITEM> {
 	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
 	private List<Predicate<ITEM>> columnItemFilterPredicates;
@@ -43,7 +41,7 @@ public abstract class FilterTableSpringDb2<ITEM> extends TableSpringDb2<ITEM> {
 	
 	public void setItemClass(Class<ITEM> itemClass) {
 		this.itemClass = itemClass;
-		this.setConnector(Connectors2.getConnector(itemClass));
+		this.setConnector(Connectors.getConnector(itemClass));
 	}
 	
 	public void setSortComparator(Comparator<String> sortComparator, Function<ITEM, String> valueGetter) {
@@ -51,7 +49,7 @@ public abstract class FilterTableSpringDb2<ITEM> extends TableSpringDb2<ITEM> {
 	}
 	
 	@Override
-	public void setConnector(HttpConnectorSpring2<ITEM> connector) {
+	public void setConnector(HttpConnectorSpring<ITEM> connector) {
 		super.setConnector(connector);
 		int nCols = getNcols();
 		
@@ -191,6 +189,24 @@ public abstract class FilterTableSpringDb2<ITEM> extends TableSpringDb2<ITEM> {
 		}
 		
 		return columnStrings.stream().collect(Collectors.joining("\n"));
+	}
+
+	@Override
+	public void setFilteredValue(ITEM item, int localCol, String newValue) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<IColumn<ITEM>> createColumns() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getTableName() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
