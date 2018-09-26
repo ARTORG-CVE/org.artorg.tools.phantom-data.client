@@ -6,7 +6,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.TableViewSpring;
+import org.artorg.tools.phantomData.client.scene.control.TableViewSpringEditFilterable;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 
@@ -15,14 +15,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class FileTypeEditFactoryController extends GroupedItemEditFactoryController<FileType> {
-	private TableViewSpring<FileType> table;
+	private TableViewSpringEditFilterable<FileType> table;
 	private TextField textFieldName;
 	
 	{
 		textFieldName = new TextField();
 	}
 
-	public FileTypeEditFactoryController(TableViewSpring<FileType> table) {
+	public FileTypeEditFactoryController(TableViewSpringEditFilterable<FileType> table) {
 		this.table = table;
 	}
 	@Override
@@ -42,7 +42,7 @@ public class FileTypeEditFactoryController extends GroupedItemEditFactoryControl
 	}
 
 	@Override
-	protected TableViewSpring<FileType> getTable() {
+	protected TableViewSpringEditFilterable<FileType> getTable() {
 		return table;
 	}
 	

@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
+import org.artorg.tools.phantomData.client.table.ITableEditFilterable;
+import org.artorg.tools.phantomData.client.table.ITableFilterable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -25,8 +27,8 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
-public abstract class TableViewSpring<ITEM extends DbPersistent<ITEM>> extends TableView<ITEM> {
-	private FilterableTable<ITEM> filterTable;
+public abstract class TableViewSpringEditFilterable<ITEM extends DbPersistent<ITEM>> extends TableView<ITEM> {
+	private ITableEditFilterable<ITEM> filterTable;
 	private List<FilterMenuButton> filterMenuButtons;
 	private ListChangeListener<ITEM> listenerChangedListenerRefresh;
 	
@@ -47,7 +49,7 @@ public abstract class TableViewSpring<ITEM extends DbPersistent<ITEM>> extends T
 		return filterTable.getConnector();
 	}
 	
-	public void setTable(FilterableTable<ITEM> table) {
+	public void setTable(ITableEditFilterable<ITEM> table) {
 		this.filterTable = table;
 
 		reload();
@@ -124,7 +126,7 @@ public abstract class TableViewSpring<ITEM extends DbPersistent<ITEM>> extends T
 	    } );
 	}
 
-	public FilterableTable<ITEM> getFilterTable() {
+	public ITableFilterable<ITEM> getFilterTable() {
 		return filterTable;
 	}
 	

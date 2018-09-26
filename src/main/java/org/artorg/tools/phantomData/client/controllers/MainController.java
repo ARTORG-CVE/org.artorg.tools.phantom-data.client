@@ -5,7 +5,7 @@ import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.io.IOutil;
-import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDb;
+import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDbEditable;
 import org.artorg.tools.phantomData.client.tables.AnnulusDiameterTable;
 import org.artorg.tools.phantomData.client.tables.FabricationTypeTable;
 import org.artorg.tools.phantomData.client.tables.FileTable;
@@ -33,7 +33,7 @@ import javafx.stage.WindowEvent;
 public class MainController {
 	private LayoutController layoutController;
 	
-	private FilterTableSpringDb<?> table;
+	private FilterTableSpringDbEditable<?> table;
 	private Stage stage;
 	
 	private static String urlLocalhost;
@@ -111,17 +111,17 @@ public class MainController {
 
     @FXML
     void save(ActionEvent event) {
-    	table.getUndoManager().save();
+    	table.getTable().getUndoManager().save();
     }
 
     @FXML
     void undo(ActionEvent event) {
-    	table.getUndoManager().undo();
+    	table.getTable().getUndoManager().undo();
     }
     
     @FXML
     void redo(ActionEvent event) {
-    	table.getUndoManager().redo();
+    	table.getTable().getUndoManager().redo();
     }
     
 	@FXML
@@ -165,7 +165,7 @@ public class MainController {
         
     }
     
-    public <ITEM extends DbPersistent<ITEM>> void setTable(FilterTableSpringDb<ITEM> table) {
+    public <ITEM extends DbPersistent<ITEM>> void setTable(FilterTableSpringDbEditable<ITEM> table) {
 		this.table = table;
 	}
     

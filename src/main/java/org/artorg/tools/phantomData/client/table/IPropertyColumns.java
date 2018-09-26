@@ -20,7 +20,7 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.ObservableList;
 
-public interface PropertyColumns {
+public interface IPropertyColumns {
 	
 	default <ITEM extends PropertyContainer & DbPersistent<ITEM>> 
 		void createPropertyColumns(List<IColumn<ITEM>> columns, 

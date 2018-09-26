@@ -1,19 +1,19 @@
 package org.artorg.tools.phantomData.client.controllers;
 
-import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDb;
-import org.artorg.tools.phantomData.client.scene.control.TableViewSpring;
+import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDbEditable;
+import org.artorg.tools.phantomData.client.scene.control.TableViewSpringEditFilterable;
 import org.artorg.tools.phantomData.client.scene.layout.AnchorPaneAddableTo;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.scene.layout.AnchorPane;
 
 public class SecondTable extends AnchorPaneAddableTo {
-	private FilterTableSpringDb<?> table;
+	private FilterTableSpringDbEditable<?> table;
 //	private TableViewSpring<?, ?> view;
 	
 	public <ITEM extends DbPersistent<ITEM>> 
 		void setTable(
-			TableViewSpring<ITEM> table) {
+			TableViewSpringEditFilterable<ITEM> table) {
 //		this.table = table;
 //		TableViewSpring<ITEM, ID_TYPE> view = new TableViewSpring<ITEM, ID_TYPE>();
 //		view.setTable(table);
@@ -27,10 +27,10 @@ public class SecondTable extends AnchorPaneAddableTo {
 	}
 	
 	public void undo() {
-		table.getUndoManager().undo();
+		table.getTable().getUndoManager().undo();
 	}
 	
 	public void redo() {
-		table.getUndoManager().redo();
+		table.getTable().getUndoManager().redo();
 	}
 }

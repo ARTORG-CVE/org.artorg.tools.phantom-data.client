@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
+import org.artorg.tools.phantomData.client.table.ITableFilterable;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -19,7 +20,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 @SuppressWarnings("unchecked")
-public class FilterTableSpringDb2<ITEM> extends TableSpringDb2<ITEM> implements FilterableTable<ITEM> {
+public class FilterTableSpringDb2<ITEM> extends TableSpringDb2<ITEM> implements ITableFilterable<ITEM> {
 	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
 	private List<Predicate<ITEM>> columnItemFilterPredicates;
@@ -189,12 +190,6 @@ public class FilterTableSpringDb2<ITEM> extends TableSpringDb2<ITEM> implements 
 		}
 		
 		return columnStrings.stream().collect(Collectors.joining("\n"));
-	}
-
-	@Override
-	public void setFilteredValue(ITEM item, int localCol, String newValue) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

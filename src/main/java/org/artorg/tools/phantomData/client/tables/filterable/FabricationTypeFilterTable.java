@@ -3,12 +3,12 @@ package org.artorg.tools.phantomData.client.tables.filterable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDb;
+import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDbEditable;
 import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 
-public class FabricationTypeFilterTable extends FilterTableSpringDb<FabricationType> {
+public class FabricationTypeFilterTable extends FilterTableSpringDbEditable<FabricationType> {
 	
 	{
 		setItemClass(FabricationType.class);

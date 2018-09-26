@@ -2,11 +2,11 @@ package org.artorg.tools.phantomData.client.tables;
 
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controllers.editFactories.SpecialEditFactoryController;
-import org.artorg.tools.phantomData.client.scene.control.TableViewSpring;
+import org.artorg.tools.phantomData.client.scene.control.TableViewSpringEditFilterable;
 import org.artorg.tools.phantomData.client.tables.filterable.SpecialFilterTable;
 import org.artorg.tools.phantomData.server.model.Special;
 
-public class SpecialTable extends TableViewSpring<Special> {
+public class SpecialTable extends TableViewSpringEditFilterable<Special> {
 
 	{
 		this.setTable(new SpecialFilterTable());

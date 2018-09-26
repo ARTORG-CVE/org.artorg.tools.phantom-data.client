@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
-import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDb;
+import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDbEditable;
 import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.model.property.Property;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 public abstract class PropertyFilterTable<ITEM extends Property<ITEM, VALUE>, VALUE extends Comparable<VALUE>> 
-		extends FilterTableSpringDb<ITEM> {
+		extends FilterTableSpringDbEditable<ITEM> {
 
 	@Override
 	public List<IColumn<ITEM>> createColumns() {

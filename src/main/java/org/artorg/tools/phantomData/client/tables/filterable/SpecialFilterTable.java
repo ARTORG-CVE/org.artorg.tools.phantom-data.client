@@ -3,13 +3,13 @@ package org.artorg.tools.phantomData.client.tables.filterable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDb;
+import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDbEditable;
 import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.IColumn;
-import org.artorg.tools.phantomData.client.table.PropertyColumns;
+import org.artorg.tools.phantomData.client.table.IPropertyColumns;
 import org.artorg.tools.phantomData.server.model.Special;
 
-public class SpecialFilterTable extends FilterTableSpringDb<Special> implements PropertyColumns {
+public class SpecialFilterTable extends FilterTableSpringDbEditable<Special> implements IPropertyColumns {
 
 	{
 		setItemClass(Special.class);

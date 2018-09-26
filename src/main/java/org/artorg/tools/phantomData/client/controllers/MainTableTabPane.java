@@ -1,7 +1,7 @@
 package org.artorg.tools.phantomData.client.controllers;
 
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
-import org.artorg.tools.phantomData.client.scene.control.TableViewSpring;
+import org.artorg.tools.phantomData.client.scene.control.TableViewSpringEditFilterable;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -29,7 +29,7 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 	}	
 
 	public <ITEM extends DbPersistent<ITEM>> void openTableTab(
-			TableViewSpring<ITEM> tableViewSpring, String name) {
+			TableViewSpringEditFilterable<ITEM> tableViewSpring, String name) {
 		Tab tab = new Tab(name);
 		tab.setContent(tableViewSpring);
 		tabPane.getTabs().add(tab);

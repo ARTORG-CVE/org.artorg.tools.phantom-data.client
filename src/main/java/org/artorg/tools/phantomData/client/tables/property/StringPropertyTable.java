@@ -2,11 +2,11 @@ package org.artorg.tools.phantomData.client.tables.property;
 
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controllers.editFactories.property.StringPropertyEditFactoryController;
-import org.artorg.tools.phantomData.client.scene.control.TableViewSpring;
+import org.artorg.tools.phantomData.client.scene.control.TableViewSpringEditFilterable;
 import org.artorg.tools.phantomData.client.tables.filterable.property.StringPropertyFilterTable;
 import org.artorg.tools.phantomData.server.model.property.StringProperty;
 
-public class StringPropertyTable extends TableViewSpring<StringProperty> {
+public class StringPropertyTable extends TableViewSpringEditFilterable<StringProperty> {
 
 	{
 		this.setTable(new StringPropertyFilterTable());

@@ -15,12 +15,13 @@ import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.table.IColumn;
+import org.artorg.tools.phantomData.client.table.ITableEditFilterable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class FilterTableSpringDb<ITEM extends DbPersistent<ITEM>> extends TableSpringDb<ITEM> implements FilterableTable<ITEM> {
+public class FilterTableSpringDbEditable<ITEM extends DbPersistent<ITEM>> implements ITableEditFilterable<ITEM> {
 	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
 	private List<Predicate<ITEM>> columnItemFilterPredicates;
@@ -30,6 +31,7 @@ public class FilterTableSpringDb<ITEM extends DbPersistent<ITEM>> extends TableS
 	private List<Integer> mappedColumnIndexes;
 	private Function<Integer, Integer> columnIndexMapper;
 	private Class<ITEM> itemClass;
+	private TableSpringDb<ITEM> table;
 	
 	{
 		filteredItems = FXCollections.observableArrayList();
@@ -41,7 +43,7 @@ public class FilterTableSpringDb<ITEM extends DbPersistent<ITEM>> extends TableS
 		
 	}
 	
-	public FilterTableSpringDb() {}
+	public FilterTableSpringDbEditable() {}
 	
 	public void setItemClass(Class<ITEM> itemClass) {
 		this.itemClass = itemClass;
@@ -49,18 +51,21 @@ public class FilterTableSpringDb<ITEM extends DbPersistent<ITEM>> extends TableS
 		
 	}
 	
+	public TableSpringDb<ITEM> getTable() {
+		return table;
+	}
+	
 	
 	public void setSortComparator(Comparator<String> sortComparator, Function<ITEM, String> valueGetter) {
 		this.sortComparator = (item1, item2) -> sortComparator.compare(valueGetter.apply(item1),valueGetter.apply(item2));
 	}
 	
-	@Override
 	public void setConnector(HttpConnectorSpring<ITEM> connector) {
-		super.setConnector(connector);
-		int nCols = getNcols();
+		table.setConnector(connector);
+		int nCols = table.getNcols();
 		
 		mappedColumnIndexes = new ArrayList<Integer>(nCols);
-		List<IColumn<ITEM>> columns = super.getColumns();
+		List<IColumn<ITEM>> columns = table.getColumns();
 		for (int i=0; i<nCols; i++)
 			if (columns.get(i).isVisible())
 				mappedColumnIndexes.add(i);
@@ -75,9 +80,9 @@ public class FilterTableSpringDb<ITEM extends DbPersistent<ITEM>> extends TableS
 	
 	@Override
 	public void readAllData() {
-		super.readAllData();
+		table.readAllData();
 		filteredItems.clear();
-		filteredItems.addAll(super.getItems());
+		filteredItems.addAll(table.getItems());
 	}
 	
 	@Override
@@ -94,7 +99,7 @@ public class FilterTableSpringDb<ITEM extends DbPersistent<ITEM>> extends TableS
 	}
 	
 	public List<IColumn<ITEM>> getFilteredColumns() {
-		return mappedColumnIndexes.stream().map(i -> getColumns().get(i)).collect(Collectors.toList());
+		return mappedColumnIndexes.stream().map(i -> table.getColumns().get(i)).collect(Collectors.toList());
 	}
 	
 	public List<String> getFilteredColumnNames() {
@@ -115,11 +120,11 @@ public class FilterTableSpringDb<ITEM extends DbPersistent<ITEM>> extends TableS
 			}, () -> {
 				getFilteredColumns().get(filteredCol).update(filteredItem);
 		});
-		undoManager.addAndRun(node);
+		table.undoManager.addAndRun(node);
 	}
 	
 	public String getFilteredValue(ITEM item, int col) {
-		return getValue(item, columnIndexMapper.apply(col));
+		return table.getValue(item, columnIndexMapper.apply(col));
 	}
 	
 	public String getFilteredValue(int row, int col) {
@@ -129,19 +134,19 @@ public class FilterTableSpringDb<ITEM extends DbPersistent<ITEM>> extends TableS
 	public String getColumnFilteredValue(int row, int col) {
 		List<IColumn<ITEM>> columns = getFilteredColumns();
 		IColumn<ITEM> column = columns.get(col);
-		ObservableList<ITEM> items = super.getItems();
+		ObservableList<ITEM> items = table.getItems();
 		ITEM item = items.get(row);
 		column.get(item);
-		return getFilteredColumns().get(col).get(super.getItems().get(row));
+		return getFilteredColumns().get(col).get(table.getItems().get(row));
 	}
 	
 	public void setFilteredValue(int row, int col, String value, Consumer<String> redo, Consumer<String> undo) {
-		ITEM superItem = items.stream().filter(item -> item.getId().equals(filteredItems.get(row).getId())).findFirst().get();
+		ITEM superItem = table.items.stream().filter(item -> item.getId().equals(filteredItems.get(row).getId())).findFirst().get();
 		setFilteredValue(superItem, filteredItems.get(row), col, value, redo, undo);
 	}
 	
 	public void setFilteredValue(ITEM item, int filteredCol, String value, Consumer<String> redo, Consumer<String> undo) {
-		ITEM superItem = items.stream().filter(i -> i.getId().equals(item.getId())).findFirst().get();
+		ITEM superItem = table.items.stream().filter(i -> i.getId().equals(item.getId())).findFirst().get();
 		setFilteredValue(superItem, item, filteredCol, value, redo, undo);
 	}
 	
@@ -179,7 +184,7 @@ public class FilterTableSpringDb<ITEM extends DbPersistent<ITEM>> extends TableS
 				.reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
 		filterPredicate = itemFilter.and(textFilter);
 		this.filteredItems.clear();
-		this.filteredItems.addAll(items.stream().filter(filterPredicate).sorted(sortComparator)
+		this.filteredItems.addAll(table.items.stream().filter(filterPredicate).sorted(sortComparator)
 				.collect(Collectors.toList()));
 	}
 	
@@ -228,13 +233,36 @@ public class FilterTableSpringDb<ITEM extends DbPersistent<ITEM>> extends TableS
 	}
 
 	@Override
-	public List<IColumn<ITEM>> createColumns() {
+	public String getTableName() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getTableName() {
+	public int getNrows() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public HttpConnectorSpring<ITEM> getConnector() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getItemName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setItems(ObservableList<ITEM> items) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public List<IColumn<ITEM>> createColumns() {
 		// TODO Auto-generated method stub
 		return null;
 	}

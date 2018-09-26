@@ -3,7 +3,7 @@ package org.artorg.tools.phantomData.client.tables.filterable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDb;
+import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDbEditable;
 import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDb2;
 import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.IColumn;
@@ -13,7 +13,7 @@ import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.Special;
 
-public class PhantomFilterTable extends FilterTableSpringDb<Phantom> {
+public class PhantomFilterTable extends FilterTableSpringDbEditable<Phantom> {
 
 	{
 		setItemClass(Phantom.class);

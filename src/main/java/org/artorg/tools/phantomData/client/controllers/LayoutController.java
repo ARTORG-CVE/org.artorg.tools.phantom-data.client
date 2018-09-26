@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
-import org.artorg.tools.phantomData.client.scene.control.TableViewSpring;
+import org.artorg.tools.phantomData.client.scene.control.TableViewSpringEditFilterable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.fxml.FXML;
@@ -40,17 +40,17 @@ public class LayoutController {
     	scene3d.addTo(pane3d);
     }
     
-	public <ITEM extends DbPersistent<ITEM>> void openMainTableTab(TableViewSpring<ITEM> table) {
+	public <ITEM extends DbPersistent<ITEM>> void openMainTableTab(TableViewSpringEditFilterable<ITEM> table) {
 		openMainTableTab(table, table.getFilterTable().getTableName());
 	}
 	
 	public <ITEM extends DbPersistent<ITEM>> void openMainTableTab(
-			TableViewSpring<ITEM> table, String name) {
+			TableViewSpringEditFilterable<ITEM> table, String name) {
 		mainSplitPane.getMainTableTabPane().openTableTab(table, name);
 	}
 	
 	public <ITEM extends DbPersistent<ITEM>> void setSecondTable(
-			TableViewSpring<ITEM> table) {
+			TableViewSpringEditFilterable<ITEM> table) {
 		secondTable.setTable(table);
 	}
 	

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.artorg.tools.phantomData.client.io.IOutil;
+import org.artorg.tools.phantomData.client.table.ITableFilterable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.application.Platform;
@@ -119,7 +120,7 @@ public class FilterMenuButton extends MenuButton {
 		
 	}
 	
-	public <ITEM> void setTable(FilterableTable<ITEM> 
+	public <ITEM> void setTable(ITableFilterable<ITEM> 
 				filterTable, int col, Runnable refresh ) {
 		Supplier<List<String>> getters = () -> {
 			List<String> getterList = new ArrayList<String>();

@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.controller.ISelector;
+import org.artorg.tools.phantomData.client.table.ITableFilterable;
 import org.artorg.tools.phantomData.client.util.TableViewUtils;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -67,11 +68,11 @@ public class TableViewSelector<ITEM, SUB_ITEM> implements ISelector<ITEM, SUB_IT
 		return tableView2.getItems();
 	}
 	
-	public void setTable1(FilterableTable<SUB_ITEM> table) {
+	public void setTable1(ITableFilterable<SUB_ITEM> table) {
 		this.tableView1.setTable(table);
 	}
 	
-	public void setTable2(FilterableTable<SUB_ITEM> table) {
+	public void setTable2(ITableFilterable<SUB_ITEM> table) {
 		this.tableView2.setTable(table);
 	}
 	

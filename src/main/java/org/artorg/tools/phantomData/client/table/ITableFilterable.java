@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.scene.control;
+package org.artorg.tools.phantomData.client.table;
 
 import java.util.Comparator;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 
 import javafx.collections.ObservableList;
 
-public interface FilterableTable<ITEM> {
+public interface ITableFilterable<ITEM> {
 
 	int getNrows();
 
@@ -36,13 +36,10 @@ public interface FilterableTable<ITEM> {
 
 	HttpConnectorSpring<ITEM> getConnector();
 
-	void setFilteredValue(ITEM item, int localCol, String newValue);
-
 	String getTableName();
 
 	String getItemName();
 	
 	void setItems(ObservableList<ITEM> items);
-
 	
 }

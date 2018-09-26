@@ -6,7 +6,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.TableViewSpring;
+import org.artorg.tools.phantomData.client.scene.control.TableViewSpringEditFilterable;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
@@ -15,7 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class PropertyFieldEditFactoryController extends GroupedItemEditFactoryController<PropertyField>{
-	private TableViewSpring<PropertyField> table;
+	private TableViewSpringEditFilterable<PropertyField> table;
 	private TextField textFielName;
 	private TextField textFieldDescription;
 
@@ -24,7 +24,7 @@ public class PropertyFieldEditFactoryController extends GroupedItemEditFactoryCo
 		textFieldDescription = new TextField();
 	}
 	
-	public PropertyFieldEditFactoryController(TableViewSpring<PropertyField> table) {
+	public PropertyFieldEditFactoryController(TableViewSpringEditFilterable<PropertyField> table) {
 		this.table = table;
 	}
 
@@ -48,7 +48,7 @@ public class PropertyFieldEditFactoryController extends GroupedItemEditFactoryCo
 	}
 
 	@Override
-	protected TableViewSpring<PropertyField> getTable() {
+	protected TableViewSpringEditFilterable<PropertyField> getTable() {
 		return table;
 	}
 
