@@ -1,10 +1,12 @@
-package org.artorg.tools.phantomData.client.scene;
+package org.artorg.tools.phantomData.client.scene.control;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.scene.control.AnchorPaneAddableTo;
+import org.artorg.tools.phantomData.client.scene.FileImporter;
+import org.artorg.tools.phantomData.client.scene.Xform;
+import org.artorg.tools.phantomData.client.scene.layout.AnchorPaneAddableTo;
 
 import javafx.event.EventHandler;
 import javafx.scene.AmbientLight;

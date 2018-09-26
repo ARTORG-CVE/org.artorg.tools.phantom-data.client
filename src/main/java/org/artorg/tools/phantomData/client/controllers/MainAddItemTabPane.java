@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.scene.control;
+package org.artorg.tools.phantomData.client.controllers;
 
 import javafx.scene.control.TabPane;
 

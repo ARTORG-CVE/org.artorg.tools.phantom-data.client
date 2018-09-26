@@ -1,8 +1,6 @@
-package org.artorg.tools.phantomData.client.scene.control.table;
+package org.artorg.tools.phantomData.client.table;
 
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
-
-public abstract class IColumn<ITEM extends DbPersistent> {
+public abstract class IColumn<ITEM> {
 	private boolean visible;
 	private boolean editable;
 	private boolean filterable;
@@ -18,11 +16,11 @@ public abstract class IColumn<ITEM extends DbPersistent> {
 		this.columnName = columnName;
 	}
 	
-	abstract String get(ITEM item);
+	public abstract String get(ITEM item);
 	
-	abstract void set(ITEM item, String value);
+	public abstract void set(ITEM item, String value);
 	
-	abstract boolean update(ITEM item);
+	public abstract boolean update(ITEM item);
 	
 	public String getColumnName() {
 		return columnName;

@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.scene.control.table;
+package org.artorg.tools.phantomData.client.scene.control;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
-import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -84,7 +83,7 @@ public abstract class TableViewSpring<ITEM extends DbPersistent<ITEM>> extends T
 			filterMenuButton.setTable(filterTable, localCol, () -> filterTable.applyFilter()); 
 			filterMenuButtons.add(filterMenuButton);
 			
-			column.setCellFactory(TextFieldTableCell.forTableColumn());
+//			column.setCellFactory(TextFieldTableCell.forTableColumn());
 		    column.setCellValueFactory(cellData -> new SimpleStringProperty(
 		    		String.valueOf(filterTable.getFilteredValue(cellData.getValue(), localCol))));
 		    column.setOnEditCommit(

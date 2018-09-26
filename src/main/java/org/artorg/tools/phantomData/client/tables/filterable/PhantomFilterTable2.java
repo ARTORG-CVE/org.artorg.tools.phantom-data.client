@@ -13,7 +13,7 @@ import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.Special;
 
-public class PhantomFilterTable extends FilterTableSpringDb<Phantom> {
+public class PhantomFilterTable2 extends FilterTableSpringDb2<Phantom> {
 
 	{
 		setItemClass(Phantom.class);

@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-public abstract class HttpConnectorSpring<T extends DbPersistent<T>> {
+public abstract class HttpConnectorSpring2<T> {
 	private final Function<Method, String[]> stringAnnosFuncCreate;
 	private final Function<Method, String[]> stringAnnosFuncRead;
 	private final Function<Method, String[]> stringAnnosFuncUpdate;
@@ -44,7 +44,7 @@ public abstract class HttpConnectorSpring<T extends DbPersistent<T>> {
 		return urlLocalhost;
 	}
 	public static void setUrlLocalhost(String urlLocalhost) {
-		HttpConnectorSpring.urlLocalhost = urlLocalhost;
+		HttpConnectorSpring2.urlLocalhost = urlLocalhost;
 	}
 
 	{
@@ -139,12 +139,13 @@ public abstract class HttpConnectorSpring<T extends DbPersistent<T>> {
 		return annoString;
 	}
 	
-	public boolean create(List<T> t) {
+	@SuppressWarnings("unchecked")
+	public <U extends DbPersistent<T>> boolean create(List<U> t) {
 		return varArgHelper(this::create, t);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public boolean create(T... t) {
+	public <U extends DbPersistent<T>> boolean create(U... t) {
 		return varArgHelper(this::create, t);
 	}
 	
@@ -164,12 +165,12 @@ public abstract class HttpConnectorSpring<T extends DbPersistent<T>> {
 		return false;
 	}
 	
-	public boolean delete(List<T> t) {
+	public <U extends DbPersistent<T>> boolean delete(List<U> t) {
 		return varArgHelper(this::delete, t);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public boolean delete(T... t) {
+	public <U extends DbPersistent<T>> boolean delete(U... t) {
 		return varArgHelper(this::delete, t);
 	}
 	
@@ -189,7 +190,7 @@ public abstract class HttpConnectorSpring<T extends DbPersistent<T>> {
 		return false;
 	}
 	
-	public boolean delete(T t) {
+	public <U extends DbPersistent<T>> boolean delete(U t) {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -205,17 +206,18 @@ public abstract class HttpConnectorSpring<T extends DbPersistent<T>> {
 		return false;
 	}
 	
-	public T read(T t) {
+	public <U extends DbPersistent<T>> U read(U t) {
 		return readById(t.getId());
 	}
 	
-	public T readById(UUID id) {
+	@SuppressWarnings("unchecked")
+	public <U extends DbPersistent<T>> U readById(UUID id) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		RestTemplate restTemplate = new RestTemplate();
 		String url = getUrlLocalhost() + "/" 
 				+ getAnnoStringControlClass() + "/" + getAnnoStringRead();
-		T result = (T) restTemplate.getForObject(url, getModelClass(), id);
+		U result = (U) restTemplate.getForObject(url, getModelClass(), id);
 		result.setId(id);
 		return result;
 	}
@@ -231,32 +233,32 @@ public abstract class HttpConnectorSpring<T extends DbPersistent<T>> {
 		return result;
 	}
 
-	public boolean update(List<T> t) {
+	public <U extends DbPersistent<T>> boolean update(List<U> t) {
 		return varArgHelper(this::update, t);
 	}
 	
-	public boolean update(Set<T> t) {
+	public <U extends DbPersistent<T>> boolean update(Set<U> t) {
 		return varArgHelper(this::update, t);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public boolean update(T... t) {
+	public <U extends DbPersistent<T>> boolean update(U... t) {
 		return varArgHelper(this::update, t);
 	}
 	
-	public boolean update(T t, UUID id) {
+	public <U extends DbPersistent<T>> boolean update(U t, UUID id) {
 		t.setId(id);
 		return update(t);
 	}
 	
-	public boolean update(T t) {
+	public <U extends DbPersistent<T>> boolean update(U t) {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			RestTemplate restTemplate = new RestTemplate();
 			String url = getUrlLocalhost() + "/" 
 					+ getAnnoStringControlClass() + "/" + getAnnoStringUpdate();
-			HttpEntity<T> requestEntity = new HttpEntity<T>(t, headers);
+			HttpEntity<U> requestEntity = new HttpEntity<U>(t, headers);
 			restTemplate.put(url, requestEntity);
 			return true;
 		} catch (Exception e) {
@@ -297,7 +299,7 @@ public abstract class HttpConnectorSpring<T extends DbPersistent<T>> {
 		return Arrays.stream(readAll());
 	}
 	
-	public boolean varArgHelper(Function<T,Boolean> func, List<T> t) {
+	public <U extends DbPersistent<T>> boolean varArgHelper(Function<U,Boolean> func, List<U> t) {
 		boolean succesful = true;
 		for(int i=0; i<t.size(); i++) {
 			if (func.apply(t.get(i)) == false) {
@@ -307,13 +309,13 @@ public abstract class HttpConnectorSpring<T extends DbPersistent<T>> {
 		return succesful;
 	}
 	
-	public boolean varArgHelper(Function<T,Boolean> func, Set<T> set) {
+	public <U extends DbPersistent<T>> boolean varArgHelper(Function<U,Boolean> func, Set<U> set) {
 		return set.stream().map(e -> func.apply(e))
 				.filter(b -> b == false).findFirst().orElse(true);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public boolean varArgHelper(Function<T,Boolean> func, T...t) {
+	public <U extends DbPersistent<T>> boolean varArgHelper(Function<U,Boolean> func, U...t) {
 		boolean succesful = true;
 		for(int i=0; i<t.length; i++) {
 			if (func.apply(t[i]) == false) {

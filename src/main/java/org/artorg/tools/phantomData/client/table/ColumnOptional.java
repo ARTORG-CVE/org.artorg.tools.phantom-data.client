@@ -1,9 +1,10 @@
-package org.artorg.tools.phantomData.client.scene.control.table;
+package org.artorg.tools.phantomData.client.table;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -13,21 +14,18 @@ public class ColumnOptional<ITEM extends DbPersistent<ITEM>,
 	private final Function<PATH, String> propertyToValueGetter;
 	private final BiConsumer<PATH, String> propertyToValueSetter;
 	private final String emptyValue;
-	private final HttpConnectorSpring<PATH> connector;
 	
 	public ColumnOptional( String columnName,
 			Function<ITEM, Optional<PATH>> itemToPropertyGetter, 
 			Function<PATH, String> propertyToValueGetter, 
 			BiConsumer<PATH, String> propertyToValueSetter,
-			String emptyValue,
-			HttpConnectorSpring<PATH> connector
+			String emptyValue
 			) {
 		super(columnName);
 		this.itemToPropertyGetter = itemToPropertyGetter;
 		this.propertyToValueGetter = propertyToValueGetter;
 		this.propertyToValueSetter = propertyToValueSetter;
 		this.emptyValue = emptyValue;
-		this.connector = connector;
 	}
 	
 	@Override
@@ -45,12 +43,14 @@ public class ColumnOptional<ITEM extends DbPersistent<ITEM>,
 			propertyToValueSetter.accept(path.get(), value);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean update(ITEM item) {
 		System.out.println("updated value in database :)");
 		Optional<PATH> path = itemToPropertyGetter.apply(item);
+		HttpConnectorSpring<PATH> connector = Connectors.getConnector(item.getClass());
 		if (path.isPresent()) 
-			return this.connector.update(path.get());
+			return connector.update(path.get());
 		return false;
 	}
 

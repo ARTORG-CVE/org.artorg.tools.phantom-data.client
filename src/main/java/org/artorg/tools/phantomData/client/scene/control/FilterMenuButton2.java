@@ -27,7 +27,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 
-public class FilterMenuButton extends MenuButton {
+public class FilterMenuButton2 extends MenuButton {
 	private static final Image imgNormal, imgFilter;
 	private final ButtonItemReset itemReset;
 	private final CheckBoxItemSortAscending itemAscending;
@@ -53,7 +53,7 @@ public class FilterMenuButton extends MenuButton {
 		regex = "";
 	}
 	
-	public FilterMenuButton() {
+	public FilterMenuButton2() {
 		itemReset.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -119,7 +119,7 @@ public class FilterMenuButton extends MenuButton {
 		
 	}
 	
-	public <ITEM extends DbPersistent<ITEM>> void setTable(FilterTableSpringDb<ITEM> 
+	public <ITEM> void setTable(FilterTableSpringDb2<ITEM> 
 				filterTable, int col, Runnable refresh ) {
 		Supplier<List<String>> getters = () -> {
 			List<String> getterList = new ArrayList<String>();

@@ -3,24 +3,23 @@ package org.artorg.tools.phantomData.client.tables.filterable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
-import org.artorg.tools.phantomData.client.scene.control.table.Column;
-import org.artorg.tools.phantomData.client.scene.control.table.FilterTableSpringDb;
-import org.artorg.tools.phantomData.client.scene.control.table.IColumn;
-import org.artorg.tools.phantomData.client.scene.control.table.PropertyColumns;
+import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDb;
+import org.artorg.tools.phantomData.client.table.Column;
+import org.artorg.tools.phantomData.client.table.IColumn;
+import org.artorg.tools.phantomData.client.table.PropertyColumns;
 import org.artorg.tools.phantomData.server.model.Special;
 
 public class SpecialFilterTable extends FilterTableSpringDb<Special> implements PropertyColumns {
 
-	public SpecialFilterTable() {
-		super(Special.class);
+	{
+		setItemClass(Special.class);
 	}
 
 	@Override
 	public List<IColumn<Special>> createColumns() {
 		List<IColumn<Special>> columns = new ArrayList<IColumn<Special>>();
 		columns.add(new Column<Special, Special>("shortcut", item -> item, path -> path.getShortcut(),
-				(path, value) -> path.setShortcut(value), SpecialConnector.get()));
+				(path, value) -> path.setShortcut(value)));
 
 		createPropertyColumns(columns, this.getItems());
 		

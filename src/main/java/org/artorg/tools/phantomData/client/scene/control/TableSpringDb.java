@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.scene.control.table;
+package org.artorg.tools.phantomData.client.scene.control;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.artorg.tools.phantomData.client.commandPattern.UndoManager;
 import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
+import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.FXCollections;
@@ -40,10 +41,6 @@ public abstract class TableSpringDb<ITEM extends DbPersistent<ITEM>> {
 		connector.create(item);
 	}
 	
-	public void editItem(ITEM item) {
-		
-	}
-	
 	public void setConnector(HttpConnectorSpring<ITEM> connector) {
 		this.connector = connector;
 		this.columns.clear();
@@ -69,8 +66,6 @@ public abstract class TableSpringDb<ITEM extends DbPersistent<ITEM>> {
 	public String getItemName() {
 		return getItemClass().getSimpleName();
 	}
-	
-	
 	
 	public void setItems(ObservableList<ITEM> items) {
 		this.items.clear();

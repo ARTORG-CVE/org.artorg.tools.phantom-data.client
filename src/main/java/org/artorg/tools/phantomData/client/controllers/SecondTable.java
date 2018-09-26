@@ -1,7 +1,8 @@
-package org.artorg.tools.phantomData.client.scene.control;
+package org.artorg.tools.phantomData.client.controllers;
 
-import org.artorg.tools.phantomData.client.scene.control.table.FilterTableSpringDb;
-import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
+import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDb;
+import org.artorg.tools.phantomData.client.scene.control.TableViewSpring;
+import org.artorg.tools.phantomData.client.scene.layout.AnchorPaneAddableTo;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.scene.layout.AnchorPane;

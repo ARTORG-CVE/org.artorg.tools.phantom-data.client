@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.scene.control.table;
+package org.artorg.tools.phantomData.client.table;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -14,12 +14,6 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
-import org.artorg.tools.phantomData.client.connectors.property.BooleanPropertyConnector;
-import org.artorg.tools.phantomData.client.connectors.property.DatePropertyConnector;
-import org.artorg.tools.phantomData.client.connectors.property.DoublePropertyConnector;
-import org.artorg.tools.phantomData.client.connectors.property.IntegerPropertyConnector;
-import org.artorg.tools.phantomData.client.connectors.property.StringPropertyConnector;
 import org.artorg.tools.phantomData.server.model.property.Property;
 import org.artorg.tools.phantomData.server.model.property.PropertyContainer;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -34,19 +28,19 @@ public interface PropertyColumns {
 		createPropertyColumns(columns, items, 
 				container -> container.getBooleanProperties(), 
 				bool -> String.valueOf(bool),
-				s -> Boolean.valueOf(s), BooleanPropertyConnector.get());
+				s -> Boolean.valueOf(s));
 		createPropertyColumns(columns, items, 
 				container -> container.getDoubleProperties(), 
 				bool -> String.valueOf(bool),
-				s -> Double.valueOf(s), DoublePropertyConnector.get());
+				s -> Double.valueOf(s));
 		createPropertyColumns(columns, items, 
 				container -> container.getIntegerProperties(), 
 				bool -> String.valueOf(bool),
-				s -> Integer.valueOf(s), IntegerPropertyConnector.get());
+				s -> Integer.valueOf(s));
 		createPropertyColumns(columns, items, 
 				container -> container.getStringProperties(), 
 				s -> s,
-				s -> s, StringPropertyConnector.get());
+				s -> s);
 		
 		DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
 		Function<String,Date> stringDateFunc = s -> {
@@ -60,7 +54,7 @@ public interface PropertyColumns {
 		createPropertyColumns(columns, items, 
 				container -> container.getDateProperties(), 
 				date -> String.valueOf(date),
-				stringDateFunc, DatePropertyConnector.get());
+				stringDateFunc);
 	}
 	
 	default <ITEM extends DbPersistent<ITEM>, 
@@ -68,8 +62,7 @@ public interface PropertyColumns {
 			PROPERTY_VALUE_TYPE extends Comparable<PROPERTY_VALUE_TYPE>> 
 			void createPropertyColumns(List<IColumn<ITEM>> columns, ObservableList<ITEM> items, 
 					Function<ITEM,Collection<PROPERTY_TYPE>> propsGetter, 
-					Function<PROPERTY_VALUE_TYPE, String> toStringFun, Function<String, PROPERTY_VALUE_TYPE> fromStringFun,
-					HttpConnectorSpring<PROPERTY_TYPE> connector) {
+					Function<PROPERTY_VALUE_TYPE, String> toStringFun, Function<String, PROPERTY_VALUE_TYPE> fromStringFun) {
 		{
 
 			Map<UUID, String> map = new HashMap<UUID, String>();
@@ -82,8 +75,7 @@ public interface PropertyColumns {
 							item -> propsGetter.apply(item).stream()
 									.filter(p -> p.getPropertyField().getId() == entry.getKey()).findFirst(),
 							path -> toStringFun.apply(path.getValue()),
-							(path, value) -> path.setValue(fromStringFun.apply((String) value)), "",
-							connector)));
+							(path, value) -> path.setValue(fromStringFun.apply((String) value)), "")));
 		}
 	}
 }

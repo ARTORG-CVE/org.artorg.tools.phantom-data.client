@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.client.scene.control.TitledTableViewSelector;
+import org.artorg.tools.phantomData.client.scene.control.TitledPaneTableViewSelector;
+import org.artorg.tools.phantomData.client.scene.control.TitledPaneTableViewSelector2;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -30,9 +31,10 @@ public abstract class GroupedItemEditFactoryController<ITEM extends DbPersistent
 		panes.stream().filter(p -> p instanceof TitledPropertyPane)
 			.forEach(p -> entries.addAll(((TitledPropertyPane)p).getEntries()));
 		
-		List<ISelector<ITEM>> selectors = this.getSelectors();
+		List<ISelector<ITEM, Object>> selectors = this.getSelectors();
 		panes.addAll(selectors.stream()
-				.map(selector -> (TitledTableViewSelector<ITEM>)selector)
+				.map(selector -> (TitledPaneTableViewSelector<ITEM>)selector)
+//				.map(selector -> (TitledPaneTableViewSelector2<ITEM>)selector)
 				.map(selector -> selector.getTitledPane()).collect(Collectors.toList()));
 		
 	}

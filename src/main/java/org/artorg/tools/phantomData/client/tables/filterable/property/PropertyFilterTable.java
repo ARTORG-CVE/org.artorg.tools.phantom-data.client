@@ -4,19 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
-import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;
-import org.artorg.tools.phantomData.client.scene.control.table.Column;
-import org.artorg.tools.phantomData.client.scene.control.table.FilterTableSpringDb;
-import org.artorg.tools.phantomData.client.scene.control.table.IColumn;
+import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDb;
+import org.artorg.tools.phantomData.client.table.Column;
+import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.model.property.Property;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 public abstract class PropertyFilterTable<ITEM extends Property<ITEM, VALUE>, VALUE extends Comparable<VALUE>> 
 		extends FilterTableSpringDb<ITEM> {
-
-	public PropertyFilterTable(Class<ITEM> itemClass) {
-		super(itemClass);
-	}
 
 	@Override
 	public List<IColumn<ITEM>> createColumns() {
@@ -25,13 +20,11 @@ public abstract class PropertyFilterTable<ITEM extends Property<ITEM, VALUE>, VA
 		columns.add(new Column<ITEM, PropertyField>(
 				"property field", item -> item.getPropertyField(), 
 				path -> path.getDescription(), 
-				(path,value) -> path.setDescription(value),
-				PropertyFieldConnector.get()));
+				(path,value) -> path.setDescription(value)));
 		columns.add(new Column<ITEM, ITEM>(
 				"value", item -> item, 
 				path -> String.valueOf(path.getValue()), 
-				(path,value) -> path.setValue(fromString(value)),
-				getPropertyConnector()));
+				(path,value) -> path.setValue(fromString(value))));
 		return columns;
 	}
 	

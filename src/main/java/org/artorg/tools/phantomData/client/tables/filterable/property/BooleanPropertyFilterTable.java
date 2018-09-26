@@ -6,8 +6,8 @@ import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 
 public class BooleanPropertyFilterTable extends PropertyFilterTable<BooleanProperty, Boolean> {
 	
-	public BooleanPropertyFilterTable() {
-		super(BooleanProperty.class);
+	{
+		setItemClass(BooleanProperty.class);
 	}
 	
 	@Override

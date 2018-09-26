@@ -4,10 +4,8 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.artorg.tools.phantomData.client.scene.Scene3D;
-import org.artorg.tools.phantomData.client.scene.control.MainSplitPane;
-import org.artorg.tools.phantomData.client.scene.control.SecondTable;
-import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
+import org.artorg.tools.phantomData.client.scene.control.Scene3D;
+import org.artorg.tools.phantomData.client.scene.control.TableViewSpring;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.fxml.FXML;

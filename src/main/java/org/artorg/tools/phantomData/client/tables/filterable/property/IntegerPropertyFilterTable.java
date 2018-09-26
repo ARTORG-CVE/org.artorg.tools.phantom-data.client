@@ -2,12 +2,13 @@ package org.artorg.tools.phantomData.client.tables.filterable.property;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connectors.property.IntegerPropertyConnector;
+import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
 
 public class IntegerPropertyFilterTable extends PropertyFilterTable<IntegerProperty, Integer> {
 	
-	public IntegerPropertyFilterTable() {
-		super(IntegerProperty.class);
+	{
+		setItemClass(IntegerProperty.class);
 	}
 
 	@Override

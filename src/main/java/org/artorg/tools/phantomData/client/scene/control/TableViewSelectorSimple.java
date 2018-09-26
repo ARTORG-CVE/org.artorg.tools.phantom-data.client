@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.scene.control.table;
+package org.artorg.tools.phantomData.client.scene.control;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
-public class TableViewSelector<ITEM extends DbPersistent<ITEM>> implements ISelector<ITEM> {
+public class TableViewSelectorSimple<ITEM extends DbPersistent<ITEM>> implements ISelector<ITEM, Object> {
 	private TableView<Object> tableView1;
 	private TableView<Object> tableView2;
 	private SplitPane splitPane;
@@ -52,7 +52,7 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM>> implements ISele
 		tableView2.getStyleClass().add("noheader");
 	}
 	
-	public void setSelectableItems(Set<?> set) {
+	public void setSelectableItems(Set<Object> set) {
 		ObservableList<Object> items = FXCollections.observableArrayList();
 		items.addAll(set);
 		tableView1.setItems(items);
@@ -62,7 +62,7 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM>> implements ISele
 		return tableView1.getItems();
 	}
 	
-	public void setSelectedItems(Set<?> set) {
+	public void setSelectedItems(Set<Object> set) {
 		ObservableList<Object> items = FXCollections.observableArrayList();
 		items.addAll(set);
 		tableView2.setItems(items);
@@ -234,16 +234,6 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM>> implements ISele
 	public Node getGraphic() {
 		return splitPane;
 	}
-
-//	@Override
-//	public ITEM getItem() {
-//		return item;
-//	}
-//
-//	@Override
-//	public void setItem(ITEM item) {
-//		this.item = item;
-//	}
 
 	@SuppressWarnings("unchecked")
 	@Override

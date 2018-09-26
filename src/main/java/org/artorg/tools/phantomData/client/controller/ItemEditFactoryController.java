@@ -11,10 +11,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
-import org.artorg.tools.phantomData.client.connectors.Connectors;
-import org.artorg.tools.phantomData.client.scene.control.TitledTableViewSelector;
-import org.artorg.tools.phantomData.client.scene.control.table.TableViewSpring;
+import org.artorg.tools.phantomData.client.scene.control.TableViewSpring;
+import org.artorg.tools.phantomData.client.scene.control.TitledPaneTableViewSelector;
+import org.artorg.tools.phantomData.client.scene.control.TitledPaneTableViewSelector2;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -41,7 +42,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM>>
 	protected Button applyButton;
 	private int nRows = 0;
 	private List<Node> rightNodes;
-	private List<ISelector<ITEM>> selectors;
+	private List<ISelector<ITEM, Object>> selectors;
 	
 	{
 		gridPane = new GridPane();
@@ -62,19 +63,19 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM>>
 	
 	public abstract List<PropertyEntry> getPropertyEntries();
 	
-	protected void setSelectedChildItems(ITEM item, ISelector<ITEM> selector) {
+	protected void setSelectedChildItems(ITEM item, ISelector<ITEM, Object> selector) {
 		Class<?> paramTypeClass = selector.getSelectedItems().getClass();
 		Object arg = selector.getSelectedItems();
 		Reflect.invokeGenericSetter(item, paramTypeClass, selector.getSubItemClass(), arg);
 	}
 	
-	public List<ISelector<ITEM>> getSelectors() {
+	public List<ISelector<ITEM, Object>> getSelectors() {
 		return selectors;
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<ISelector<ITEM>> createSelectors(ITEM item) {
-		List<ISelector<ITEM>> selectors = new ArrayList<ISelector<ITEM>>();
+	private List<ISelector<ITEM, Object>> createSelectors(ITEM item) {
+		List<ISelector<ITEM, Object>> selectors = new ArrayList<ISelector<ITEM, Object>>();
 		
 		List<Class<?>> subItemClasses = Reflect.getCollectionSetterMethods(item.getClass())
 				.map(m -> {
@@ -89,10 +90,12 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM>>
 		subItemClasses.forEach(subItemClass -> {
 			if (Reflect.containsCollectionSetter(item, subItemClass)) {
 				HttpConnectorSpring<?> connector = Connectors.getConnector((Class<ITEM>) subItemClass);
-				Set<?> selectableItemSet = connector.readAllAsSet();
+				Set<Object> selectableItemSet = (Set<Object>) connector.readAllAsSet();
 				
 				if (selectableItemSet.size() > 0) {
-					TitledTableViewSelector<ITEM> titledSelector = new TitledTableViewSelector<ITEM>();
+					TitledPaneTableViewSelector titledSelector = new TitledPaneTableViewSelector();
+//					TitledPaneTableViewSelector2<ITEM> titledSelector = new TitledPaneTableViewSelector2<ITEM>(subItemClass);
+					titledSelector.setSubItemClass((Class<?>) subItemClass);
 					titledSelector.setSelectableItems(selectableItemSet);
 					
 					Method selectedMethod = Reflect.getMethodByGenericReturnType(item, subItemClass);
@@ -108,7 +111,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM>>
 					titledSelector.setSelectedItems(subItemGetter2.apply(item).stream().collect(Collectors.toSet()));
 					
 					titledSelector.getTitledPane().setText(subItemClass.getSimpleName());
-					titledSelector.setSubItemClass((Class<?>) subItemClass);
+					
 					titledSelector.init();
 					selectors.add(titledSelector);
 				}

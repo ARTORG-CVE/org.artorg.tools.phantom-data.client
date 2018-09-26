@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.scene.control.table;
+package org.artorg.tools.phantomData.client.scene.control;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,8 +12,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
+import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
-import org.artorg.tools.phantomData.client.connectors.Connectors;
+import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.FXCollections;
@@ -40,10 +41,13 @@ public abstract class FilterTableSpringDb<ITEM extends DbPersistent<ITEM>> exten
 		
 	}
 	
-	public FilterTableSpringDb(Class<ITEM> itemClass) {
+	public FilterTableSpringDb() {}
+	
+	public void setItemClass(Class<ITEM> itemClass) {
 		this.itemClass = itemClass;
 		this.setConnector(Connectors.getConnector(itemClass));
 	}
+	
 	
 	public void setSortComparator(Comparator<String> sortComparator, Function<ITEM, String> valueGetter) {
 		this.sortComparator = (item1, item2) -> sortComparator.compare(valueGetter.apply(item1),valueGetter.apply(item2));

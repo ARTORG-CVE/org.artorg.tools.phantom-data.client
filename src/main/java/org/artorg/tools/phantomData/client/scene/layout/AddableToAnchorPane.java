@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.scene.control.table;
+package org.artorg.tools.phantomData.client.scene.layout;
 
 import javafx.scene.layout.AnchorPane;
 
