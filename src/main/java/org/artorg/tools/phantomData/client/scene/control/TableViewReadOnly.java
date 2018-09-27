@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.artorg.tools.phantomData.client.table.ITableFilterable;
+import org.artorg.tools.phantomData.client.table.FilterableTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.TableViewUtils;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -20,8 +20,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 
-public class TableViewSpringReadOnly<ITEM> extends TableView<ITEM> {	
-	private ITableFilterable<ITEM> filterTable;
+public class TableViewReadOnly<ITEM> extends TableView<ITEM> {	
+	private FilterableTable<ITEM> filterTable;
 	private List<FilterMenuButton> filterMenuButtons;
 	
 	public List<FilterMenuButton> getFilterMenuButtons() {
@@ -33,7 +33,7 @@ public class TableViewSpringReadOnly<ITEM> extends TableView<ITEM> {
 		filterMenuButtons = new ArrayList<FilterMenuButton>();
 	}
 	
-	public void setTable(ITableFilterable<ITEM> table) {
+	public void setTable(FilterableTable<ITEM> table) {
 		this.filterTable = table;
 
 		reload();
@@ -80,7 +80,7 @@ public class TableViewSpringReadOnly<ITEM> extends TableView<ITEM> {
 	    Platform.runLater(() -> showFilterButtons());
 	}
 
-	public ITableFilterable<ITEM> getFilterTable() {
+	public FilterableTable<ITEM> getFilterTable() {
 		return filterTable;
 	}
 	

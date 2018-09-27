@@ -6,9 +6,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.controller.ISelector;
-import org.artorg.tools.phantomData.client.table.ITableFilterable;
+import org.artorg.tools.phantomData.client.table.FilterableTable;
 import org.artorg.tools.phantomData.client.util.TableViewUtils;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -26,15 +26,15 @@ import javafx.scene.control.TableView;
 import javafx.util.Callback;
 
 public class TableViewSelector<ITEM, SUB_ITEM> implements ISelector<ITEM, SUB_ITEM> {
-	private TableViewSpringReadOnly<SUB_ITEM> tableView1;
-	private TableViewSpringReadOnly<SUB_ITEM> tableView2;
+	private TableViewReadOnly<SUB_ITEM> tableView1;
+	private TableViewReadOnly<SUB_ITEM> tableView2;
 	private SplitPane splitPane;
 	private int height;
 	private Class<Object> subItemClass;
 	
 	{
-		tableView1 = new TableViewSpringReadOnly<SUB_ITEM>();
-		tableView2 = new TableViewSpringReadOnly<SUB_ITEM>();
+		tableView1 = new TableViewReadOnly<SUB_ITEM>();
+		tableView2 = new TableViewReadOnly<SUB_ITEM>();
 		splitPane = new SplitPane();
 		splitPane.setOrientation(Orientation.VERTICAL);
 		height = 200;
@@ -68,11 +68,11 @@ public class TableViewSelector<ITEM, SUB_ITEM> implements ISelector<ITEM, SUB_IT
 		return tableView2.getItems();
 	}
 	
-	public void setTable1(ITableFilterable<SUB_ITEM> table) {
+	public void setTable1(FilterableTable<SUB_ITEM> table) {
 		this.tableView1.setTable(table);
 	}
 	
-	public void setTable2(ITableFilterable<SUB_ITEM> table) {
+	public void setTable2(FilterableTable<SUB_ITEM> table) {
 		this.tableView2.setTable(table);
 	}
 	
@@ -81,7 +81,7 @@ public class TableViewSelector<ITEM, SUB_ITEM> implements ISelector<ITEM, SUB_IT
 //		tableView.setItems(tableView.getFilterTable().getItems());
 //	}
 //	
-	private List<TableColumn<SUB_ITEM,?>> createColumns(TableViewSpringReadOnly<SUB_ITEM> tableView) {
+	private List<TableColumn<SUB_ITEM,?>> createColumns(TableViewReadOnly<SUB_ITEM> tableView) {
 		List<TableColumn<SUB_ITEM,?>> columns = new ArrayList<TableColumn<SUB_ITEM,?>>();
 		
 		List<String> columnNames = tableView.getFilterTable().getFilteredColumnNames();
@@ -104,7 +104,7 @@ public class TableViewSelector<ITEM, SUB_ITEM> implements ISelector<ITEM, SUB_IT
 		
 	}
 	
-	private void addFilterMenuButtonToColumn(TableViewSpringReadOnly<SUB_ITEM> tableView, int col, String columnName) {
+	private void addFilterMenuButtonToColumn(TableViewReadOnly<SUB_ITEM> tableView, int col, String columnName) {
 		FilterMenuButton filterMenuButton = new FilterMenuButton();
 		filterMenuButton.setText(columnName);
 		filterMenuButton.setTable(tableView.getFilterTable(), col, () -> tableView.getFilterTable().applyFilter()); 
@@ -114,7 +114,7 @@ public class TableViewSelector<ITEM, SUB_ITEM> implements ISelector<ITEM, SUB_IT
 	public void init() {
 		tableView2.getItems().stream().forEach(item2 -> {
 			List<Object> doublettes = tableView1.getItems().stream()
-					.filter(item1 -> ((DbPersistent<?>)item2).getId().compareTo(((DbPersistent<?>)item1).getId()) == 0).collect(Collectors.toList());
+					.filter(item1 -> ((DbPersistentUUID<?>)item2).getId().compareTo(((DbPersistentUUID<?>)item1).getId()) == 0).collect(Collectors.toList());
 			tableView1.getItems().removeAll(doublettes);
 		});
 		
@@ -132,7 +132,7 @@ public class TableViewSelector<ITEM, SUB_ITEM> implements ISelector<ITEM, SUB_IT
 		
 	}
 	
-	private void initTable(TableViewSpringReadOnly<SUB_ITEM> tableView, String contextMenuText) {
+	private void initTable(TableViewReadOnly<SUB_ITEM> tableView, String contextMenuText) {
 //		reload(tableView);
 		List<TableColumn<SUB_ITEM, ?>> columns = new ArrayList<TableColumn<SUB_ITEM, ?>>();
 		tableView.getColumns().removeAll(tableView.getColumns());

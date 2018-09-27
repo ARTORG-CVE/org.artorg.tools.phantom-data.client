@@ -4,23 +4,26 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.artorg.tools.phantomData.client.table.FilterableTable;
 import org.artorg.tools.phantomData.client.connector.Connectors;
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
-import org.artorg.tools.phantomData.client.table.ITableFilterable;
+import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
+import org.artorg.tools.phantomData.server.specification.Identifiable;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 @SuppressWarnings("unchecked")
-public class FilterTableSpringDb2<ITEM> extends TableSpringDb2<ITEM> implements ITableFilterable<ITEM> {
+public class DbFilterTable<ITEM extends DbPersistent<ITEM,ID>, ID> extends DbTable<ITEM,ID> implements FilterableTable<ITEM> {
 	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
 	private List<Predicate<ITEM>> columnItemFilterPredicates;
@@ -29,29 +32,15 @@ public class FilterTableSpringDb2<ITEM> extends TableSpringDb2<ITEM> implements 
 	private int nFilteredCols;
 	private List<Integer> mappedColumnIndexes;
 	private Function<Integer, Integer> columnIndexMapper;
-	private Class<?> itemClass;
 	
 	{
 		filteredItems = FXCollections.observableArrayList();
 		filterPredicate = item -> true;
 		columnItemFilterPredicates = new ArrayList<Predicate<ITEM>>();
 		columnTextFilterPredicates = new ArrayList<Predicate<ITEM>>();
-		sortComparator = (i1,i2) -> ((DbPersistent<ITEM>)i1).getId().compareTo(((DbPersistent<ITEM>)i2).getId()); 
+		sortComparator = (i1,i2) -> ((DbPersistentUUID<ITEM>)i1).getId().compareTo(((DbPersistentUUID<ITEM>)i2).getId()); 
 		mappedColumnIndexes = new ArrayList<>();
-	}
-	
-	public void setItemClass(Class<ITEM> itemClass) {
-		this.itemClass = itemClass;
-		this.setConnector(Connectors.getConnector(itemClass));
-	}
-	
-	public void setSortComparator(Comparator<String> sortComparator, Function<ITEM, String> valueGetter) {
-		this.sortComparator = (item1, item2) -> sortComparator.compare(valueGetter.apply(item1),valueGetter.apply(item2));
-	}
-	
-	@Override
-	public void setConnector(HttpConnectorSpring<ITEM> connector) {
-		super.setConnector(connector);
+		
 		int nCols = getNcols();
 		
 		mappedColumnIndexes = new ArrayList<Integer>(nCols);
@@ -65,7 +54,10 @@ public class FilterTableSpringDb2<ITEM> extends TableSpringDb2<ITEM> implements 
 			columnTextFilterPredicates.add(item -> true);
 		}
 		columnIndexMapper = i -> mappedColumnIndexes.get(i);
-		
+	}
+	
+	public void setSortComparator(Comparator<String> sortComparator, Function<ITEM, String> valueGetter) {
+		this.sortComparator = (item1, item2) -> sortComparator.compare(valueGetter.apply(item1),valueGetter.apply(item2));
 	}
 	
 	@Override
@@ -190,18 +182,6 @@ public class FilterTableSpringDb2<ITEM> extends TableSpringDb2<ITEM> implements 
 		}
 		
 		return columnStrings.stream().collect(Collectors.joining("\n"));
-	}
-
-	@Override
-	public List<IColumn<ITEM>> createColumns() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getTableName() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

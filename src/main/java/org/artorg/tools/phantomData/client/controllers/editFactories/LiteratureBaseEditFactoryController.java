@@ -6,7 +6,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.TableViewSpringEditFilterable;
+import org.artorg.tools.phantomData.client.scene.control.TableViewEditFilterable;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 
@@ -15,7 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class LiteratureBaseEditFactoryController extends GroupedItemEditFactoryController<LiteratureBase> {
-	private TableViewSpringEditFilterable<LiteratureBase> table;
+	private TableViewEditFilterable<LiteratureBase> table;
 	private TextField textFieldShortcut;
 	private TextField textFieldValue;
 
@@ -24,7 +24,7 @@ public class LiteratureBaseEditFactoryController extends GroupedItemEditFactoryC
 		textFieldValue = new TextField();
 	}
 	
-	public LiteratureBaseEditFactoryController(TableViewSpringEditFilterable<LiteratureBase> table) {
+	public LiteratureBaseEditFactoryController(TableViewEditFilterable<LiteratureBase> table) {
 		this.table = table;
 	}
 
@@ -48,7 +48,7 @@ public class LiteratureBaseEditFactoryController extends GroupedItemEditFactoryC
 	}
 
 	@Override
-	protected TableViewSpringEditFilterable<LiteratureBase> getTable() {
+	protected TableViewEditFilterable<LiteratureBase> getTable() {
 		return table;
 	}
 

@@ -4,13 +4,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
+public interface FilterableTable<ITEM> extends Table<ITEM> {
 
-import javafx.collections.ObservableList;
-
-public interface ITableFilterable<ITEM> {
-
-	int getNrows();
+	int getFilteredNrows();
 
 	String getColumnFilteredValue(int localRow, int col);
 
@@ -30,16 +26,5 @@ public interface ITableFilterable<ITEM> {
 
 	void applyFilter();
 
-	ObservableList<ITEM> getItems();
-
-	void readAllData();
-
-	HttpConnectorSpring<ITEM> getConnector();
-
-	String getTableName();
-
-	String getItemName();
-	
-	void setItems(ObservableList<ITEM> items);
 	
 }

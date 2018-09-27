@@ -7,7 +7,7 @@ import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConn
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.TableViewSpringEditFilterable;
+import org.artorg.tools.phantomData.client.scene.control.TableViewEditFilterable;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
@@ -16,7 +16,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TitledPane;
 
 public class BooleanPropertyEditFactoryController extends GroupedItemEditFactoryController<BooleanProperty> {
-	private TableViewSpringEditFilterable<BooleanProperty> table;
+	private TableViewEditFilterable<BooleanProperty> table;
 	private ComboBox<PropertyField> comboBoxPropertyField;
 	private CheckBox checkBoxValue;
 
@@ -25,7 +25,7 @@ public class BooleanPropertyEditFactoryController extends GroupedItemEditFactory
 		checkBoxValue = new CheckBox();
 	}
 	
-	public BooleanPropertyEditFactoryController(TableViewSpringEditFilterable<BooleanProperty> table) {
+	public BooleanPropertyEditFactoryController(TableViewEditFilterable<BooleanProperty> table) {
 		this.table = table;
 	}
 	
@@ -49,7 +49,7 @@ public class BooleanPropertyEditFactoryController extends GroupedItemEditFactory
 	}
 
 	@Override
-	protected TableViewSpringEditFilterable<BooleanProperty> getTable() {
+	protected TableViewEditFilterable<BooleanProperty> getTable() {
 		return table;
 	}
 	

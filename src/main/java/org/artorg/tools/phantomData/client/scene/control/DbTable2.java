@@ -5,28 +5,25 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.artorg.tools.phantomData.client.commandPattern.UndoManager;
-import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
+import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.table.IColumn;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
+import org.artorg.tools.phantomData.server.specification.Identifiable;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public abstract class TableSpringDb<ITEM extends DbPersistent<ITEM>> {
+public abstract class DbTable2<ITEM> {
 	protected final ObservableList<ITEM> items;
 	private final List<IColumn<ITEM>> columns;
-	protected final UndoManager undoManager;
-	protected HttpConnectorSpring<ITEM> connector;
+	protected CrudConnector<?,?> connector;
 	private boolean isIdColumnVisible;
 	
 	{
-		undoManager = new UndoManager();
 		items = FXCollections.observableArrayList();
 		
 		columns = new ArrayList<IColumn<ITEM>>();
@@ -37,18 +34,14 @@ public abstract class TableSpringDb<ITEM extends DbPersistent<ITEM>> {
 	
 	public abstract String getTableName();
 	
-	public void addItem(ITEM item) {
-		connector.create(item);
-	}
-	
-	public void setConnector(HttpConnectorSpring<ITEM> connector) {
+	public <T extends DbPersistentUUID<ITEM> & Identifiable<UUID>> void setConnector(CrudConnector<T,UUID> connector) {
 		this.connector = connector;
 		this.columns.clear();
 		readAllData();
 		this.columns.addAll(createColumns());
 	}
 	
-	public HttpConnectorSpring<ITEM> getConnector() {
+	public CrudConnector<?,?> getConnector() {
 		return connector;
 	}
 	
@@ -77,28 +70,8 @@ public abstract class TableSpringDb<ITEM extends DbPersistent<ITEM>> {
 		return columns.get(col).get(item);
 	}
 	
-	private void setValue(ITEM item, int col, String value, Consumer<String> redo, Consumer<String> undo) {
-		String currentValue = getValue(item, col);
-		if (value.equals(currentValue))  return;
-		
-		UndoRedoNode node = new UndoRedoNode(() -> {
-				columns.get(col).set(item, value);
-				redo.accept(value);
-			}, () -> {
-				columns.get(col).set(item, currentValue);
-				undo.accept(currentValue);
-			}, () -> {
-				columns.get(col).update(item);
-				});
-		undoManager.addAndRun(node);
-	}
-	
 	public String getValue(int row, int col) {
 		return columns.get(col).get(items.get(row));
-	}
-	
-	public void setValue(int row, int col, String value, Consumer<String> redo, Consumer<String> undo) {
-		setValue(items.get(row), col, value, redo, undo);
 	}
 	
 	// addiotional methods
@@ -162,10 +135,6 @@ public abstract class TableSpringDb<ITEM extends DbPersistent<ITEM>> {
 	// Getters
 	public ObservableList<ITEM> getItems() {
 		return items;
-	}
-	
-	public UndoManager getUndoManager() {
-		return undoManager;
 	}
 	
 	public boolean isIdColumnVisible() {

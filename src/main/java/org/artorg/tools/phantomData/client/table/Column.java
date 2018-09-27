@@ -4,18 +4,18 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
+import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class Column<ITEM extends DbPersistent<ITEM>, 
-		PATH extends DbPersistent<PATH>> extends IColumn<ITEM> {
-	private final Function<ITEM, PATH> itemToPropertyGetter;
-	private final Function<PATH, String> propertyToValueGetter;
-	private final BiConsumer<PATH, String> propertyToValueSetter;
+public class Column<T extends DbPersistent<T,?>, 
+		SUB extends DbPersistent<SUB,?>> extends IColumn<T> {
+	private final Function<T, SUB> itemToPropertyGetter;
+	private final Function<SUB, String> propertyToValueGetter;
+	private final BiConsumer<SUB, String> propertyToValueSetter;
 	
-	public Column(String columnName, Function<ITEM, PATH> itemToPropertyGetter, 
-			Function<PATH, String> propertyToValueGetter, 
-			BiConsumer<PATH, String> propertyToValueSetter) {
+	public Column(String columnName, Function<T, SUB> itemToPropertyGetter, 
+			Function<SUB, String> propertyToValueGetter, 
+			BiConsumer<SUB, String> propertyToValueSetter) {
 		super(columnName);
 		this.itemToPropertyGetter = itemToPropertyGetter;
 		this.propertyToValueGetter = propertyToValueGetter;
@@ -23,23 +23,26 @@ public class Column<ITEM extends DbPersistent<ITEM>,
 	}
 	
 	@Override
-	public String get(ITEM item) {
+	public String get(T item) {
 		return propertyToValueGetter.apply(itemToPropertyGetter.apply(item));
 	}
 	
 	@Override
-	public void set(ITEM item, String value) {
+	public void set(T item, String value) {
 		propertyToValueSetter.accept(itemToPropertyGetter.apply(item), value);
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public boolean update(ITEM item) {
+	public <U extends DbPersistent<U,SUB_ID>, SUB_ID> boolean update(T item) {
 		System.out.println("updated value in database :)");
-		HttpConnectorSpring<PATH> connector = (HttpConnectorSpring<PATH>) Connectors.getConnector(item.getClass());
-		return connector.update(itemToPropertyGetter.apply(item));
+		U path = (U) itemToPropertyGetter.apply(item);
+		CrudConnector<U,SUB_ID> connector = Connectors.getConnector(path.getItemClass());
+		return connector.update(path);
 	}
 
-	
+	@Override
+	public boolean isIdColumn() {
+		throw new UnsupportedOperationException();
+	}
 	
 }

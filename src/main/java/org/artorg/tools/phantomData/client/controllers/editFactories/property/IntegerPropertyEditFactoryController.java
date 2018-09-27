@@ -7,7 +7,7 @@ import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConn
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.TableViewSpringEditFilterable;
+import org.artorg.tools.phantomData.client.scene.control.TableViewEditFilterable;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
@@ -18,7 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class IntegerPropertyEditFactoryController extends GroupedItemEditFactoryController<IntegerProperty> {
-	private TableViewSpringEditFilterable<IntegerProperty> table;
+	private TableViewEditFilterable<IntegerProperty> table;
 	private ComboBox<PropertyField> comboBoxPropertyField;
 	private TextField textFieldValue;
 
@@ -27,7 +27,7 @@ public class IntegerPropertyEditFactoryController extends GroupedItemEditFactory
 		textFieldValue = new TextField();
 	}
 	
-	public IntegerPropertyEditFactoryController(TableViewSpringEditFilterable<IntegerProperty> table) {
+	public IntegerPropertyEditFactoryController(TableViewEditFilterable<IntegerProperty> table) {
 		this.table = table;
 	}
 	
@@ -51,7 +51,7 @@ public class IntegerPropertyEditFactoryController extends GroupedItemEditFactory
 	}
 
 	@Override
-	protected TableViewSpringEditFilterable<IntegerProperty> getTable() {
+	protected TableViewEditFilterable<IntegerProperty> getTable() {
 		return table;
 	}
 	

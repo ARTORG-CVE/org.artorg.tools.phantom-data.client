@@ -3,13 +3,15 @@ package org.artorg.tools.phantomData.client.scene.control;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
+import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
-import org.artorg.tools.phantomData.client.table.ITableEditFilterable;
-import org.artorg.tools.phantomData.client.table.ITableFilterable;
+import org.artorg.tools.phantomData.client.table.EditFilterableTable;
+import org.artorg.tools.phantomData.client.table.FilterableTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
+import org.artorg.tools.phantomData.server.specification.Identifiable;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -27,8 +29,8 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
-public abstract class TableViewSpringEditFilterable<ITEM extends DbPersistent<ITEM>> extends TableView<ITEM> {
-	private ITableEditFilterable<ITEM> filterTable;
+public abstract class TableViewEditFilterable<ITEM extends DbPersistentUUID<ITEM> & Identifiable<UUID>> extends TableView<ITEM> {
+	private EditFilterableTable<ITEM> filterTable;
 	private List<FilterMenuButton> filterMenuButtons;
 	private ListChangeListener<ITEM> listenerChangedListenerRefresh;
 	
@@ -45,11 +47,12 @@ public abstract class TableViewSpringEditFilterable<ITEM extends DbPersistent<IT
 	
 	public abstract ItemEditFactoryController<ITEM> createAddEditController();
 	
-	public HttpConnectorSpring<ITEM> getConnector() {
-		return filterTable.getConnector();
+	@SuppressWarnings("unchecked")
+	public CrudConnector<ITEM,UUID> getConnector() {
+		return (CrudConnector<ITEM, UUID>) filterTable.getConnector();
 	}
 	
-	public void setTable(ITableEditFilterable<ITEM> table) {
+	public void setTable(EditFilterableTable<ITEM> table) {
 		this.filterTable = table;
 
 		reload();
@@ -126,7 +129,7 @@ public abstract class TableViewSpringEditFilterable<ITEM extends DbPersistent<IT
 	    } );
 	}
 
-	public ITableFilterable<ITEM> getFilterTable() {
+	public FilterableTable<ITEM> getFilterTable() {
 		return filterTable;
 	}
 	

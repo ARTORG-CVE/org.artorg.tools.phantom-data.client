@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.controller.ISelector;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -27,7 +27,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
-public class TableViewSelectorSimple<ITEM extends DbPersistent<ITEM>> implements ISelector<ITEM, Object> {
+public class TableViewSelectorSimple<ITEM extends DbPersistentUUID<ITEM>> implements ISelector<ITEM, Object> {
 	private TableView<Object> tableView1;
 	private TableView<Object> tableView2;
 	private SplitPane splitPane;
@@ -75,7 +75,7 @@ public class TableViewSelectorSimple<ITEM extends DbPersistent<ITEM>> implements
 	public void init() {
 		tableView2.getItems().stream().forEach(item2 -> {
 			List<Object> doublettes = tableView1.getItems().stream()
-					.filter(item1 -> ((DbPersistent<?>)item2).getId().compareTo(((DbPersistent<?>)item1).getId()) == 0).collect(Collectors.toList());
+					.filter(item1 -> ((DbPersistentUUID<?>)item2).getId().compareTo(((DbPersistentUUID<?>)item1).getId()) == 0).collect(Collectors.toList());
 			tableView1.getItems().removeAll(doublettes);
 		});
 		

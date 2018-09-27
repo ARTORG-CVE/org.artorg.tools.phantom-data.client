@@ -13,15 +13,14 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
 import org.artorg.tools.phantomData.client.connector.Connectors;
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.table.IColumn;
-import org.artorg.tools.phantomData.client.table.ITableEditFilterable;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.client.table.EditFilterableTable;
+import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class FilterTableSpringDbEditable<ITEM extends DbPersistent<ITEM>> implements ITableEditFilterable<ITEM> {
+public class FilterTableSpringDbEditable<ITEM extends DbPersistentUUID<ITEM>> implements EditFilterableTable<ITEM> {
 	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
 	private List<Predicate<ITEM>> columnItemFilterPredicates;
@@ -31,7 +30,7 @@ public class FilterTableSpringDbEditable<ITEM extends DbPersistent<ITEM>> implem
 	private List<Integer> mappedColumnIndexes;
 	private Function<Integer, Integer> columnIndexMapper;
 	private Class<ITEM> itemClass;
-	private TableSpringDb<ITEM> table;
+	private DbUndoRedoTable<ITEM> table;
 	
 	{
 		filteredItems = FXCollections.observableArrayList();
@@ -51,7 +50,7 @@ public class FilterTableSpringDbEditable<ITEM extends DbPersistent<ITEM>> implem
 		
 	}
 	
-	public TableSpringDb<ITEM> getTable() {
+	public DbUndoRedoTable<ITEM> getTable() {
 		return table;
 	}
 	

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
 
 public class Connectors {
 	private static Map<Class<?>,HttpConnectorSpring<?>> connectorMap;
@@ -35,8 +36,8 @@ public class Connectors {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <ITEM> HttpConnectorSpring<ITEM> getConnector(Class<ITEM> itemClass) {
-		HttpConnectorSpring<ITEM> connector = (HttpConnectorSpring<ITEM>) connectorMap.get(itemClass);
+	public static <ITEM extends DbPersistent<ITEM,ID>, ID> CrudConnector<ITEM, ID> getConnector(Class<ITEM> itemClass) {
+		CrudConnector<ITEM, ID> connector = (CrudConnector<ITEM, ID>) connectorMap.get(itemClass);
 		if (connector == null) throw new IllegalArgumentException();
 		
 		return connector;

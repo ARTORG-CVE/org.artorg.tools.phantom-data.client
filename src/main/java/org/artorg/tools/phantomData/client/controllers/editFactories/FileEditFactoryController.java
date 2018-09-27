@@ -7,7 +7,7 @@ import org.artorg.tools.phantomData.client.connectors.FileTypeConnector;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.TableViewSpringEditFilterable;
+import org.artorg.tools.phantomData.client.scene.control.TableViewEditFilterable;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
@@ -18,7 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class FileEditFactoryController extends GroupedItemEditFactoryController<PhantomFile> {
-	private TableViewSpringEditFilterable<PhantomFile> table;
+	private TableViewEditFilterable<PhantomFile> table;
 	private TextField textFieldPath;
 	private TextField textFieldName;
 	private TextField textFieldExtension;
@@ -31,7 +31,7 @@ public class FileEditFactoryController extends GroupedItemEditFactoryController<
 		comboBoxFileType = new ComboBox<FileType>();
 	}
 	
-	public FileEditFactoryController(TableViewSpringEditFilterable<PhantomFile> table) {
+	public FileEditFactoryController(TableViewEditFilterable<PhantomFile> table) {
 		this.table = table;
 	}
 
@@ -62,7 +62,7 @@ public class FileEditFactoryController extends GroupedItemEditFactoryController<
 	}
 
 	@Override
-	protected TableViewSpringEditFilterable<PhantomFile> getTable() {
+	protected TableViewEditFilterable<PhantomFile> getTable() {
 		return table;
 	}
 

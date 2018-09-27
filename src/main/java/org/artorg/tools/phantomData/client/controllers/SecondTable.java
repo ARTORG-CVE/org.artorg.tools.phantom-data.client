@@ -1,9 +1,9 @@
 package org.artorg.tools.phantomData.client.controllers;
 
 import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDbEditable;
-import org.artorg.tools.phantomData.client.scene.control.TableViewSpringEditFilterable;
+import org.artorg.tools.phantomData.client.scene.control.TableViewEditFilterable;
 import org.artorg.tools.phantomData.client.scene.layout.AnchorPaneAddableTo;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
 
 import javafx.scene.layout.AnchorPane;
 
@@ -11,9 +11,9 @@ public class SecondTable extends AnchorPaneAddableTo {
 	private FilterTableSpringDbEditable<?> table;
 //	private TableViewSpring<?, ?> view;
 	
-	public <ITEM extends DbPersistent<ITEM>> 
+	public <ITEM extends DbPersistentUUID<ITEM>> 
 		void setTable(
-			TableViewSpringEditFilterable<ITEM> table) {
+			TableViewEditFilterable<ITEM> table) {
 //		this.table = table;
 //		TableViewSpring<ITEM, ID_TYPE> view = new TableViewSpring<ITEM, ID_TYPE>();
 //		view.setTable(table);

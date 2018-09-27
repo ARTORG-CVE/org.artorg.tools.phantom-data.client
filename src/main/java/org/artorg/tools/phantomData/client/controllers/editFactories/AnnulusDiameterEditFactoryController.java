@@ -6,7 +6,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.TableViewSpringEditFilterable;
+import org.artorg.tools.phantomData.client.scene.control.TableViewEditFilterable;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 
@@ -16,7 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactoryController<AnnulusDiameter> {
-	private TableViewSpringEditFilterable<AnnulusDiameter> table;
+	private TableViewEditFilterable<AnnulusDiameter> table;
 	private Label labelShortcut;
 	private TextField textFieldValue;
 	
@@ -26,7 +26,7 @@ public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactory
 		labelShortcut.setDisable(true);
 	}
 	
-	public AnnulusDiameterEditFactoryController(TableViewSpringEditFilterable<AnnulusDiameter> table) {
+	public AnnulusDiameterEditFactoryController(TableViewEditFilterable<AnnulusDiameter> table) {
 		this.table = table;
 	}
 
@@ -63,7 +63,7 @@ public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactory
 	}
 
 	@Override
-	protected TableViewSpringEditFilterable<AnnulusDiameter> getTable() {
+	protected TableViewEditFilterable<AnnulusDiameter> getTable() {
 		return table;
 	}
 

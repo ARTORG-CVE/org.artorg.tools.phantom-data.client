@@ -1,5 +1,7 @@
 package org.artorg.tools.phantomData.client.table;
 
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
+
 public abstract class IColumn<ITEM> {
 	private boolean visible;
 	private boolean editable;
@@ -20,7 +22,9 @@ public abstract class IColumn<ITEM> {
 	
 	public abstract void set(ITEM item, String value);
 	
-	public abstract boolean update(ITEM item);
+	public abstract <U extends DbPersistent<U,SUB_ID>, SUB_ID> boolean update(ITEM item);
+	
+	public abstract boolean isIdColumn();
 	
 	public String getColumnName() {
 		return columnName;
@@ -49,7 +53,5 @@ public abstract class IColumn<ITEM> {
 	public void setFilterable(boolean filterable) {
 		this.filterable = filterable;
 	}
-	
-	
 
 }

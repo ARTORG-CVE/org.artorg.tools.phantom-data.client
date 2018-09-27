@@ -2,11 +2,11 @@ package org.artorg.tools.phantomData.client.tables;
 
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controllers.editFactories.FileEditFactoryController;
-import org.artorg.tools.phantomData.client.scene.control.TableViewSpringEditFilterable;
+import org.artorg.tools.phantomData.client.scene.control.TableViewEditFilterable;
 import org.artorg.tools.phantomData.client.tables.filterable.FileFilterTable;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 
-public class FileTable extends TableViewSpringEditFilterable<PhantomFile> {
+public class FileTable extends TableViewEditFilterable<PhantomFile> {
 
 	{
 		this.setTable(new FileFilterTable());

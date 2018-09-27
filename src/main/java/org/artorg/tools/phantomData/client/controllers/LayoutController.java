@@ -5,8 +5,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
-import org.artorg.tools.phantomData.client.scene.control.TableViewSpringEditFilterable;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.client.scene.control.TableViewEditFilterable;
+import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
 
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
@@ -40,17 +40,17 @@ public class LayoutController {
     	scene3d.addTo(pane3d);
     }
     
-	public <ITEM extends DbPersistent<ITEM>> void openMainTableTab(TableViewSpringEditFilterable<ITEM> table) {
+	public <ITEM extends DbPersistentUUID<ITEM>> void openMainTableTab(TableViewEditFilterable<ITEM> table) {
 		openMainTableTab(table, table.getFilterTable().getTableName());
 	}
 	
-	public <ITEM extends DbPersistent<ITEM>> void openMainTableTab(
-			TableViewSpringEditFilterable<ITEM> table, String name) {
+	public <ITEM extends DbPersistentUUID<ITEM>> void openMainTableTab(
+			TableViewEditFilterable<ITEM> table, String name) {
 		mainSplitPane.getMainTableTabPane().openTableTab(table, name);
 	}
 	
-	public <ITEM extends DbPersistent<ITEM>> void setSecondTable(
-			TableViewSpringEditFilterable<ITEM> table) {
+	public <ITEM extends DbPersistentUUID<ITEM>> void setSecondTable(
+			TableViewEditFilterable<ITEM> table) {
 		secondTable.setTable(table);
 	}
 	

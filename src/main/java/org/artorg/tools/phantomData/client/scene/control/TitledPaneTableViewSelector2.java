@@ -5,7 +5,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.ISelector;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
 
 import javafx.scene.Node;
 import javafx.scene.control.TitledPane;
@@ -26,11 +26,11 @@ public class TitledPaneTableViewSelector2<ITEM> extends TableViewSelector<ITEM, 
 		this.subItemClass = subItemClass;
 		System.out.println(this.subItemClass);
 		
-		List<Class<?>> subClasses = Reflect.getSubclasses(FilterTableSpringDb2.class, "org");
+		List<Class<?>> subClasses = Reflect.getSubclasses(DbFilterTable.class, "org");
 		
-		FilterTableSpringDb2<Object> filterTable = null;
+		DbFilterTable<Object> filterTable = null;
 		try {
-			filterTable = (FilterTableSpringDb2<Object>) subClasses.get(0).newInstance();
+			filterTable = (DbFilterTable<Object>) subClasses.get(0).newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}

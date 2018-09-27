@@ -2,17 +2,10 @@ package org.artorg.tools.phantomData.client.connector;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.specification.Identifiable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -26,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-public abstract class HttpConnectorSpring<T> {
+public abstract class HttpConnectorSpring<T extends Identifiable<UUID>> implements CrudConnector<T,UUID> {
 	private final Function<Method, String[]> stringAnnosFuncCreate;
 	private final Function<Method, String[]> stringAnnosFuncRead;
 	private final Function<Method, String[]> stringAnnosFuncUpdate;
@@ -70,17 +63,109 @@ public abstract class HttpConnectorSpring<T> {
 	public abstract Class<?> getArrayModelClass();
 	public abstract Class<T> getModelClass();
 	
-	public final String getAnnoStringControlClass() {return annoStringControlClass;}
-	public final String getAnnoStringRead() {return annoStringRead;}
-	public final String getAnnoStringReadAll() {return annoStringReadAll;}
-	public final String getAnnoStringUpdate() {return annoStringUpdate;}
-	public final String getAnnoStringCreate() {return annoStringCreate;}
-	public final String getAnnoStringDelete() {return annoStringDelete;}
+	@Override
+	public boolean create(T t) {
+		try {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		RestTemplate restTemplate = new RestTemplate();
+		String url = getUrlLocalhost() + "/" 
+				+ getAnnoStringControlClass() + "/" + getAnnoStringCreate();
+		HttpEntity<T> requestEntity = new HttpEntity<T>(t, headers);
+		restTemplate.postForLocation(url, requestEntity);
+		return true;
+		} catch( Exception e) {
+			handleException(e);
+		}
+		return false;
+	}
 	
 	@Override
-	public String toString() {
-		T[] content = readAll();
-		return Arrays.stream(content).map(t -> t.toString()).collect(Collectors.joining("\n"));
+	public T read(UUID id) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		RestTemplate restTemplate = new RestTemplate();
+		String url = getUrlLocalhost() + "/" 
+				+ getAnnoStringControlClass() + "/" + getAnnoStringRead();
+		T result = (T) restTemplate.getForObject(url, getModelClass(), id);
+		result.setId(id);
+		return result;
+	}
+	
+	@Override
+	public boolean update(T t) {
+		try {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		RestTemplate restTemplate = new RestTemplate();
+		String url = getUrlLocalhost() + "/" 
+				+ getAnnoStringControlClass() + "/" + getAnnoStringUpdate();
+		HttpEntity<T> requestEntity = new HttpEntity<T>(t, headers);
+		restTemplate.put(url, requestEntity);
+		return true;
+		} catch (Exception e) {
+			handleException(e);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean delete(UUID id) {
+		try {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		RestTemplate restTemplate = new RestTemplate();
+		String url = getUrlLocalhost() + "/" 
+				+ getAnnoStringControlClass() + "/" + getAnnoStringDelete();
+		HttpEntity<T> requestEntity = new HttpEntity<T>(headers);
+		restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, Void.class, id);
+		return true;
+		} catch (Exception e) {
+			handleException(e);
+		}
+		return false;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public T[] readAll() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		RestTemplate restTemplate = new RestTemplate();
+		String url = getUrlLocalhost() + "/" + getAnnoStringControlClass() + "/" + getAnnoStringReadAll();
+		HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+		ResponseEntity<?> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+				getArrayModelClass());
+		T[] results1 = (T[]) responseEntity.getBody();
+		return results1;
+	}
+	
+	@Override
+	public <V> T readByAttribute(V attribute, String annString) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		RestTemplate restTemplate = new RestTemplate();
+		String url = getUrlLocalhost() + "/" 
+				+ getAnnoStringControlClass() + "/" + annString;
+		T result = (T) restTemplate.getForObject(url, getModelClass(), attribute);
+		return result;
+	}
+
+	private void handleException(Exception e) {
+		if (e instanceof org.springframework.web.client.HttpClientErrorException) {
+			System.err.println("Move SpringBootApplication class in correct package! ex. org.artorg.tools.phantomData.server.BootApplication");
+			e.printStackTrace();
+			System.exit(0);
+		}
+		if (e instanceof HttpServerErrorException) {
+			System.err.println("///// EXCEPTION HANDLER //////");
+			e = (HttpServerErrorException)e;
+			System.out.println(e.toString());
+			System.out.println(e.getMessage());
+			System.out.println(e.getCause());
+			e.printStackTrace();
+		}
+		e.printStackTrace();
 	}
 	
 	private final String getAnnotationString(Class<? extends Annotation> mappingClass, 
@@ -139,209 +224,12 @@ public abstract class HttpConnectorSpring<T> {
 		return annoString;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public <U extends DbPersistent<T>> boolean create(List<U> t) {
-		return varArgHelper(this::create, t);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <U extends DbPersistent<T>> boolean create(U... t) {
-		return varArgHelper(this::create, t);
-	}
-	
-	public boolean create(T t) {
-		try {
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			RestTemplate restTemplate = new RestTemplate();
-			String url = getUrlLocalhost() + "/" 
-					+ getAnnoStringControlClass() + "/" + getAnnoStringCreate();
-			HttpEntity<T> requestEntity = new HttpEntity<T>(t, headers);
-			restTemplate.postForLocation(url, requestEntity);
-			return true;
-		} catch( Exception e) {
-			handleException(e);
-		}
-		return false;
-	}
-	
-	public <U extends DbPersistent<T>> boolean delete(List<U> t) {
-		return varArgHelper(this::delete, t);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <U extends DbPersistent<T>> boolean delete(U... t) {
-		return varArgHelper(this::delete, t);
-	}
-	
-	public boolean delete(UUID id) {
-		try {
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			RestTemplate restTemplate = new RestTemplate();
-			String url = getUrlLocalhost() + "/" 
-					+ getAnnoStringControlClass() + "/" + getAnnoStringDelete();
-			HttpEntity<T> requestEntity = new HttpEntity<T>(headers);
-			restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, Void.class, id);
-			return true;
-		} catch (Exception e) {
-			handleException(e);
-		}
-		return false;
-	}
-	
-	public <U extends DbPersistent<T>> boolean delete(U t) {
-		try {
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			RestTemplate restTemplate = new RestTemplate();
-			String url = getUrlLocalhost() + "/" 
-					+ getAnnoStringControlClass() + "/" + getAnnoStringDelete();
-			HttpEntity<T> requestEntity = new HttpEntity<T>(headers);
-			restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, Void.class, t.getId());
-			return true;
-		} catch(Exception e) {
-			handleException(e);
-		}
-		return false;
-	}
-	
-	public <U extends DbPersistent<T>> U read(U t) {
-		return readById(t.getId());
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <U extends DbPersistent<T>> U readById(UUID id) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		RestTemplate restTemplate = new RestTemplate();
-		String url = getUrlLocalhost() + "/" 
-				+ getAnnoStringControlClass() + "/" + getAnnoStringRead();
-		U result = (U) restTemplate.getForObject(url, getModelClass(), id);
-		result.setId(id);
-		return result;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <U,R> R readByAttribute(U attribute, String annString) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		RestTemplate restTemplate = new RestTemplate();
-		String url = getUrlLocalhost() + "/" 
-				+ getAnnoStringControlClass() + "/" + annString;
-		R result = (R) restTemplate.getForObject(url, getModelClass(), attribute);
-		return result;
-	}
-
-	public <U extends DbPersistent<T>> boolean update(List<U> t) {
-		return varArgHelper(this::update, t);
-	}
-	
-	public <U extends DbPersistent<T>> boolean update(Set<U> t) {
-		return varArgHelper(this::update, t);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <U extends DbPersistent<T>> boolean update(U... t) {
-		return varArgHelper(this::update, t);
-	}
-	
-	public <U extends DbPersistent<T>> boolean update(U t, UUID id) {
-		t.setId(id);
-		return update(t);
-	}
-	
-	public <U extends DbPersistent<T>> boolean update(U t) {
-		try {
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			RestTemplate restTemplate = new RestTemplate();
-			String url = getUrlLocalhost() + "/" 
-					+ getAnnoStringControlClass() + "/" + getAnnoStringUpdate();
-			HttpEntity<U> requestEntity = new HttpEntity<U>(t, headers);
-			restTemplate.put(url, requestEntity);
-			return true;
-		} catch (Exception e) {
-			handleException(e);
-		}
-		return false;
-	}
-	
-//	public <PATH> void update(PATH path) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-
-	@SuppressWarnings("unchecked")
-	public T[] readAll() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		RestTemplate restTemplate = new RestTemplate();
-		String url = getUrlLocalhost() + "/" + getAnnoStringControlClass() + "/" + getAnnoStringReadAll();
-		HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
-		ResponseEntity<?> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-				getArrayModelClass());
-		T[] results1 = (T[]) responseEntity.getBody();
-		return results1;
-	}
-	
-	public List<T> readAllAsList() {
-		return Arrays.asList(readAll());
-	}
-	
-	public Set<T> readAllAsSet() {
-		Set<T> set = new HashSet<T>();
-		Collections.addAll(set, readAll());
-		return set;
-	}
-	
-	public Stream<T> readAllAsStream() {
-		return Arrays.stream(readAll());
-	}
-	
-	public <U extends DbPersistent<T>> boolean varArgHelper(Function<U,Boolean> func, List<U> t) {
-		boolean succesful = true;
-		for(int i=0; i<t.size(); i++) {
-			if (func.apply(t.get(i)) == false) {
-				succesful = false;
-			}
-		}
-		return succesful;
-	}
-	
-	public <U extends DbPersistent<T>> boolean varArgHelper(Function<U,Boolean> func, Set<U> set) {
-		return set.stream().map(e -> func.apply(e))
-				.filter(b -> b == false).findFirst().orElse(true);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <U extends DbPersistent<T>> boolean varArgHelper(Function<U,Boolean> func, U...t) {
-		boolean succesful = true;
-		for(int i=0; i<t.length; i++) {
-			if (func.apply(t[i]) == false) {
-				succesful = false;
-			}
-		}
-		return succesful;
-	}
-	
-	private void handleException(Exception e) {
-		if (e instanceof org.springframework.web.client.HttpClientErrorException) {
-			System.err.println("Move SpringBootApplication class in correct package! ex. org.artorg.tools.phantomData.server.BootApplication");
-			e.printStackTrace();
-			System.exit(0);
-		}
-		if (e instanceof HttpServerErrorException) {
-			System.err.println("///// EXCEPTION HANDLER //////");
-			e = (HttpServerErrorException)e;
-			System.out.println(e.toString());
-			System.out.println(e.getMessage());
-			System.out.println(e.getCause());
-			e.printStackTrace();
-		}
-		e.printStackTrace();
-	}
-	
-	
+	// Getters
+	public final String getAnnoStringControlClass() {return annoStringControlClass;}
+	public final String getAnnoStringRead() {return annoStringRead;}
+	public final String getAnnoStringReadAll() {return annoStringReadAll;}
+	public final String getAnnoStringUpdate() {return annoStringUpdate;}
+	public final String getAnnoStringCreate() {return annoStringCreate;}
+	public final String getAnnoStringDelete() {return annoStringDelete;}
 
 }
