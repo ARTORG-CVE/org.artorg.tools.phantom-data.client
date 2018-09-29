@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import javafx.collections.ObservableList;
+
 public interface Table<ITEM> {
 	
 	void setColumns(List<IColumn<ITEM>> columns);
@@ -23,7 +25,9 @@ public interface Table<ITEM> {
 	
 	void setItemName(String name);
 	
-	List<ITEM> getItems();
+	ObservableList<ITEM> getItems();
+	
+	void setItems(ObservableList<ITEM> items);
 	
 	String getItemName();
 	

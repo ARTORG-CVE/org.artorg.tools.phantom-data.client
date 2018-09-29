@@ -36,7 +36,7 @@ public class TableViewReadOnly<ITEM> extends TableView<ITEM> {
 	public void setTable(FilterableTable<ITEM> table) {
 		this.filterTable = table;
 
-		reload();
+//		reload();
 		initTable();
 	}
 	
@@ -108,10 +108,10 @@ public class TableViewReadOnly<ITEM> extends TableView<ITEM> {
         }
     }
 	
-	public void reload() {
-		filterTable.readAllData();
-		super.setItems(filterTable.getItems());
-	}
+//	public void reload() {
+//		filterTable.readAllData();
+//		super.setItems(filterTable.getItems());
+//	}
 	
 	public void addTo(AnchorPane pane) {
 		FxUtil.addToAnchorPane(pane, this);

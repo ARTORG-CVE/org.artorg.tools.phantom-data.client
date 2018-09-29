@@ -16,10 +16,7 @@ public class PhantomFilterTable2 extends DbFilterTable<Phantom> {
 
 	{
 		setItemClass(Phantom.class);
-	}
-	
-	@Override
-	public List<IColumn<Phantom>> createColumns() {
+		
 		List<IColumn<Phantom>> columns =
 				new ArrayList<IColumn<Phantom>>();
 		IColumn<Phantom> column;
@@ -48,12 +45,9 @@ public class PhantomFilterTable2 extends DbFilterTable<Phantom> {
 				"number", item -> item, 
 				path -> String.valueOf(path.getNumber()), 
 				(path,value) -> path.setNumber(Integer.valueOf(value))));
-		return columns;
-	}
-
-	@Override
-	public String getTableName() {
-		return "Phantoms";
+		this.setColumns(columns);
+		
+		this.setTableName("Phantoms");
 	}
 
 }

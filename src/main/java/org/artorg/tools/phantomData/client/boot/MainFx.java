@@ -14,6 +14,7 @@ public class MainFx extends Application {
 	public void start(Stage stage) throws Exception {
 		MainController controller = new MainController(stage);
 		AnchorPane pane = FxUtil.loadFXML("fxml/Table.fxml", controller);
+		controller.init();
 		
     	Scene scene = new Scene(pane);
 		scene.getStylesheets().add(FxUtil.readCSSstylesheet("css/application.css"));

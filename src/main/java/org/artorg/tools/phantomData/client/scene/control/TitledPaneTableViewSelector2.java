@@ -3,6 +3,7 @@ package org.artorg.tools.phantomData.client.scene.control;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.controller.ISelector;
+import org.artorg.tools.phantomData.client.table.FilterableTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
@@ -28,9 +29,9 @@ public class TitledPaneTableViewSelector2<ITEM> extends TableViewSelector<ITEM, 
 		
 		List<Class<?>> subClasses = Reflect.getSubclasses(DbFilterTable.class, "org");
 		
-		DbFilterTable<Object> filterTable = null;
+		FilterableTable<Object> filterTable = null;
 		try {
-			filterTable = (DbFilterTable<Object>) subClasses.get(0).newInstance();
+			filterTable = (FilterableTable<Object>) subClasses.get(0).newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
@@ -41,6 +42,7 @@ public class TitledPaneTableViewSelector2<ITEM> extends TableViewSelector<ITEM, 
 		subClasses.forEach(System.out::println);
 		
 		System.out.println();
+		
 		
 		this.setTable1(filterTable);
 		

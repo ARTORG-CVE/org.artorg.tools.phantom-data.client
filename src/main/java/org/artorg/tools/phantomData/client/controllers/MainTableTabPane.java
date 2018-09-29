@@ -1,10 +1,10 @@
 package org.artorg.tools.phantomData.client.controllers;
 
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
-import org.artorg.tools.phantomData.client.scene.control.TableViewEditFilterable;
+import org.artorg.tools.phantomData.client.scene.control.DbEditFilterTableView;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.ContextMenu;
@@ -28,8 +28,8 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 		this.mainSplitPane = splitPane;
 	}	
 
-	public <ITEM extends DbPersistentUUID<ITEM>> void openTableTab(
-			TableViewEditFilterable<ITEM> tableViewSpring, String name) {
+	public <ITEM extends DbPersistent<ITEM,ID>, ID> void openTableTab(
+			DbEditFilterTableView<ITEM> tableViewSpring, String name) {
 		Tab tab = new Tab(name);
 		tab.setContent(tableViewSpring);
 		tabPane.getTabs().add(tab);

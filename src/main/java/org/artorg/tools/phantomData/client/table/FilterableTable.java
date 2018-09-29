@@ -4,6 +4,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 
+import javafx.collections.ObservableList;
+
 public interface FilterableTable<ITEM> extends Table<ITEM> {
 
 	int getFilteredNrows();
@@ -25,6 +27,8 @@ public interface FilterableTable<ITEM> extends Table<ITEM> {
 	int getFilteredNcols();
 
 	void applyFilter();
+	
+	ObservableList<ITEM> getFilteredItems();
 
 	
 }

@@ -1,11 +1,8 @@
 package org.artorg.tools.phantomData.client.connectors;
 
-import java.util.UUID;
-
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.controller.FileController;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
-import org.artorg.tools.phantomData.server.specification.Identifiable;
 
 public class FileConnector extends HttpConnectorSpring<PhantomFile> {
 
@@ -37,9 +34,9 @@ public class FileConnector extends HttpConnectorSpring<PhantomFile> {
 	}
 	
 	@Override
-	public <U extends Identifiable<UUID>> boolean create(U phantomFile) {
+	public boolean create(PhantomFile phantomFile) {
 		boolean check = super.create(phantomFile);
-		((PhantomFile) phantomFile).updateNativeFileName();
+		phantomFile.updateNativeFileName();
 		return check;
 	}
 	

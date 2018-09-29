@@ -3,15 +3,13 @@ package org.artorg.tools.phantomData.client.scene.control;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
-import org.artorg.tools.phantomData.client.table.EditFilterableTable;
 import org.artorg.tools.phantomData.client.table.FilterableTable;
+import org.artorg.tools.phantomData.client.table.DbEditFilterableTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
-import org.artorg.tools.phantomData.server.specification.Identifiable;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -25,12 +23,11 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
-public abstract class TableViewEditFilterable<ITEM extends DbPersistentUUID<ITEM> & Identifiable<UUID>> extends TableView<ITEM> {
-	private EditFilterableTable<ITEM> filterTable;
+public abstract class DbEditFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends TableView<ITEM> {
+	private DbEditFilterableTable<ITEM> filterTable;
 	private List<FilterMenuButton> filterMenuButtons;
 	private ListChangeListener<ITEM> listenerChangedListenerRefresh;
 	
@@ -47,12 +44,15 @@ public abstract class TableViewEditFilterable<ITEM extends DbPersistentUUID<ITEM
 	
 	public abstract ItemEditFactoryController<ITEM> createAddEditController();
 	
-	@SuppressWarnings("unchecked")
-	public CrudConnector<ITEM,UUID> getConnector() {
-		return (CrudConnector<ITEM, UUID>) filterTable.getConnector();
+	public CrudConnector<ITEM,?> getConnector() {
+		return filterTable.getConnector();
 	}
 	
-	public void setTable(EditFilterableTable<ITEM> table) {
+	public void setConnector(CrudConnector<ITEM,?> connector) {
+		filterTable.setConnector(connector);
+	}
+	
+	public void setTable(DbEditFilterableTable<ITEM> table) {
 		this.filterTable = table;
 
 		reload();

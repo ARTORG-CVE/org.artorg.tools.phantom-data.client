@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -12,18 +11,15 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.artorg.tools.phantomData.client.table.FilterableTable;
-import org.artorg.tools.phantomData.client.connector.Connectors;
-import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
-import org.artorg.tools.phantomData.server.specification.Identifiable;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 @SuppressWarnings("unchecked")
-public class DbFilterTable<ITEM extends DbPersistent<ITEM,ID>, ID> extends DbTable<ITEM,ID> implements FilterableTable<ITEM> {
+public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<ITEM> implements FilterableTable<ITEM> {
 	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
 	private List<Predicate<ITEM>> columnItemFilterPredicates;
@@ -54,10 +50,15 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,ID>, ID> extends DbTab
 			columnTextFilterPredicates.add(item -> true);
 		}
 		columnIndexMapper = i -> mappedColumnIndexes.get(i);
+		
 	}
 	
 	public void setSortComparator(Comparator<String> sortComparator, Function<ITEM, String> valueGetter) {
 		this.sortComparator = (item1, item2) -> sortComparator.compare(valueGetter.apply(item1),valueGetter.apply(item2));
+	}
+	
+	public ObservableList<ITEM> getFilteredItems() {
+		return filteredItems;
 	}
 	
 	@Override
@@ -136,7 +137,7 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,ID>, ID> extends DbTab
 				.reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
 		filterPredicate = itemFilter.and(textFilter);
 		this.filteredItems.clear();
-		this.filteredItems.addAll(items.stream().filter(filterPredicate).sorted(sortComparator)
+		this.filteredItems.addAll(super.getItems().stream().filter(filterPredicate).sorted(sortComparator)
 				.collect(Collectors.toList()));
 	}
 	

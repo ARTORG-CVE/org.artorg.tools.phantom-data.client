@@ -2,11 +2,11 @@ package org.artorg.tools.phantomData.client.tables.property;
 
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controllers.editFactories.property.BooleanPropertyEditFactoryController;
-import org.artorg.tools.phantomData.client.scene.control.TableViewEditFilterable;
+import org.artorg.tools.phantomData.client.scene.control.DbEditFilterTableView;
 import org.artorg.tools.phantomData.client.tables.filterable.property.BooleanPropertyFilterTable;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 
-public class BooleanPropertyTable extends TableViewEditFilterable<BooleanProperty> {
+public class BooleanPropertyTable extends DbEditFilterTableView<BooleanProperty> {
 
 	{
 		this.setTable(new BooleanPropertyFilterTable());

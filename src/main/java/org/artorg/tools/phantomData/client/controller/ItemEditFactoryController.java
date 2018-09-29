@@ -7,20 +7,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
-import org.artorg.tools.phantomData.client.scene.control.TableViewEditFilterable;
+import org.artorg.tools.phantomData.client.scene.control.DbEditFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.TitledPaneTableViewSelector;
-import org.artorg.tools.phantomData.client.scene.control.TitledPaneTableViewSelector2;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
-import org.artorg.tools.phantomData.server.specification.Identifiable;
 
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -39,7 +37,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.util.Callback;
 
-public abstract class ItemEditFactoryController<ITEM extends DbPersistentUUID<ITEM> & Identifiable<UUID>> {
+public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?>> {
 	private GridPane gridPane;
 	protected Button applyButton;
 	private int nRows = 0;
@@ -57,7 +55,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistentUUID<IT
 	
 	protected abstract void copy(ITEM from, ITEM to);
 	
-	protected abstract TableViewEditFilterable<ITEM> getTable();
+	protected abstract DbEditFilterTableView<ITEM> getTable();
 	
 	protected abstract AnchorPane createRootPane();
 	
@@ -79,10 +77,10 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistentUUID<IT
 	private List<ISelector<ITEM, Object>> createSelectors(ITEM item) {
 		List<ISelector<ITEM, Object>> selectors = new ArrayList<ISelector<ITEM, Object>>();
 		
-		List<Class<?>> subItemClasses = Reflect.getCollectionSetterMethods(item.getClass())
+		List<Class<? extends DbPersistent<?,?>>> subItemClasses = Reflect.getCollectionSetterMethods(item.getClass())
 				.map(m -> {
 					Type type = m.getGenericParameterTypes()[0];
-					Class<?> cls = Reflect.getGenericTypeClass(type);
+					Class<? extends DbPersistent<?,?>> cls = (Class<? extends DbPersistent<?, ?>>) Reflect.getGenericTypeClass(type);
 					return cls;
 				})
 				.filter(c -> c != null)
@@ -91,11 +89,11 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistentUUID<IT
 		
 		subItemClasses.forEach(subItemClass -> {
 			if (Reflect.containsCollectionSetter(item, subItemClass)) {
-				CrudConnector<?,?> connector = Connectors.getConnector((Class<ITEM>) subItemClass);
+				CrudConnector<?,?> connector = Connectors.getConnector(subItemClass);
 				Set<Object> selectableItemSet = (Set<Object>) connector.readAllAsSet();
 				
 				if (selectableItemSet.size() > 0) {
-					TitledPaneTableViewSelector titledSelector = new TitledPaneTableViewSelector();
+					TitledPaneTableViewSelector<ITEM> titledSelector = new TitledPaneTableViewSelector<ITEM>();
 //					TitledPaneTableViewSelector2<ITEM> titledSelector = new TitledPaneTableViewSelector2<ITEM>(subItemClass);
 					titledSelector.setSubItemClass((Class<?>) subItemClass);
 					titledSelector.setSelectableItems(selectableItemSet);
@@ -123,7 +121,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistentUUID<IT
 		return selectors;
 	}
 		
-	public final CrudConnector<ITEM,UUID> getConnector() {
+	public final CrudConnector<ITEM,?> getConnector() {
 		return getTable().getConnector();
 	}
 	
@@ -146,8 +144,8 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistentUUID<IT
 			}
 	}
 	
-	protected <T extends DbPersistentUUID<T> & Identifiable<UUID>> void createComboBox(ComboBox<T> comboBox, 
-			CrudConnector<T,UUID> connector, Function<T,String> mapper, Consumer<T> selectedItemChangedConsumer) {
+	protected <T extends DbPersistent<T,ID>, ID> void createComboBox(ComboBox<T> comboBox, 
+			CrudConnector<T,ID> connector, Function<T,String> mapper, Consumer<T> selectedItemChangedConsumer) {
     	createComboBox(comboBox, connector, mapper);
         
         ChangeListener<T> listener = (observable, oldValue, newValue) -> {
@@ -158,8 +156,8 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistentUUID<IT
         comboBox.getSelectionModel().selectedItemProperty().addListener(listener);
     }
 	
-	protected <T extends DbPersistentUUID<T> & Identifiable<UUID>> void createComboBox(ComboBox<T> comboBox, 
-			CrudConnector<T,UUID> connector, Function<T,String> mapper) {
+	protected <T extends DbPersistent<T,ID>, ID> void createComboBox(ComboBox<T> comboBox, 
+			CrudConnector<T,ID> connector, Function<T,String> mapper) {
     	List<T> fabricationType = connector.readAllAsStream()
         		.distinct().collect(Collectors.toList());
     	comboBox.setItems(FXCollections.observableList(fabricationType));

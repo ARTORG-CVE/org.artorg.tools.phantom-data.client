@@ -7,10 +7,9 @@ import java.util.function.Function;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
-import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
 
-public class ColumnOptional<T extends DbPersistentUUID<T>, 
-SUB extends DbPersistent<SUB,SUB_ID>,SUB_ID> extends IColumn<T> {
+public class ColumnOptional<T extends DbPersistent<T,?>, 
+SUB extends DbPersistent<SUB,?>> extends IColumn<T> {
 	private final Function<T, Optional<SUB>> itemToPropertyGetter;
 	private final Function<SUB, String> propertyToValueGetter;
 	private final BiConsumer<SUB, String> propertyToValueSetter;
@@ -44,13 +43,14 @@ SUB extends DbPersistent<SUB,SUB_ID>,SUB_ID> extends IColumn<T> {
 			propertyToValueSetter.accept(path.get(), value);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public boolean update(T item) {
+	public <U extends DbPersistent<U,SUB_ID>, SUB_ID>  boolean update(T item) {
 		System.out.println("updated value in database :)");
-		Optional<SUB> optional = itemToPropertyGetter.apply(item);
+		Optional<U> optional = (Optional<U>) itemToPropertyGetter.apply(item);
 		if (!optional.isPresent()) return false;
-		SUB sub = optional.get();
-		CrudConnector<SUB,SUB_ID> connector = Connectors.getConnector(sub.getItemClass()); 
+		U sub = optional.get();
+		CrudConnector<U,SUB_ID> connector = Connectors.getConnector(sub.getItemClass()); 
 		return connector.update(sub);
 	}
 	

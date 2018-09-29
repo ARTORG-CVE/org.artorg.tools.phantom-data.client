@@ -10,7 +10,7 @@ import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.TableViewEditFilterable;
+import org.artorg.tools.phantomData.client.scene.control.DbEditFilterTableView;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
@@ -23,7 +23,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class PhantomEditFactoryController extends GroupedItemEditFactoryController<Phantom> {
-	private TableViewEditFilterable<Phantom> table;
+	private DbEditFilterTableView<Phantom> table;
 	private Label labelIdValue;
     private ComboBox<AnnulusDiameter> comboBoxAnnulus;
     private ComboBox<FabricationType> comboBoxFabricationType;
@@ -42,7 +42,7 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 		labelIdValue.setDisable(true);
 	}
 	
-	public PhantomEditFactoryController(TableViewEditFilterable<Phantom> table) {
+	public PhantomEditFactoryController(DbEditFilterTableView<Phantom> table) {
 		this.table = table;
 	}
 	
@@ -104,7 +104,7 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 	}
 	
 	@Override
-	protected TableViewEditFilterable<Phantom> getTable() {
+	protected DbEditFilterTableView<Phantom> getTable() {
 		return table;
 	}
 

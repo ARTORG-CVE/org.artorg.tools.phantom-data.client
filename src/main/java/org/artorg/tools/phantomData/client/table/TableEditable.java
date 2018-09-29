@@ -2,11 +2,11 @@ package org.artorg.tools.phantomData.client.table;
 
 import javafx.collections.ObservableList;
 
-public interface EditableTable<ITEM> extends Table<ITEM> {
+public interface TableEditable<T> extends Table<T> {
 	
-	void setItems(ObservableList<ITEM> items);
+	void setItems(ObservableList<T> items);
 	
-	default void setValue(ITEM item, int col, String value) {
+	default void setValue(T item, int col, String value) {
 		getColumns().get(col).set(item, value);
 	}
 	

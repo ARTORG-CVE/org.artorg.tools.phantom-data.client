@@ -1,22 +1,19 @@
 package org.artorg.tools.phantomData.client.tables.filterable.property;
 
+import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.connectors.property.StringPropertyConnector;
-import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.StringProperty;
 
 public class StringPropertyFilterTable extends PropertyFilterTable<StringProperty, String> {
 	
 	{
 		setItemClass(StringProperty.class);
-	}
-	
-	@Override
-	public String getTableName() {
-		return "String Properties";
+		
+		this.setTableName("String Properties");
 	}
 
 	@Override
-	protected HttpConnectorSpring<StringProperty> getPropertyConnector() {
+	protected CrudConnector<StringProperty,?> getPropertyConnector() {
 		return StringPropertyConnector.get();
 	}
 

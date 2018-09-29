@@ -7,7 +7,7 @@ import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConn
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.TableViewEditFilterable;
+import org.artorg.tools.phantomData.client.scene.control.DbEditFilterTableView;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import org.artorg.tools.phantomData.server.model.property.StringProperty;
@@ -18,7 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class StringPropertyEditFactoryController extends GroupedItemEditFactoryController<StringProperty> {
-	private TableViewEditFilterable<StringProperty> table;
+	private DbEditFilterTableView<StringProperty> table;
 	private ComboBox<PropertyField> comboBoxPropertyField;
 	private TextField textFieldValue;
 	
@@ -27,7 +27,7 @@ public class StringPropertyEditFactoryController extends GroupedItemEditFactoryC
 		textFieldValue = new TextField();
 	}
 	
-	public StringPropertyEditFactoryController(TableViewEditFilterable<StringProperty> table) {
+	public StringPropertyEditFactoryController(DbEditFilterTableView<StringProperty> table) {
 		this.table = table;
 	}
 	
@@ -51,7 +51,7 @@ public class StringPropertyEditFactoryController extends GroupedItemEditFactoryC
 	}
 
 	@Override
-	protected TableViewEditFilterable<StringProperty> getTable() {
+	protected DbEditFilterTableView<StringProperty> getTable() {
 		return table;
 	}
 	

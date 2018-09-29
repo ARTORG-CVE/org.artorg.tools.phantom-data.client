@@ -6,7 +6,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.TableViewEditFilterable;
+import org.artorg.tools.phantomData.client.scene.control.DbEditFilterTableView;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 
@@ -15,7 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class FabricationTypeEditFactoryController extends GroupedItemEditFactoryController<FabricationType> {
-	private TableViewEditFilterable<FabricationType> table;
+	private DbEditFilterTableView<FabricationType> table;
 	private TextField textFieldShortcut;
 	private TextField textFieldValue;
 
@@ -24,7 +24,7 @@ public class FabricationTypeEditFactoryController extends GroupedItemEditFactory
 		textFieldValue = new TextField();
 	}
 	
-	public FabricationTypeEditFactoryController(TableViewEditFilterable<FabricationType> table) {
+	public FabricationTypeEditFactoryController(DbEditFilterTableView<FabricationType> table) {
 		this.table = table;
 	}
 
@@ -48,7 +48,7 @@ public class FabricationTypeEditFactoryController extends GroupedItemEditFactory
 	}
 
 	@Override
-	protected TableViewEditFilterable<FabricationType> getTable() {
+	protected DbEditFilterTableView<FabricationType> getTable() {
 		return table;
 	}
 

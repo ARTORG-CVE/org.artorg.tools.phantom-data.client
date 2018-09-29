@@ -1,5 +1,6 @@
 package org.artorg.tools.phantomData.client.tables.filterable.property;
 
+import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.connectors.property.BooleanPropertyConnector;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 
@@ -7,15 +8,12 @@ public class BooleanPropertyFilterTable extends PropertyFilterTable<BooleanPrope
 	
 	{
 		setItemClass(BooleanProperty.class);
-	}
-	
-	@Override
-	public String getTableName() {
-		return "Boolean Properties";
+		
+		this.setTableName("Boolean Properties");
 	}
 
 	@Override
-	protected HttpConnectorSpring<BooleanProperty> getPropertyConnector() {
+	protected CrudConnector<BooleanProperty,?> getPropertyConnector() {
 		return BooleanPropertyConnector.get();
 	}
 

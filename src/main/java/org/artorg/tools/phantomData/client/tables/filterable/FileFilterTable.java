@@ -3,20 +3,19 @@ package org.artorg.tools.phantomData.client.tables.filterable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDbEditable;
+import org.artorg.tools.phantomData.client.connector.Connectors;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTable;
 import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 
-public class FileFilterTable extends FilterTableSpringDbEditable<PhantomFile> {
+public class FileFilterTable extends DbUndoRedoEditFilterTable<PhantomFile> {
 
 	{
 		setItemClass(PhantomFile.class);
-	}
-
-	@Override
-	public List<IColumn<PhantomFile>> createColumns() {
+		setConnector(Connectors.getConnector(PhantomFile.class));
+		
 		List<IColumn<PhantomFile>> columns =
 				new ArrayList<IColumn<PhantomFile>>();
 		columns.add(new Column<PhantomFile, PhantomFile>(
@@ -35,14 +34,9 @@ public class FileFilterTable extends FilterTableSpringDbEditable<PhantomFile> {
 				"file type", item -> item.getFileType(), 
 				path -> path.getName(), 
 				(path,value) -> path.setName(value)));
-		return columns;
+		this.setColumns(columns);
+		
+		this.setTableName("Files");
 	}
-
-	@Override
-	public String getTableName() {
-		return "Files";
-	}
-	
-	
 
 }

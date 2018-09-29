@@ -3,19 +3,16 @@ package org.artorg.tools.phantomData.client.tables.filterable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDbEditable;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTable;
 import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
-public class PropertyFieldFilterTable extends FilterTableSpringDbEditable<PropertyField> {
+public class PropertyFieldFilterTable extends DbUndoRedoEditFilterTable<PropertyField> {
 	
 	{
 		setItemClass(PropertyField.class);
-	}
-
-	@Override
-	public List<IColumn<PropertyField>> createColumns() {
+		
 		List<IColumn<PropertyField>> columns =
 				new ArrayList<IColumn<PropertyField>>();
 		columns.add(new Column<PropertyField, PropertyField>(
@@ -26,12 +23,9 @@ public class PropertyFieldFilterTable extends FilterTableSpringDbEditable<Proper
 				"description", item -> item, 
 				path -> path.getDescription(), 
 				(path,value) -> path.setDescription((String) value)));
-		return columns;
-	}
-
-	@Override
-	public String getTableName() {
-		return "Property Fields";
+		this.setColumns(columns);
+		
+		this.setTableName("Property Field");
 	}
 
 }

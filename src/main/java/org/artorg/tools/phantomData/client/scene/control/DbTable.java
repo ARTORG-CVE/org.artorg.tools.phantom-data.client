@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
-import org.artorg.tools.phantomData.client.table.DatabasableTable;
+import org.artorg.tools.phantomData.client.table.DatabaseableTable;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class DbTable<ITEM extends DbPersistent<ITEM,ID>, ID> implements DatabasableTable<ITEM,ID> {
+public class DbTable<ITEM extends DbPersistent<ITEM,?>> implements DatabaseableTable<ITEM> {
 	private final ObservableList<ITEM> items;
 	private List<IColumn<ITEM>> columns;
-	private CrudConnector<ITEM,ID> connector;
+	private CrudConnector<ITEM,?> connector;
 	private boolean isIdColumnVisible;
 	private String tableName;
 	private String itemName;
@@ -36,8 +36,6 @@ public class DbTable<ITEM extends DbPersistent<ITEM,ID>, ID> implements Databasa
 	}
 
 	public void setIdColumnVisible(boolean isIdColumnVisible) {
-		this.getColumns().get(0).get
-		
 		this.isIdColumnVisible = isIdColumnVisible;
 	}
 	
@@ -78,7 +76,7 @@ public class DbTable<ITEM extends DbPersistent<ITEM,ID>, ID> implements Databasa
 	}
 
 	@Override
-	public List<ITEM> getItems() {
+	public ObservableList<ITEM> getItems() {
 		return this.items;
 	}
 
@@ -93,12 +91,12 @@ public class DbTable<ITEM extends DbPersistent<ITEM,ID>, ID> implements Databasa
 	}
 
 	@Override
-	public CrudConnector<ITEM, ID> getConnector() {
+	public CrudConnector<ITEM,?> getConnector() {
 		return this.connector;
 	}
 
 	@Override
-	public void setConnector(CrudConnector<ITEM, ID> connector) {
+	public void setConnector(CrudConnector<ITEM,?> connector) {
 		this.connector = connector;
 	}
 

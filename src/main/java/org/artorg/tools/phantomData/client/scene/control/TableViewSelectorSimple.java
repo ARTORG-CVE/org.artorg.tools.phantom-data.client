@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.controller.ISelector;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
 
 import javafx.beans.binding.Bindings;
@@ -27,7 +28,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
-public class TableViewSelectorSimple<ITEM extends DbPersistentUUID<ITEM>> implements ISelector<ITEM, Object> {
+public class TableViewSelectorSimple<ITEM extends DbPersistent<ITEM,?>> implements ISelector<ITEM, Object> {
 	private TableView<Object> tableView1;
 	private TableView<Object> tableView2;
 	private SplitPane splitPane;

@@ -5,7 +5,7 @@ import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.io.IOutil;
-import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDbEditable;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTable;
 import org.artorg.tools.phantomData.client.tables.AnnulusDiameterTable;
 import org.artorg.tools.phantomData.client.tables.FabricationTypeTable;
 import org.artorg.tools.phantomData.client.tables.FileTable;
@@ -33,7 +33,7 @@ import javafx.stage.WindowEvent;
 public class MainController {
 	private LayoutController layoutController;
 	
-	private FilterTableSpringDbEditable<?> table;
+	private DbUndoRedoEditFilterTable<?> table;
 	private Stage stage;
 	
 	private static String urlLocalhost;
@@ -111,17 +111,17 @@ public class MainController {
 
     @FXML
     void save(ActionEvent event) {
-    	table.getTable().getUndoManager().save();
+//    	table.getTable().getUndoManager().save();
     }
 
     @FXML
     void undo(ActionEvent event) {
-    	table.getTable().getUndoManager().undo();
+//    	table.getTable().getUndoManager().undo();
     }
     
     @FXML
     void redo(ActionEvent event) {
-    	table.getTable().getUndoManager().redo();
+//    	table.getTable().getUndoManager().redo();
     }
     
 	@FXML
@@ -143,8 +143,10 @@ public class MainController {
         assert menuItemTableFileTypes != null : "fx:id=\"menuItemTableFileTypes\" was not injected: check your FXML file 'Main.fxml'.";
         assert menuItemTablePropertyFields != null : "fx:id=\"menuItemTablePropertyField\" was not injected: check your FXML file 'Main.fxml'.";
         assert contentPane != null : "fx:id=\"contentPane\" was not injected: check your FXML file 'Table.fxml'.";
-        
-        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+    }
+	
+	public void init() {
+		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
             	close();
@@ -162,10 +164,9 @@ public class MainController {
         	e.printStackTrace();
         }
 		layoutController.set3dFile(IOutil.readResourceAsFile("model.stl"));
-        
-    }
+	}
     
-    public <ITEM extends DbPersistentUUID<ITEM>> void setTable(FilterTableSpringDbEditable<ITEM> table) {
+    public <ITEM extends DbPersistentUUID<ITEM>> void setTable(DbUndoRedoEditFilterTable<ITEM> table) {
 		this.table = table;
 	}
     

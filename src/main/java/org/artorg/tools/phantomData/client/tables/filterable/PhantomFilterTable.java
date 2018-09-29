@@ -2,10 +2,9 @@ package org.artorg.tools.phantomData.client.tables.filterable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-import org.artorg.tools.phantomData.client.scene.control.FilterTableSpringDbEditable;
-import org.artorg.tools.phantomData.client.scene.control.DbFilterTable;
+import org.artorg.tools.phantomData.client.connector.Connectors;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTable;
 import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
@@ -14,15 +13,12 @@ import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.Special;
 
-public class PhantomFilterTable extends FilterTableSpringDbEditable<Phantom> {
+public class PhantomFilterTable extends DbUndoRedoEditFilterTable<Phantom> {
 
 	{
 		setItemClass(Phantom.class);
+		setConnector(Connectors.getConnector(Phantom.class));
 		
-	}
-	
-	@Override
-	public List<IColumn<Phantom>> createColumns() {
 		List<IColumn<Phantom>> columns =
 				new ArrayList<IColumn<Phantom>>();
 		IColumn<Phantom> column;
@@ -51,12 +47,10 @@ public class PhantomFilterTable extends FilterTableSpringDbEditable<Phantom> {
 				"number", item -> item, 
 				path -> String.valueOf(path.getNumber()), 
 				(path,value) -> path.setNumber(Integer.valueOf(value))));
-		return columns;
-	}
-
-	@Override
-	public String getTableName() {
-		return "Phantoms";
+		this.setColumns(columns);
+		
+		this.setTableName("Phantoms");
+		
 	}
 
 }
