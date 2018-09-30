@@ -1,96 +1,21 @@
 package org.artorg.tools.phantomData.client.scene.control;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.connector.CrudConnectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.IDbTable;
-import org.artorg.tools.phantomData.client.table.IColumn;
+import org.artorg.tools.phantomData.client.table.LambdaColumn;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
-public class DbTable<ITEM extends DbPersistent<ITEM,?>> implements IDbTable<ITEM> {
-	private final ObservableList<ITEM> items;
-	private List<IColumn<ITEM>> columns;
+public class DbTable<ITEM extends DbPersistent<ITEM,?>> extends Table<ITEM> implements IDbTable<ITEM> {
 	private ICrudConnector<ITEM,?> connector;
-	private boolean isIdColumnVisible;
-	private String tableName;
-	private String itemName;
-	private Class<ITEM> itemClass;
-	
-	{
-		items = FXCollections.observableArrayList();
-		columns = new ArrayList<IColumn<ITEM>>();
-		isIdColumnVisible = false;
-
-	}
-	
-	public void setItems(ObservableList<ITEM> items) {
-		this.items.clear();
-		this.items.addAll(items);
-	}
-	
-	public boolean isIdColumnVisible() {
-		return isIdColumnVisible;
-	}
-
-	public void setIdColumnVisible(boolean isIdColumnVisible) {
-		this.isIdColumnVisible = isIdColumnVisible;
-	}
-	
-	
-    @Override
-	public String toString() {
-		return this.createString();
-	}
-	
-    @Override
-	public String getTableName() {
-		return tableName;
-	}
-	
-	@Override
-	public void setTableName(String name) {
-		this.tableName = name;
-	}
-	
-	@Override
-	public String getItemName() {
-		return itemName;
-	}
-	
-	@Override
-	public void setItemName(String name) {
-		this.itemName = name;
-	}
-
-	@Override
-	public List<IColumn<ITEM>> getColumns() {
-		return this.columns;
-	}
 
 	@Override
 	public void setItemClass(Class<ITEM> itemClass) {
-		this.itemClass = itemClass;
+		super.setItemClass(itemClass);
 		setConnector(CrudConnectors.<ITEM>getConnector(itemClass));
-	}
-
-	@Override
-	public ObservableList<ITEM> getItems() {
-		return this.items;
-	}
-
-	@Override
-	public Class<ITEM> getItemClass() {
-		return this.itemClass;
-	}
-
-	@Override
-	public void setColumns(List<IColumn<ITEM>> columns) {
-		this.columns = columns;
 	}
 
 	@Override
@@ -101,6 +26,19 @@ public class DbTable<ITEM extends DbPersistent<ITEM,?>> implements IDbTable<ITEM
 	@Override
 	public void setConnector(ICrudConnector<ITEM,?> connector) {
 		this.connector = connector;
+	}
+	
+	@Override
+	public void setColumns(List<Column<ITEM>> columns) {
+		columns.forEach(column -> column.setIdColumn(false));
+		LambdaColumn<ITEM,ITEM> idColumn = new LambdaColumn<ITEM, ITEM>(
+			"ID", item -> item, 
+			path -> path.getId().toString(), 
+			(path,value) -> path.setId(value));
+		idColumn.setIdColumn(true);
+		idColumn.setVisibility(false);
+		columns.add(0, idColumn);
+		super.setColumns(columns);
 	}
 
 }

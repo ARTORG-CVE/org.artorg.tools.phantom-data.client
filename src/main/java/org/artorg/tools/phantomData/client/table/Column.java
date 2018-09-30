@@ -1,48 +1,121 @@
 package org.artorg.tools.phantomData.client.table;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.client.connector.Connectors;
-import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class Column<T extends DbPersistent<T,?>, 
-		SUB extends DbPersistent<SUB,?>> extends IColumn<T> {
-	private final Function<T, SUB> itemToPropertyGetter;
-	private final Function<SUB, String> propertyToValueGetter;
-	private final BiConsumer<SUB, String> propertyToValueSetter;
-	
-	public Column(String columnName, Function<T, SUB> itemToPropertyGetter, 
-			Function<SUB, String> propertyToValueGetter, 
-			BiConsumer<SUB, String> propertyToValueSetter) {
-		super(columnName);
-		this.itemToPropertyGetter = itemToPropertyGetter;
-		this.propertyToValueGetter = propertyToValueGetter;
-		this.propertyToValueSetter = propertyToValueSetter;
+import javafx.collections.ObservableList;
+
+public abstract class Column<ITEM> {
+	private ObservableList<ITEM> items;
+	private boolean visible;
+	private boolean editable;
+	private boolean filterable;
+	private boolean idColumn;
+	private final String columnName;
+	private Function<ITEM,String> valueGetter;
+	private BiConsumer<ITEM,String> valueSetter;
+
+	{
+		visible = true;
+		editable = true;
+		filterable = true;
+		idColumn = false;
 	}
 	
-	@Override
-	public String get(T item) {
-		return propertyToValueGetter.apply(itemToPropertyGetter.apply(item));
+	public Column(String columnName) {
+		this.columnName = columnName;
 	}
 	
-	@Override
-	public void set(T item, String value) {
-		propertyToValueSetter.accept(itemToPropertyGetter.apply(item), value);
+	public abstract <U extends DbPersistent<U,SUB_ID>, SUB_ID> boolean update(ITEM item);
+	
+	public List<String> getValues() {
+		return getItems().stream().map(item -> get(item)).collect(Collectors.toList());
+	}
+	
+	public String get(ITEM item) {
+		return valueGetter.apply(item);
+	}
+	
+	public boolean contains(ITEM item) {
+		try {
+			valueGetter.apply(item);
+			return true;
+		} catch (Exception e) {}
+		return false;
+	}
+	
+	public boolean contains(String value) {
+		return getItems().stream().filter(item -> get(item).equals(value))
+				.findFirst().isPresent();
+	}
+	
+	public void set(ITEM item, String value) {
+		valueSetter.accept(item, value);
+	}
+	
+	// Getters & Setters
+	public Function<ITEM, String> getValueGetter() {
+		return valueGetter;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <U extends DbPersistent<U,SUB_ID>, SUB_ID> boolean update(T item) {
-		System.out.println("updated value in database :)");
-		U path = (U) itemToPropertyGetter.apply(item);
-		ICrudConnector<U,SUB_ID> connector = Connectors.getConnector(path.getItemClass());
-		return connector.update(path);
+	public void setValueGetter(Function<ITEM, String> valueGetter) {
+		this.valueGetter = valueGetter;
 	}
 
-	@Override
+	public BiConsumer<ITEM, String> getValueSetter() {
+		return valueSetter;
+	}
+
+	public void setValueSetter(BiConsumer<ITEM, String> valueSetter) {
+		this.valueSetter = valueSetter;
+	}
+	
+	public ObservableList<ITEM> getItems() {
+		return items;
+	}
+	
+	public void setItems(ObservableList<ITEM> items) {
+		this.items = items;
+	}
+	
+	public String getColumnName() {
+		return columnName;
+	}
+	
+	public boolean isVisible() {
+		return visible;
+	}
+	
+	public void setVisibility(boolean visible) {
+		this.visible = visible;
+	}
+	
+	public boolean isEditable() {
+		return editable;
+	}
+	
+	public void setEditable(boolean editable) {
+		this.editable = editable;
+	}
+
+	public boolean isFilterable() {
+		return filterable;
+	}
+
+	public void setFilterable(boolean filterable) {
+		this.filterable = filterable;
+	}
+	
 	public boolean isIdColumn() {
-		throw new UnsupportedOperationException();
+		return idColumn;
 	}
 	
+	public void setIdColumn(boolean idColumn) {
+		this.idColumn = idColumn;
+	}
+
 }

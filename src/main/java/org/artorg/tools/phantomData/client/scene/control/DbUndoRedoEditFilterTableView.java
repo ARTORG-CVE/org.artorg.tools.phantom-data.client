@@ -106,7 +106,7 @@ public abstract class DbUndoRedoEditFilterTableView<ITEM extends DbPersistent<IT
 		}
 		
 	    super.getColumns().addAll(columns);
-	    super.setItems(filterTable.getItems());
+	    super.setItems(filterTable.getFilteredItems());
 	    autoResizeColumns();
 	    
 	    Platform.runLater(() -> showFilterButtons());

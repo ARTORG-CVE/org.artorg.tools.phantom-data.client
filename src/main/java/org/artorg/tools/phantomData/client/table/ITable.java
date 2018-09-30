@@ -6,14 +6,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.artorg.tools.phantomData.client.util.Collectors2;
 
 import javafx.collections.ObservableList;
 
 public interface ITable<ITEM> {
 	
-	void setColumns(List<IColumn<ITEM>> columns);
+	void setColumns(List<Column<ITEM>> columns);
 	
-	List<IColumn<ITEM>> getColumns();
+	List<Column<ITEM>> getColumns();
 	
 	Class<ITEM> getItemClass();
 	
@@ -30,6 +31,18 @@ public interface ITable<ITEM> {
 	void setItems(ObservableList<ITEM> items);
 	
 	String getItemName();
+	
+	default Column<ITEM> getIdColumn() {
+		return getColumns().stream().filter(c -> c.isIdColumn()).collect(Collectors2.toSingleton());
+	}
+	
+	default void setIdColumn(Column<ITEM> column) {
+		getColumns().replaceAll(c -> c.isIdColumn()? column: c);
+	}
+	
+	default List<Column<ITEM>> getVisibleColumns() {
+		return getColumns().stream().filter(c -> c.isVisible()).collect(Collectors.toList());
+	}
 	
 	default String getValue(int row, int col) {
 		return getValue(getItems().get(row), col);

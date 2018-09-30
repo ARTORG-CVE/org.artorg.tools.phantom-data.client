@@ -3,11 +3,15 @@ package org.artorg.tools.phantomData.client.scene.control;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.artorg.tools.phantomData.client.io.IOutil;
+import org.artorg.tools.phantomData.client.table.Column;
+import org.artorg.tools.phantomData.client.table.FilterColumn;
 import org.artorg.tools.phantomData.client.table.IFilterTable;
 
 import javafx.application.Platform;
@@ -37,12 +41,12 @@ public class FilterMenuButton extends MenuButton {
 	private final List<CheckBoxItemFilter> itemsFilter;
 	private Supplier<List<String>> getters;
 	private String regex;
-	
+
 	static {
 		imgNormal = IOutil.readResourceAsImage("img/arrow.png");
 		imgFilter = IOutil.readResourceAsImage("img/filter.png");
 	}
-	
+
 	{
 		itemReset = new ButtonItemReset();
 		itemAscending = new CheckBoxItemSortAscending();
@@ -52,7 +56,7 @@ public class FilterMenuButton extends MenuButton {
 		itemsFilter = new ArrayList<CheckBoxItemFilter>();
 		regex = "";
 	}
-	
+
 	public FilterMenuButton() {
 		itemReset.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -65,42 +69,39 @@ public class FilterMenuButton extends MenuButton {
 				setImage(imgNormal);
 			}
 		});
-		
-		itemAscending.getCheckBox().addEventHandler(MouseEvent.MOUSE_CLICKED,new EventHandler<MouseEvent>() {
+
+		itemAscending.getCheckBox().addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
 				if (itemAscending.getCheckBox().isSelected())
 					itemDescending.getCheckBox().setSelected(false);
 			}
 		});
-		
-		itemDescending.getCheckBox().addEventHandler(MouseEvent.MOUSE_CLICKED,new EventHandler<MouseEvent>() {
+
+		itemDescending.getCheckBox().addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
 				if (itemDescending.getCheckBox().isSelected())
 					itemAscending.getCheckBox().setSelected(false);
 			}
 		});
-		
+
 		itemSearch.getTextField().textProperty().addListener(new ChangeListener<String>() {
 
 			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue,
-					String newValue) {
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				if (!newValue.isEmpty()) {
 					setRegex(newValue);
 					setImage(imgFilter);
-				}
-				else 
+				} else
 					refreshImage();
 			}
 		});
-		
-		itemFilterAll.getCheckBox().addEventHandler(MouseEvent.MOUSE_CLICKED,new EventHandler<MouseEvent>() {
+
+		itemFilterAll.getCheckBox().addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				streamCheckBoxes().forEach(c -> 
-					c.setSelected(itemFilterAll.getCheckBox().isSelected()));
+				streamCheckBoxes().forEach(c -> c.setSelected(itemFilterAll.getCheckBox().isSelected()));
 
 				if (!itemFilterAll.getCheckBox().isSelected())
 					setImage(imgFilter);
@@ -108,41 +109,64 @@ public class FilterMenuButton extends MenuButton {
 					refreshImage();
 			}
 		});
-		
+
 		this.getItems().add(itemReset);
 		this.getItems().add(new SeparatorMenuItem());
 		this.getItems().add(itemAscending);
 		this.getItems().add(itemDescending);
-		this.getItems().add(itemSearch);	
+		this.getItems().add(itemSearch);
 		this.getItems().add(itemFilterAll);
 		this.getItems().add(new SeparatorMenuItem());
-		
+
 	}
-	
-	public <ITEM> void setTable(IFilterTable<ITEM> 
-				filterTable, int col, Runnable refresh ) {
-		Supplier<List<String>> getters = () -> {
-			List<String> getterList = new ArrayList<String>();
-			for (int row = 0; row < filterTable.getNrows(); row++) {
-				final int localRow = row;
-				getterList.add(filterTable.getColumnFilteredValue(localRow, col));
-			}
-			return getterList;
-		};
+
+	public <ITEM> void setTable(FilterColumn<ITEM> column, int col, Runnable refresh) {
+		Supplier<List<String>> getters = () -> column.getValues();
+		
 		setGetters(getters);
 		this.addEventHandler(ComboBox.ON_HIDDEN, event -> {
-			filterTable.setColumnItemFilterValues(col, this.getSelectedValues());
-			if (this.isSortComparatorSet())
-				filterTable.setSortComparator(this.getSortComparator(), 
-						item -> filterTable.getFilteredValue(item, col));
-			filterTable.setColumnTextFilterValues(col, this.getRegex());
-		    refresh.run();
+			Predicate<ITEM> itemFilter = item -> getSelectedValues().stream()
+					.filter(value -> column.get(item).equals(value)).findFirst().isPresent();
+			Predicate<ITEM> textFilter;
+			if (this.getRegex().isEmpty())
+				textFilter = item -> true;
+			else {
+				final Pattern p = Pattern.compile("(?i)" +this.getRegex());
+				textFilter = item -> p.matcher(column.get(item)).find();
+			}
+			Predicate<ITEM> filter = itemFilter.and(textFilter);
+			
+			refresh.run();
 		});
 		this.addEventHandler(ComboBox.ON_SHOWING, event -> {
 			this.updateNodes();
 		});
 	}
-	
+
+//	public <ITEM> void setTable(IFilterTable<ITEM> 
+//				filterTable, int col, Runnable refresh ) {
+//		Supplier<List<String>> getters = () -> {
+//			List<String> getterList = new ArrayList<String>();
+//			for (int row = 0; row < filterTable.getNrows(); row++) {
+//				final int localRow = row;
+//				getterList.add(filterTable.getColumnFilteredValue(localRow, col));
+//			}
+//			return getterList;
+//		};
+//		setGetters(getters);
+//		this.addEventHandler(ComboBox.ON_HIDDEN, event -> {
+//			filterTable.setColumnItemFilterValues(col, this.getSelectedValues());
+//			if (this.isSortComparatorSet())
+//				filterTable.setSortComparator(this.getSortComparator(), 
+//						item -> filterTable.getFilteredValue(item, col));
+//			filterTable.setColumnTextFilterValues(col, this.getRegex());
+//		    refresh.run();
+//		});
+//		this.addEventHandler(ComboBox.ON_SHOWING, event -> {
+//			this.updateNodes();
+//		});
+//	}
+
 	public void setImage(Image image) {
 		Platform.runLater(new Runnable() {
 			@Override
@@ -154,31 +178,33 @@ public class FilterMenuButton extends MenuButton {
 			}
 		});
 	}
-	
+
 	public void refreshImage() {
-		if (!itemFilterAll.getCheckBox().isSelected()) return;
-		if (streamCheckBoxes().filter(c -> !c.isSelected()).findFirst().isPresent()) return;
+		if (!itemFilterAll.getCheckBox().isSelected())
+			return;
+		if (streamCheckBoxes().filter(c -> !c.isSelected()).findFirst().isPresent())
+			return;
 		setImage(imgNormal);
 	}
-	
+
 	private Stream<CheckBox> streamCheckBoxes() {
 		return itemsFilter.stream().map(i -> i.getCheckBox());
 	}
-	
+
 	public void setGetters(Supplier<List<String>> getters) {
 		this.getters = getters;
 	}
-	
+
 	public class ButtonItemReset extends CustomMenuItem {
 		public ButtonItemReset() {
 			super(new Label("Reset Filter"));
 			this.setHideOnClick(false);
 		}
 	}
-	
+
 	public class TextItemSearch extends CustomMenuItem {
 		private final TextField textField;
-		
+
 		public TextItemSearch() {
 			super(new TextField());
 			textField = (TextField) this.getContent();
@@ -189,33 +215,35 @@ public class FilterMenuButton extends MenuButton {
 			return textField;
 		}
 	}
-	
+
 	public class CheckBoxItemSortAscending extends CustomMenuItem {
 		private final CheckBox checkBox;
 		private final Comparator<String> comparator;
-		
+
 		{
-			comparator = (s1,s2) -> {
+			comparator = (s1, s2) -> {
 				try {
 					Long l1 = Long.valueOf(s1);
 					Long l2 = Long.valueOf(s2);
 					return l1.compareTo(l2);
-				} catch (Exception e) {}
+				} catch (Exception e) {
+				}
 				try {
 					Double d1 = Double.valueOf(s1);
 					Double d2 = Double.valueOf(s2);
 					return d1.compareTo(d2);
-				} catch (Exception e) {}
+				} catch (Exception e) {
+				}
 				return s1.compareTo(s2);
 			};
 		}
-		
+
 		public CheckBoxItemSortAscending() {
 			super(new CheckBox("Sort Ascending"));
 			checkBox = (CheckBox) this.getContent();
 			this.setHideOnClick(false);
 		}
-		
+
 		public CheckBox getCheckBox() {
 			return checkBox;
 		}
@@ -224,60 +252,62 @@ public class FilterMenuButton extends MenuButton {
 			return comparator;
 		}
 	}
-	
+
 	public class CheckBoxItemSortDescending extends CustomMenuItem {
 		private final CheckBox checkBox;
 		private final Comparator<String> comparator;
-		
+
 		{
-			comparator = (s1,s2) -> {
+			comparator = (s1, s2) -> {
 				try {
 					Long l1 = Long.valueOf(s1);
 					Long l2 = Long.valueOf(s2);
 					return l2.compareTo(l1);
-				} catch (Exception e) {}
+				} catch (Exception e) {
+				}
 				try {
 					Double d1 = Double.valueOf(s1);
 					Double d2 = Double.valueOf(s2);
 					return d2.compareTo(d1);
-				} catch (Exception e) {}
+				} catch (Exception e) {
+				}
 				return s2.compareTo(s1);
 			};
 		}
-		
+
 		public CheckBoxItemSortDescending() {
 			super(new CheckBox("Sort Descending"));
 			checkBox = (CheckBox) this.getContent();
 			this.setHideOnClick(false);
 		}
-		
+
 		public CheckBox getCheckBox() {
 			return checkBox;
 		}
-		
+
 		public Comparator<String> getComparator() {
 			return comparator;
 		}
 	}
-	
+
 	public class CheckBoxItemFilterAll extends CustomMenuItem {
 		private final CheckBox checkBox;
-		
+
 		public CheckBoxItemFilterAll() {
 			super(new CheckBox("Select All"));
 			checkBox = (CheckBox) this.getContent();
 			checkBox.setSelected(true);
 			this.setHideOnClick(false);
 		}
-		
+
 		public CheckBox getCheckBox() {
 			return checkBox;
 		}
 	}
-	
+
 	public class CheckBoxItemFilter extends CustomMenuItem {
 		private final CheckBox checkBox;
-		
+
 		public CheckBoxItemFilter(String name) {
 			super(new CheckBox(name));
 			checkBox = (CheckBox) this.getContent();
@@ -289,7 +319,7 @@ public class FilterMenuButton extends MenuButton {
 			return checkBox;
 		}
 	}
-	
+
 	public String getRegex() {
 		return regex;
 	}
@@ -299,39 +329,42 @@ public class FilterMenuButton extends MenuButton {
 	}
 
 	public List<String> getSelectedValues() {
-		return streamCheckBoxes().filter(c -> c.isSelected()).map(c -> c.getText())
-		.collect(Collectors.toList());
+		return streamCheckBoxes().filter(c -> c.isSelected()).map(c -> c.getText()).collect(Collectors.toList());
 	}
 
 	public boolean isSortComparatorSet() {
-		if (itemAscending.getCheckBox().isSelected()) return true;
-		if (itemDescending.getCheckBox().isSelected()) return true;
+		if (itemAscending.getCheckBox().isSelected())
+			return true;
+		if (itemDescending.getCheckBox().isSelected())
+			return true;
 		return false;
 	}
 
 	public Comparator<String> getSortComparator() {
-		if (itemAscending.getCheckBox().isSelected()) return itemAscending.getComparator();
-		if (itemDescending.getCheckBox().isSelected()) return itemDescending.getComparator();
-		return (s1,s2) -> 0;
+		if (itemAscending.getCheckBox().isSelected())
+			return itemAscending.getComparator();
+		if (itemDescending.getCheckBox().isSelected())
+			return itemDescending.getComparator();
+		return (s1, s2) -> 0;
 	}
 
-	public void updateNodes() {		
+	public void updateNodes() {
 		this.getItems().removeAll(itemsFilter);
 		itemsFilter.clear();
-		itemsFilter.addAll(getters.get().stream().distinct().map(g ->
-			new CheckBoxItemFilter(g)).collect(Collectors.toList()));
-		
+		itemsFilter.addAll(
+				getters.get().stream().distinct().map(g -> new CheckBoxItemFilter(g)).collect(Collectors.toList()));
+
 		if (!itemsFilter.isEmpty()) {
-			if (!(this.getItems().get(this.getItems().size()-1) instanceof SeparatorMenuItem))
+			if (!(this.getItems().get(this.getItems().size() - 1) instanceof SeparatorMenuItem))
 				this.getItems().add(new SeparatorMenuItem());
-		} else if ((this.getItems().get(this.getItems().size()-1) instanceof SeparatorMenuItem)) 
-			this.getItems().remove(this.getItems().size()-1);
-		
+		} else if ((this.getItems().get(this.getItems().size() - 1) instanceof SeparatorMenuItem))
+			this.getItems().remove(this.getItems().size() - 1);
+
 		this.getItems().addAll(itemsFilter);
-		
+
 		streamCheckBoxes().forEach(c -> c.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 			@Override
-			public void handle(MouseEvent event) { 
+			public void handle(MouseEvent event) {
 				if (!c.isSelected()) {
 					setImage(imgFilter);
 					itemFilterAll.getCheckBox().setSelected(false);

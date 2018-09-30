@@ -10,16 +10,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.IFilterTable;
-import org.artorg.tools.phantomData.client.connector.CrudConnectors;
-import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
-import java.util.UUID;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-@SuppressWarnings("unchecked")
 public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<ITEM> implements IFilterTable<ITEM> {
 	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
@@ -35,14 +32,23 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 		filterPredicate = item -> true;
 		columnItemFilterPredicates = new ArrayList<Predicate<ITEM>>();
 		columnTextFilterPredicates = new ArrayList<Predicate<ITEM>>();
-		sortComparator = (i1,i2) -> ((DbPersistent<ITEM,UUID>)i1).getId().compareTo(((DbPersistent<ITEM,UUID>)i2).getId());
-		
+		sortComparator = (i1,i2) -> initSortComparator(i1,i2);
 		mappedColumnIndexes = new ArrayList<>();
 		
 	}
 	
+	private int initSortComparator(ITEM item1, ITEM item2) {
+		if (item1 instanceof DbPersistent) {
+			DbPersistent<ITEM,?> dbPersistent1 = ((DbPersistent<ITEM,?>)item1);
+			DbPersistent<ITEM,?> dbPersistent2 = ((DbPersistent<ITEM,?>)item2);
+			if (dbPersistent1.getId() instanceof Comparable)
+				return (dbPersistent1.getId().toString()).compareTo(dbPersistent2.getId().toString());
+		} 
+		return 0;
+	}
+	
 	@Override
-	public void setColumns(List<IColumn<ITEM>> columns) {
+	public void setColumns(List<Column<ITEM>> columns) {
 		super.setColumns(columns);
 		
 		int nCols = getNcols();
@@ -59,13 +65,13 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 		columnIndexMapper = i -> mappedColumnIndexes.get(i);
 		
 	}
-
 	
-	
+	@Override
 	public void setSortComparator(Comparator<String> sortComparator, Function<ITEM, String> valueGetter) {
 		this.sortComparator = (item1, item2) -> sortComparator.compare(valueGetter.apply(item1),valueGetter.apply(item2));
 	}
 	
+	@Override
 	public ObservableList<ITEM> getFilteredItems() {
 		return filteredItems;
 	}
@@ -75,52 +81,64 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 		super.readAllData();
 		filteredItems.clear();
 		filteredItems.addAll(super.getItems());
+		
+		applyFilter();
 	}
 	
+	@Override
 	public int getFilteredNrows() {
 		return filteredItems.size();
 	}
 	
+	@Override
 	public int getFilteredNcols() {
 		return nFilteredCols;
 	}
 	
-	public List<IColumn<ITEM>> getFilteredColumns() {
+	@Override
+	public List<Column<ITEM>> getFilteredColumns() {
 		return mappedColumnIndexes.stream().map(i -> getColumns().get(i)).collect(Collectors.toList());
 	}
 	
+	@Override
 	public List<String> getFilteredColumnNames() {
 		return getFilteredColumns().stream().map(c -> c.getColumnName())
 				.collect(Collectors.toList());
 	}
 	
+	@Override
 	public String getFilteredValue(ITEM item, int col) {
 		return getValue(item, columnIndexMapper.apply(col));
 	}
 	
+	@Override
 	public String getFilteredValue(int row, int col) {
 		return getFilteredColumns().get(col).get(filteredItems.get(row));
 	}
 	
+	@Override
 	public String getColumnFilteredValue(int row, int col) {
-		List<IColumn<ITEM>> columns = getFilteredColumns();
-		IColumn<ITEM> column = columns.get(col);
+		List<Column<ITEM>> columns = getFilteredColumns();
+		Column<ITEM> column = columns.get(col);
 		ObservableList<ITEM> items = super.getItems();
 		ITEM item = items.get(row);
 		column.get(item);
 		return getFilteredColumns().get(col).get(super.getItems().get(row));
 	}
-
+	
+	@Override
 	public Predicate<ITEM> getFilterPredicate() {
 		return filterPredicate;
 	}
 
+	@Override
 	public void setColumnItemFilterValues(int columnIndex, List<String> values) {
 		columnItemFilterPredicates.set(columnIndexMapper.apply(columnIndex), item -> {
 			return values.stream().filter(value -> getFilteredValue(item,columnIndex).equals(value)).findFirst().isPresent();
 		});
 	}
 	
+	@Override
 	public void setColumnTextFilterValues(int columnIndex, String searchText) {
 		final Pattern p = Pattern.compile("(?i)" +searchText);
 		if (searchText.isEmpty())
@@ -130,6 +148,7 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 				p.matcher(getFilteredValue(item, columnIndex)).find());
 	}
 	
+	@Override
 	public void applyFilter() {
 		Predicate<ITEM> itemFilter = mappedColumnIndexes.stream()
 				.filter(i -> i<columnItemFilterPredicates.size())

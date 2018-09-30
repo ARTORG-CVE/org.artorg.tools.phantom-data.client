@@ -21,6 +21,8 @@ public class DbUndoRedoEditFilterTable<ITEM extends DbPersistent<ITEM,?>> extend
 			}, () -> {
 				getFilteredColumns().get(filteredCol).update(filteredItem);
 		});
+		
+		
 		getUndoManager().addAndRun(node);
 	}
 	

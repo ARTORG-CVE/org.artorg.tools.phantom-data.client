@@ -8,14 +8,14 @@ import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class ColumnOptional<T extends DbPersistent<T,?>, 
-SUB extends DbPersistent<SUB,?>> extends IColumn<T> {
+public class OptionalColumn<T extends DbPersistent<T,?>, 
+SUB extends DbPersistent<SUB,?>> extends Column<T> {
 	private final Function<T, Optional<SUB>> itemToPropertyGetter;
 	private final Function<SUB, String> propertyToValueGetter;
 	private final BiConsumer<SUB, String> propertyToValueSetter;
 	private final String emptyValue;
 	
-	public ColumnOptional( String columnName,
+	public OptionalColumn( String columnName,
 			Function<T, Optional<SUB>> itemToPropertyGetter, 
 			Function<SUB, String> propertyToValueGetter, 
 			BiConsumer<SUB, String> propertyToValueSetter,

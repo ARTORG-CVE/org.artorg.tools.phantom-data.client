@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTable;
+import org.artorg.tools.phantomData.client.table.LambdaColumn;
 import org.artorg.tools.phantomData.client.table.Column;
-import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.model.property.Property;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -17,13 +17,13 @@ public abstract class PropertyFilterTable<ITEM extends Property<ITEM, VALUE> & D
 		extends DbUndoRedoEditFilterTable<ITEM> {
 	
 	{
-		List<IColumn<ITEM>> columns =
-				new ArrayList<IColumn<ITEM>>();
-		columns.add(new Column<ITEM, PropertyField>(
+		List<Column<ITEM>> columns =
+				new ArrayList<Column<ITEM>>();
+		columns.add(new LambdaColumn<ITEM, PropertyField>(
 				"property field", item -> item.getPropertyField(), 
 				path -> path.getDescription(), 
 				(path,value) -> path.setDescription(value)));
-		columns.add(new Column<ITEM, ITEM>(
+		columns.add(new LambdaColumn<ITEM, ITEM>(
 				"value", item -> item, 
 				path -> String.valueOf(path.getValue()), 
 				(path,value) -> path.setValue(fromString(value))));

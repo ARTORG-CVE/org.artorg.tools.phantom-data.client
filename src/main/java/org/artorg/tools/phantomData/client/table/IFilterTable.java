@@ -3,6 +3,7 @@ package org.artorg.tools.phantomData.client.table;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
 
@@ -29,6 +30,10 @@ public interface IFilterTable<ITEM> extends ITable<ITEM> {
 	void applyFilter();
 	
 	ObservableList<ITEM> getFilteredItems();
+
+	List<Column<ITEM>> getFilteredColumns();
+
+	Predicate<ITEM> getFilterPredicate();
 
 	
 }

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTable;
+import org.artorg.tools.phantomData.client.table.LambdaColumn;
 import org.artorg.tools.phantomData.client.table.Column;
-import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 public class PropertyFieldFilterTable extends DbUndoRedoEditFilterTable<PropertyField> {
@@ -13,13 +13,13 @@ public class PropertyFieldFilterTable extends DbUndoRedoEditFilterTable<Property
 	{
 		setItemClass(PropertyField.class);
 		
-		List<IColumn<PropertyField>> columns =
-				new ArrayList<IColumn<PropertyField>>();
-		columns.add(new Column<PropertyField, PropertyField>(
+		List<Column<PropertyField>> columns =
+				new ArrayList<Column<PropertyField>>();
+		columns.add(new LambdaColumn<PropertyField, PropertyField>(
 				"name", item -> item, 
 				path -> path.getName(), 
 				(path,value) -> path.setName((String) value)));
-		columns.add(new Column<PropertyField, PropertyField>(
+		columns.add(new LambdaColumn<PropertyField, PropertyField>(
 				"description", item -> item, 
 				path -> path.getDescription(), 
 				(path,value) -> path.setDescription((String) value)));
