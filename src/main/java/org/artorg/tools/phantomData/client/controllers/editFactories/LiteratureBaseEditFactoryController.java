@@ -6,14 +6,14 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.DbEditFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTableView;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class LiteratureBaseEditFactoryController extends GroupedItemEditFactoryController<LiteratureBase> {
-	private DbEditFilterTableView<LiteratureBase> table;
+	private DbUndoRedoEditFilterTableView<LiteratureBase> table;
 	private TextField textFieldShortcut;
 	private TextField textFieldValue;
 
@@ -22,7 +22,7 @@ public class LiteratureBaseEditFactoryController extends GroupedItemEditFactoryC
 		textFieldValue = new TextField();
 	}
 	
-	public LiteratureBaseEditFactoryController(DbEditFilterTableView<LiteratureBase> table) {
+	public LiteratureBaseEditFactoryController(DbUndoRedoEditFilterTableView<LiteratureBase> table) {
 		this.table = table;
 	}
 
@@ -46,7 +46,7 @@ public class LiteratureBaseEditFactoryController extends GroupedItemEditFactoryC
 	}
 
 	@Override
-	protected DbEditFilterTableView<LiteratureBase> getTable() {
+	protected DbUndoRedoEditFilterTableView<LiteratureBase> getTable() {
 		return table;
 	}
 

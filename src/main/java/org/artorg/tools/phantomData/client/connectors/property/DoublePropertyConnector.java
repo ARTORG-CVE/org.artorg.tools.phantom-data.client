@@ -4,7 +4,6 @@ import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.controller.property.DoublePropertyController;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
-import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
 
 public class DoublePropertyConnector extends HttpConnectorSpring<DoubleProperty> {
 

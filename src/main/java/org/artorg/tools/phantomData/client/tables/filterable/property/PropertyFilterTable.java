@@ -3,14 +3,17 @@ package org.artorg.tools.phantomData.client.tables.filterable.property;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connector.CrudConnector;
+import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTable;
 import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.model.property.Property;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public abstract class PropertyFilterTable<ITEM extends Property<ITEM, VALUE>, VALUE extends Comparable<VALUE>> 
+import java.util.UUID;
+
+public abstract class PropertyFilterTable<ITEM extends Property<ITEM, VALUE> & DbPersistent<ITEM,UUID>, VALUE extends Comparable<VALUE>> 
 		extends DbUndoRedoEditFilterTable<ITEM> {
 	
 	{
@@ -27,7 +30,7 @@ public abstract class PropertyFilterTable<ITEM extends Property<ITEM, VALUE>, VA
 		this.setColumns(columns);
 	}
 	
-	protected abstract CrudConnector<ITEM,?> getPropertyConnector();
+	protected abstract ICrudConnector<ITEM,?> getPropertyConnector();
 	
 	protected abstract String toString(VALUE value);
 	

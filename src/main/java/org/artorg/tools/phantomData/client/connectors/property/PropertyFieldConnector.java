@@ -3,7 +3,6 @@ package org.artorg.tools.phantomData.client.connectors.property;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.controller.property.PropertyFieldController;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
-import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
 
 public class PropertyFieldConnector extends HttpConnectorSpring<PropertyField> {
 

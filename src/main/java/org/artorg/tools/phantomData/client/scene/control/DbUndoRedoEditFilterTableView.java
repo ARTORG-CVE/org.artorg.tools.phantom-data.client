@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.artorg.tools.phantomData.client.connector.CrudConnector;
+import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
-import org.artorg.tools.phantomData.client.table.FilterableTable;
-import org.artorg.tools.phantomData.client.table.DbEditFilterableTable;
+import org.artorg.tools.phantomData.client.table.IFilterTable;
+import org.artorg.tools.phantomData.client.table.IDbEditFilterTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -26,8 +26,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
-public abstract class DbEditFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends TableView<ITEM> {
-	private DbEditFilterableTable<ITEM> filterTable;
+public abstract class DbUndoRedoEditFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends TableView<ITEM> {
+	private IDbEditFilterTable<ITEM> filterTable;
 	private List<FilterMenuButton> filterMenuButtons;
 	private ListChangeListener<ITEM> listenerChangedListenerRefresh;
 	
@@ -44,15 +44,15 @@ public abstract class DbEditFilterTableView<ITEM extends DbPersistent<ITEM,?>> e
 	
 	public abstract ItemEditFactoryController<ITEM> createAddEditController();
 	
-	public CrudConnector<ITEM,?> getConnector() {
+	public ICrudConnector<ITEM,?> getConnector() {
 		return filterTable.getConnector();
 	}
 	
-	public void setConnector(CrudConnector<ITEM,?> connector) {
+	public void setConnector(ICrudConnector<ITEM,?> connector) {
 		filterTable.setConnector(connector);
 	}
 	
-	public void setTable(DbEditFilterableTable<ITEM> table) {
+	public void setTable(IDbEditFilterTable<ITEM> table) {
 		this.filterTable = table;
 
 		reload();
@@ -129,7 +129,7 @@ public abstract class DbEditFilterTableView<ITEM extends DbPersistent<ITEM,?>> e
 	    } );
 	}
 
-	public FilterableTable<ITEM> getFilterTable() {
+	public IFilterTable<ITEM> getFilterTable() {
 		return filterTable;
 	}
 	
@@ -165,7 +165,7 @@ public abstract class DbEditFilterTableView<ITEM extends DbPersistent<ITEM,?>> e
 	public void reload() {
 		filterTable.getItems().removeListener(listenerChangedListenerRefresh);
 		filterTable.readAllData();
-		super.setItems(filterTable.getItems());
+		super.setItems(filterTable.getFilteredItems());
 		filterTable.getItems().addListener(listenerChangedListenerRefresh);
 		refresh();
 	}

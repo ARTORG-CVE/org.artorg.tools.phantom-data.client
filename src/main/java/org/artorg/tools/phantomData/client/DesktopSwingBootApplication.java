@@ -5,6 +5,8 @@ import static org.artorg.tools.phantomData.client.boot.DatabaseInitializer.isIni
 
 import org.artorg.tools.phantomData.client.boot.ClientBooter;
 import org.artorg.tools.phantomData.client.boot.MainFx;
+import org.artorg.tools.phantomData.client.connector.Connectors;
+import org.artorg.tools.phantomData.client.connector.CrudConnectors;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controllers.MainController;
 import org.artorg.tools.phantomData.client.util.FxUtil;
@@ -26,6 +28,7 @@ public class DesktopSwingBootApplication extends ClientBooter {
 		}
     	
     	try {
+    		CrudConnectors.connectorGetter = itemClass -> Connectors.getConnector(itemClass); 
     		HttpConnectorSpring.setUrlLocalhost(getServerBooter().getUrlLocalhost());
     		MainController.setUrlLocalhost(getServerBooter().getUrlLocalhost());
     		MainController.setUrlShutdownActuator(getServerBooter().getUrlShutdownActuator());

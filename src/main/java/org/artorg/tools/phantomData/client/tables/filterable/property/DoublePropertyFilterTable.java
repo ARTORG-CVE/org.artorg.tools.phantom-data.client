@@ -1,6 +1,6 @@
 package org.artorg.tools.phantomData.client.tables.filterable.property;
 
-import org.artorg.tools.phantomData.client.connector.CrudConnector;
+import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.connectors.property.DoublePropertyConnector;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 
@@ -13,7 +13,7 @@ public class DoublePropertyFilterTable extends PropertyFilterTable<DoublePropert
 	}
 	
 	@Override
-	protected CrudConnector<DoubleProperty,?> getPropertyConnector() {
+	protected ICrudConnector<DoubleProperty,?> getPropertyConnector() {
 		return DoublePropertyConnector.get();
 	}
 

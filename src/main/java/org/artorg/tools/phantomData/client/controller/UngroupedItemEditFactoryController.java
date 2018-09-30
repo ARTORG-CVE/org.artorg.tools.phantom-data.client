@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.geometry.Insets;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-public abstract class UngroupedItemEditFactoryController<ITEM extends DbPersistentUUID<ITEM>> extends ItemEditFactoryController<ITEM> {
+public abstract class UngroupedItemEditFactoryController<ITEM extends DbPersistent<ITEM,?>> extends ItemEditFactoryController<ITEM> {
 	private List<PropertyEntry> entries;
 	
 	{

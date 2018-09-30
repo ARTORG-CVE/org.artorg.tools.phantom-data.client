@@ -3,10 +3,10 @@ package org.artorg.tools.phantomData.client.scene.control;
 import java.util.function.Consumer;
 
 import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
-import org.artorg.tools.phantomData.client.table.DbEditFilterableTable;
+import org.artorg.tools.phantomData.client.table.IDbEditFilterTable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class DbUndoRedoEditFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbUndoRedoFilterTable<ITEM> implements DbEditFilterableTable<ITEM> {
+public class DbUndoRedoEditFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbUndoRedoFilterTable<ITEM> implements IDbEditFilterTable<ITEM> {
 	
 	private void setFilteredValue(ITEM item, ITEM filteredItem, int filteredCol, String value, Consumer<String> redo, Consumer<String> undo) {
 		String currentValue = getFilteredValue(item, filteredCol);

@@ -5,9 +5,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
-import org.artorg.tools.phantomData.client.scene.control.DbEditFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTableView;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
-import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
 
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
@@ -41,17 +40,17 @@ public class LayoutController {
     	scene3d.addTo(pane3d);
     }
     
-	public <T extends DbPersistent<T,ID>, ID> void openMainTableTab(DbEditFilterTableView<T> table) {
+	public <T extends DbPersistent<T,ID>, ID> void openMainTableTab(DbUndoRedoEditFilterTableView<T> table) {
 		openMainTableTab(table, table.getFilterTable().getTableName());
 	}
 	
 	public <T extends DbPersistent<T,ID>, ID> void openMainTableTab(
-			DbEditFilterTableView<T> table, String name) {
+			DbUndoRedoEditFilterTableView<T> table, String name) {
 		mainSplitPane.getMainTableTabPane().openTableTab(table, name);
 	}
 	
-	public <T extends DbPersistentUUID<T>> void setSecondTable(
-			DbEditFilterTableView<T> table) {
+	public <T extends DbPersistent<T,?>> void setSecondTable(
+			DbUndoRedoEditFilterTableView<T> table) {
 		secondTable.setTable(table);
 	}
 	

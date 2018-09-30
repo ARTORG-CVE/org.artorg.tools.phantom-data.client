@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 
-public interface CrudConnector<T extends Identifiable<ID>, ID> {
+public interface ICrudConnector<T extends Identifiable<ID>, ID> {
 	
 	boolean create(T t);
 	
@@ -102,5 +102,5 @@ public interface CrudConnector<T extends Identifiable<ID>, ID> {
 		}
 		return succesful;
 	}
-
+	
 }

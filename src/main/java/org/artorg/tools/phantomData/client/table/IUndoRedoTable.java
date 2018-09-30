@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import org.artorg.tools.phantomData.client.commandPattern.UndoManager;
 import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
 
-public interface UndoRedoableTable<ITEM> extends TableEditable<ITEM> {
+public interface IUndoRedoTable<ITEM> extends IEditTable<ITEM> {
 	
 	UndoManager getUndoManager();
 	

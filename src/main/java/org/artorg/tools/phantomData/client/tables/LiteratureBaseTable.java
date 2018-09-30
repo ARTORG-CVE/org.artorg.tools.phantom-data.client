@@ -2,11 +2,11 @@ package org.artorg.tools.phantomData.client.tables;
 
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controllers.editFactories.LiteratureBaseEditFactoryController;
-import org.artorg.tools.phantomData.client.scene.control.DbEditFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTableView;
 import org.artorg.tools.phantomData.client.tables.filterable.LiteratureBaseFilterTable;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 
-public class LiteratureBaseTable extends DbEditFilterTableView<LiteratureBase> {
+public class LiteratureBaseTable extends DbUndoRedoEditFilterTableView<LiteratureBase> {
 
 	{
 		this.setTable(new LiteratureBaseFilterTable());

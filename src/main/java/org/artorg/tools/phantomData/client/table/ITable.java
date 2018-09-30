@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javafx.collections.ObservableList;
 
-public interface Table<ITEM> {
+public interface ITable<ITEM> {
 	
 	void setColumns(List<IColumn<ITEM>> columns);
 	

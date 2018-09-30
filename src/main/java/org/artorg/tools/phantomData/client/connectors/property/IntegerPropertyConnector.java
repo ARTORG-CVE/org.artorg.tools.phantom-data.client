@@ -4,7 +4,6 @@ import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.controller.property.IntegerPropertyController;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
-import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
 
 public class IntegerPropertyConnector extends HttpConnectorSpring<IntegerProperty> {
 

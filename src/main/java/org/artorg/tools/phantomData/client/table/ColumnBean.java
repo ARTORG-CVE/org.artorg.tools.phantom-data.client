@@ -6,9 +6,8 @@ import java.util.function.Function;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.artorg.tools.phantomData.client.connector.Connectors;
-import org.artorg.tools.phantomData.client.connector.CrudConnector;
+import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
-import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
 
 public class ColumnBean<T extends DbPersistent<T,?>, 
 		SUB_T extends DbPersistent<SUB_T,?>> extends IColumn<T>  {
@@ -59,7 +58,7 @@ public class ColumnBean<T extends DbPersistent<T,?>,
 	public <U extends DbPersistent<U,SUB_ID>, SUB_ID> boolean update(T item) {
 		System.out.println("updated value in database :)");
 		U path = (U) itemToPropertyGetter.apply(item);
-		CrudConnector<U,SUB_ID> connector = Connectors.getConnector(path.getItemClass());
+		ICrudConnector<U,SUB_ID> connector = Connectors.getConnector(path.getItemClass());
 		return connector.update(path);
 	}
 	

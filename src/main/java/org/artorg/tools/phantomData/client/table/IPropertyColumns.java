@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.server.model.property.Property;
 import org.artorg.tools.phantomData.server.model.property.PropertyContainer;
-import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.ObservableList;
 
 public interface IPropertyColumns {
 	
-	default <ITEM extends PropertyContainer & DbPersistentUUID<ITEM>> 
+	default <ITEM extends PropertyContainer & DbPersistent<ITEM,ID>, ID> 
 		void createPropertyColumns(List<IColumn<ITEM>> columns, 
 				ObservableList<ITEM> items) {
 		createPropertyColumns(columns, items, 
@@ -57,7 +57,7 @@ public interface IPropertyColumns {
 				stringDateFunc);
 	}
 	
-	default <ITEM extends DbPersistentUUID<ITEM>, 
+	default <ITEM extends DbPersistent<ITEM,?>, 
 			PROPERTY_TYPE extends Property<PROPERTY_TYPE, PROPERTY_VALUE_TYPE>, 
 			PROPERTY_VALUE_TYPE extends Comparable<PROPERTY_VALUE_TYPE>> 
 			void createPropertyColumns(List<IColumn<ITEM>> columns, ObservableList<ITEM> items, 

@@ -6,7 +6,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.DbEditFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTableView;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 
@@ -15,14 +15,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class FileTypeEditFactoryController extends GroupedItemEditFactoryController<FileType> {
-	private DbEditFilterTableView<FileType> table;
+	private DbUndoRedoEditFilterTableView<FileType> table;
 	private TextField textFieldName;
 	
 	{
 		textFieldName = new TextField();
 	}
 
-	public FileTypeEditFactoryController(DbEditFilterTableView<FileType> table) {
+	public FileTypeEditFactoryController(DbUndoRedoEditFilterTableView<FileType> table) {
 		this.table = table;
 	}
 	@Override
@@ -42,7 +42,7 @@ public class FileTypeEditFactoryController extends GroupedItemEditFactoryControl
 	}
 
 	@Override
-	protected DbEditFilterTableView<FileType> getTable() {
+	protected DbUndoRedoEditFilterTableView<FileType> getTable() {
 		return table;
 	}
 	

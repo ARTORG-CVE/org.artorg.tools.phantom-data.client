@@ -1,6 +1,6 @@
 package org.artorg.tools.phantomData.client.tables.filterable.property;
 
-import org.artorg.tools.phantomData.client.connector.CrudConnector;
+import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.connectors.property.IntegerPropertyConnector;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
 
@@ -13,7 +13,7 @@ public class IntegerPropertyFilterTable extends PropertyFilterTable<IntegerPrope
 	}
 
 	@Override
-	protected CrudConnector<IntegerProperty,?> getPropertyConnector() {
+	protected ICrudConnector<IntegerProperty,?> getPropertyConnector() {
 		return IntegerPropertyConnector.get();
 	}
 

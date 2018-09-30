@@ -3,7 +3,6 @@ package org.artorg.tools.phantomData.client.connectors;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.controller.FabricationTypeController;
 import org.artorg.tools.phantomData.server.model.FabricationType;
-import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
 
 public class FabricationTypeConnector extends HttpConnectorSpring<FabricationType> {
 

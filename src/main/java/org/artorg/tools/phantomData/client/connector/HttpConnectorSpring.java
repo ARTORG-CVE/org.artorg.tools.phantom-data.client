@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-public abstract class HttpConnectorSpring<T extends Identifiable<UUID>> implements CrudConnector<T,UUID> {
+public abstract class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConnectors<T,UUID> {
 	private final Function<Method, String[]> stringAnnosFuncCreate;
 	private final Function<Method, String[]> stringAnnosFuncRead;
 	private final Function<Method, String[]> stringAnnosFuncUpdate;

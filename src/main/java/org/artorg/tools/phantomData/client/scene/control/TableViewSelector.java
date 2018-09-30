@@ -6,9 +6,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.controller.ISelector;
-import org.artorg.tools.phantomData.client.table.FilterableTable;
+import org.artorg.tools.phantomData.client.table.IFilterTable;
 import org.artorg.tools.phantomData.client.util.TableViewUtils;
-import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -24,6 +24,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.util.Callback;
+
+import java.util.UUID;
 
 public class TableViewSelector<ITEM, SUB_ITEM> implements ISelector<ITEM, SUB_ITEM> {
 	private TableViewReadOnly<SUB_ITEM> tableView1;
@@ -68,11 +70,11 @@ public class TableViewSelector<ITEM, SUB_ITEM> implements ISelector<ITEM, SUB_IT
 		return tableView2.getItems();
 	}
 	
-	public void setTable1(FilterableTable<SUB_ITEM> table) {
+	public void setTable1(IFilterTable<SUB_ITEM> table) {
 		this.tableView1.setTable(table);
 	}
 	
-	public void setTable2(FilterableTable<SUB_ITEM> table) {
+	public void setTable2(IFilterTable<SUB_ITEM> table) {
 		this.tableView2.setTable(table);
 	}
 	
@@ -114,7 +116,7 @@ public class TableViewSelector<ITEM, SUB_ITEM> implements ISelector<ITEM, SUB_IT
 	public void init() {
 		tableView2.getItems().stream().forEach(item2 -> {
 			List<Object> doublettes = tableView1.getItems().stream()
-					.filter(item1 -> ((DbPersistentUUID<?>)item2).getId().compareTo(((DbPersistentUUID<?>)item1).getId()) == 0).collect(Collectors.toList());
+					.filter(item1 -> ((DbPersistent<?,UUID>)item2).getId().compareTo(((DbPersistent<?,UUID>)item1).getId()) == 0).collect(Collectors.toList());
 			tableView1.getItems().removeAll(doublettes);
 		});
 		

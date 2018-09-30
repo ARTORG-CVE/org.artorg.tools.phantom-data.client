@@ -3,18 +3,19 @@ package org.artorg.tools.phantomData.client.scene.control;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connector.CrudConnector;
-import org.artorg.tools.phantomData.client.table.DatabaseableTable;
+import org.artorg.tools.phantomData.client.connector.CrudConnectors;
+import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.table.IDbTable;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class DbTable<ITEM extends DbPersistent<ITEM,?>> implements DatabaseableTable<ITEM> {
+public class DbTable<ITEM extends DbPersistent<ITEM,?>> implements IDbTable<ITEM> {
 	private final ObservableList<ITEM> items;
 	private List<IColumn<ITEM>> columns;
-	private CrudConnector<ITEM,?> connector;
+	private ICrudConnector<ITEM,?> connector;
 	private boolean isIdColumnVisible;
 	private String tableName;
 	private String itemName;
@@ -24,6 +25,7 @@ public class DbTable<ITEM extends DbPersistent<ITEM,?>> implements DatabaseableT
 		items = FXCollections.observableArrayList();
 		columns = new ArrayList<IColumn<ITEM>>();
 		isIdColumnVisible = false;
+
 	}
 	
 	public void setItems(ObservableList<ITEM> items) {
@@ -73,6 +75,7 @@ public class DbTable<ITEM extends DbPersistent<ITEM,?>> implements DatabaseableT
 	@Override
 	public void setItemClass(Class<ITEM> itemClass) {
 		this.itemClass = itemClass;
+		setConnector(CrudConnectors.<ITEM>getConnector(itemClass));
 	}
 
 	@Override
@@ -91,12 +94,12 @@ public class DbTable<ITEM extends DbPersistent<ITEM,?>> implements DatabaseableT
 	}
 
 	@Override
-	public CrudConnector<ITEM,?> getConnector() {
+	public ICrudConnector<ITEM,?> getConnector() {
 		return this.connector;
 	}
 
 	@Override
-	public void setConnector(CrudConnector<ITEM,?> connector) {
+	public void setConnector(ICrudConnector<ITEM,?> connector) {
 		this.connector = connector;
 	}
 

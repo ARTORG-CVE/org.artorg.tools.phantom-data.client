@@ -10,16 +10,17 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.artorg.tools.phantomData.client.table.FilterableTable;
+import org.artorg.tools.phantomData.client.table.IFilterTable;
+import org.artorg.tools.phantomData.client.connector.CrudConnectors;
 import org.artorg.tools.phantomData.client.table.IColumn;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
-import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
+import java.util.UUID;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 @SuppressWarnings("unchecked")
-public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<ITEM> implements FilterableTable<ITEM> {
+public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<ITEM> implements IFilterTable<ITEM> {
 	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
 	private List<Predicate<ITEM>> columnItemFilterPredicates;
@@ -34,13 +35,19 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 		filterPredicate = item -> true;
 		columnItemFilterPredicates = new ArrayList<Predicate<ITEM>>();
 		columnTextFilterPredicates = new ArrayList<Predicate<ITEM>>();
-		sortComparator = (i1,i2) -> ((DbPersistentUUID<ITEM>)i1).getId().compareTo(((DbPersistentUUID<ITEM>)i2).getId()); 
+		sortComparator = (i1,i2) -> ((DbPersistent<ITEM,UUID>)i1).getId().compareTo(((DbPersistent<ITEM,UUID>)i2).getId());
+		
 		mappedColumnIndexes = new ArrayList<>();
+		
+	}
+	
+	@Override
+	public void setColumns(List<IColumn<ITEM>> columns) {
+		super.setColumns(columns);
 		
 		int nCols = getNcols();
 		
 		mappedColumnIndexes = new ArrayList<Integer>(nCols);
-		List<IColumn<ITEM>> columns = super.getColumns();
 		for (int i=0; i<nCols; i++)
 			if (columns.get(i).isVisible())
 				mappedColumnIndexes.add(i);
@@ -52,6 +59,8 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 		columnIndexMapper = i -> mappedColumnIndexes.get(i);
 		
 	}
+
+	
 	
 	public void setSortComparator(Comparator<String> sortComparator, Function<ITEM, String> valueGetter) {
 		this.sortComparator = (item1, item2) -> sortComparator.compare(valueGetter.apply(item1),valueGetter.apply(item2));
@@ -66,11 +75,6 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 		super.readAllData();
 		filteredItems.clear();
 		filteredItems.addAll(super.getItems());
-	}
-	
-	@Override
-	public ObservableList<ITEM> getItems() {
-		return filteredItems;
 	}
 	
 	public int getFilteredNrows() {

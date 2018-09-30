@@ -23,11 +23,9 @@ public class LiteratureBaseFilterTable extends DbUndoRedoEditFilterTable<Literat
 				"value", item -> item, 
 				path -> path.getValue(), 
 				(path,value) -> path.setValue((String) value)));
-	}
-
-	@Override
-	public String getTableName() {
-		return "Literature Bases";
+		setColumns(columns);
+		
+		setTableName("Literature Bases");
 	}
 
 }

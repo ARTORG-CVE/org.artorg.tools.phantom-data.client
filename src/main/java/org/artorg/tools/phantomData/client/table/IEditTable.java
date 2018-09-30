@@ -2,7 +2,7 @@ package org.artorg.tools.phantomData.client.table;
 
 import javafx.collections.ObservableList;
 
-public interface TableEditable<T> extends Table<T> {
+public interface IEditTable<T> extends ITable<T> {
 	
 	void setItems(ObservableList<T> items);
 	

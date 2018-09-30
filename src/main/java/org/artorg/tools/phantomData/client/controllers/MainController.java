@@ -19,7 +19,7 @@ import org.artorg.tools.phantomData.client.tables.property.DoublePropertyTable;
 import org.artorg.tools.phantomData.client.tables.property.IntegerPropertyTable;
 import org.artorg.tools.phantomData.client.tables.property.StringPropertyTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -166,7 +166,7 @@ public class MainController {
 		layoutController.set3dFile(IOutil.readResourceAsFile("model.stl"));
 	}
     
-    public <ITEM extends DbPersistentUUID<ITEM>> void setTable(DbUndoRedoEditFilterTable<ITEM> table) {
+    public <ITEM extends DbPersistent<ITEM,?>> void setTable(DbUndoRedoEditFilterTable<ITEM> table) {
 		this.table = table;
 	}
     

@@ -2,11 +2,11 @@ package org.artorg.tools.phantomData.client.tables;
 
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controllers.editFactories.AnnulusDiameterEditFactoryController;
-import org.artorg.tools.phantomData.client.scene.control.DbEditFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTableView;
 import org.artorg.tools.phantomData.client.tables.filterable.AnnulusDiameterFilterTable;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 
-public class AnnulusDiameterTable extends DbEditFilterTableView<AnnulusDiameter> {
+public class AnnulusDiameterTable extends DbUndoRedoEditFilterTableView<AnnulusDiameter> {
 
 	{
 		this.setTable(new AnnulusDiameterFilterTable());

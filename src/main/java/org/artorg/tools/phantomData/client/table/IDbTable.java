@@ -3,15 +3,18 @@ package org.artorg.tools.phantomData.client.table;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.artorg.tools.phantomData.client.connector.CrudConnector;
+import org.artorg.tools.phantomData.client.connector.CrudConnectors;
+import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public interface DatabaseableTable<ITEM extends DbPersistent<ITEM,?>> extends Table<ITEM>, DbConnectable<ITEM>{
-	
-	
+public interface IDbTable<ITEM extends DbPersistent<ITEM,?>> extends ITable<ITEM>, IDbConnectable<ITEM>{
+
 	default void readAllData() {
 		Set<ITEM> itemSet = new HashSet<ITEM>();
-		CrudConnector<ITEM,?> connector = getConnector();
+		Class<ITEM> itemClass = getItemClass();
+		if (itemClass == null)
+			throw new NullPointerException();
+		ICrudConnector<ITEM,?> connector = getConnector();
 		if (connector == null)
 			throw new NullPointerException();
 		itemSet.addAll(connector.readAllAsSet());

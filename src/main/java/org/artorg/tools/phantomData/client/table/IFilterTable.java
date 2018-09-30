@@ -6,7 +6,7 @@ import java.util.function.Function;
 
 import javafx.collections.ObservableList;
 
-public interface FilterableTable<ITEM> extends Table<ITEM> {
+public interface IFilterTable<ITEM> extends ITable<ITEM> {
 
 	int getFilteredNrows();
 

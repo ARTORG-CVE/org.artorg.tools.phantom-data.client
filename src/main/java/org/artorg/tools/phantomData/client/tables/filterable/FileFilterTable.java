@@ -3,7 +3,6 @@ package org.artorg.tools.phantomData.client.tables.filterable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTable;
 import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.IColumn;
@@ -14,7 +13,6 @@ public class FileFilterTable extends DbUndoRedoEditFilterTable<PhantomFile> {
 
 	{
 		setItemClass(PhantomFile.class);
-		setConnector(Connectors.getConnector(PhantomFile.class));
 		
 		List<IColumn<PhantomFile>> columns =
 				new ArrayList<IColumn<PhantomFile>>();

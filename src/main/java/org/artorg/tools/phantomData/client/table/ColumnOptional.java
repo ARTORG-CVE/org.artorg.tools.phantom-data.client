@@ -5,7 +5,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
-import org.artorg.tools.phantomData.client.connector.CrudConnector;
+import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 public class ColumnOptional<T extends DbPersistent<T,?>, 
@@ -50,7 +50,7 @@ SUB extends DbPersistent<SUB,?>> extends IColumn<T> {
 		Optional<U> optional = (Optional<U>) itemToPropertyGetter.apply(item);
 		if (!optional.isPresent()) return false;
 		U sub = optional.get();
-		CrudConnector<U,SUB_ID> connector = Connectors.getConnector(sub.getItemClass()); 
+		ICrudConnector<U,SUB_ID> connector = Connectors.getConnector(sub.getItemClass()); 
 		return connector.update(sub);
 	}
 	

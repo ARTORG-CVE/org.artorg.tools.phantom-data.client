@@ -12,13 +12,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
-import org.artorg.tools.phantomData.client.connector.CrudConnector;
-import org.artorg.tools.phantomData.client.scene.control.DbEditFilterTableView;
+import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.TitledPaneTableViewSelector;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
-import org.artorg.tools.phantomData.server.specification.DbPersistentUUID;
 
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -55,7 +54,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 	
 	protected abstract void copy(ITEM from, ITEM to);
 	
-	protected abstract DbEditFilterTableView<ITEM> getTable();
+	protected abstract DbUndoRedoEditFilterTableView<ITEM> getTable();
 	
 	protected abstract AnchorPane createRootPane();
 	
@@ -84,12 +83,12 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 					return cls;
 				})
 				.filter(c -> c != null)
-				.filter(c -> DbPersistentUUID.class.isAssignableFrom(c))
+				.filter(c -> DbPersistent.class.isAssignableFrom(c))
 				.collect(Collectors.toList());
 		
 		subItemClasses.forEach(subItemClass -> {
 			if (Reflect.containsCollectionSetter(item, subItemClass)) {
-				CrudConnector<?,?> connector = Connectors.getConnector(subItemClass);
+				ICrudConnector<?,?> connector = Connectors.getConnector(subItemClass);
 				Set<Object> selectableItemSet = (Set<Object>) connector.readAllAsSet();
 				
 				if (selectableItemSet.size() > 0) {
@@ -121,7 +120,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 		return selectors;
 	}
 		
-	public final CrudConnector<ITEM,?> getConnector() {
+	public final ICrudConnector<ITEM,?> getConnector() {
 		return getTable().getConnector();
 	}
 	
@@ -145,7 +144,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 	}
 	
 	protected <T extends DbPersistent<T,ID>, ID> void createComboBox(ComboBox<T> comboBox, 
-			CrudConnector<T,ID> connector, Function<T,String> mapper, Consumer<T> selectedItemChangedConsumer) {
+			ICrudConnector<T,ID> connector, Function<T,String> mapper, Consumer<T> selectedItemChangedConsumer) {
     	createComboBox(comboBox, connector, mapper);
         
         ChangeListener<T> listener = (observable, oldValue, newValue) -> {
@@ -157,7 +156,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
     }
 	
 	protected <T extends DbPersistent<T,ID>, ID> void createComboBox(ComboBox<T> comboBox, 
-			CrudConnector<T,ID> connector, Function<T,String> mapper) {
+			ICrudConnector<T,ID> connector, Function<T,String> mapper) {
     	List<T> fabricationType = connector.readAllAsStream()
         		.distinct().collect(Collectors.toList());
     	comboBox.setItems(FXCollections.observableList(fabricationType));

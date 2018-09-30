@@ -35,8 +35,8 @@ public class Connectors {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <ITEM extends DbPersistent<ITEM,ID>, ID> CrudConnector<ITEM, ID> getConnector(Class<?> itemClass) {
-		CrudConnector<ITEM, ID> connector = (CrudConnector<ITEM, ID>) connectorMap.get(itemClass);
+	public static <ITEM extends DbPersistent<ITEM,ID>, ID> CrudConnectors<ITEM, ID> getConnector(Class<?> itemClass) {
+		CrudConnectors<ITEM, ID> connector = (CrudConnectors<ITEM, ID>) connectorMap.get(itemClass);
 		if (connector == null) throw new IllegalArgumentException();
 		
 		return connector;
