@@ -8,29 +8,29 @@ import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class OptionalColumn<T extends DbPersistent<T,?>, 
-SUB extends DbPersistent<SUB,?>> extends Column<T> {
-	private final Function<T, Optional<SUB>> itemToPropertyGetter;
-	private final Function<SUB, String> propertyToValueGetter;
-	private final BiConsumer<SUB, String> propertyToValueSetter;
+public class OptionalColumn<T extends DbPersistent<T,?>> extends AbstractColumn<T> {
+	private final Function<T, Optional<? extends Object>> itemToPropertyGetter;
+	private final Function<Object, String> propertyToValueGetter;
+	private final BiConsumer<Object, String> propertyToValueSetter;
 	private final String emptyValue;
 	
-	public OptionalColumn( String columnName,
+	@SuppressWarnings("unchecked")
+	public <SUB extends DbPersistent<SUB,?>> OptionalColumn( String columnName,
 			Function<T, Optional<SUB>> itemToPropertyGetter, 
 			Function<SUB, String> propertyToValueGetter, 
 			BiConsumer<SUB, String> propertyToValueSetter,
 			String emptyValue
 			) {
 		super(columnName);
-		this.itemToPropertyGetter = itemToPropertyGetter;
-		this.propertyToValueGetter = propertyToValueGetter;
-		this.propertyToValueSetter = propertyToValueSetter;
+		this.itemToPropertyGetter = item -> itemToPropertyGetter.apply(item);
+		this.propertyToValueGetter = sub -> propertyToValueGetter.apply((SUB)sub);
+		this.propertyToValueSetter = (sub,value) -> propertyToValueSetter.accept(((SUB)sub), value);
 		this.emptyValue = emptyValue;
 	}
 	
 	@Override
 	public String get(T item) {
-		Optional<SUB> path = itemToPropertyGetter.apply(item);
+		Optional<? extends Object> path = itemToPropertyGetter.apply(item);
 		if (path.isPresent()) 
 			return propertyToValueGetter.apply(path.get());
 		return emptyValue;
@@ -38,7 +38,7 @@ SUB extends DbPersistent<SUB,?>> extends Column<T> {
 	
 	@Override
 	public  void set(T item, String value) {
-		Optional<SUB> path = itemToPropertyGetter.apply(item);
+		Optional<? extends Object> path = itemToPropertyGetter.apply(item);
 		if (path.isPresent())
 			propertyToValueSetter.accept(path.get(), value);
 	}

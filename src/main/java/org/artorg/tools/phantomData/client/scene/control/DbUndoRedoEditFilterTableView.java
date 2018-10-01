@@ -6,8 +6,10 @@ import java.util.Optional;
 
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
-import org.artorg.tools.phantomData.client.table.IFilterTable;
+import org.artorg.tools.phantomData.client.table.AbstractColumn;
+import org.artorg.tools.phantomData.client.table.FilterColumn;
 import org.artorg.tools.phantomData.client.table.IDbEditFilterTable;
+import org.artorg.tools.phantomData.client.table.IFilterTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -28,12 +30,12 @@ import javafx.scene.text.Text;
 
 public abstract class DbUndoRedoEditFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends TableView<ITEM> {
 	private IDbEditFilterTable<ITEM> filterTable;
-	private List<FilterMenuButton> filterMenuButtons;
+	private List<FilterMenuButton<ITEM>> filterMenuButtons;
 	private ListChangeListener<ITEM> listenerChangedListenerRefresh;
 	
 	{
 		super.setEditable(true);
-		filterMenuButtons = new ArrayList<FilterMenuButton>();
+		filterMenuButtons = new ArrayList<FilterMenuButton<ITEM>>();
 		listenerChangedListenerRefresh = new ListChangeListener<ITEM>() {
 			@Override
 			public void onChanged(Change<? extends ITEM> c) {
@@ -56,6 +58,10 @@ public abstract class DbUndoRedoEditFilterTableView<ITEM extends DbPersistent<IT
 		this.filterTable = table;
 
 		reload();
+		
+		
+		
+		
 		initTable();
 		filterTable.getItems().addListener(listenerChangedListenerRefresh);
 	}
@@ -77,15 +83,21 @@ public abstract class DbUndoRedoEditFilterTableView<ITEM extends DbPersistent<IT
 	    
 		List<String> columnNames = filterTable.getFilteredColumnNames();
 		
+		
 		int nCols = filterTable.getFilteredNcols();
+		
 		for ( int col=0; col<nCols; col++) {
 			TableColumn<ITEM, String> column = new TableColumn<ITEM, String>(columnNames.get(col));
 			column.setSortable(false);
 			
 			final int localCol = col;
-			FilterMenuButton filterMenuButton = new FilterMenuButton();
+			FilterMenuButton<ITEM> filterMenuButton = new FilterMenuButton<ITEM>();
 			filterMenuButton.setText(columnNames.get(col));
-			filterMenuButton.setTable(filterTable, localCol, () -> filterTable.applyFilter()); 
+			
+			AbstractColumn<ITEM> filterTableColumn = filterTable.getFilteredColumns().get(localCol);
+			FilterColumn<ITEM> filterColumn = (FilterColumn<ITEM>)filterTableColumn;
+			filterColumn.setSortComparatorQueue(filterTable.getSortComparatorQueue());
+			filterMenuButton.setColumn(filterColumn, () -> filterTable.applyFilter()); 
 			filterMenuButtons.add(filterMenuButton);
 			
 //			column.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -148,7 +160,7 @@ public abstract class DbUndoRedoEditFilterTableView<ITEM extends DbPersistent<IT
             	Label label = (Label)n;
             	
             	String columnName = label.getText();
-            	Optional<FilterMenuButton> filterMenuButton = filterMenuButtons.stream()
+            	Optional<FilterMenuButton<ITEM>> filterMenuButton = filterMenuButtons.stream()
             			.filter(f -> f.getText().equals(columnName))
             			.findFirst();
             	if(filterMenuButton.isPresent()) {

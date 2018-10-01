@@ -109,14 +109,15 @@ public class TableViewSelector<ITEM, SUB_ITEM> implements ISelector<ITEM, SUB_IT
 	private void addFilterMenuButtonToColumn(TableViewReadOnly<SUB_ITEM> tableView, int col, String columnName) {
 		FilterMenuButton filterMenuButton = new FilterMenuButton();
 		filterMenuButton.setText(columnName);
-		filterMenuButton.setTable(tableView.getFilterTable(), col, () -> tableView.getFilterTable().applyFilter()); 
+		filterMenuButton.setColumn(tableView.getFilterTable().getColumns().get(col), () -> tableView.getFilterTable().applyFilter()); 
 		tableView.getFilterMenuButtons().add(filterMenuButton);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void init() {
 		tableView2.getItems().stream().forEach(item2 -> {
 			List<Object> doublettes = tableView1.getItems().stream()
-					.filter(item1 -> ((DbPersistent<?,UUID>)item2).getId().compareTo(((DbPersistent<?,UUID>)item1).getId()) == 0).collect(Collectors.toList());
+					.filter(item1 -> ((DbPersistent<?,? extends Comparable>)item2).getId().compareTo(((DbPersistent<?,? extends Comparable>)item1).getId()) == 0).collect(Collectors.toList());
 			tableView1.getItems().removeAll(doublettes);
 		});
 		

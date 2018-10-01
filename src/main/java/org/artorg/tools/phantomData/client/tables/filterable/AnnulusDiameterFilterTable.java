@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTable;
-import org.artorg.tools.phantomData.client.table.LambdaColumn;
-import org.artorg.tools.phantomData.client.table.Column;
+import org.artorg.tools.phantomData.client.table.AbstractColumn;
+import org.artorg.tools.phantomData.client.table.FilterColumn;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 
 public class AnnulusDiameterFilterTable extends DbUndoRedoEditFilterTable<AnnulusDiameter> {
@@ -13,13 +13,13 @@ public class AnnulusDiameterFilterTable extends DbUndoRedoEditFilterTable<Annulu
 	{
 		setItemClass(AnnulusDiameter.class);
 		
-		List<Column<AnnulusDiameter>> columns =
-				new ArrayList<Column<AnnulusDiameter>>();
-		columns.add(new LambdaColumn<AnnulusDiameter, AnnulusDiameter>(
+		List<AbstractColumn<AnnulusDiameter>> columns =
+				new ArrayList<AbstractColumn<AnnulusDiameter>>();
+		columns.add(new FilterColumn<AnnulusDiameter>(
 				"shortcut", item -> item, 
 				path -> String.valueOf(path.getShortcut()), 
 				(path,value) -> path.setShortcut(Integer.valueOf(value))));
-		columns.add(new LambdaColumn<AnnulusDiameter, AnnulusDiameter>(
+		columns.add(new FilterColumn<AnnulusDiameter>(
 				"value", item -> item, 
 				path -> String.valueOf(path.getValue()), 
 				(path,value) -> path.setValue(Double.valueOf(value))));

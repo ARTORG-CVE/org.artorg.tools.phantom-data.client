@@ -10,9 +10,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.artorg.tools.phantomData.client.io.IOutil;
-import org.artorg.tools.phantomData.client.table.Column;
+import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.FilterColumn;
-import org.artorg.tools.phantomData.client.table.IFilterTable;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -31,7 +30,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 
-public class FilterMenuButton extends MenuButton {
+public class FilterMenuButton<ITEM> extends MenuButton {
 	private static final Image imgNormal, imgFilter;
 	private final ButtonItemReset itemReset;
 	private final CheckBoxItemSortAscending itemAscending;
@@ -39,8 +38,9 @@ public class FilterMenuButton extends MenuButton {
 	private final TextItemSearch itemSearch;
 	private final CheckBoxItemFilterAll itemFilterAll;
 	private final List<CheckBoxItemFilter> itemsFilter;
-	private Supplier<List<String>> getters;
 	private String regex;
+	private FilterColumn<ITEM> column;
+	private Runnable refresh;
 
 	static {
 		imgNormal = IOutil.readResourceAsImage("img/arrow.png");
@@ -55,6 +55,7 @@ public class FilterMenuButton extends MenuButton {
 		itemFilterAll = new CheckBoxItemFilterAll();
 		itemsFilter = new ArrayList<CheckBoxItemFilter>();
 		regex = "";
+		refresh = () -> {};
 	}
 
 	public FilterMenuButton() {
@@ -67,6 +68,10 @@ public class FilterMenuButton extends MenuButton {
 				itemFilterAll.getCheckBox().setSelected(true);
 				streamCheckBoxes().forEach(c -> c.setSelected(true));
 				setImage(imgNormal);
+				
+				if (column != null) {
+					column.resetFilter();
+				}
 			}
 		});
 
@@ -87,7 +92,6 @@ public class FilterMenuButton extends MenuButton {
 		});
 
 		itemSearch.getTextField().textProperty().addListener(new ChangeListener<String>() {
-
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				if (!newValue.isEmpty()) {
@@ -119,11 +123,14 @@ public class FilterMenuButton extends MenuButton {
 		this.getItems().add(new SeparatorMenuItem());
 
 	}
+	
+	public AbstractColumn<?> getColumn() {
+		return column;
+	}
 
-	public <ITEM> void setTable(FilterColumn<ITEM> column, int col, Runnable refresh) {
-		Supplier<List<String>> getters = () -> column.getValues();
-		
-		setGetters(getters);
+	public void setColumn(FilterColumn<ITEM> column, Runnable refresh) {
+		this.column = column;		
+		this.refresh = refresh;
 		this.addEventHandler(ComboBox.ON_HIDDEN, event -> {
 			Predicate<ITEM> itemFilter = item -> getSelectedValues().stream()
 					.filter(value -> column.get(item).equals(value)).findFirst().isPresent();
@@ -135,38 +142,41 @@ public class FilterMenuButton extends MenuButton {
 				textFilter = item -> p.matcher(column.get(item)).find();
 			}
 			Predicate<ITEM> filter = itemFilter.and(textFilter);
+			column.setFilterPredicate(filter);
 			
+			Comparator<ITEM> comparator = null;
+			if (itemAscending.getCheckBox().isSelected())
+				comparator = column.getAscendingSortComparator();
+			else if (itemDescending.getCheckBox().isSelected()) {
+				Comparator<ITEM> ascendingSortComparator = column.getAscendingSortComparator(); 
+				if (ascendingSortComparator != null)
+					comparator = ascendingSortComparator.reversed();
+			}
+			
+			if (comparator != null)
+				column.setSortComparator(comparator);
 			refresh.run();
 		});
 		this.addEventHandler(ComboBox.ON_SHOWING, event -> {
 			this.updateNodes();
 		});
+		
+		addAction(itemReset, refresh);
+		addAction(itemAscending, refresh);
+		addAction(itemDescending, refresh);
+		addAction(itemSearch, refresh);
+		addAction(itemFilterAll, refresh);
 	}
-
-//	public <ITEM> void setTable(IFilterTable<ITEM> 
-//				filterTable, int col, Runnable refresh ) {
-//		Supplier<List<String>> getters = () -> {
-//			List<String> getterList = new ArrayList<String>();
-//			for (int row = 0; row < filterTable.getNrows(); row++) {
-//				final int localRow = row;
-//				getterList.add(filterTable.getColumnFilteredValue(localRow, col));
-//			}
-//			return getterList;
-//		};
-//		setGetters(getters);
-//		this.addEventHandler(ComboBox.ON_HIDDEN, event -> {
-//			filterTable.setColumnItemFilterValues(col, this.getSelectedValues());
-//			if (this.isSortComparatorSet())
-//				filterTable.setSortComparator(this.getSortComparator(), 
-//						item -> filterTable.getFilteredValue(item, col));
-//			filterTable.setColumnTextFilterValues(col, this.getRegex());
-//		    refresh.run();
-//		});
-//		this.addEventHandler(ComboBox.ON_SHOWING, event -> {
-//			this.updateNodes();
-//		});
-//	}
-
+	
+	private void addAction(CustomMenuItem menuItem, Runnable rc) {
+		EventHandler<ActionEvent> eventHandler = menuItem.getOnAction();
+		menuItem.setOnAction(event -> {
+			if (eventHandler != null)
+				eventHandler.handle(event);
+			rc.run();
+		});
+	}
+	
 	public void setImage(Image image) {
 		Platform.runLater(new Runnable() {
 			@Override
@@ -189,10 +199,6 @@ public class FilterMenuButton extends MenuButton {
 
 	private Stream<CheckBox> streamCheckBoxes() {
 		return itemsFilter.stream().map(i -> i.getCheckBox());
-	}
-
-	public void setGetters(Supplier<List<String>> getters) {
-		this.getters = getters;
 	}
 
 	public class ButtonItemReset extends CustomMenuItem {
@@ -309,9 +315,13 @@ public class FilterMenuButton extends MenuButton {
 		private final CheckBox checkBox;
 
 		public CheckBoxItemFilter(String name) {
+			this(name, true);
+		}
+		
+		public CheckBoxItemFilter(String name, boolean selected) {
 			super(new CheckBox(name));
 			checkBox = (CheckBox) this.getContent();
-			checkBox.setSelected(true);
+			checkBox.setSelected(selected);
 			this.setHideOnClick(false);
 		}
 
@@ -340,20 +350,17 @@ public class FilterMenuButton extends MenuButton {
 		return false;
 	}
 
-	public Comparator<String> getSortComparator() {
-		if (itemAscending.getCheckBox().isSelected())
-			return itemAscending.getComparator();
-		if (itemDescending.getCheckBox().isSelected())
-			return itemDescending.getComparator();
-		return (s1, s2) -> 0;
-	}
-
 	public void updateNodes() {
 		this.getItems().removeAll(itemsFilter);
 		itemsFilter.clear();
+		
+		List<String> filteredValues = column.getFilteredValues();
 		itemsFilter.addAll(
-				getters.get().stream().distinct().map(g -> new CheckBoxItemFilter(g)).collect(Collectors.toList()));
-
+				column.getValues().stream().distinct().map(g -> {
+					boolean isFiltered = filteredValues.contains(g);
+					return new CheckBoxItemFilter(g, isFiltered);
+				}).collect(Collectors.toList()));
+		
 		if (!itemsFilter.isEmpty()) {
 			if (!(this.getItems().get(this.getItems().size() - 1) instanceof SeparatorMenuItem))
 				this.getItems().add(new SeparatorMenuItem());
@@ -361,7 +368,7 @@ public class FilterMenuButton extends MenuButton {
 			this.getItems().remove(this.getItems().size() - 1);
 
 		this.getItems().addAll(itemsFilter);
-
+		
 		streamCheckBoxes().forEach(c -> c.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
@@ -374,6 +381,7 @@ public class FilterMenuButton extends MenuButton {
 						refreshImage();
 					}
 				}
+				refresh.run();
 			}
 		}));
 	}

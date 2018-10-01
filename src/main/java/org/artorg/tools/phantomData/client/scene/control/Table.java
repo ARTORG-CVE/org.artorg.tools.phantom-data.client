@@ -1,9 +1,10 @@
 package org.artorg.tools.phantomData.client.scene.control;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.table.Column;
+import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.ITable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -11,8 +12,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class Table<ITEM extends DbPersistent<ITEM,?>> implements ITable<ITEM> {
-	private final ObservableList<ITEM> items;
-	private List<Column<ITEM>> columns;
+	private ObservableList<ITEM> items;
+	private List<AbstractColumn<ITEM>> columns;
 	private boolean isIdColumnVisible;
 	private String tableName;
 	private String itemName;
@@ -20,13 +21,13 @@ public class Table<ITEM extends DbPersistent<ITEM,?>> implements ITable<ITEM> {
 	
 	{
 		items = FXCollections.observableArrayList();
-		columns = new ArrayList<Column<ITEM>>();
+		columns = new ArrayList<AbstractColumn<ITEM>>();
 		isIdColumnVisible = true;
 	}
 	
 	public void setItems(ObservableList<ITEM> items) {
-		this.items.clear();
-		this.items.addAll(items);
+		this.items = items;
+		getColumns().stream().forEach(column -> column.setItems(items));
 	}
 	
 	public boolean isIdColumnVisible() {
@@ -36,6 +37,15 @@ public class Table<ITEM extends DbPersistent<ITEM,?>> implements ITable<ITEM> {
 	public void setIdColumnVisible(boolean isIdColumnVisible) {
 		this.isIdColumnVisible = isIdColumnVisible;
 	}
+	
+	@Override
+	public void setColumns(List<AbstractColumn<ITEM>> columns) {
+		this.columns = columns;
+		getColumns().stream().forEach(column -> {
+			
+			column.setItems(getItems());	
+		});
+	}	
 	
     @Override
 	public String toString() {
@@ -63,7 +73,7 @@ public class Table<ITEM extends DbPersistent<ITEM,?>> implements ITable<ITEM> {
 	}
 
 	@Override
-	public List<Column<ITEM>> getColumns() {
+	public List<AbstractColumn<ITEM>> getColumns() {
 		return this.columns;
 	}
 
@@ -81,10 +91,7 @@ public class Table<ITEM extends DbPersistent<ITEM,?>> implements ITable<ITEM> {
 	public Class<ITEM> getItemClass() {
 		return this.itemClass;
 	}
-
-	@Override
-	public void setColumns(List<Column<ITEM>> columns) {
-		this.columns = columns;
-	}	
+	
+	
 
 }

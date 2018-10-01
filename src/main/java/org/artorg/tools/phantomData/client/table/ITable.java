@@ -2,7 +2,9 @@ package org.artorg.tools.phantomData.client.table;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,9 +14,9 @@ import javafx.collections.ObservableList;
 
 public interface ITable<ITEM> {
 	
-	void setColumns(List<Column<ITEM>> columns);
+	List<AbstractColumn<ITEM>> getColumns();
 	
-	List<Column<ITEM>> getColumns();
+	void setColumns(List<AbstractColumn<ITEM>> columns);
 	
 	Class<ITEM> getItemClass();
 	
@@ -32,15 +34,16 @@ public interface ITable<ITEM> {
 	
 	String getItemName();
 	
-	default Column<ITEM> getIdColumn() {
+	default AbstractColumn<ITEM> getIdColumn() {
 		return getColumns().stream().filter(c -> c.isIdColumn()).collect(Collectors2.toSingleton());
 	}
 	
-	default void setIdColumn(Column<ITEM> column) {
-		getColumns().replaceAll(c -> c.isIdColumn()? column: c);
+	default  void setIdColumn(AbstractColumn<ITEM> column) {
+		UnaryOperator<AbstractColumn<ITEM>> unaryOperator = c -> c.isIdColumn()? column: c;
+		getColumns().replaceAll(unaryOperator);
 	}
 	
-	default List<Column<ITEM>> getVisibleColumns() {
+	default List<AbstractColumn<ITEM>> getVisibleColumns() {
 		return getColumns().stream().filter(c -> c.isVisible()).collect(Collectors.toList());
 	}
 	
@@ -107,5 +110,7 @@ public interface ITable<ITEM> {
 		
 		return columnStrings.stream().collect(Collectors.joining("\n"));
 	}
+
+	
 
 }

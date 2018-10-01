@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Queue;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.artorg.tools.phantomData.client.table.Column;
+import org.artorg.tools.phantomData.client.table.AbstractColumn;
+import org.artorg.tools.phantomData.client.table.FilterColumn;
 import org.artorg.tools.phantomData.client.table.IFilterTable;
+import org.artorg.tools.phantomData.client.util.LimitedQueue;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.FXCollections;
@@ -26,7 +29,18 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 	private int nFilteredCols;
 	private List<Integer> mappedColumnIndexes;
 	private Function<Integer, Integer> columnIndexMapper;
+	private Queue<Comparator<ITEM>> sortComparatorQueue;
 	
+	@Override
+	public Queue<Comparator<ITEM>> getSortComparatorQueue() {
+		return sortComparatorQueue;
+	}
+
+	@Override
+	public void setSortComparatorQueue(Queue<Comparator<ITEM>> sortComparatorQueue) {
+		this.sortComparatorQueue = sortComparatorQueue;
+	}
+
 	{
 		filteredItems = FXCollections.observableArrayList();
 		filterPredicate = item -> true;
@@ -34,7 +48,7 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 		columnTextFilterPredicates = new ArrayList<Predicate<ITEM>>();
 		sortComparator = (i1,i2) -> initSortComparator(i1,i2);
 		mappedColumnIndexes = new ArrayList<>();
-		
+		sortComparatorQueue = new LimitedQueue<Comparator<ITEM>>(1);
 	}
 	
 	private int initSortComparator(ITEM item1, ITEM item2) {
@@ -48,7 +62,7 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 	}
 	
 	@Override
-	public void setColumns(List<Column<ITEM>> columns) {
+	public void setColumns(List<AbstractColumn<ITEM>> columns) {
 		super.setColumns(columns);
 		
 		int nCols = getNcols();
@@ -63,6 +77,8 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 			columnTextFilterPredicates.add(item -> true);
 		}
 		columnIndexMapper = i -> mappedColumnIndexes.get(i);
+		
+		applyFilter();
 		
 	}
 	
@@ -82,6 +98,10 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 		filteredItems.clear();
 		filteredItems.addAll(super.getItems());
 		
+		getFilteredColumns().stream().forEach(column -> {
+			column.setFilteredItems(getFilteredItems());	
+		});
+		
 		applyFilter();
 	}
 	
@@ -96,8 +116,8 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 	}
 	
 	@Override
-	public List<Column<ITEM>> getFilteredColumns() {
-		return mappedColumnIndexes.stream().map(i -> getColumns().get(i)).collect(Collectors.toList());
+	public List<FilterColumn<ITEM>> getFilteredColumns() {
+		return mappedColumnIndexes.stream().map(i -> (FilterColumn<ITEM>)getColumns().get(i)).collect(Collectors.toList());
 	}
 	
 	@Override
@@ -118,8 +138,8 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 	
 	@Override
 	public String getColumnFilteredValue(int row, int col) {
-		List<Column<ITEM>> columns = getFilteredColumns();
-		Column<ITEM> column = columns.get(col);
+		List<FilterColumn<ITEM>> columns = getFilteredColumns();
+		AbstractColumn<ITEM> column = columns.get(col);
 		ObservableList<ITEM> items = super.getItems();
 		ITEM item = items.get(row);
 		column.get(item);
@@ -150,18 +170,23 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 	
 	@Override
 	public void applyFilter() {
-		Predicate<ITEM> itemFilter = mappedColumnIndexes.stream()
+		System.out.println("Filter applied");
+		
+		filterPredicate = mappedColumnIndexes.stream()
 				.filter(i -> i<columnItemFilterPredicates.size())
-				.map(i -> columnItemFilterPredicates.get(i))
+				.map(i -> getColumns().get(i))
+				.filter(column -> column instanceof FilterColumn)
+				.map(column -> ((FilterColumn<ITEM>)column))
+				.map(filterColumn -> filterColumn.getFilterPredicate())
 				.reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
-		Predicate<ITEM> textFilter = mappedColumnIndexes.stream()
-				.filter(i -> i<columnTextFilterPredicates.size())
-				.map(i -> columnTextFilterPredicates.get(i))
-				.reduce((f1,f2) -> f1.and(f2)).orElse(item -> true);
-		filterPredicate = itemFilter.and(textFilter);
+		
+		sortComparator = sortComparatorQueue.stream()
+				.reduce((c1,c2) -> c2.thenComparing(c1)).orElse((c1,c2) -> 0);
+		
 		this.filteredItems.clear();
 		this.filteredItems.addAll(super.getItems().stream().filter(filterPredicate).sorted(sortComparator)
 				.collect(Collectors.toList()));
+		
 	}
 	
 	@Override
@@ -207,5 +232,9 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 		
 		return columnStrings.stream().collect(Collectors.joining("\n"));
 	}
+
+	
+
+	
 
 }

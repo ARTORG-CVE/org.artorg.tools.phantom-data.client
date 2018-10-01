@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.connector.CrudConnectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.table.Column;
+import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.IDbTable;
-import org.artorg.tools.phantomData.client.table.LambdaColumn;
+import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 public class DbTable<ITEM extends DbPersistent<ITEM,?>> extends Table<ITEM> implements IDbTable<ITEM> {
@@ -29,9 +29,9 @@ public class DbTable<ITEM extends DbPersistent<ITEM,?>> extends Table<ITEM> impl
 	}
 	
 	@Override
-	public void setColumns(List<Column<ITEM>> columns) {
+	public void setColumns(List<AbstractColumn<ITEM>> columns) {
 		columns.forEach(column -> column.setIdColumn(false));
-		LambdaColumn<ITEM,ITEM> idColumn = new LambdaColumn<ITEM, ITEM>(
+		AbstractColumn<ITEM> idColumn = new Column<ITEM>(
 			"ID", item -> item, 
 			path -> path.getId().toString(), 
 			(path,value) -> path.setId(value));

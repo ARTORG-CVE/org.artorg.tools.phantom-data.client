@@ -7,6 +7,9 @@ import org.artorg.tools.phantomData.client.connector.CrudConnectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 public interface IDbTable<ITEM extends DbPersistent<ITEM,?>> extends ITable<ITEM>, IDbConnectable<ITEM>{
 
 	default void readAllData() {
@@ -18,8 +21,11 @@ public interface IDbTable<ITEM extends DbPersistent<ITEM,?>> extends ITable<ITEM
 		if (connector == null)
 			throw new NullPointerException();
 		itemSet.addAll(connector.readAllAsSet());
-		getItems().clear();
-		getItems().addAll(itemSet);
+		
+		ObservableList<ITEM> items = FXCollections.observableArrayList();
+		items.addAll(itemSet);
+		setItems(items);
+		getColumns().stream().forEach(column -> column.setItems(getItems()));
 	}
 	
 	@Override

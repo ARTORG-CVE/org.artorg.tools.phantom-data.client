@@ -10,7 +10,7 @@ import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 public class BeanColumn<T extends DbPersistent<T,?>, 
-		SUB_T extends DbPersistent<SUB_T,?>> extends Column<T>  {
+		SUB_T extends DbPersistent<SUB_T,?>> extends AbstractColumn<T>  {
 	private final Function<T, SUB_T> itemToPropertyGetter;
 	private final Function<SUB_T, String> propertyToValueGetter;
 	private final BiConsumer<SUB_T, String> propertyToValueSetter;
