@@ -3,16 +3,14 @@ package org.artorg.tools.phantomData.client.controllers.editFactories;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connectors.FileTypeConnector;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTableView;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
-import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 
-import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
@@ -70,7 +68,7 @@ public class FileEditFactoryController extends GroupedItemEditFactoryController<
 	protected List<TitledPane> createGroupedProperties(PhantomFile item) {
 		List<TitledPane> panes = new ArrayList<TitledPane>();
 		
-		createComboBox(comboBoxFileType, FileTypeConnector.get(), d -> String.valueOf(d.getName()));
+		createComboBox(comboBoxFileType, HttpConnectorSpring.getOrCreate(FileType.class), d -> String.valueOf(d.getName()));
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
 		generalProperties.add(new PropertyEntry("Path", textFieldPath));
 		generalProperties.add(new PropertyEntry("Name", textFieldName));

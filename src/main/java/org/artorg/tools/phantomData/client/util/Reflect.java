@@ -28,6 +28,13 @@ import java.util.stream.Stream;
 
 public class Reflect {
 	
+	
+	
+	public static Class<?> findClass(String simpleClassName, String parentSearchPackage) {
+		return getClasses(parentSearchPackage).stream().filter(c -> c.getSimpleName().equals(simpleClassName))
+				.findFirst().orElseThrow(() -> new IllegalArgumentException());
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static <T> Class<? extends T[]> getArrayClass(Class<T> clazz) {
 	    return (Class<? extends T[]>) Array.newInstance(clazz, 0).getClass();

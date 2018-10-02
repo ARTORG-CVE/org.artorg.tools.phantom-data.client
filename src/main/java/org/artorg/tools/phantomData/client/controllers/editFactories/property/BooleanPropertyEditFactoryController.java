@@ -3,7 +3,7 @@ package org.artorg.tools.phantomData.client.controllers.editFactories.property;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
@@ -58,7 +58,7 @@ public class BooleanPropertyEditFactoryController extends GroupedItemEditFactory
 		List<TitledPane> panes = new ArrayList<TitledPane>();
 		
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-		createComboBox(comboBoxPropertyField, PropertyFieldConnector.get(), d -> String.valueOf(d.getName()));
+		createComboBox(comboBoxPropertyField, HttpConnectorSpring.getOrCreate(PropertyField.class), d -> String.valueOf(d.getName()));
 		generalProperties.add(new PropertyEntry("Property Field", comboBoxPropertyField));
 		generalProperties.add(new PropertyEntry("Value", checkBoxValue));
 		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");

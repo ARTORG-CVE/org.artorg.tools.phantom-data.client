@@ -1,7 +1,7 @@
 package org.artorg.tools.phantomData.client.tables.filterable.property;
 
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.connectors.property.BooleanPropertyConnector;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 
 public class BooleanPropertyFilterTable extends PropertyFilterTable<BooleanProperty, Boolean> {
@@ -14,7 +14,7 @@ public class BooleanPropertyFilterTable extends PropertyFilterTable<BooleanPrope
 
 	@Override
 	protected ICrudConnector<BooleanProperty,?> getPropertyConnector() {
-		return BooleanPropertyConnector.get();
+		return HttpConnectorSpring.getOrCreate(BooleanProperty.class);
 	}
 
 	@Override

@@ -3,16 +3,7 @@ package org.artorg.tools.phantomData.client.boot;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
-import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
-import org.artorg.tools.phantomData.client.connectors.FileConnector;
-import org.artorg.tools.phantomData.client.connectors.FileTypeConnector;
-import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
-import org.artorg.tools.phantomData.client.connectors.PhantomConnector;
-import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
-import org.artorg.tools.phantomData.client.connectors.property.BooleanPropertyConnector;
-import org.artorg.tools.phantomData.client.connectors.property.IntegerPropertyConnector;
-import org.artorg.tools.phantomData.client.connectors.property.PropertyFieldConnector;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.FileType;
@@ -25,14 +16,16 @@ import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 public class DatabaseInitializer {
-	private static AnnulusDiameterConnector adConn = AnnulusDiameterConnector.get();
-	private static FabricationTypeConnector fTypeConn = FabricationTypeConnector.get();
-	private static LiteratureBaseConnector litBaseConn = LiteratureBaseConnector.get();
-	private static PropertyFieldConnector fieldConn = PropertyFieldConnector.get();
-	private static BooleanPropertyConnector boolPropConn = BooleanPropertyConnector.get();
-	private static IntegerPropertyConnector intPropConn = IntegerPropertyConnector.get();
-	private static SpecialConnector specConn = SpecialConnector.get();
-	private static PhantomConnector phantomConn = PhantomConnector.get();
+	private static HttpConnectorSpring<AnnulusDiameter> adConn = HttpConnectorSpring.getOrCreate(AnnulusDiameter.class);
+	private static HttpConnectorSpring<FabricationType> fTypeConn = HttpConnectorSpring.getOrCreate(FabricationType.class);
+	private static HttpConnectorSpring<LiteratureBase> litBaseConn = HttpConnectorSpring.getOrCreate(LiteratureBase.class);
+	private static HttpConnectorSpring<PropertyField> fieldConn = HttpConnectorSpring.getOrCreate(PropertyField.class);
+	private static HttpConnectorSpring<BooleanProperty> boolPropConn = HttpConnectorSpring.getOrCreate(BooleanProperty.class);
+	private static HttpConnectorSpring<IntegerProperty> intPropConn = HttpConnectorSpring.getOrCreate(IntegerProperty.class);
+	private static HttpConnectorSpring<Special> specConn = HttpConnectorSpring.getOrCreate(Special.class);
+	private static HttpConnectorSpring<Phantom> phantomConn = HttpConnectorSpring.getOrCreate(Phantom.class);
+	private static HttpConnectorSpring<FileType> fileTypeConn = HttpConnectorSpring.getOrCreate(FileType.class);
+	private static HttpConnectorSpring<PhantomFile> fileConn = HttpConnectorSpring.getOrCreate(PhantomFile.class);
 
 	public static void initDatabase() {
 		initAnnulusDiameter();
@@ -125,7 +118,6 @@ public class DatabaseInitializer {
 	}
 
 	private static void initFiles() {
-		FileTypeConnector fileTypeConn = FileTypeConnector.get();
 		FileType fileType1 = new FileType("phantom-specific-geometry-main-cad-model");
 		FileType fileType2 = new FileType("phantom-specific-geometry-fabrication-part");
 		FileType fileType3 = new FileType("thesis-master");
@@ -136,18 +128,17 @@ public class DatabaseInitializer {
 		fileTypeConn.create(fileType3);
 		fileTypeConn.create(fileType4);
 
-		FileConnector fileConn = FileConnector.get();
 		fileConn.create(new PhantomFile("", "model", "stl", fileTypeConn.read(fileType1)));
 		fileConn.create(new PhantomFile("", "model2", "stl", fileTypeConn.read(fileType1)));
 		fileConn.create(new PhantomFile("", "model3", "stl", fileTypeConn.read(fileType3)));
 
-		fileConn.readByName("model").create("D:/Users/Marc/Desktop/test1.stl");
-		fileConn.readByName("model").toString();
+		fileConn.readByAttribute("model", "NAME").create("D:/Users/Marc/Desktop/test1.stl");
+		fileConn.readByAttribute("model", "NAME").toString();
 
 	}
 
 	private static void initPhantoms() {
-		PhantomConnector phantConn = PhantomConnector.get();
+//		PhantomConnector phantConn = PhantomConnector.get();
 		Phantom[] phantoms = new Phantom[15];
 		phantoms[0] = createPhantom(21, "A", "C", "N", 3);
 		phantoms[1] = createPhantom(21, "A", "C", "N", 5);
@@ -166,19 +157,18 @@ public class DatabaseInitializer {
 		phantoms[14] = createPhantom(21, "A", "P", "N", 1);
 
 		List<PhantomFile> files0 = new ArrayList<PhantomFile>();
-		files0.add(FileConnector.get().readByName("model"));
-		files0.add(FileConnector.get().readByName("model2"));
+		files0.add(fileConn.readByAttribute("model", "NAME"));
+		files0.add(fileConn.readByAttribute("model2", "NAME"));
 		phantoms[0].setFiles(files0);
-		phantConn.create(phantoms);
+		phantomConn.create(phantoms);
 	}
 
 	private static Phantom createPhantom(int annulusDiameter, String fType, String litBase,
 			String special, int number) {
-		AnnulusDiameter annulusDiameter2 = AnnulusDiameterConnector.get()
-				.readByShortcut(annulusDiameter);
-		FabricationType fType2 = FabricationTypeConnector.get().readByShortcut(fType);
-		LiteratureBase litBase2 = LiteratureBaseConnector.get().readByShortcut(litBase);
-		Special special2 = SpecialConnector.get().readByShortcut(special);
+		AnnulusDiameter annulusDiameter2 = adConn.readByAttribute(annulusDiameter, "SHORTCUT");
+		FabricationType fType2 = fTypeConn.readByAttribute(fType, "SHORTCUT");
+		LiteratureBase litBase2 = litBaseConn.readByAttribute(litBase, "SHORTCUT");
+		Special special2 = specConn.readByAttribute(special, "SHORTCUT");
 		return new Phantom(annulusDiameter2, fType2, litBase2, special2, number);
 	}
 

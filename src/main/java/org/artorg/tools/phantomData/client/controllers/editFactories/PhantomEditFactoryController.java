@@ -3,10 +3,6 @@ package org.artorg.tools.phantomData.client.controllers.editFactories;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connectors.AnnulusDiameterConnector;
-import org.artorg.tools.phantomData.client.connectors.FabricationTypeConnector;
-import org.artorg.tools.phantomData.client.connectors.LiteratureBaseConnector;
-import org.artorg.tools.phantomData.client.connectors.SpecialConnector;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
@@ -53,10 +49,10 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
     }
 	
 	private void createComboBoxes() {
-        createComboBox(comboBoxAnnulus, AnnulusDiameterConnector.get(), d -> String.valueOf(d.getValue()), item -> updateId());
-        createComboBox(comboBoxFabricationType, FabricationTypeConnector.get(), f -> f.getValue(), item -> updateId());
-        createComboBox(comboBoxLiterature, LiteratureBaseConnector.get(), l -> l.getValue(), item -> updateId());
-        createComboBox(comboBoxSpecials, SpecialConnector.get(), s -> s.getShortcut(), item -> updateId());
+        createComboBox(comboBoxAnnulus, AnnulusDiameter.class, d -> String.valueOf(d.getValue()), item -> updateId());
+        createComboBox(comboBoxFabricationType, FabricationType.class, f -> f.getValue(), item -> updateId());
+        createComboBox(comboBoxLiterature, LiteratureBase.class, l -> l.getValue(), item -> updateId());
+        createComboBox(comboBoxSpecials, Special.class, s -> s.getShortcut(), item -> updateId());
     }
 	
 	@Override

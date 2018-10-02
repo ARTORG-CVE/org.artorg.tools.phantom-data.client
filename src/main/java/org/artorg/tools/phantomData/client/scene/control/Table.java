@@ -19,6 +19,7 @@ public class Table<ITEM extends DbPersistent<ITEM,?>> implements ITable<ITEM> {
 	private String itemName;
 	private Class<ITEM> itemClass;
 	
+	
 	{
 		items = FXCollections.observableArrayList();
 		columns = new ArrayList<AbstractColumn<ITEM>>();

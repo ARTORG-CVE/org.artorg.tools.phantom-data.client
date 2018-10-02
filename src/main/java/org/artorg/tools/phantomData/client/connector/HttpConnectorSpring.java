@@ -2,10 +2,14 @@ package org.artorg.tools.phantomData.client.connector;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
 import org.artorg.tools.phantomData.client.util.Reflect;
+import org.artorg.tools.phantomData.server.specification.ControllerSpec;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-public abstract class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConnectors<T,UUID> {
+public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConnectors<T,UUID> {
 	private final Function<Method, String[]> stringAnnosFuncCreate;
 	private final Function<Method, String[]> stringAnnosFuncRead;
 	private final Function<Method, String[]> stringAnnosFuncUpdate;
@@ -31,19 +35,45 @@ public abstract class HttpConnectorSpring<T extends Identifiable<UUID>> extends 
 	private final String annoStringCreate;
 	private final String annoStringDelete;
 	private final String annoStringUpdate;
-	private Class<?> itemClass;
-	private Class<?> arrayItemClass;
+	private final Class<?> itemClass;
+	private final Class<?> arrayItemClass;
+	private final Class<?> controllerClass;
 	
 	private static String urlLocalhost;
+	private static final Map<Class<?>,HttpConnectorSpring<?>> connectorMap;
 	
-	public static String getUrlLocalhost() {
-		return urlLocalhost;
-	}
-	public static void setUrlLocalhost(String urlLocalhost) {
-		HttpConnectorSpring.urlLocalhost = urlLocalhost;
+	static {
+		connectorMap = new HashMap<Class<?>,HttpConnectorSpring<?>>();
 	}
 
-	{
+	public HttpConnectorSpring() {
+		this(null);
+	}
+	
+	public HttpConnectorSpring(Class<?> itemClass) {
+		if (itemClass == null)
+			itemClass = Reflect.findGenericClasstype(this);
+		this.itemClass = itemClass;
+		if (connectorMap.containsKey(this.itemClass))
+			throw new IllegalArgumentException();
+		
+		arrayItemClass = Reflect.getArrayClass(itemClass);
+		Class<?> controllerClass;
+		try {
+		controllerClass = Reflect.findClass(itemClass.getSimpleName() +"Controller", "org");
+		} catch (Exception e) {
+			List<Class<?>> controllerClasses = Reflect.getSubclasses(ControllerSpec.class, "org");
+			controllerClass = controllerClasses.stream().filter(c-> {
+				try {
+					return Reflect.findSubClassParameterType(c.newInstance(), ControllerSpec.class, 0) == this.itemClass;
+				} catch (Exception e2) {}
+				return false;
+			}).findFirst().orElseThrow(() -> new IllegalArgumentException());
+		}
+		if (controllerClass == null)
+			throw new NullPointerException();
+		this.controllerClass = controllerClass;
+		
 		stringAnnosFuncCreate = m -> m.getAnnotation(PostMapping.class).value();
 		stringAnnosFuncRead = m -> m.getAnnotation(GetMapping.class).value();
 		stringAnnosFuncUpdate = m -> m.getAnnotation(PutMapping.class).value();
@@ -60,27 +90,15 @@ public abstract class HttpConnectorSpring<T extends Identifiable<UUID>> extends 
 		annoStringReadAll = getAnnotationStringAll(GetMapping.class, stringAnnosFuncRead);
 		annoStringUpdate = getAnnotationString(PutMapping.class, stringAnnosFuncUpdate);
 		annoStringDelete = getAnnotationString(DeleteMapping.class, stringAnnosFuncDelete);
-		
-		if (itemClass == null)
-			itemClass = Reflect.findGenericClasstype(this);
-		
-		arrayItemClass = Reflect.getArrayClass(itemClass);
-		
-		
 	}
 	
-	
-	
-	public abstract Class<?> getControllerClass();
-//	public abstract Class<?> getArrayModelClass();
-//	public abstract Class<T> getModelClass();
-	
-	public Class<?> getModelClass() {
-		return itemClass;
-	}
-	
-	public Class<?> getArrayModelClass() {
-		return arrayItemClass;
+	@SuppressWarnings("unchecked")
+	public static <U extends Identifiable<UUID>> HttpConnectorSpring<U> getOrCreate(Class<?> cls) {
+		if (connectorMap.containsKey(cls)) 
+			return (HttpConnectorSpring<U>) connectorMap.get(cls);
+		HttpConnectorSpring<U> connector = new HttpConnectorSpring<U>(cls);
+		connectorMap.put(cls, connector);
+		return connector;
 	}
 	
 	@Override
@@ -100,6 +118,7 @@ public abstract class HttpConnectorSpring<T extends Identifiable<UUID>> extends 
 		return false;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public T read(UUID id) {
 		HttpHeaders headers = new HttpHeaders();
@@ -160,13 +179,14 @@ public abstract class HttpConnectorSpring<T extends Identifiable<UUID>> extends 
 		return results1;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public <V> T readByAttribute(V attribute, String annString) {
+	public <V> T readByAttribute(V attribute, String attributeName) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		RestTemplate restTemplate = new RestTemplate();
 		String url = getUrlLocalhost() + "/" 
-				+ getAnnoStringControlClass() + "/" + annString;
+				+ getAnnoStringControlClass() + "/" + getAnnotationStringRead(attributeName);
 		T result = (T) restTemplate.getForObject(url, getModelClass(), attribute);
 		return result;
 	}
@@ -244,7 +264,15 @@ public abstract class HttpConnectorSpring<T extends Identifiable<UUID>> extends 
 		return annoString;
 	}
 	
+	public static void setUrlLocalhost(String urlLocalhost) {
+		HttpConnectorSpring.urlLocalhost = urlLocalhost;
+	}
+	
 	// Getters
+	public Class<?> getModelClass() {return itemClass;}
+	public Class<?> getArrayModelClass() {return arrayItemClass;}
+	public Class<?> getControllerClass() {return controllerClass;}
+	public static String getUrlLocalhost() {return urlLocalhost;}
 	public final String getAnnoStringControlClass() {return annoStringControlClass;}
 	public final String getAnnoStringRead() {return annoStringRead;}
 	public final String getAnnoStringReadAll() {return annoStringReadAll;}
