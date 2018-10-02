@@ -1,29 +1,32 @@
 package org.artorg.tools.phantomData.client.scene.control;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.ITable;
+import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+@SuppressWarnings("unchecked")
 public class Table<ITEM extends DbPersistent<ITEM,?>> implements ITable<ITEM> {
 	private ObservableList<ITEM> items;
 	private List<AbstractColumn<ITEM>> columns;
 	private boolean isIdColumnVisible;
 	private String tableName;
 	private String itemName;
-	private Class<ITEM> itemClass;
+	private final Class<ITEM> itemClass;
 	
 	
 	{
 		items = FXCollections.observableArrayList();
 		columns = new ArrayList<AbstractColumn<ITEM>>();
 		isIdColumnVisible = true;
+		
+		itemClass = (Class<ITEM>) Reflect.findGenericClasstype(this);
 	}
 	
 	public void setItems(ObservableList<ITEM> items) {
@@ -79,20 +82,13 @@ public class Table<ITEM extends DbPersistent<ITEM,?>> implements ITable<ITEM> {
 	}
 
 	@Override
-	public void setItemClass(Class<ITEM> itemClass) {
-		this.itemClass = itemClass;
-	}
-
-	@Override
 	public ObservableList<ITEM> getItems() {
 		return this.items;
 	}
 
 	@Override
-	public Class<ITEM> getItemClass() {
+	public final Class<ITEM> getItemClass() {
 		return this.itemClass;
 	}
-	
-	
 
 }

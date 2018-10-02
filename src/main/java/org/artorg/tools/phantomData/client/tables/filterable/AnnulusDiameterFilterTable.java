@@ -11,8 +11,6 @@ import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 public class AnnulusDiameterFilterTable extends DbUndoRedoEditFilterTable<AnnulusDiameter> {
 	
 	{
-		setItemClass(AnnulusDiameter.class);
-		
 		List<AbstractColumn<AnnulusDiameter>> columns =
 				new ArrayList<AbstractColumn<AnnulusDiameter>>();
 		columns.add(new FilterColumn<AnnulusDiameter>(

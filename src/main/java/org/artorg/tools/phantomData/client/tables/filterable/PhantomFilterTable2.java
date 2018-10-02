@@ -15,8 +15,6 @@ import org.artorg.tools.phantomData.server.model.Special;
 public class PhantomFilterTable2 extends DbFilterTable<Phantom> {
 
 	{
-		setItemClass(Phantom.class);
-		
 		List<AbstractColumn<Phantom>> columns =
 				new ArrayList<AbstractColumn<Phantom>>();
 		AbstractColumn<Phantom> column;

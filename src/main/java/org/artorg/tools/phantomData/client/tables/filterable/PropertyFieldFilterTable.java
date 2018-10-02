@@ -11,8 +11,6 @@ import org.artorg.tools.phantomData.server.model.property.PropertyField;
 public class PropertyFieldFilterTable extends DbUndoRedoEditFilterTable<PropertyField> {
 	
 	{
-		setItemClass(PropertyField.class);
-		
 		List<AbstractColumn<PropertyField>> columns =
 				new ArrayList<AbstractColumn<PropertyField>>();
 		columns.add(new FilterColumn<PropertyField>(

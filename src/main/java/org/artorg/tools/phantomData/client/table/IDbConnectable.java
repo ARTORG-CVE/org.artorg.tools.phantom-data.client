@@ -6,7 +6,5 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 public interface IDbConnectable<ITEM extends DbPersistent<ITEM,?>> {
 	
 	ICrudConnector<ITEM,?> getConnector();	
-	
-	void setConnector(ICrudConnector<ITEM,?> connector);
 
 }

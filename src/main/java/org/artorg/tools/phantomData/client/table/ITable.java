@@ -2,7 +2,6 @@ package org.artorg.tools.phantomData.client.table;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -19,8 +18,6 @@ public interface ITable<ITEM> {
 	void setColumns(List<AbstractColumn<ITEM>> columns);
 	
 	Class<ITEM> getItemClass();
-	
-	void setItemClass(Class<ITEM> itemClass);
 	
 	String getTableName();
 	

@@ -2,30 +2,24 @@ package org.artorg.tools.phantomData.client.scene.control;
 
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connector.CrudConnectors;
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
-import org.artorg.tools.phantomData.client.table.IDbTable;
 import org.artorg.tools.phantomData.client.table.Column;
+import org.artorg.tools.phantomData.client.table.IDbTable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
+@SuppressWarnings("unchecked")
 public class DbTable<ITEM extends DbPersistent<ITEM,?>> extends Table<ITEM> implements IDbTable<ITEM> {
 	private ICrudConnector<ITEM,?> connector;
-
-	@Override
-	public void setItemClass(Class<ITEM> itemClass) {
-		super.setItemClass(itemClass);
-		setConnector(CrudConnectors.<ITEM>getConnector(itemClass));
+	
+	{
+		connector = (ICrudConnector<ITEM, ?>) HttpConnectorSpring.getOrCreate(getItemClass());
 	}
 
 	@Override
 	public ICrudConnector<ITEM,?> getConnector() {
 		return this.connector;
-	}
-
-	@Override
-	public void setConnector(ICrudConnector<ITEM,?> connector) {
-		this.connector = connector;
 	}
 	
 	@Override

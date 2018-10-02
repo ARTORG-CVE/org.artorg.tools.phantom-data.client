@@ -11,8 +11,6 @@ import org.artorg.tools.phantomData.server.model.LiteratureBase;
 public class LiteratureBaseFilterTable extends DbUndoRedoEditFilterTable<LiteratureBase> {
 
 	{
-		setItemClass(LiteratureBase.class);
-		
 		List<AbstractColumn<LiteratureBase>> columns =
 				new ArrayList<AbstractColumn<LiteratureBase>>();
 		columns.add(new FilterColumn<LiteratureBase>(

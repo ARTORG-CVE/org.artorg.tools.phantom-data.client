@@ -3,7 +3,6 @@ package org.artorg.tools.phantomData.client.table;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.artorg.tools.phantomData.client.connector.CrudConnectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 

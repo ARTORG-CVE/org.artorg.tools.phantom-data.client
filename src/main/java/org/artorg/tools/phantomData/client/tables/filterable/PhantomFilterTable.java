@@ -11,8 +11,6 @@ import org.artorg.tools.phantomData.server.model.Phantom;
 public class PhantomFilterTable extends DbUndoRedoEditFilterTable<Phantom> {
 
 	{
-		setItemClass(Phantom.class);
-		
 		List<AbstractColumn<Phantom>> columns =
 				new ArrayList<AbstractColumn<Phantom>>();
 		FilterColumn<Phantom> column;

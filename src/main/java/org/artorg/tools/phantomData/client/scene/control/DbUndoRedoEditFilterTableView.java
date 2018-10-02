@@ -50,10 +50,6 @@ public abstract class DbUndoRedoEditFilterTableView<ITEM extends DbPersistent<IT
 		return filterTable.getConnector();
 	}
 	
-	public void setConnector(ICrudConnector<ITEM,?> connector) {
-		filterTable.setConnector(connector);
-	}
-	
 	public void setTable(IDbEditFilterTable<ITEM> table) {
 		this.filterTable = table;
 

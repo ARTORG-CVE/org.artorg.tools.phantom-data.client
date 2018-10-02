@@ -11,8 +11,6 @@ import org.artorg.tools.phantomData.server.model.FabricationType;
 public class FabricationTypeFilterTable extends DbUndoRedoEditFilterTable<FabricationType> {
 	
 	{
-		setItemClass(FabricationType.class);
-		
 		List<AbstractColumn<FabricationType>> columns =
 				new ArrayList<AbstractColumn<FabricationType>>();
 		columns.add(new FilterColumn<FabricationType>(
