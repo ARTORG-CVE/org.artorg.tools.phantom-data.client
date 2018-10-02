@@ -22,16 +22,6 @@ public class SpecialConnector extends HttpConnectorSpring<Special> {
 	public Class<?> getControllerClass() {
 		return SpecialController.class;
 	}
-
-	@Override
-	public Class<?> getArrayModelClass() {
-		return Special[].class;
-	}
-
-	@Override
-	public Class<Special> getModelClass() {
-		return Special.class;
-	}
 	
 	private final String annoStringReadByShortcut;
 	

@@ -23,16 +23,6 @@ public class PropertyFieldConnector extends HttpConnectorSpring<PropertyField> {
 		return PropertyFieldController.class;
 	}
 
-	@Override
-	public Class<?> getArrayModelClass() {
-		return PropertyField[].class;
-	}
-
-	@Override
-	public Class<PropertyField> getModelClass() {
-		return PropertyField.class;
-	}
-
 	private final String annoStringReadByName;
 	
 	

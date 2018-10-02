@@ -23,14 +23,4 @@ public class PhantomConnector2 extends HttpConnectorSpring<Phantom> {
 		return PhantomController.class;
 	}
 
-	@Override
-	public Class<?> getArrayModelClass() {
-		return Phantom[].class;
-	}
-
-	@Override
-	public Class<Phantom> getModelClass() {
-		return Phantom.class;
-	}	
-
 }

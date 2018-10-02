@@ -23,14 +23,4 @@ public class FileTypeConnector extends HttpConnectorSpring<FileType> {
 		return FileTypeController.class;
 	}
 
-	@Override
-	public Class<?> getArrayModelClass() {
-		return FileType[].class;
-	}
-
-	@Override
-	public Class<FileType> getModelClass() {
-		return FileType.class;
-	}
-
 }

@@ -21,16 +21,6 @@ public class AnnulusDiameterConnector extends HttpConnectorSpring<AnnulusDiamete
 	public Class<?> getControllerClass() {
 		return AnnulusDiameterController.class;
 	}
-
-	@Override
-	public Class<?> getArrayModelClass() {
-		return AnnulusDiameter[].class;
-	}
-
-	@Override
-	public Class<AnnulusDiameter> getModelClass() {
-		return AnnulusDiameter.class;
-	}
 	
 	private final String annoStringReadByShortcut;
 	

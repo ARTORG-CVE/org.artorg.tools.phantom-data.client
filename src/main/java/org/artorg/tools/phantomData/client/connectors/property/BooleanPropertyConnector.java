@@ -24,16 +24,6 @@ public class BooleanPropertyConnector extends HttpConnectorSpring<BooleanPropert
 		return BooleanPropertyController.class;
 	}
 
-	@Override
-	public Class<?> getArrayModelClass() {
-		return BooleanProperty[].class;
-	}
-
-	@Override
-	public Class<BooleanProperty> getModelClass() {
-		return BooleanProperty.class;
-	}
-
 	private final String annoStringReadByPropertyField;
 	
 	public final String getAnnoStringReadByPropertyField() {

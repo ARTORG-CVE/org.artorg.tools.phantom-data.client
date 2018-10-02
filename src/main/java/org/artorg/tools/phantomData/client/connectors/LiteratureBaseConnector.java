@@ -22,16 +22,6 @@ public class LiteratureBaseConnector extends HttpConnectorSpring<LiteratureBase>
 	public Class<?> getControllerClass() {
 		return LiteratureBaseController.class;
 	}
-
-	@Override
-	public Class<?> getArrayModelClass() {
-		return LiteratureBase[].class;
-	}
-
-	@Override
-	public Class<LiteratureBase> getModelClass() {
-		return LiteratureBase.class;
-	}
 	
 	private final String annoStringReadByShortcut;
 	

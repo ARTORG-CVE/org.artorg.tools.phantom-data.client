@@ -22,16 +22,6 @@ public class FabricationTypeConnector extends HttpConnectorSpring<FabricationTyp
 	public Class<?> getControllerClass() {
 		return FabricationTypeController.class;
 	}
-
-	@Override
-	public Class<?> getArrayModelClass() {
-		return FabricationType[].class;
-	}
-
-	@Override
-	public Class<FabricationType> getModelClass() {
-		return FabricationType.class;
-	}
 	
 	private final String annoStringReadByShortcut;
 	

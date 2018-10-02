@@ -24,16 +24,6 @@ public class IntegerPropertyConnector extends HttpConnectorSpring<IntegerPropert
 		return IntegerPropertyController.class;
 	}
 
-	@Override
-	public Class<?> getArrayModelClass() {
-		return IntegerProperty[].class;
-	}
-
-	@Override
-	public Class<IntegerProperty> getModelClass() {
-		return IntegerProperty.class;
-	}
-
 	private final String annoStringReadByPropertyField;
 	
 	public final String getAnnoStringReadByPropertyField() {

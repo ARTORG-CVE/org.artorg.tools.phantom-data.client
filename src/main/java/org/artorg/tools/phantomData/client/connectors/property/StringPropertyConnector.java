@@ -24,16 +24,6 @@ public class StringPropertyConnector extends HttpConnectorSpring<StringProperty>
 		return StringPropertyController.class;
 	}
 
-	@Override
-	public Class<?> getArrayModelClass() {
-		return StringProperty[].class;
-	}
-
-	@Override
-	public Class<StringProperty> getModelClass() {
-		return StringProperty.class;
-	}
-
 	private final String annoStringReadByPropertyField;
 	
 	public final String getAnnoStringReadByPropertyField() {

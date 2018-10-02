@@ -24,16 +24,6 @@ public class DoublePropertyConnector extends HttpConnectorSpring<DoubleProperty>
 		return DoublePropertyController.class;
 	}
 
-	@Override
-	public Class<?> getArrayModelClass() {
-		return DoubleProperty[].class;
-	}
-
-	@Override
-	public Class<DoubleProperty> getModelClass() {
-		return DoubleProperty.class;
-	}
-
 	private final String annoStringReadByPropertyField;
 	
 	public final String getAnnoStringReadByPropertyField() {

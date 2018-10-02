@@ -23,16 +23,6 @@ public class DatePropertyConnector extends HttpConnectorSpring<DateProperty> {
 	public Class<?> getControllerClass() {
 		return DatePropertyController.class;
 	}
-
-	@Override
-	public Class<?> getArrayModelClass() {
-		return DateProperty[].class;
-	}
-
-	@Override
-	public Class<DateProperty> getModelClass() {
-		return DateProperty.class;
-	}
 	
 	private final String annoStringReadByPropertyField;
 	

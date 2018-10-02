@@ -22,16 +22,6 @@ public class FileConnector extends HttpConnectorSpring<PhantomFile> {
 	public Class<?> getControllerClass() {
 		return FileController.class;
 	}
-
-	@Override
-	public Class<?> getArrayModelClass() {
-		return PhantomFile[].class;
-	}
-
-	@Override
-	public Class<PhantomFile> getModelClass() {
-		return PhantomFile.class;
-	}
 	
 	@Override
 	public boolean create(PhantomFile phantomFile) {

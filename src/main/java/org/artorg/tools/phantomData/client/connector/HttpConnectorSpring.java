@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.UUID;
 import java.util.function.Function;
 
+import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -30,6 +31,8 @@ public abstract class HttpConnectorSpring<T extends Identifiable<UUID>> extends 
 	private final String annoStringCreate;
 	private final String annoStringDelete;
 	private final String annoStringUpdate;
+	private Class<?> itemClass;
+	private Class<?> arrayItemClass;
 	
 	private static String urlLocalhost;
 	
@@ -57,11 +60,28 @@ public abstract class HttpConnectorSpring<T extends Identifiable<UUID>> extends 
 		annoStringReadAll = getAnnotationStringAll(GetMapping.class, stringAnnosFuncRead);
 		annoStringUpdate = getAnnotationString(PutMapping.class, stringAnnosFuncUpdate);
 		annoStringDelete = getAnnotationString(DeleteMapping.class, stringAnnosFuncDelete);
+		
+		if (itemClass == null)
+			itemClass = Reflect.findGenericClasstype(this);
+		
+		arrayItemClass = Reflect.getArrayClass(itemClass);
+		
+		
 	}
 	
+	
+	
 	public abstract Class<?> getControllerClass();
-	public abstract Class<?> getArrayModelClass();
-	public abstract Class<T> getModelClass();
+//	public abstract Class<?> getArrayModelClass();
+//	public abstract Class<T> getModelClass();
+	
+	public Class<?> getModelClass() {
+		return itemClass;
+	}
+	
+	public Class<?> getArrayModelClass() {
+		return arrayItemClass;
+	}
 	
 	@Override
 	public boolean create(T t) {
