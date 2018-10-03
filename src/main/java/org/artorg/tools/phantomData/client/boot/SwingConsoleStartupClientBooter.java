@@ -17,17 +17,13 @@ public abstract class SwingConsoleStartupClientBooter extends ClientBooter {
 				e2.printStackTrace();
 			}
 		}
-		if (!getConsoleFrame().isErrorOccured() && !isErrorOccured() && !isDebugConsoleMode())
+		if (!getConsoleFrame().isErrorOccured() && !isErrorOccured() && !getServerBooter().isDebugConsoleMode())
 			getConsoleFrame().setVisible(false);
 		else 
 			if (isRunnableJarExecution()) 
 				getConsoleFrame().setVisible(true);
 		if (isErrorOccured())
 			return false;
-		return true;
-	}
-
-	private boolean isDebugConsoleMode() {
 		return true;
 	}
 

@@ -25,7 +25,7 @@ public class DesktopSwingBootApplication extends SwingConsoleStartupClientBooter
 	
 	static {
 		nConsoleLinesServer = 191;
-		nConsoleLinesFx = 62;
+		nConsoleLinesFx = 49;
 	}
 	
 	public static void main(String[] args) {
@@ -78,6 +78,11 @@ public class DesktopSwingBootApplication extends SwingConsoleStartupClientBooter
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+			}
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 			
 			getStartupFrame().setVisible(false);

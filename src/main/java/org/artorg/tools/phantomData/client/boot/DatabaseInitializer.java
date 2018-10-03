@@ -38,7 +38,7 @@ public class DatabaseInitializer {
 	
 	public static boolean isInitialized() {
 		try {
-			return  (phantomConn.readAll().length>0);
+			return  (adConn.readAll().length>0);
 		} catch (Exception e) {}
 		return false;
 	}
@@ -54,8 +54,6 @@ public class DatabaseInitializer {
 		fTypeConn.create(new FabricationType("B", "Small, thick"));
 		fTypeConn.create(new FabricationType("C", "Tomo, thin"));
 		fTypeConn.create(new FabricationType("D", "Tomo, thick"));
-		
-		System.out.println(fTypeConn.read(fType1));
 	}
 
 	private static void initLiteratureBase() {
@@ -131,14 +129,9 @@ public class DatabaseInitializer {
 		fileConn.create(new PhantomFile("", "model", "stl", fileTypeConn.read(fileType1)));
 		fileConn.create(new PhantomFile("", "model2", "stl", fileTypeConn.read(fileType1)));
 		fileConn.create(new PhantomFile("", "model3", "stl", fileTypeConn.read(fileType3)));
-
-		fileConn.readByAttribute("model", "NAME").create("D:/Users/Marc/Desktop/test1.stl");
-		fileConn.readByAttribute("model", "NAME").toString();
-
 	}
 
 	private static void initPhantoms() {
-//		PhantomConnector phantConn = PhantomConnector.get();
 		Phantom[] phantoms = new Phantom[15];
 		phantoms[0] = createPhantom(21, "A", "C", "N", 3);
 		phantoms[1] = createPhantom(21, "A", "C", "N", 5);

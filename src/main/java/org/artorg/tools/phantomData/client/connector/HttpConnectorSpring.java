@@ -50,10 +50,6 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 		connectorMap = new HashMap<Class<?>, HttpConnectorSpring<?>>();
 	}
 
-	public HttpConnectorSpring() {
-		this(null);
-	}
-
 	public HttpConnectorSpring(Class<?> itemClass) {
 		if (itemClass == null)
 			itemClass = Reflect.findGenericClasstype(this);
@@ -74,6 +70,9 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 		if (controllerClass == null)
 			throw new NullPointerException();
 		this.controllerClass = controllerClass;
+		
+		System.out.println(String.format("create connector: itemClass = %s, arrayClass = %s, controllerClass = %s", 
+				itemClass.getSimpleName(), arrayItemClass.getSimpleName(), controllerClass.getSimpleName()));
 
 		stringAnnosFuncCreate = m -> m.getAnnotation(PostMapping.class).value();
 		stringAnnosFuncRead = m -> m.getAnnotation(GetMapping.class).value();
@@ -105,6 +104,7 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 	@Override
 	public boolean create(T t) {
 		try {
+			System.out.println("create " +getModelClass() +": " +t.toString());
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			RestTemplate restTemplate = new RestTemplate();
