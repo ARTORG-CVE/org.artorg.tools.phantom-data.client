@@ -9,6 +9,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class MainFx extends Application {
+	private static boolean isStarted;
+
+	{
+		isStarted = false;
+	}
     
     @Override
 	public void start(Stage stage) throws Exception {
@@ -26,6 +31,11 @@ public class MainFx extends Application {
 		stage.show();
 		stage.requestFocus();
 		stage.toFront();
-		
+		isStarted = true;
 	}
+    
+    public static boolean isStarted() {
+		return isStarted;
+	}
+    
 }

@@ -170,8 +170,6 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 	
 	@Override
 	public void applyFilter() {
-		System.out.println("Filter applied");
-		
 		filterPredicate = mappedColumnIndexes.stream()
 				.filter(i -> i<columnItemFilterPredicates.size())
 				.map(i -> getColumns().get(i))
@@ -232,9 +230,5 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 		
 		return columnStrings.stream().collect(Collectors.joining("\n"));
 	}
-
-	
-
-	
 
 }

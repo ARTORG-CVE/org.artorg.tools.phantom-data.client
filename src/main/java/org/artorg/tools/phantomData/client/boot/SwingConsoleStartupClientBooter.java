@@ -6,10 +6,16 @@ public abstract class SwingConsoleStartupClientBooter extends ClientBooter {
 		try {
 			rc.run();
 		} catch (Exception e) {
-			getConsoleFrame().setTitle("Phantom Database - Exception thrown!");
-			setErrorOccured(true);
-			if (!super.handleException(e))
+			try {
+				getConsoleFrame().setTitle("Phantom Database - Exception thrown!");
+				setErrorOccured(true);
+				if (!super.handleException(e))
+					e.printStackTrace();
+			}
+			catch (Exception e2) {
 				e.printStackTrace();
+				e2.printStackTrace();
+			}
 		}
 		if (!getConsoleFrame().isErrorOccured() && !isErrorOccured() && !isDebugConsoleMode())
 			getConsoleFrame().setVisible(false);

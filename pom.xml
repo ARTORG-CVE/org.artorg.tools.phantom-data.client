@@ -47,11 +47,11 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			<version>0.0.8</version>
 		</dependency>
 
-		<!-- <dependency> -->
-		<!-- <groupId>ch.huma</groupId> -->
-		<!-- <artifactId>huma-library-io</artifactId> -->
-		<!-- <version>0.0.1-SNAPSHOT</version> -->
-		<!-- </dependency> -->
+		<dependency>
+		<groupId>ch.huma</groupId>
+		<artifactId>huma-library-io</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		
 		<!-- REQUIRED - Reflections f.e. getSubClass -->
 		<dependency>

@@ -119,7 +119,7 @@ public class SwingStartupProgressFrame extends JFrame {
 	}
 	
 	private void addProgressPrintStream() {
-		System.setOut(consoleDiverter.addOutPrintStream(this::updateStartupProgress));
+		System.setOut(consoleDiverter.addOutLineConsumer(this::updateStartupProgress));
 	}
 	
 	private void updateStartupProgress(List<String> consoleLines, String newLine) {
