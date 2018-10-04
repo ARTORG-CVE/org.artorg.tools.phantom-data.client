@@ -7,7 +7,7 @@ import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 
@@ -16,7 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class FileEditFactoryController extends GroupedItemEditFactoryController<PhantomFile> {
-	private DbUndoRedoEditFilterTableView<PhantomFile> table;
+	private DbUndoRedoAddEditControlFilterTableView<PhantomFile> table;
 	private TextField textFieldPath;
 	private TextField textFieldName;
 	private TextField textFieldExtension;
@@ -29,7 +29,7 @@ public class FileEditFactoryController extends GroupedItemEditFactoryController<
 		comboBoxFileType = new ComboBox<FileType>();
 	}
 	
-	public FileEditFactoryController(DbUndoRedoEditFilterTableView<PhantomFile> table) {
+	public FileEditFactoryController(DbUndoRedoAddEditControlFilterTableView<PhantomFile> table) {
 		this.table = table;
 	}
 
@@ -60,7 +60,7 @@ public class FileEditFactoryController extends GroupedItemEditFactoryController<
 	}
 
 	@Override
-	protected DbUndoRedoEditFilterTableView<PhantomFile> getTable() {
+	protected DbUndoRedoAddEditControlFilterTableView<PhantomFile> getTable() {
 		return table;
 	}
 

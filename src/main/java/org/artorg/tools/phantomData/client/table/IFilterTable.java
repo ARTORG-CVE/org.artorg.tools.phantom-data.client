@@ -12,15 +12,11 @@ public interface IFilterTable<ITEM> extends ITable<ITEM> {
 
 	int getFilteredNrows();
 
-	String getColumnFilteredValue(int localRow, int col);
-
 	void setColumnItemFilterValues(int col, List<String> selectedValues);
 
 	void setSortComparator(Comparator<String> sortComparator, Function<ITEM, String> valueGetter);
 
 	void setColumnTextFilterValues(int col, String regex);
-
-	String getFilteredValue(int row, int col);
 
 	String getFilteredValue(ITEM item, int col);
 
@@ -39,5 +35,20 @@ public interface IFilterTable<ITEM> extends ITable<ITEM> {
 	void setSortComparatorQueue(Queue<Comparator<ITEM>> sortComparatorQueue);
 	
 	Queue<Comparator<ITEM>> getSortComparatorQueue();
+	
+	
+	default String getFilteredValue(int row, int col) {
+		return getFilteredColumns().get(col).get(getFilteredItems().get(row));
+	}
+	
+	
+	default String getColumnFilteredValue(int row, int col) {
+		List<FilterColumn<ITEM>> columns = getFilteredColumns();
+		AbstractColumn<ITEM> column = columns.get(col);
+		ObservableList<ITEM> items = getItems();
+		ITEM item = items.get(row);
+		column.get(item);
+		return getFilteredColumns().get(col).get(getItems().get(row));
+	}
 	
 }

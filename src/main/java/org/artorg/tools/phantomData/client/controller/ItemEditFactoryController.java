@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.TitledPaneTableViewSelector;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
@@ -55,7 +55,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 	
 	protected abstract void copy(ITEM from, ITEM to);
 	
-	protected abstract DbUndoRedoEditFilterTableView<ITEM> getTable();
+	protected abstract DbUndoRedoAddEditControlFilterTableView<ITEM> getTable();
 	
 	protected abstract AnchorPane createRootPane();
 	

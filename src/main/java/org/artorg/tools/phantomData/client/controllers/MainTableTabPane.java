@@ -1,7 +1,7 @@
 package org.artorg.tools.phantomData.client.controllers;
 
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -29,7 +29,7 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 	}	
 
 	public <ITEM extends DbPersistent<ITEM,ID>, ID> void openTableTab(
-			DbUndoRedoEditFilterTableView<ITEM> tableViewSpring, String name) {
+			DbUndoRedoAddEditControlFilterTableView<ITEM> tableViewSpring, String name) {
 		Tab tab = new Tab(name);
 		tab.setContent(tableViewSpring);
 		tabPane.getTabs().add(tab);
@@ -49,13 +49,13 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 				editItem.setOnAction(event -> {
 					ItemEditFactoryController<ITEM> controller = tableViewSpring.createAddEditController();
 					AnchorPane node = controller.edit(row.getItem());
-					mainSplitPane.addNewItemTab(node, "Edit " + tableViewSpring.getFilterTable().getItemName());
+					mainSplitPane.addNewItemTab(node, "Edit " + tableViewSpring.getTable().getItemName());
 				});
 				MenuItem addItem = new MenuItem("Add item");
 				addItem.setOnAction(event -> {
 					ItemEditFactoryController<ITEM> controller = tableViewSpring.createAddEditController();
 					AnchorPane node = controller.create(row.getItem());
-					mainSplitPane.addNewItemTab(node, "Add " + tableViewSpring.getFilterTable().getItemName());
+					mainSplitPane.addNewItemTab(node, "Add " + tableViewSpring.getTable().getItemName());
 				});
 				MenuItem removeItem = new MenuItem("Delete");
 				removeItem.setOnAction(event -> {
@@ -75,7 +75,7 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 		editItem.setOnAction(event -> {
 			ItemEditFactoryController<ITEM> controller = tableViewSpring.createAddEditController();
 			AnchorPane node = controller.create();
-			mainSplitPane.addNewItemTab(node, "Add " + tableViewSpring.getFilterTable().getItemName());
+			mainSplitPane.addNewItemTab(node, "Add " + tableViewSpring.getTable().getItemName());
 		});
 		contextMenu.getItems().addAll(editItem);
 		

@@ -7,7 +7,7 @@ import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
@@ -16,7 +16,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TitledPane;
 
 public class BooleanPropertyEditFactoryController extends GroupedItemEditFactoryController<BooleanProperty> {
-	private DbUndoRedoEditFilterTableView<BooleanProperty> table;
+	private DbUndoRedoAddEditControlFilterTableView<BooleanProperty> table;
 	private ComboBox<PropertyField> comboBoxPropertyField;
 	private CheckBox checkBoxValue;
 
@@ -25,7 +25,7 @@ public class BooleanPropertyEditFactoryController extends GroupedItemEditFactory
 		checkBoxValue = new CheckBox();
 	}
 	
-	public BooleanPropertyEditFactoryController(DbUndoRedoEditFilterTableView<BooleanProperty> table) {
+	public BooleanPropertyEditFactoryController(DbUndoRedoAddEditControlFilterTableView<BooleanProperty> table) {
 		this.table = table;
 	}
 	
@@ -49,7 +49,7 @@ public class BooleanPropertyEditFactoryController extends GroupedItemEditFactory
 	}
 
 	@Override
-	protected DbUndoRedoEditFilterTableView<BooleanProperty> getTable() {
+	protected DbUndoRedoAddEditControlFilterTableView<BooleanProperty> getTable() {
 		return table;
 	}
 	

@@ -6,7 +6,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
@@ -19,7 +19,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class PhantomEditFactoryController extends GroupedItemEditFactoryController<Phantom> {
-	private DbUndoRedoEditFilterTableView<Phantom> table;
+	private DbUndoRedoAddEditControlFilterTableView<Phantom> table;
 	private Label labelIdValue;
     private ComboBox<AnnulusDiameter> comboBoxAnnulus;
     private ComboBox<FabricationType> comboBoxFabricationType;
@@ -38,7 +38,7 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 		labelIdValue.setDisable(true);
 	}
 	
-	public PhantomEditFactoryController(DbUndoRedoEditFilterTableView<Phantom> table) {
+	public PhantomEditFactoryController(DbUndoRedoAddEditControlFilterTableView<Phantom> table) {
 		this.table = table;
 	}
 	
@@ -100,7 +100,7 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 	}
 	
 	@Override
-	protected DbUndoRedoEditFilterTableView<Phantom> getTable() {
+	protected DbUndoRedoAddEditControlFilterTableView<Phantom> getTable() {
 		return table;
 	}
 

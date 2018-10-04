@@ -6,7 +6,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 
@@ -16,7 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactoryController<AnnulusDiameter> {
-	private DbUndoRedoEditFilterTableView<AnnulusDiameter> table;
+	private DbUndoRedoAddEditControlFilterTableView<AnnulusDiameter> table;
 	private Label labelShortcut;
 	private TextField textFieldValue;
 	
@@ -26,7 +26,7 @@ public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactory
 		labelShortcut.setDisable(true);
 	}
 	
-	public AnnulusDiameterEditFactoryController(DbUndoRedoEditFilterTableView<AnnulusDiameter> table) {
+	public AnnulusDiameterEditFactoryController(DbUndoRedoAddEditControlFilterTableView<AnnulusDiameter> table) {
 		this.table = table;
 	}
 
@@ -63,7 +63,7 @@ public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactory
 	}
 
 	@Override
-	protected DbUndoRedoEditFilterTableView<AnnulusDiameter> getTable() {
+	protected DbUndoRedoAddEditControlFilterTableView<AnnulusDiameter> getTable() {
 		return table;
 	}
 

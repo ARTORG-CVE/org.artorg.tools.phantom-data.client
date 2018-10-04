@@ -1,8 +1,8 @@
 package org.artorg.tools.phantomData.client.controllers;
 
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTable;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.client.scene.layout.AnchorPaneAddableTo;
+import org.artorg.tools.phantomData.client.table.DbUndoRedoEditFilterTable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.scene.layout.AnchorPane;
@@ -13,7 +13,7 @@ public class SecondTable extends AnchorPaneAddableTo {
 	
 	public <ITEM extends DbPersistent<ITEM,?>> 
 		void setTable(
-			DbUndoRedoEditFilterTableView<ITEM> table) {
+			DbUndoRedoAddEditControlFilterTableView<ITEM> table) {
 //		this.table = table;
 //		TableViewSpring<ITEM, ID_TYPE> view = new TableViewSpring<ITEM, ID_TYPE>();
 //		view.setTable(table);

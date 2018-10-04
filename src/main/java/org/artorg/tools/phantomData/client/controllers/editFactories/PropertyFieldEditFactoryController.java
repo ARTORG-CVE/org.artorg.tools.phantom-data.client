@@ -6,7 +6,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoEditFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
@@ -15,7 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class PropertyFieldEditFactoryController extends GroupedItemEditFactoryController<PropertyField>{
-	private DbUndoRedoEditFilterTableView<PropertyField> table;
+	private DbUndoRedoAddEditControlFilterTableView<PropertyField> table;
 	private TextField textFielName;
 	private TextField textFieldDescription;
 
@@ -24,7 +24,7 @@ public class PropertyFieldEditFactoryController extends GroupedItemEditFactoryCo
 		textFieldDescription = new TextField();
 	}
 	
-	public PropertyFieldEditFactoryController(DbUndoRedoEditFilterTableView<PropertyField> table) {
+	public PropertyFieldEditFactoryController(DbUndoRedoAddEditControlFilterTableView<PropertyField> table) {
 		this.table = table;
 	}
 
@@ -48,7 +48,7 @@ public class PropertyFieldEditFactoryController extends GroupedItemEditFactoryCo
 	}
 
 	@Override
-	protected DbUndoRedoEditFilterTableView<PropertyField> getTable() {
+	protected DbUndoRedoAddEditControlFilterTableView<PropertyField> getTable() {
 		return table;
 	}
 
