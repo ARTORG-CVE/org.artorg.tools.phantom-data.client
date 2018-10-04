@@ -34,6 +34,7 @@ public class DatabaseInitializer {
 		initSpecial();
 		initFiles();
 		initPhantoms();
+		System.out.println("Database initialized succesful");
 	}
 	
 	public static boolean isInitialized() {
