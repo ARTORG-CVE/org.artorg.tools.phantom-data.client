@@ -14,8 +14,9 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.TitledPaneTableViewSelector;
+import org.artorg.tools.phantomData.client.table.FxFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -37,12 +38,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.util.Callback;
 
-public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?>> {
+public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?>> implements FxFactory<ITEM> {
 	private GridPane gridPane;
 	protected Button applyButton;
 	private int nRows = 0;
 	private List<Node> rightNodes;
 	private List<ISelector<ITEM, Object>> selectors;
+	private DbTableView<ITEM,?> table;
+	private AnchorPane pane;
 	
 	{
 		gridPane = new GridPane();
@@ -55,7 +58,18 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 	
 	protected abstract void copy(ITEM from, ITEM to);
 	
-	protected abstract DbUndoRedoAddEditControlFilterTableView<ITEM> getTable();
+	public DbTableView<ITEM,?> getTable() {
+		return table;
+	}
+	
+	public Node getGraphic() {
+		return pane;
+	}
+	
+	@Override
+	public void setTable(DbTableView<ITEM,?> table) {
+		this.table = table;
+	}
 	
 	protected abstract AnchorPane createRootPane();
 	
@@ -212,7 +226,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 		addProperties(item); 
 		createRightNodes(getPropertyEntries());
 		initDefaultValues();
-		AnchorPane pane = createRootPane();
+		pane = createRootPane();
 		if (item != null)
 			setTemplate(item);
 		applyButton.setOnAction(event -> {
@@ -236,7 +250,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 		addProperties(item); 
 		createRightNodes(getPropertyEntries());
 		initDefaultValues();
-		AnchorPane pane = createRootPane();
+		pane = createRootPane();
 		if (item != null)
 			setTemplate(item);
 		applyButton.setOnAction(event -> {

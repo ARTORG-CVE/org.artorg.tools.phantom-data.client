@@ -16,7 +16,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class FileEditFactoryController extends GroupedItemEditFactoryController<PhantomFile> {
-	private DbUndoRedoAddEditControlFilterTableView<PhantomFile> table;
 	private TextField textFieldPath;
 	private TextField textFieldName;
 	private TextField textFieldExtension;
@@ -29,10 +28,6 @@ public class FileEditFactoryController extends GroupedItemEditFactoryController<
 		comboBoxFileType = new ComboBox<FileType>();
 	}
 	
-	public FileEditFactoryController(DbUndoRedoAddEditControlFilterTableView<PhantomFile> table) {
-		this.table = table;
-	}
-
 	@Override
 	public PhantomFile createItem() {
 		String path = textFieldPath.getText();
@@ -58,12 +53,7 @@ public class FileEditFactoryController extends GroupedItemEditFactoryController<
 		to.setName(from.getName());
 		to.setPath(from.getPath());
 	}
-
-	@Override
-	protected DbUndoRedoAddEditControlFilterTableView<PhantomFile> getTable() {
-		return table;
-	}
-
+	
 	@Override
 	protected List<TitledPane> createGroupedProperties(PhantomFile item) {
 		List<TitledPane> panes = new ArrayList<TitledPane>();

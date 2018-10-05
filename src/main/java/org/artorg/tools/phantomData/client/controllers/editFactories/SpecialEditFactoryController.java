@@ -15,15 +15,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class SpecialEditFactoryController extends GroupedItemEditFactoryController<Special> {
-	private DbUndoRedoAddEditControlFilterTableView<Special> table;
 	private TextField textFieldShortcut; 
 	
 	{
 		textFieldShortcut = new TextField();
-	}
-	
-	public SpecialEditFactoryController(DbUndoRedoAddEditControlFilterTableView<Special> table) {
-		this.table = table;
 	}
 
 	@Override
@@ -47,12 +42,7 @@ public class SpecialEditFactoryController extends GroupedItemEditFactoryControll
 		to.setIntegerProperties(from.getIntegerProperties());
 		to.setStringProperties(from.getStringProperties());
 	}
-
-	@Override
-	protected DbUndoRedoAddEditControlFilterTableView<Special> getTable() {
-		return table;
-	}
-
+	
 	@Override
 	protected List<TitledPane> createGroupedProperties(Special item) {
 		List<TitledPane> panes = new ArrayList<TitledPane>();

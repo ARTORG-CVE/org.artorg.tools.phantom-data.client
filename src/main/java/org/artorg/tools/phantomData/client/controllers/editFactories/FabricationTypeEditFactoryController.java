@@ -15,17 +15,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class FabricationTypeEditFactoryController extends GroupedItemEditFactoryController<FabricationType> {
-	private DbUndoRedoAddEditControlFilterTableView<FabricationType> table;
 	private TextField textFieldShortcut;
 	private TextField textFieldValue;
 
 	{
 		textFieldShortcut = new TextField();
 		textFieldValue = new TextField();
-	}
-	
-	public FabricationTypeEditFactoryController(DbUndoRedoAddEditControlFilterTableView<FabricationType> table) {
-		this.table = table;
 	}
 
 	@Override
@@ -45,11 +40,6 @@ public class FabricationTypeEditFactoryController extends GroupedItemEditFactory
 	protected void copy(FabricationType from, FabricationType to) {
 		to.setShortcut(from.getShortcut());
 		to.setValue(from.getValue());
-	}
-
-	@Override
-	protected DbUndoRedoAddEditControlFilterTableView<FabricationType> getTable() {
-		return table;
 	}
 
 	@Override

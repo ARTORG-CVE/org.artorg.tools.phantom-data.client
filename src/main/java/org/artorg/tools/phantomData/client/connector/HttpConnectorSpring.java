@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
+import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.ControllerSpec;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
@@ -44,7 +45,7 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 
 	private static String urlLocalhost;
 	private static final Map<Class<?>, HttpConnectorSpring<?>> connectorMap;
-	private static final Reflections reflections = new Reflections("org.artorg.tools.phantomData");
+	
 
 	static {
 		connectorMap = new HashMap<Class<?>, HttpConnectorSpring<?>>();
@@ -59,7 +60,7 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 
 		arrayItemClass = Reflect.getArrayClass(itemClass);
 		Class<?> controllerClass;
-		List<Class<?>> controllerClasses = Reflect.getSubclasses(ControllerSpec.class, reflections);
+		List<Class<?>> controllerClasses = Reflect.getSubclasses(ControllerSpec.class, Main.getReflections());
 		controllerClass = controllerClasses.stream().filter(c -> {
 			try {
 				return Reflect.findSubClassParameterType(c.newInstance(), ControllerSpec.class, 0) == this.itemClass;

@@ -19,7 +19,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class PhantomEditFactoryController extends GroupedItemEditFactoryController<Phantom> {
-	private DbUndoRedoAddEditControlFilterTableView<Phantom> table;
 	private Label labelIdValue;
     private ComboBox<AnnulusDiameter> comboBoxAnnulus;
     private ComboBox<FabricationType> comboBoxFabricationType;
@@ -36,10 +35,6 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 		textFieldModelNumber = new TextField();
 		
 		labelIdValue.setDisable(true);
-	}
-	
-	public PhantomEditFactoryController(DbUndoRedoAddEditControlFilterTableView<Phantom> table) {
-		this.table = table;
 	}
 	
 	private void updateId() {
@@ -97,11 +92,6 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 		to.setDoubleProperties(from.getDoubleProperties());
 		to.setIntegerProperties(from.getIntegerProperties());
 		to.setStringProperties(from.getStringProperties());
-	}
-	
-	@Override
-	protected DbUndoRedoAddEditControlFilterTableView<Phantom> getTable() {
-		return table;
 	}
 
 	@Override

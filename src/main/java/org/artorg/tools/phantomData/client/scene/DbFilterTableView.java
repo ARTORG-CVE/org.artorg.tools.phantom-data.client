@@ -1,10 +1,11 @@
-package org.artorg.tools.phantomData.client.scene.control;
+package org.artorg.tools.phantomData.client.scene;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
+import org.artorg.tools.phantomData.client.scene.control.DbTableView;
+import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.FilterColumn;
 import org.artorg.tools.phantomData.client.table.IDbTable;
@@ -19,16 +20,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 
-public abstract class DbFilterTableView<ITEM extends DbPersistent<ITEM,?>, TABLE extends IDbTable<ITEM> & IFilterTable<ITEM>> extends DbTableView<ITEM,TABLE> {
+public class DbFilterTableView<ITEM extends DbPersistent<ITEM,?>, TABLE extends IDbTable<ITEM> & IFilterTable<ITEM>> extends DbTableView<ITEM,TABLE> {
 	protected List<FilterMenuButton<ITEM>> filterMenuButtons;
 	
 	{
 		super.setEditable(true);
 		filterMenuButtons = new ArrayList<FilterMenuButton<ITEM>>();	
 	}
-	
-	public abstract ItemEditFactoryController<ITEM> createAddEditController();
-	
 	
 	public void showFilterButtons() {
         for (Node n : super.lookupAll(".column-header > .label")) {

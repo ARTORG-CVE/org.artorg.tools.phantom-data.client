@@ -47,13 +47,13 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 				});
 				MenuItem editItem = new MenuItem("Edit item");
 				editItem.setOnAction(event -> {
-					ItemEditFactoryController<ITEM> controller = tableViewSpring.createAddEditController();
+					ItemEditFactoryController<ITEM> controller = (ItemEditFactoryController<ITEM>) tableViewSpring.createFxFactory();
 					AnchorPane node = controller.edit(row.getItem());
 					mainSplitPane.addNewItemTab(node, "Edit " + tableViewSpring.getTable().getItemName());
 				});
 				MenuItem addItem = new MenuItem("Add item");
 				addItem.setOnAction(event -> {
-					ItemEditFactoryController<ITEM> controller = tableViewSpring.createAddEditController();
+					ItemEditFactoryController<ITEM> controller = (ItemEditFactoryController<ITEM>) tableViewSpring.createFxFactory();
 					AnchorPane node = controller.create(row.getItem());
 					mainSplitPane.addNewItemTab(node, "Add " + tableViewSpring.getTable().getItemName());
 				});
@@ -73,7 +73,7 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 		ContextMenu contextMenu = new ContextMenu();
 		MenuItem editItem = new MenuItem("Add item");
 		editItem.setOnAction(event -> {
-			ItemEditFactoryController<ITEM> controller = tableViewSpring.createAddEditController();
+			ItemEditFactoryController<ITEM> controller = (ItemEditFactoryController<ITEM>) tableViewSpring.createFxFactory();
 			AnchorPane node = controller.create();
 			mainSplitPane.addNewItemTab(node, "Add " + tableViewSpring.getTable().getItemName());
 		});

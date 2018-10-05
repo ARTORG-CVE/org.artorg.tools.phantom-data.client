@@ -15,17 +15,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class PropertyFieldEditFactoryController extends GroupedItemEditFactoryController<PropertyField>{
-	private DbUndoRedoAddEditControlFilterTableView<PropertyField> table;
 	private TextField textFielName;
 	private TextField textFieldDescription;
 
 	{
 		textFielName = new TextField();
 		textFieldDescription = new TextField();
-	}
-	
-	public PropertyFieldEditFactoryController(DbUndoRedoAddEditControlFilterTableView<PropertyField> table) {
-		this.table = table;
 	}
 
 	@Override
@@ -45,11 +40,6 @@ public class PropertyFieldEditFactoryController extends GroupedItemEditFactoryCo
 	protected void copy(PropertyField from, PropertyField to) {
 		to.setDescription(from.getDescription());
 		to.setName(from.getName());
-	}
-
-	@Override
-	protected DbUndoRedoAddEditControlFilterTableView<PropertyField> getTable() {
-		return table;
 	}
 
 	@Override

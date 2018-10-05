@@ -7,7 +7,6 @@ import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import org.artorg.tools.phantomData.server.model.property.StringProperty;
 
@@ -16,17 +15,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class StringPropertyEditFactoryController extends GroupedItemEditFactoryController<StringProperty> {
-	private DbUndoRedoAddEditControlFilterTableView<StringProperty> table;
 	private ComboBox<PropertyField> comboBoxPropertyField;
 	private TextField textFieldValue;
 	
 	{
 		comboBoxPropertyField = new ComboBox<PropertyField>();
 		textFieldValue = new TextField();
-	}
-	
-	public StringPropertyEditFactoryController(DbUndoRedoAddEditControlFilterTableView<StringProperty> table) {
-		this.table = table;
 	}
 	
 	@Override
@@ -46,11 +40,6 @@ public class StringPropertyEditFactoryController extends GroupedItemEditFactoryC
 	protected void copy(StringProperty from, StringProperty to) {
 		to.setPropertyField(from.getPropertyField());
 		to.setValue(from.getValue());
-	}
-
-	@Override
-	protected DbUndoRedoAddEditControlFilterTableView<StringProperty> getTable() {
-		return table;
 	}
 	
 	@Override

@@ -16,17 +16,12 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TitledPane;
 
 public class BooleanPropertyEditFactoryController extends GroupedItemEditFactoryController<BooleanProperty> {
-	private DbUndoRedoAddEditControlFilterTableView<BooleanProperty> table;
 	private ComboBox<PropertyField> comboBoxPropertyField;
 	private CheckBox checkBoxValue;
 
 	{
 		comboBoxPropertyField = new ComboBox<PropertyField>();
 		checkBoxValue = new CheckBox();
-	}
-	
-	public BooleanPropertyEditFactoryController(DbUndoRedoAddEditControlFilterTableView<BooleanProperty> table) {
-		this.table = table;
 	}
 	
 	@Override
@@ -46,11 +41,6 @@ public class BooleanPropertyEditFactoryController extends GroupedItemEditFactory
 	protected void copy(BooleanProperty from, BooleanProperty to) {
 		to.setPropertyField(from.getPropertyField());
 		to.setValue(from.getValue());
-	}
-
-	@Override
-	protected DbUndoRedoAddEditControlFilterTableView<BooleanProperty> getTable() {
-		return table;
 	}
 	
 	@Override

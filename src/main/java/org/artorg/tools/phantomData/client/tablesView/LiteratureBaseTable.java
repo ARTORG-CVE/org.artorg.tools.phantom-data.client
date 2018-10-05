@@ -12,10 +12,12 @@ public class LiteratureBaseTable extends DbUndoRedoAddEditControlFilterTableView
 		this.setTable(new LiteratureBaseFilterTable());
 	}
 	
-	@Override
-	public ItemEditFactoryController<LiteratureBase> createAddEditController() {
-		return new LiteratureBaseEditFactoryController(this);
-	}
+//	@Override
+//	public ItemEditFactoryController<LiteratureBase> createAddEditController() {
+//		LiteratureBaseEditFactoryController factory = new LiteratureBaseEditFactoryController();
+//		factory.setTable(this);
+//		return factory;
+//	}
 	
 
 }

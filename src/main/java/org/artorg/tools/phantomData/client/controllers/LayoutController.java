@@ -31,14 +31,16 @@ public class LayoutController {
         assert mainTablePane != null : "fx:id=\"mainTablePane\" was not injected: check your FXML file 'PhantomLayout.fxml'.";
         assert pane3d != null : "fx:id=\"pane3d\" was not injected: check your FXML file 'PhantomLayout.fxml'.";
         assert bottomTablePane != null : "fx:id=\"tableBottomPane\" was not injected: check your FXML file 'PhantomLayout.fxml'.";
-
-        mainSplitPane = new MainSplitPane();
+    }
+	
+	public void init() {
+		mainSplitPane = new MainSplitPane();
         mainSplitPane.addTo(mainTablePane);
     	secondTable = new SecondTable();
     	secondTable.addTo(bottomTablePane);
     	scene3d = new Scene3D();
     	scene3d.addTo(pane3d);
-    }
+	}
     
 	public <T extends DbPersistent<T,ID>, ID> void openMainTableTab(DbUndoRedoAddEditControlFilterTableView<T> table) {
 		openMainTableTab(table, table.getTable().getTableName());

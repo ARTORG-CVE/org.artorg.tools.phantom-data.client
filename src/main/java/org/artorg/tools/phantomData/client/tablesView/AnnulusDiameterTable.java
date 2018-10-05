@@ -12,9 +12,11 @@ public class AnnulusDiameterTable extends DbUndoRedoAddEditControlFilterTableVie
 		this.setTable(new AnnulusDiameterFilterTable());
 	}
 	
-	@Override
-	public ItemEditFactoryController<AnnulusDiameter> createAddEditController() {
-		return new AnnulusDiameterEditFactoryController(this);
-	}
+//	@Override
+//	public ItemEditFactoryController<AnnulusDiameter> createAddEditController() {
+//		AnnulusDiameterEditFactoryController factory = new AnnulusDiameterEditFactoryController();
+//		factory.setTable(this);
+//		return factory;
+//	}
 	
 }

@@ -157,6 +157,7 @@ public class MainController {
         
         AnchorPane layout = FxUtil.loadFXML("fxml/PhantomLayout.fxml", layoutController);
         FxUtil.addToAnchorPane(contentPane, layout);
+        layoutController.init();
         layoutController.openMainTableTab(new PhantomTable(), "Phantoms");
         try {
         	layoutController.setSecondTable(new FileTable());

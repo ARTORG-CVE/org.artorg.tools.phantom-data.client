@@ -12,9 +12,11 @@ public class SpecialTable extends DbUndoRedoAddEditControlFilterTableView<Specia
 		this.setTable(new SpecialFilterTable());
 	}
 	
-	@Override
-	public ItemEditFactoryController<Special> createAddEditController() {
-		return new SpecialEditFactoryController(this);
-	}
+//	@Override
+//	public ItemEditFactoryController<Special> createAddEditController() {
+//		SpecialEditFactoryController factory = new SpecialEditFactoryController();
+//		factory.setTable(this);
+//		return factory;
+//	}
 
 }

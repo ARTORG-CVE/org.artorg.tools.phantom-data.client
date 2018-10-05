@@ -7,7 +7,6 @@ import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
@@ -16,17 +15,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class IntegerPropertyEditFactoryController extends GroupedItemEditFactoryController<IntegerProperty> {
-	private DbUndoRedoAddEditControlFilterTableView<IntegerProperty> table;
 	private ComboBox<PropertyField> comboBoxPropertyField;
 	private TextField textFieldValue;
 
 	{
 		comboBoxPropertyField = new ComboBox<PropertyField>();
 		textFieldValue = new TextField();
-	}
-	
-	public IntegerPropertyEditFactoryController(DbUndoRedoAddEditControlFilterTableView<IntegerProperty> table) {
-		this.table = table;
 	}
 	
 	@Override
@@ -46,11 +40,6 @@ public class IntegerPropertyEditFactoryController extends GroupedItemEditFactory
 	protected void copy(IntegerProperty from, IntegerProperty to) {
 		to.setPropertyField(from.getPropertyField());
 		to.setValue(from.getValue());
-	}
-
-	@Override
-	protected DbUndoRedoAddEditControlFilterTableView<IntegerProperty> getTable() {
-		return table;
 	}
 	
 	@Override

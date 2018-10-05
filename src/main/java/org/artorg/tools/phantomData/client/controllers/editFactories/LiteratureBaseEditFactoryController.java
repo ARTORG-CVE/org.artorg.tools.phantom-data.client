@@ -13,7 +13,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class LiteratureBaseEditFactoryController extends GroupedItemEditFactoryController<LiteratureBase> {
-	private DbUndoRedoAddEditControlFilterTableView<LiteratureBase> table;
 	private TextField textFieldShortcut;
 	private TextField textFieldValue;
 
@@ -22,10 +21,6 @@ public class LiteratureBaseEditFactoryController extends GroupedItemEditFactoryC
 		textFieldValue = new TextField();
 	}
 	
-	public LiteratureBaseEditFactoryController(DbUndoRedoAddEditControlFilterTableView<LiteratureBase> table) {
-		this.table = table;
-	}
-
 	@Override
 	protected void setTemplate(LiteratureBase item) {
 		textFieldShortcut.setText(item.getShortcut());
@@ -43,11 +38,6 @@ public class LiteratureBaseEditFactoryController extends GroupedItemEditFactoryC
 	protected void copy(LiteratureBase from, LiteratureBase to) {
 		to.setShortcut(from.getShortcut());
 		to.setValue(from.getValue());
-	}
-
-	@Override
-	protected DbUndoRedoAddEditControlFilterTableView<LiteratureBase> getTable() {
-		return table;
 	}
 
 	@Override

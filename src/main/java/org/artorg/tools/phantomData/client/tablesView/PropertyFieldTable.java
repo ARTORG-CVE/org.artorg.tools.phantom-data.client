@@ -1,6 +1,7 @@
 package org.artorg.tools.phantomData.client.tablesView;
 
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
+import org.artorg.tools.phantomData.client.controllers.editFactories.PhantomEditFactoryController;
 import org.artorg.tools.phantomData.client.controllers.editFactories.PropertyFieldEditFactoryController;
 import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.client.tablesFilter.PropertyFieldFilterTable;
@@ -12,9 +13,11 @@ public class PropertyFieldTable extends DbUndoRedoAddEditControlFilterTableView<
 		this.setTable(new PropertyFieldFilterTable());
 	}
 	
-	@Override
-	public ItemEditFactoryController<PropertyField> createAddEditController() {
-		return new PropertyFieldEditFactoryController(this);
-	}
+//	@Override
+//	public ItemEditFactoryController<PropertyField> createAddEditController() {
+//		PropertyFieldEditFactoryController factory = new PropertyFieldEditFactoryController();
+//		factory.setTable(this);
+//		return factory;
+//	}
 
 }

@@ -12,9 +12,11 @@ public class FabricationTypeTable extends DbUndoRedoAddEditControlFilterTableVie
 		this.setTable(new FabricationTypeFilterTable());
 	}
 	
-	@Override
-	public ItemEditFactoryController<FabricationType> createAddEditController() {
-		return new FabricationTypeEditFactoryController(this);
-	}
+//	@Override
+//	public ItemEditFactoryController<FabricationType> createAddEditController() {
+//		FabricationTypeEditFactoryController factory = new FabricationTypeEditFactoryController();
+//		factory.setTable(this);
+//		return factory;
+//	}
 
 }

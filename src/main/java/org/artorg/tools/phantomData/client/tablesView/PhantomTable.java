@@ -1,6 +1,7 @@
 package org.artorg.tools.phantomData.client.tablesView;
 
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
+import org.artorg.tools.phantomData.client.controllers.editFactories.LiteratureBaseEditFactoryController;
 import org.artorg.tools.phantomData.client.controllers.editFactories.PhantomEditFactoryController;
 import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.client.tablesFilter.PhantomFilterTable;
@@ -13,9 +14,11 @@ public class PhantomTable extends DbUndoRedoAddEditControlFilterTableView<Phanto
 		this.setTable(table);
 	}
 	
-	@Override
-	public ItemEditFactoryController<Phantom> createAddEditController() {
-		return new PhantomEditFactoryController(this);
-	}
+//	@Override
+//	public ItemEditFactoryController<Phantom> createAddEditController() {
+//		PhantomEditFactoryController factory = new PhantomEditFactoryController();
+//		factory.setTable(this);
+//		return factory;
+//	}
 
 }

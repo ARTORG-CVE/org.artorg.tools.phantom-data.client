@@ -15,16 +15,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class FileTypeEditFactoryController extends GroupedItemEditFactoryController<FileType> {
-	private DbUndoRedoAddEditControlFilterTableView<FileType> table;
 	private TextField textFieldName;
 	
 	{
 		textFieldName = new TextField();
 	}
-
-	public FileTypeEditFactoryController(DbUndoRedoAddEditControlFilterTableView<FileType> table) {
-		this.table = table;
-	}
+	
 	@Override
 	public FileType createItem() {
 		String name = textFieldName.getText();
@@ -39,11 +35,6 @@ public class FileTypeEditFactoryController extends GroupedItemEditFactoryControl
 	@Override
 	protected void copy(FileType from, FileType to) {
 		to.setName(from.getName());
-	}
-
-	@Override
-	protected DbUndoRedoAddEditControlFilterTableView<FileType> getTable() {
-		return table;
 	}
 	
 	@Override
