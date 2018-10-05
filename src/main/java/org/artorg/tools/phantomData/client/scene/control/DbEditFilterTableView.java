@@ -8,8 +8,8 @@ import javafx.event.EventHandler;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 
-public abstract class DbEditFilterTableView<ITEM extends DbPersistent<ITEM, ?>, TABLE extends IDbEditFilterTable<ITEM>>
-		extends DbFactoryFilterTableView<ITEM, TABLE> {
+public abstract class DbEditFilterTableView<ITEM extends DbPersistent<ITEM, ?>, TABLE_TYPE extends IDbEditFilterTable<ITEM>>
+		extends DbFactoryFilterTableView<ITEM, TABLE_TYPE> {
 
 	@SuppressWarnings("unchecked")
 	@Override

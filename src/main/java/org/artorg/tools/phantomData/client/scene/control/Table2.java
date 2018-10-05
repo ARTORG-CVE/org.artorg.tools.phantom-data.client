@@ -12,7 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 @SuppressWarnings("unchecked")
-public class Table<ITEM extends DbPersistent<ITEM,?>> implements ITable<ITEM> {
+public class Table2<ITEM extends DbPersistent<ITEM,?>> implements ITable<ITEM> {
 	private ObservableList<ITEM> items;
 	private List<AbstractColumn<ITEM>> columns;
 	private boolean isIdColumnVisible;
@@ -26,8 +26,19 @@ public class Table<ITEM extends DbPersistent<ITEM,?>> implements ITable<ITEM> {
 		columns = new ArrayList<AbstractColumn<ITEM>>();
 		isIdColumnVisible = true;
 		
+		
+	}
+	
+	
+	public Table2() {
 		itemClass = (Class<ITEM>) Reflect.findGenericClasstype(this);
 	}
+	
+	public Table2(Class<ITEM> itemClass) {
+		this.itemClass = itemClass;
+	}
+	
+	
 	
 	public void setItems(ObservableList<ITEM> items) {
 		this.items = items;
