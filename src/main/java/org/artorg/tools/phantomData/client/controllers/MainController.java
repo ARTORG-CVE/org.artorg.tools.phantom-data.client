@@ -5,21 +5,19 @@ import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.io.IOutil;
-import org.artorg.tools.phantomData.client.table.DbUndoRedoEditFilterTable;
-import org.artorg.tools.phantomData.client.tablesView.AnnulusDiameterTable;
-import org.artorg.tools.phantomData.client.tablesView.FabricationTypeTable;
-import org.artorg.tools.phantomData.client.tablesView.FileTable;
-import org.artorg.tools.phantomData.client.tablesView.FileTypeTable;
-import org.artorg.tools.phantomData.client.tablesView.LiteratureBaseTable;
-import org.artorg.tools.phantomData.client.tablesView.PhantomTable;
-import org.artorg.tools.phantomData.client.tablesView.PropertyFieldTable;
-import org.artorg.tools.phantomData.client.tablesView.SpecialTable;
-import org.artorg.tools.phantomData.client.tablesView.property.BooleanPropertyTable;
-import org.artorg.tools.phantomData.client.tablesView.property.DoublePropertyTable;
-import org.artorg.tools.phantomData.client.tablesView.property.IntegerPropertyTable;
-import org.artorg.tools.phantomData.client.tablesView.property.StringPropertyTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
+import org.artorg.tools.phantomData.server.model.FabricationType;
+import org.artorg.tools.phantomData.server.model.FileType;
+import org.artorg.tools.phantomData.server.model.LiteratureBase;
+import org.artorg.tools.phantomData.server.model.Phantom;
+import org.artorg.tools.phantomData.server.model.PhantomFile;
+import org.artorg.tools.phantomData.server.model.Special;
+import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
+import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
+import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
+import org.artorg.tools.phantomData.server.model.property.PropertyField;
+import org.artorg.tools.phantomData.server.model.property.StringProperty;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -31,31 +29,10 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 public class MainController {
-	private LayoutController layoutController;
-	
-	private DbUndoRedoEditFilterTable<?> table;
-	private Stage stage;
-	
 	private static String urlLocalhost;
 	private static String urlShutdownActuator;
-	
-
-	public static String getUrlLocalhost() {
-		return urlLocalhost;
-	}
-
-	public static void setUrlLocalhost(String urlLocalhost) {
-		System.out.println(urlLocalhost);
-		MainController.urlLocalhost = urlLocalhost;
-	}
-
-	public static String getUrlShutdownActuator() {
-		return urlShutdownActuator;
-	}
-
-	public static void setUrlShutdownActuator(String urlShutdownActuator) {
-		MainController.urlShutdownActuator = urlShutdownActuator;
-	}
+	private LayoutController layoutController;
+	private Stage stage;
 	
 	public MainController(Stage stage) {
 		this.stage = stage;
@@ -158,32 +135,25 @@ public class MainController {
         AnchorPane layout = FxUtil.loadFXML("fxml/PhantomLayout.fxml", layoutController);
         FxUtil.addToAnchorPane(contentPane, layout);
         layoutController.init();
-        layoutController.openMainTableTab(new PhantomTable(), "Phantoms");
-        try {
-        	layoutController.setSecondTable(new FileTable());
-        } catch (Exception e) {
-        	e.printStackTrace();
-        }
+        
+        layoutController.openMainTableTab(Phantom.class);
+        layoutController.setSecondTable(PhantomFile.class);
 		layoutController.set3dFile(IOutil.readResourceAsFile("model.stl"));
-	}
-    
-    public <ITEM extends DbPersistent<ITEM,?>> void setTable(DbUndoRedoEditFilterTable<ITEM> table) {
-		this.table = table;
 	}
     
 	@FXML
     void openTableFileTypes(ActionEvent event) {
-		layoutController.openMainTableTab(new FileTypeTable());
+		layoutController.openMainTableTab(FileType.class);
     }
     
 	@FXML
     void openTableFiles(ActionEvent event) {
-		layoutController.openMainTableTab(new FileTable());
+		layoutController.openMainTableTab(PhantomFile.class);
     }
     
 	@FXML
     void openTablePhantoms(ActionEvent event) {    	
-		layoutController.openMainTableTab(new PhantomTable());
+		layoutController.openMainTableTab(Phantom.class);
     }
 	
 //	private Button createTabButton(String iconName) {
@@ -197,52 +167,69 @@ public class MainController {
     
 	@FXML
     void openTableProperties(ActionEvent event) {
-		layoutController.openMainTableTab(new BooleanPropertyTable());
+		layoutController.openMainTableTab(BooleanProperty.class);
     }
     
 	@FXML
     void openTableSpecials(ActionEvent event) {
-		layoutController.openMainTableTab(new SpecialTable());
+		layoutController.openMainTableTab(Special.class);
     }
     
 	@FXML
     void openTableAnnulusDiameter(ActionEvent event) {
-		layoutController.openMainTableTab(new AnnulusDiameterTable());
+		layoutController.openMainTableTab(AnnulusDiameter.class);
     }
     
 	@FXML
     void openTableFabricationTypes(ActionEvent event) {
-		layoutController.openMainTableTab(new FabricationTypeTable());
+		layoutController.openMainTableTab(FabricationType.class);
     }
     
 	@FXML
     void openTableLiteratureBases(ActionEvent event) {
-		layoutController.openMainTableTab(new LiteratureBaseTable());
+		layoutController.openMainTableTab(LiteratureBase.class);
     }
     
 	@FXML
     void openTablePropertyFields(ActionEvent event) {
-		layoutController.openMainTableTab(new PropertyFieldTable());
+		layoutController.openMainTableTab(PropertyField.class);
     }
 	
 	@FXML
     void openTableBooleanProperties(ActionEvent event) {
-		layoutController.openMainTableTab(new BooleanPropertyTable());
+		layoutController.openMainTableTab(BooleanProperty.class);
     }
 
     @FXML
     void openTableDoubleProperties(ActionEvent event) {
-    	layoutController.openMainTableTab(new DoublePropertyTable());
+    	layoutController.openMainTableTab(DoubleProperty.class);
     }
     
     @FXML
     void openTableIntegerProperties(ActionEvent event) {
-    	layoutController.openMainTableTab(new IntegerPropertyTable());
+    	layoutController.openMainTableTab(IntegerProperty.class);
     }
 
     @FXML
     void openTableStringProperties(ActionEvent event) {
-    	layoutController.openMainTableTab(new StringPropertyTable());
+    	layoutController.openMainTableTab(StringProperty.class);
     }
+    
+    public static String getUrlLocalhost() {
+		return urlLocalhost;
+	}
+
+	public static void setUrlLocalhost(String urlLocalhost) {
+		System.out.println(urlLocalhost);
+		MainController.urlLocalhost = urlLocalhost;
+	}
+
+	public static String getUrlShutdownActuator() {
+		return urlShutdownActuator;
+	}
+
+	public static void setUrlShutdownActuator(String urlShutdownActuator) {
+		MainController.urlShutdownActuator = urlShutdownActuator;
+	}
     
 }

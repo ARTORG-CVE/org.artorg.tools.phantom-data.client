@@ -28,7 +28,7 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 		this.mainSplitPane = splitPane;
 	}	
 
-	public <ITEM extends DbPersistent<ITEM,ID>, ID> void openTableTab(
+	public <ITEM extends DbPersistent<ITEM,?>> void openTableTab(
 			DbUndoRedoAddEditControlFilterTableView<ITEM> tableViewSpring, String name) {
 		Tab tab = new Tab(name);
 		tab.setContent(tableViewSpring);

@@ -1,7 +1,5 @@
 package org.artorg.tools.phantomData.client.scene.control;
 
-import java.util.List;
-
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.scene.DbFilterTableView;
@@ -16,29 +14,10 @@ public abstract class DbFactoryFilterTableView<ITEM extends DbPersistent<ITEM,?>
 	private final Class<ITEM> itemClass;
 	private final Class<?> factoryClass;
 	
-	
 	{
-		itemClass = (Class<ITEM>) Reflect.findGenericClasstype(this);
-		List<Class<?>> factoryClasses = Reflect.getSubclasses(ItemEditFactoryController.class, Main.getReflections());
-		factoryClass = factoryClasses.stream().filter(c -> {
-			try {
-				return Reflect.findSubClassParameterType(c.newInstance(), ItemEditFactoryController.class, 0) == this.itemClass;
-			} catch (Exception e2) {
-			}
-			return false;
-		}).findFirst().orElseThrow(() -> new IllegalArgumentException());
-		if (factoryClass == null)
-			throw new NullPointerException();
-		
-		
-		
-		
-		
-		System.out.println(factoryClass);
-		System.out.println();
-		
+		itemClass = (Class<ITEM>) Reflect.findSubClassParameterType(this, DbFilterTableView.class, 0);
+		factoryClass = Reflect.getClassByGenericAndSuperClass(ItemEditFactoryController.class, this.itemClass, 0, Main.getReflections());
 	}
-	
 	
 	public FxFactory<ITEM> createFxFactory() {
 		FxFactory<ITEM> fxFactory = null;
@@ -47,10 +26,8 @@ public abstract class DbFactoryFilterTableView<ITEM extends DbPersistent<ITEM,?>
 		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
-		fxFactory.setTable((DbTableView<ITEM, TABLE>) this.getTable());
+		fxFactory.setTable((DbTableView<ITEM, TABLE>) this);
 		return fxFactory;
 	}
-
-//	public abstract ItemEditFactoryController<ITEM> createAddEditController();
 	
 }

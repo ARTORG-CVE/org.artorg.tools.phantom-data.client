@@ -20,10 +20,60 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.artorg.tools.phantomData.client.Main;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 
 public class Reflect {
+	
+	
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T createInstanceByGenericAndSuperClass(Class<T> superClass, Class<?> genericClass, Reflections reflections) {
+		Class<?> subClass = getClassByGenericAndSuperClass(superClass, superClass, genericClass, 0, reflections);
+		T t = null;
+		try {
+			t = (T) subClass.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return t;
+	}
+	
+	
+	public static <T> Class<?> getClassByGenericAndSuperClass(Class<T> superClass, Class<?> genericClass, Reflections reflections) {
+		return getClassByGenericAndSuperClass(superClass, superClass, genericClass, 0, reflections);
+	}
+	
+	public static <T> Class<?> getClassByGenericAndSuperClass(Class<T> superClass, Class<?> genericClass, int parameterIndex, Reflections reflections) {
+		return getClassByGenericAndSuperClass(superClass, superClass, genericClass, parameterIndex, reflections);
+	}
+	
+	
+	public static <T> Class<?> getClassByGenericAndSuperClass(Class<T> superClass, Class<?> classOfInterest, Class<?> genericClass, int parameterIndex, Reflections reflections) {
+		List<Class<?>> superClasses = Reflect.getSubclasses(superClass, Main.getReflections());
+		Class<?> cls = superClasses.stream().filter(c -> {
+			try {
+				return Reflect.findSubClassParameterType(c.newInstance(), classOfInterest, parameterIndex) == genericClass;
+			} catch (Exception e2) {
+			}
+			return false;
+		}).findFirst().orElseThrow(() -> new IllegalArgumentException());
+		if (cls == null)
+			throw new NullPointerException();
+		return cls;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	@SuppressWarnings("unchecked")
 	public static <T> Class<? extends T[]> getArrayClass(Class<T> clazz) {
 	    return (Class<? extends T[]>) Array.newInstance(clazz, 0).getClass();
