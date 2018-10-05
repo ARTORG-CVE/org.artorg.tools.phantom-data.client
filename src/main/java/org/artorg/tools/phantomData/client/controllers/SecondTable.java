@@ -1,6 +1,6 @@
 package org.artorg.tools.phantomData.client.controllers;
 
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.TableView;
 import org.artorg.tools.phantomData.client.scene.layout.AnchorPaneAddableTo;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -10,7 +10,7 @@ public class SecondTable extends AnchorPaneAddableTo {
 	
 	public <ITEM extends DbPersistent<ITEM,?>> 
 		void setTable(
-			DbUndoRedoAddEditControlFilterTableView<ITEM> table) {
+				TableView<ITEM,?> table) {
 		super.getChildren().removeAll(super.getChildren());
 		super.getChildren().add(table);
 		AnchorPane.setBottomAnchor(table, 0.0);

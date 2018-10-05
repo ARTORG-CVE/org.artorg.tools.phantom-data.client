@@ -64,16 +64,6 @@ public class Reflect {
 		return cls;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	@SuppressWarnings("unchecked")
 	public static <T> Class<? extends T[]> getArrayClass(Class<T> clazz) {
 	    return (Class<? extends T[]>) Array.newInstance(clazz, 0).getClass();

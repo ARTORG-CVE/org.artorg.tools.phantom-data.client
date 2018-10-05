@@ -16,7 +16,7 @@ import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.scene.control.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.TitledPaneTableViewSelector;
-import org.artorg.tools.phantomData.client.table.FxFactory;
+import org.artorg.tools.phantomData.client.table.DbFxFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -38,7 +38,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.util.Callback;
 
-public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?>> implements FxFactory<ITEM> {
+public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?>> implements DbFxFactory<ITEM> {
 	private GridPane gridPane;
 	protected Button applyButton;
 	private int nRows = 0;

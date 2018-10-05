@@ -2,8 +2,7 @@ package org.artorg.tools.phantomData.client.scene.control;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
-import org.artorg.tools.phantomData.client.scene.DbFilterTableView;
-import org.artorg.tools.phantomData.client.table.FxFactory;
+import org.artorg.tools.phantomData.client.table.DbFxFactory;
 import org.artorg.tools.phantomData.client.table.IDbTable;
 import org.artorg.tools.phantomData.client.table.IFilterTable;
 import org.artorg.tools.phantomData.client.util.Reflect;
@@ -31,10 +30,10 @@ public class DbFactoryFilterTableView<ITEM extends DbPersistent<ITEM,?>, TABLE_T
 	
 	
 	
-	public FxFactory<ITEM> createFxFactory() {
-		FxFactory<ITEM> fxFactory = null;
+	public DbFxFactory<ITEM> createFxFactory() {
+		DbFxFactory<ITEM> fxFactory = null;
 		try {
-			fxFactory = (FxFactory<ITEM>) factoryClass.newInstance();
+			fxFactory = (DbFxFactory<ITEM>) factoryClass.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}

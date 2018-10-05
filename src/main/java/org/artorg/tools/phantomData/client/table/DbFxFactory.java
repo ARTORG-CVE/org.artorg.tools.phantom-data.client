@@ -5,10 +5,16 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.scene.Node;
 
-public interface FxFactory<ITEM extends DbPersistent<ITEM,?>> {
+public interface DbFxFactory<ITEM extends DbPersistent<ITEM,?>> {
 	
 	Node getGraphic();
 	
 	void setTable(DbTableView<ITEM,?> table);
+	
+	Node create(ITEM item);
+	
+	Node edit(ITEM item);
+
+	Node create();
 
 }

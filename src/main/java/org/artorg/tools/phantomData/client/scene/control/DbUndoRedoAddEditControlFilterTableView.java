@@ -5,4 +5,10 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 public class DbUndoRedoAddEditControlFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends DbEditFilterTableView<ITEM, DbUndoRedoEditFilterTable<ITEM>> {
 
+	public DbUndoRedoAddEditControlFilterTableView() {}
+	
+	public DbUndoRedoAddEditControlFilterTableView(Class<ITEM> itemClass) {
+		super(itemClass);
+	}
+	
 }

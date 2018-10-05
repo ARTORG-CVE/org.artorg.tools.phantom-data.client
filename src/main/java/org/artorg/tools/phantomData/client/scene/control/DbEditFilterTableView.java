@@ -11,6 +11,13 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 public abstract class DbEditFilterTableView<ITEM extends DbPersistent<ITEM, ?>, TABLE_TYPE extends IDbEditFilterTable<ITEM>>
 		extends DbFactoryFilterTableView<ITEM, TABLE_TYPE> {
 
+	public DbEditFilterTableView() {}
+	
+	public DbEditFilterTableView(Class<ITEM> itemClass) {
+		super(itemClass);
+	}
+			
+			
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initTable() {
