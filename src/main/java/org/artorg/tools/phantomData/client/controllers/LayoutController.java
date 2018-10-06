@@ -2,16 +2,24 @@ package org.artorg.tools.phantomData.client.controllers;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Collection;
 import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.connector.Connectors;
+import org.artorg.tools.phantomData.client.scene.control.DbFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
-import org.artorg.tools.phantomData.client.scene.control.TableView;
-import org.artorg.tools.phantomData.client.table.DbUndoRedoEditFilterTable;
+import org.artorg.tools.phantomData.client.scene.control.ProTableView;
+import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
+import org.artorg.tools.phantomData.client.table.Table;
+import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 
@@ -47,33 +55,28 @@ public class LayoutController {
 	}
 
 	public <T extends DbPersistent<T,?>> void openMainTableTab(Class<T> itemClass) {
-		TableView<T,?> table = createTable(itemClass);
+		ProTableView<T> table = createTable(itemClass);
 		openMainTableTab(table, table.getTable().getTableName());
 	}
 
 	public <T extends DbPersistent<T,?>> void setSecondTable(Class<T> itemClass) {
-		TableView<T,?> table = createTable(itemClass);
+		ProTableView<T> table = createTable(itemClass);
 		setSecondTable(table);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends DbPersistent<T,?>> TableView<T,?> createTable(
+	private <T extends DbPersistent<T,?>> ProTableView<T> createTable(
 			Class<T> itemClass) {
-		DbUndoRedoEditFilterTable<T> table = Reflect.createInstanceByGenericAndSuperClass(
-				DbUndoRedoEditFilterTable.class, itemClass, Main.getReflections());
-		DbUndoRedoAddEditControlFilterTableView<T> tableView = new DbUndoRedoAddEditControlFilterTableView<T>(itemClass);
-		tableView.setTable(table);
-
-		return tableView;
+		return TableViewFactory.createTable(itemClass, DbUndoRedoFactoryEditFilterTable.class, DbUndoRedoAddEditControlFilterTableView.class);
 	}
 
-	private <T extends DbPersistent<T, ?>> void openMainTableTab(TableView<T,?> table,
+	private <T extends DbPersistent<T, ?>> void openMainTableTab(ProTableView<T> table,
 			String name) {
 		mainSplitPane.getMainTableTabPane().openTableTab(table, name);
 	}
 
-	private <T extends DbPersistent<T, ?>> void setSecondTable(TableView<T,?> table) {
-		secondTable.setTable(table);
+	private <T extends DbPersistent<T, ?>> void setSecondTable(ProTableView<T> table) {
+		secondTable.setTableView(table);
 	}
 
 	public void set3dFile(File file) {

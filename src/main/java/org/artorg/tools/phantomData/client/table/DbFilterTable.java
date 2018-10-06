@@ -38,7 +38,6 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 		sortComparatorQueue = new LimitedQueue<Comparator<ITEM>>(1);
 	}
 	
-	
 	@Override
 	public Queue<Comparator<ITEM>> getSortComparatorQueue() {
 		return sortComparatorQueue;

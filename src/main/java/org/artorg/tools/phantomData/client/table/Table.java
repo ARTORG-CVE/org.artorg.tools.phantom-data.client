@@ -1,18 +1,15 @@
-package org.artorg.tools.phantomData.client.scene.control;
+package org.artorg.tools.phantomData.client.table;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.table.AbstractColumn;
-import org.artorg.tools.phantomData.client.table.ITable;
 import org.artorg.tools.phantomData.client.util.Reflect;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 @SuppressWarnings("unchecked")
-public class Table2<ITEM extends DbPersistent<ITEM,?>> implements ITable<ITEM> {
+public class Table<ITEM> implements ITable<ITEM> {
 	private ObservableList<ITEM> items;
 	private List<AbstractColumn<ITEM>> columns;
 	private boolean isIdColumnVisible;
@@ -20,25 +17,19 @@ public class Table2<ITEM extends DbPersistent<ITEM,?>> implements ITable<ITEM> {
 	private String itemName;
 	private final Class<ITEM> itemClass;
 	
-	
 	{
 		items = FXCollections.observableArrayList();
 		columns = new ArrayList<AbstractColumn<ITEM>>();
 		isIdColumnVisible = true;
-		
-		
 	}
 	
-	
-	public Table2() {
+	public Table() {
 		itemClass = (Class<ITEM>) Reflect.findGenericClasstype(this);
 	}
 	
-	public Table2(Class<ITEM> itemClass) {
+	public Table(Class<ITEM> itemClass) {
 		this.itemClass = itemClass;
 	}
-	
-	
 	
 	public void setItems(ObservableList<ITEM> items) {
 		this.items = items;
@@ -56,10 +47,7 @@ public class Table2<ITEM extends DbPersistent<ITEM,?>> implements ITable<ITEM> {
 	@Override
 	public void setColumns(List<AbstractColumn<ITEM>> columns) {
 		this.columns = columns;
-		getColumns().stream().forEach(column -> {
-			
-			column.setItems(getItems());	
-		});
+		getColumns().stream().forEach(column ->column.setItems(getItems()));
 	}	
 	
     @Override

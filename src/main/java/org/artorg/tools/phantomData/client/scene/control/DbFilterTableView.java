@@ -18,12 +18,20 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 
-public class DbFilterTableView<ITEM extends DbPersistent<ITEM,?>, TABLE extends IDbTable<ITEM> & IFilterTable<ITEM>> extends DbTableView<ITEM,TABLE> {
+public class DbFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends DbTableView<ITEM> {
 	protected List<FilterMenuButton<ITEM>> filterMenuButtons;
 	
 	{
 		super.setEditable(true);
 		filterMenuButtons = new ArrayList<FilterMenuButton<ITEM>>();	
+	}
+	
+	public DbFilterTableView() {
+		super();
+	}
+	
+	public DbFilterTableView(Class<ITEM> itemClass)  {
+		super(itemClass);
 	}
 	
 	public void showFilterButtons() {
@@ -46,8 +54,16 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM,?>, TABLE extends 
         }
     }
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initTable() {
+		if (getTable() instanceof IFilterTable)
+			initFilterTable((IFilterTable<ITEM>)getTable());
+		else 
+			super.initTable();
+	}
+	
+	protected void initFilterTable(IFilterTable<ITEM> table) {
 		super.getColumns().removeAll(super.getColumns());
 
 	    // creating columns
@@ -62,10 +78,10 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM,?>, TABLE extends 
 	    headerColumn.setSortable(false);
 	    columns.add(headerColumn);
 	    
-		List<String> columnNames = getTable().getFilteredColumnNames();
+		List<String> columnNames = table.getFilteredColumnNames();
 		
 		
-		int nCols = getTable().getFilteredNcols();
+		int nCols = table.getFilteredNcols();
 		
 		for ( int col=0; col<nCols; col++) {
 			TableColumn<ITEM, String> column = new TableColumn<ITEM, String>(columnNames.get(col));
@@ -75,29 +91,36 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM,?>, TABLE extends 
 			FilterMenuButton<ITEM> filterMenuButton = new FilterMenuButton<ITEM>();
 			filterMenuButton.setText(columnNames.get(col));
 			
-			AbstractColumn<ITEM> filterTableColumn = getTable().getFilteredColumns().get(localCol);
+			AbstractColumn<ITEM> filterTableColumn = table.getFilteredColumns().get(localCol);
 			FilterColumn<ITEM> filterColumn = (FilterColumn<ITEM>)filterTableColumn;
-			filterColumn.setSortComparatorQueue(getTable().getSortComparatorQueue());
-			filterMenuButton.setColumn(filterColumn, () -> getTable().applyFilter()); 
+			filterColumn.setSortComparatorQueue(table.getSortComparatorQueue());
+			filterMenuButton.setColumn(filterColumn, () -> table.applyFilter()); 
 			filterMenuButtons.add(filterMenuButton);
 			
 		    column.setCellValueFactory(cellData -> new SimpleStringProperty(
-		    		String.valueOf(getTable().getFilteredValue(cellData.getValue(), localCol))));
+		    		String.valueOf(table.getFilteredValue(cellData.getValue(), localCol))));
 		    columns.add(column);
 		}
 		
 	    super.getColumns().addAll(columns);
-	    super.setItems(getTable().getFilteredItems());
+	    super.setItems(table.getFilteredItems());
 	    autoResizeColumns();
 	    
 	    Platform.runLater(() -> showFilterButtons());
 	}
 	
+	
 	@Override
+	@SuppressWarnings("unchecked")
 	public void reload() {
-		getTable().getItems().removeListener(getListenerChangedListenerRefresh());
-		getTable().readAllData();
-		super.setItems(getTable().getFilteredItems());
+		if (getTable() instanceof IDbTable && getTable() instanceof IFilterTable)
+			reloadFilterTable((IDbTable<ITEM> & IFilterTable<ITEM>)getTable());
+	}
+	
+	private <TABLE extends IDbTable<ITEM> & IFilterTable<ITEM>> void reloadFilterTable(TABLE table) {
+		table.getItems().removeListener(getListenerChangedListenerRefresh());
+		table.readAllData();
+		super.setItems(table.getFilteredItems());
 		getTable().getItems().addListener(getListenerChangedListenerRefresh());
 		refresh();
 	}

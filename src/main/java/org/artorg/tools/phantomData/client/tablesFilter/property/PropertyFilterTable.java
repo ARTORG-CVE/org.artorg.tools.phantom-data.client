@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.UUID;
 
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
-import org.artorg.tools.phantomData.client.table.DbUndoRedoEditFilterTable;
+import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.FilterColumn;
 import org.artorg.tools.phantomData.server.model.property.Property;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 public abstract class PropertyFilterTable<ITEM extends Property<ITEM, VALUE> & DbPersistent<ITEM,UUID>, VALUE extends Comparable<VALUE>> 
-		extends DbUndoRedoEditFilterTable<ITEM> {
+		extends DbUndoRedoFactoryEditFilterTable<ITEM> {
 	
 	{
 		List<AbstractColumn<ITEM>> columns =

@@ -30,7 +30,7 @@ public abstract class GroupedItemEditFactoryController<ITEM extends DbPersistent
 		panes.stream().filter(p -> p instanceof TitledPropertyPane)
 			.forEach(p -> entries.addAll(((TitledPropertyPane)p).getEntries()));
 		
-		List<ISelector<ITEM, Object>> selectors = this.getSelectors();
+		List<AbstractTableViewSelector<ITEM>> selectors = this.getSelectors();
 		panes.addAll(selectors.stream()
 				.map(selector -> (TitledPaneTableViewSelector<ITEM>)selector)
 //				.map(selector -> (TitledPaneTableViewSelector2<ITEM>)selector)

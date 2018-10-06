@@ -1,11 +1,8 @@
 package org.artorg.tools.phantomData.client.controllers;
 
-import org.artorg.tools.phantomData.client.scene.control.DbTableView;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
-import org.artorg.tools.phantomData.client.table.DbFxFactory;
+import org.artorg.tools.phantomData.client.table.FxFactory;
 import org.artorg.tools.phantomData.client.table.IDbFactoryTableView;
-import org.artorg.tools.phantomData.client.table.IDbTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -33,7 +30,7 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 	}	
 
 	@SuppressWarnings("unchecked")
-	public <ITEM extends DbPersistent<ITEM,?>, TABLE extends org.artorg.tools.phantomData.client.scene.control.TableView<ITEM,?>> void openTableTab(
+	public <ITEM extends DbPersistent<ITEM,?>, TABLE extends org.artorg.tools.phantomData.client.scene.control.ProTableView<ITEM>> void openTableTab(
 			TABLE tableViewSpring, String name) {
 		Tab tab = new Tab(name);
 		tab.setContent(tableViewSpring);
@@ -54,13 +51,13 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 				if (tableViewSpring instanceof IDbFactoryTableView) {
 					MenuItem editItem = new MenuItem("Edit item");
 					editItem.setOnAction(event -> {
-						DbFxFactory<ITEM> controller = ((IDbFactoryTableView<ITEM>)tableViewSpring).createFxFactory();
+						FxFactory<ITEM> controller = ((IDbFactoryTableView<ITEM>)tableViewSpring).createFxFactory();
 						Node node = controller.edit(row.getItem());
 						mainSplitPane.addNewItemTab(node, "Edit " + tableViewSpring.getTable().getItemName());
 					});
 					MenuItem addItem = new MenuItem("Add item");
 					addItem.setOnAction(event -> {
-						DbFxFactory<ITEM> controller = ((IDbFactoryTableView<ITEM>)tableViewSpring).createFxFactory();
+						FxFactory<ITEM> controller = ((IDbFactoryTableView<ITEM>)tableViewSpring).createFxFactory();
 						Node node = controller.create(row.getItem());
 						mainSplitPane.addNewItemTab(node, "Add " + tableViewSpring.getTable().getItemName());
 					});
@@ -82,7 +79,7 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 		ContextMenu contextMenu = new ContextMenu();
 		MenuItem editItem = new MenuItem("Add item");
 		editItem.setOnAction(event -> {
-			DbFxFactory<ITEM> controller = ((IDbFactoryTableView<ITEM>)tableViewSpring).createFxFactory();
+			FxFactory<ITEM> controller = ((IDbFactoryTableView<ITEM>)tableViewSpring).createFxFactory();
 			Node node = controller.create();
 			mainSplitPane.addNewItemTab(node, "Add " + tableViewSpring.getTable().getItemName());
 		});

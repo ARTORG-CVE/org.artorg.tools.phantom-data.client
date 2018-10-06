@@ -3,7 +3,7 @@ package org.artorg.tools.phantomData.client.table;
 import org.artorg.tools.phantomData.client.commandPattern.UndoManager;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class DbUndoRedoEditFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbFilterTable<ITEM> implements IDbUndoRedoEditFilterTable<ITEM> {
+public class DbUndoRedoFactoryEditFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbFilterTable<ITEM> implements IDbUndoRedoEditFilterTable<ITEM> {
 	private final UndoManager undoManager;
 	
 	{

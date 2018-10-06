@@ -1,19 +1,33 @@
 package org.artorg.tools.phantomData.client.scene.control;
 
-import org.artorg.tools.phantomData.client.controller.ISelector;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.scene.Node;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 
-public class TitledPaneTableViewSelector<T extends DbPersistent<T,?>> extends TableViewSelectorSimple<T>
-		implements ISelector<T, Object> {
+public class TitledPaneTableViewSelector<T extends DbPersistent<T,?>> extends TableViewSelectorSimple<T> {
 	private final TitledPane titledPane;
 	
 	{
 		titledPane = new TitledPane();
+	}
+	
+	public TitledPaneTableViewSelector() {
+		super();
+		
+		super.setTableView1(new TableView<Object>());
+		super.setTableView2(new TableView<Object>());
+		
+	}
+	
+	public TitledPaneTableViewSelector(Class<Object> subItemClass) {
+		super(subItemClass);
+		
+		super.setTableView1(new TableView<Object>());
+		super.setTableView2(new TableView<Object>());
 	}
 	
 	@Override

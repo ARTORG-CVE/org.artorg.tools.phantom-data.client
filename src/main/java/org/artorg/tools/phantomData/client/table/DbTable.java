@@ -4,11 +4,10 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.scene.control.Table2;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 @SuppressWarnings("unchecked")
-public class DbTable<ITEM extends DbPersistent<ITEM,?>> extends Table2<ITEM> implements IDbTable<ITEM> {
+public class DbTable<ITEM extends DbPersistent<ITEM,?>> extends Table<ITEM> implements IDbTable<ITEM> {
 	private ICrudConnector<ITEM,?> connector;
 	
 	{

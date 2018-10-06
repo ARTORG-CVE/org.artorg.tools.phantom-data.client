@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
-import org.artorg.tools.phantomData.client.table.DbUndoRedoEditFilterTable;
+import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.FilterColumn;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 
-public class AnnulusDiameterFilterTable extends DbUndoRedoEditFilterTable<AnnulusDiameter> {
+public class AnnulusDiameterFilterTable extends DbUndoRedoFactoryEditFilterTable<AnnulusDiameter> {
 	
 	{
 		List<AbstractColumn<AnnulusDiameter>> columns =

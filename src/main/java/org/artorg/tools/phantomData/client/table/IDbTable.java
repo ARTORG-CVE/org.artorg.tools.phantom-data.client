@@ -37,4 +37,8 @@ public interface IDbTable<ITEM extends DbPersistent<ITEM,?>> extends ITable<ITEM
 		getItems().add(item);
 	}
 	
+	default ICrudConnector<ITEM,?> getConnector() {
+		return getConnector();
+	}
+	
 }

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
-import org.artorg.tools.phantomData.client.table.DbUndoRedoEditFilterTable;
+import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.FilterColumn;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
-public class PropertyFieldFilterTable extends DbUndoRedoEditFilterTable<PropertyField> {
+public class PropertyFieldFilterTable extends DbUndoRedoFactoryEditFilterTable<PropertyField> {
 	
 	{
 		List<AbstractColumn<PropertyField>> columns =

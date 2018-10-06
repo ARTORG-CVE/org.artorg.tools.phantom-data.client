@@ -1,20 +1,31 @@
 package org.artorg.tools.phantomData.client.scene.control;
 
 import org.artorg.tools.phantomData.client.table.IDbTable;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public abstract class DbTableView<ITEM extends DbPersistent<ITEM,?>, TABLE_TYPE extends IDbTable<ITEM>> extends TableView<ITEM,TABLE_TYPE> {
+public class DbTableView<ITEM extends DbPersistent<ITEM,?>> extends ProTableView<ITEM> {
+	
+	public DbTableView() {
+		super();
+	}
+	
+	public DbTableView(Class<ITEM> itemClass) {
+		super(itemClass);
+	}
+	
 	
 	@Override
-	public void setTable(TABLE_TYPE table) {
+	public void setTable(Table<ITEM> table) {
 		super.setTable(table);
 		reload();
 		initTable();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void reload() {
 		getTable().getItems().removeListener(getListenerChangedListenerRefresh());
-		getTable().readAllData();
+		((IDbTable<ITEM>)getTable()).readAllData();
 		super.setItems(getTable().getItems());
 		getTable().getItems().addListener(getListenerChangedListenerRefresh());
 		refresh();

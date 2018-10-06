@@ -1,6 +1,6 @@
 package org.artorg.tools.phantomData.client.scene.control;
 
-import org.artorg.tools.phantomData.client.table.IDbEditFilterTable;
+import org.artorg.tools.phantomData.client.table.IEditFilterTable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.ObservableList;
@@ -8,8 +8,8 @@ import javafx.event.EventHandler;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 
-public abstract class DbEditFilterTableView<ITEM extends DbPersistent<ITEM, ?>, TABLE_TYPE extends IDbEditFilterTable<ITEM>>
-		extends DbFactoryFilterTableView<ITEM, TABLE_TYPE> {
+public abstract class DbEditFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
+		extends DbFactoryFilterTableView<ITEM> {
 
 	public DbEditFilterTableView() {}
 	
@@ -17,15 +17,22 @@ public abstract class DbEditFilterTableView<ITEM extends DbPersistent<ITEM, ?>, 
 		super(itemClass);
 	}
 			
-			
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initTable() {
+		if (getTable() instanceof IEditFilterTable)
+			initEditFilterTable((IEditFilterTable<ITEM>) getTable());
+		else
+			super.initTable();
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected void initEditFilterTable(IEditFilterTable<ITEM> table) {
 		super.initTable();
 
 		ObservableList<TableColumn<ITEM, ?>> columns = super.getColumns();
 
-		int nCols = getTable().getFilteredNcols();
+		int nCols = table.getFilteredNcols();
 		for (int col = 0; col < nCols; col++) {
 			TableColumn<ITEM, String> column = (TableColumn<ITEM, String>) columns.get(col);
 
@@ -34,7 +41,7 @@ public abstract class DbEditFilterTableView<ITEM extends DbPersistent<ITEM, ?>, 
 				@Override
 				public void handle(CellEditEvent<ITEM, String> t) {
 					ITEM item = ((ITEM) t.getTableView().getItems().get(t.getTablePosition().getRow()));
-					getTable().setFilteredValue(item, localCol, t.getNewValue());
+					table.setFilteredValue(item, localCol, t.getNewValue());
 				}
 			});
 		}

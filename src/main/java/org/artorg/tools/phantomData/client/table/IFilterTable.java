@@ -36,11 +36,9 @@ public interface IFilterTable<ITEM> extends ITable<ITEM> {
 	
 	Queue<Comparator<ITEM>> getSortComparatorQueue();
 	
-	
 	default String getFilteredValue(int row, int col) {
 		return getFilteredColumns().get(col).get(getFilteredItems().get(row));
 	}
-	
 	
 	default String getColumnFilteredValue(int row, int col) {
 		List<FilterColumn<ITEM>> columns = getFilteredColumns();

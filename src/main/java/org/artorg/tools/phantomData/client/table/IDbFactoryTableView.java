@@ -4,7 +4,7 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 public interface IDbFactoryTableView<ITEM extends DbPersistent<ITEM,?>> {
 	
-	DbFxFactory<ITEM> createFxFactory();
+	FxFactory<ITEM> createFxFactory();
 	
 	
 }
