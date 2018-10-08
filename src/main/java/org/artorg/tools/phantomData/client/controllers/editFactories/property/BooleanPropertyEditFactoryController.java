@@ -21,6 +21,19 @@ public class BooleanPropertyEditFactoryController extends GroupedItemEditFactory
 	{
 		comboBoxPropertyField = new ComboBox<PropertyField>();
 		checkBoxValue = new CheckBox();
+		
+		List<TitledPane> panes = new ArrayList<TitledPane>();
+		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
+		createComboBox(comboBoxPropertyField, HttpConnectorSpring.getOrCreate(PropertyField.class), d -> String.valueOf(d.getName()));
+		generalProperties.add(new PropertyEntry("Property Field", comboBoxPropertyField));
+		generalProperties.add(new PropertyEntry("Value", checkBoxValue));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		panes.add(generalPane);
+		setTitledPanes(panes);
+		
+		setItemFactory(this::createItem);
+		setTemplateSetter(this::setTemplate);
+		setItemCopier(this::copy);
 	}
 	
 	@Override
@@ -40,20 +53,6 @@ public class BooleanPropertyEditFactoryController extends GroupedItemEditFactory
 	protected void copy(BooleanProperty from, BooleanProperty to) {
 		to.setPropertyField(from.getPropertyField());
 		to.setValue(from.getValue());
-	}
-	
-	@Override
-	protected List<TitledPane> createGroupedProperties(BooleanProperty item) {
-		List<TitledPane> panes = new ArrayList<TitledPane>();
-		
-		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-		createComboBox(comboBoxPropertyField, HttpConnectorSpring.getOrCreate(PropertyField.class), d -> String.valueOf(d.getName()));
-		generalProperties.add(new PropertyEntry("Property Field", comboBoxPropertyField));
-		generalProperties.add(new PropertyEntry("Value", checkBoxValue));
-		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-		panes.add(generalPane);
-		
-		return panes;
 	}
 
 }

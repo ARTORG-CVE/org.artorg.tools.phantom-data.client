@@ -6,11 +6,8 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.server.model.FileType;
-import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 
-import javafx.collections.ObservableList;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
@@ -19,6 +16,17 @@ public class FileTypeEditFactoryController extends GroupedItemEditFactoryControl
 	
 	{
 		textFieldName = new TextField();
+		
+		List<TitledPane> panes = new ArrayList<TitledPane>();
+		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
+		generalProperties.add(new PropertyEntry("Name", textFieldName));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		panes.add(generalPane);
+		setTitledPanes(panes);
+		
+		setItemFactory(this::createItem);
+		setTemplateSetter(this::setTemplate);
+		setItemCopier(this::copy);
 	}
 	
 	@Override
@@ -35,18 +43,6 @@ public class FileTypeEditFactoryController extends GroupedItemEditFactoryControl
 	@Override
 	protected void copy(FileType from, FileType to) {
 		to.setName(from.getName());
-	}
-	
-	@Override
-	protected List<TitledPane> createGroupedProperties(FileType item) {
-		List<TitledPane> panes = new ArrayList<TitledPane>();
-		
-		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-		generalProperties.add(new PropertyEntry("Name", textFieldName));
-		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-		panes.add(generalPane);
-		
-		return panes;
 	}
 
 }

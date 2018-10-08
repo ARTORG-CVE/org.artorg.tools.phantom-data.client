@@ -6,7 +6,6 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
@@ -35,6 +34,24 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 		textFieldModelNumber = new TextField();
 		
 		labelIdValue.setDisable(true);
+		
+		List<TitledPane> panes = new ArrayList<TitledPane>();
+		createComboBoxes();
+		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
+		generalProperties.add(new PropertyEntry("PID", labelIdValue));
+		generalProperties.add(new PropertyEntry("Annulus diameter [mm]", comboBoxAnnulus));
+		generalProperties.add(new PropertyEntry("Fabrication Type", comboBoxFabricationType));
+		generalProperties.add(new PropertyEntry("Literarure Base", comboBoxLiterature));
+		generalProperties.add(new PropertyEntry("Special", comboBoxSpecials));
+		generalProperties.add(new PropertyEntry("Phantom specific Number", textFieldModelNumber, () -> updateId()));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		panes.add(generalPane);
+		setTitledPanes(panes);
+		
+		setItemFactory(this::createItem);
+		setTemplateSetter(this::setTemplate);
+		setItemCopier(this::copy);
+		
 	}
 	
 	private void updateId() {
@@ -92,24 +109,6 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 		to.setDoubleProperties(from.getDoubleProperties());
 		to.setIntegerProperties(from.getIntegerProperties());
 		to.setStringProperties(from.getStringProperties());
-	}
-
-	@Override
-	protected List<TitledPane> createGroupedProperties(Phantom item) {
-		List<TitledPane> panes = new ArrayList<TitledPane>();
-		
-		createComboBoxes();
-		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-		generalProperties.add(new PropertyEntry("PID", labelIdValue));
-		generalProperties.add(new PropertyEntry("Annulus diameter [mm]", comboBoxAnnulus));
-		generalProperties.add(new PropertyEntry("Fabrication Type", comboBoxFabricationType));
-		generalProperties.add(new PropertyEntry("Literarure Base", comboBoxLiterature));
-		generalProperties.add(new PropertyEntry("Special", comboBoxSpecials));
-		generalProperties.add(new PropertyEntry("Phantom specific Number", textFieldModelNumber, () -> updateId()));
-		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-		panes.add(generalPane);
-		
-		return panes;
 	}
 	
 }

@@ -30,6 +30,14 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> imp
 		this.itemClass = itemClass;
 	}
 	
+	public void removeHeaderRow() {
+		try {
+			this.getStyleClass().add("noheader");
+		} catch(Exception e) {
+			this.setStyle("-fx-max-height: 0; -fx-pref-height: 0; -fx-min-height: 0;");
+		}
+	}
+	
 	
 	public ListChangeListener<ITEM> getListenerChangedListenerRefresh() {
 		return listenerChangedListenerRefresh;
@@ -53,8 +61,6 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> imp
 
 	    // creating columns
 	    List<TableColumn<ITEM,?>> columns = new ArrayList<TableColumn<ITEM,?>>();
-	    
-	    columns.add(createHeaderColumn());
 		List<String> columnNames = table.getColumnNames();
 		
 		int nCols = table.getNcols();

@@ -1,8 +1,6 @@
 package org.artorg.tools.phantomData.client.scene.control;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.controller.AbstractTableViewSelector;
@@ -15,15 +13,12 @@ import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
 public class TableViewSelector<ITEM extends DbPersistent<ITEM,?>> extends AbstractTableViewSelector<ITEM> {
-	private TableView<Object> tableView1;
-	private TableView<Object> tableView2;
 	private SplitPane splitPane;
 	private int height;
 	private final Class<?> subItemClass;
@@ -37,41 +32,38 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM,?>> extends Abstra
 	
 	public TableViewSelector() {
 		this.subItemClass = Reflect.findGenericClasstype(this);
+		super.setName(subItemClass.getSimpleName());
 	}
 	
 	public TableViewSelector(Class<?> subItemClass) {
 		this.subItemClass = subItemClass;
+		System.out.println("subItemClass: " +subItemClass.getSimpleName());
+		super.setName(subItemClass.getSimpleName());
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void init() {
-		tableView2.getItems().stream().forEach(item2 -> {
-			List<?> doublettes = tableView1.getItems().stream()
-					.filter(item1 -> ((DbPersistent<?,UUID>)item2).getId().compareTo(((DbPersistent<?,UUID>)item1).getId()) == 0).collect(Collectors.toList());
-			tableView1.getItems().removeAll(doublettes);
+		getTableView2().getItems().stream().forEach(item2 -> {
+			List<?> doublettes = (List<?>) getTableView1().getItems().stream()
+//					.filter(item1 -> ((DbPersistent<?,UUID>)item2).getId().compareTo(((DbPersistent<?,UUID>)item1).getId()) == 0)
+					.collect(Collectors.toList());
+			getTableView1().getItems().removeAll(doublettes);
 		});
 		
-		if (tableView1.getItems().size() != 0 && !splitPane.getItems().contains(tableView1)) {
-			splitPane.getItems().add(tableView1);
-			autoResizeColumns(tableView1);
+		if (getTableView1().getItems().size() != 0 && !splitPane.getItems().contains(getTableView1())) {
+			splitPane.getItems().add(getTableView1());
+			autoResizeColumns(getTableView1());
 		}
-		if (tableView2.getItems().size() != 0 && !splitPane.getItems().contains(tableView2)) {
-			splitPane.getItems().add(tableView2);
-			autoResizeColumns(tableView2);
+		if (getTableView2().getItems().size() != 0 && !splitPane.getItems().contains(getTableView2())) {
+			splitPane.getItems().add(getTableView2());
+			autoResizeColumns(getTableView2());
 		}
 		
-		List<TableColumn<Object, ?>> columns1 = new ArrayList<TableColumn<Object, ?>>();
-		columns1.add(createButtonCellColumn("+", this::moveToSelected));
-		columns1.add(createValueColumn("Selectable Items"));
-		this.tableView1.getColumns().addAll(columns1);
-
+		this.getTableView1().getColumns().add(0, createButtonCellColumn("+", this::moveToSelected));
+		this.getTableView2().getColumns().add(0, createButtonCellColumn("-", this::moveToSelected));
+		((ProTableView<ITEM>)this.getTableView2()).removeHeaderRow();
 		
-		List<TableColumn<Object, ?>> columns2 = new ArrayList<TableColumn<Object, ?>>();
-		columns2.add(createButtonCellColumn("-", this::moveToSelectable));
-		columns2.add(createValueColumn("Selected Items"));
-		this.tableView2.getColumns().addAll(columns2);
-		
-		tableView1.setRowFactory(new Callback<TableView<Object>,TableRow<Object>>() {
+		getTableView1().setRowFactory(new Callback<TableView<Object>,TableRow<Object>>() {
 			@Override
 			public TableRow<Object> call(TableView<Object> tableView) {
 				final TableRow<Object> row = new TableRow<Object>();
@@ -89,7 +81,7 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM,?>> extends Abstra
 			};
 		});
 		
-		tableView2.setRowFactory(new Callback<TableView<Object>,TableRow<Object>>() {
+		getTableView2().setRowFactory(new Callback<TableView<Object>,TableRow<Object>>() {
 			@Override
 			public TableRow<Object> call(TableView<Object> tableView) {
 				final TableRow<Object> row = new TableRow<Object>();
@@ -110,35 +102,35 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM,?>> extends Abstra
 	}
 	
 	public void moveToSelected(Object item) {
-		tableView1.getItems().remove(item);
-		tableView2.getItems().add(item);
-		if (tableView1.getItems().size() == 0) {
-			splitPane.getItems().remove(tableView1);
-			tableView2.setPrefHeight(this.height);
+		getTableView1().getItems().remove(item);
+		getTableView2().getItems().add(item);
+		if (getTableView1().getItems().size() == 0) {
+			splitPane.getItems().remove(getTableView1());
+			getTableView2().setPrefHeight(this.height);
 		}
-		if (tableView2.getItems().size() != 0 && !splitPane.getItems().contains(tableView2)) {
-			splitPane.getItems().add(tableView2);
-			tableView2.setPrefHeight(this.height/2);
+		if (getTableView2().getItems().size() != 0 && !splitPane.getItems().contains(getTableView2())) {
+			splitPane.getItems().add(getTableView2());
+			getTableView2().setPrefHeight(this.height/2);
 		}
-		autoResizeColumns(tableView1);
-		autoResizeColumns(tableView2);
+		autoResizeColumns(getTableView1());
+		autoResizeColumns(getTableView2());
 	}
 	
 	public void moveToSelectable(Object item) {
-		tableView1.getItems().add(item);
-		tableView2.getItems().remove(item);
-		if (tableView2.getItems().size() == 0) {
-			splitPane.getItems().remove(tableView2);
-			tableView1.setPrefHeight(this.height);
+		getTableView1().getItems().add(item);
+		getTableView2().getItems().remove(item);
+		if (getTableView2().getItems().size() == 0) {
+			splitPane.getItems().remove(getTableView2());
+			getTableView1().setPrefHeight(this.height);
 		}
-		if (tableView1.getItems().size() != 0 && !splitPane.getItems().contains(tableView1)) {
-			splitPane.getItems().add(0, tableView1);
-			tableView1.setPrefHeight(this.height/2);
+		if (getTableView1().getItems().size() != 0 && !splitPane.getItems().contains(getTableView1())) {
+			splitPane.getItems().add(0, getTableView1());
+			getTableView1().setPrefHeight(this.height/2);
 		}
-		autoResizeColumns(tableView1);
-		autoResizeColumns(tableView2);
-		tableView1.refresh();
-		tableView2.refresh();
+		autoResizeColumns(getTableView1());
+		autoResizeColumns(getTableView2());
+		getTableView1().refresh();
+		getTableView2().refresh();
 	}
 	
 	public void autoResizeColumns(TableView<?> tableView) {
@@ -156,7 +148,6 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM,?>> extends Abstra
 	        }
 	        column.setPrefWidth( max);
 	    } );
-		tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 	}
 
 	@Override

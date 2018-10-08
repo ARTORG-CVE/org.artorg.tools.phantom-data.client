@@ -10,21 +10,17 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.UUID;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.scene.control.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.TitledPaneTableViewSelector;
-import org.artorg.tools.phantomData.client.scene.control.TitledPaneTableViewSelector2;
 import org.artorg.tools.phantomData.client.table.FxFactory;
-import org.artorg.tools.phantomData.client.table.Table;
+import org.artorg.tools.phantomData.client.table.IDbTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
-import org.artorg.tools.phantomData.client.table.IDbTable;
 
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -63,7 +59,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 	
 	protected abstract void copy(ITEM from, ITEM to);
 	
-	public ProTableView<ITEM> getTable() {
+	public ProTableView<ITEM> getTableView() {
 		return table;
 	}
 	
@@ -110,8 +106,8 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 				Set<Object> selectableItemSet = (Set<Object>) connector.readAllAsSet();
 				
 				if (selectableItemSet.size() > 0) {
-					TitledPaneTableViewSelector<ITEM> titledSelector = new TitledPaneTableViewSelector<ITEM>(Object.class);
-//					TitledPaneTableViewSelector2<ITEM> titledSelector = new TitledPaneTableViewSelector2<ITEM>(subItemClass);
+//					TitledPaneTableViewSelector<ITEM> titledSelector = new TitledPaneTableViewSelector<ITEM>(Object.class);
+					AbstractTableViewSelector<ITEM> titledSelector = new TitledPaneTableViewSelector<ITEM>(subItemClass);
 					titledSelector.setSelectableItems(selectableItemSet);
 					
 					Method selectedMethod = Reflect.getMethodByGenericReturnType(item, subItemClass);
@@ -126,8 +122,6 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 					};
 					titledSelector.setSelectedItems(subItemGetter2.apply(item).stream().collect(Collectors.toSet()));
 					
-					titledSelector.getTitledPane().setText(subItemClass.getSimpleName());
-					
 					titledSelector.init();
 					selectors.add(titledSelector);
 				}
@@ -139,8 +133,8 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 		
 	@SuppressWarnings("unchecked")
 	public final ICrudConnector<ITEM,?> getConnector() {
-		if (getTable() instanceof IDbTable)
-			return ((IDbTable<ITEM>)getTable()).getConnector();
+		if (getTableView().getTable() instanceof IDbTable)
+			return ((IDbTable<ITEM>)getTableView().getTable()).getConnector();
 		return null;
 	}
 	
@@ -237,7 +231,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 		applyButton.setOnAction(event -> {
 			ITEM newItem = createItem();
 			selectors.forEach(selector -> selector.setSelectedChildItems(item));
-			this.getTable().getItems().add(newItem);
+			this.getTableView().getItems().add(newItem);
 			getConnector().create(newItem);
 			this.initDefaultValues();
 		});
@@ -263,6 +257,10 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 			copy(item2,item);
 			selectors.forEach(selector -> selector.setSelectedChildItems(item));
 //			this.getTable().refresh();
+			
+			System.out.println("connector: " +getConnector());
+			System.out.println("item: " +item);
+			
 			getConnector().update(item);
 		});
 		

@@ -6,11 +6,8 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.server.model.Special;
-import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 
-import javafx.collections.ObservableList;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
@@ -19,6 +16,17 @@ public class SpecialEditFactoryController extends GroupedItemEditFactoryControll
 	
 	{
 		textFieldShortcut = new TextField();
+		
+		List<TitledPane> panes = new ArrayList<TitledPane>();
+		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
+		generalProperties.add(new PropertyEntry("Shortcut", textFieldShortcut));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		panes.add(generalPane);
+		setTitledPanes(panes);
+		
+		setItemFactory(this::createItem);
+		setTemplateSetter(this::setTemplate);
+		setItemCopier(this::copy);
 	}
 
 	@Override
@@ -43,16 +51,4 @@ public class SpecialEditFactoryController extends GroupedItemEditFactoryControll
 		to.setStringProperties(from.getStringProperties());
 	}
 	
-	@Override
-	protected List<TitledPane> createGroupedProperties(Special item) {
-		List<TitledPane> panes = new ArrayList<TitledPane>();
-		
-		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-		generalProperties.add(new PropertyEntry("Shortcut", textFieldShortcut));
-		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-		panes.add(generalPane);
-		
-		return panes;
-	}
-
 }

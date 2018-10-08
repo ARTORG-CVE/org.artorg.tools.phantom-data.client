@@ -20,6 +20,18 @@ public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactory
 		labelShortcut = new Label();
 		textFieldValue = new TextField();
 		labelShortcut.setDisable(true);
+		
+		List<TitledPane> panes = new ArrayList<TitledPane>();
+		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
+		generalProperties.add(new PropertyEntry("Shortcut [mm]", labelShortcut));
+		generalProperties.add(new PropertyEntry("Diameter [mm]", textFieldValue, () -> updateLabel()));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		panes.add(generalPane);
+		setTitledPanes(panes);
+		
+		setItemFactory(this::createItem);
+		setTemplateSetter(this::setTemplate);
+		setItemCopier(this::copy);
 	}
 
 	private void updateLabel() {
@@ -52,21 +64,6 @@ public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactory
 	protected void copy(AnnulusDiameter from, AnnulusDiameter to) {
 		to.setShortcut(from.getShortcut());
 		to.setValue(from.getValue());
-	}
-	
-	@Override
-	protected List<TitledPane> createGroupedProperties(AnnulusDiameter item) {
-		List<TitledPane> panes = new ArrayList<TitledPane>();
-		
-		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-		generalProperties.add(new PropertyEntry("Shortcut [mm]", labelShortcut));
-		generalProperties.add(new PropertyEntry("Diameter [mm]", textFieldValue, () -> updateLabel()));
-		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-		panes.add(generalPane);
-		
-		
-		
-		return panes;
 	}
 
 }

@@ -6,7 +6,6 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 
 import javafx.scene.control.TextField;
@@ -19,6 +18,18 @@ public class LiteratureBaseEditFactoryController extends GroupedItemEditFactoryC
 	{
 		textFieldShortcut = new TextField();
 		textFieldValue = new TextField();
+		
+		List<TitledPane> panes = new ArrayList<TitledPane>();
+		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
+		generalProperties.add(new PropertyEntry("Shortcut", textFieldShortcut));
+		generalProperties.add(new PropertyEntry("Name", textFieldValue));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		panes.add(generalPane);
+		setTitledPanes(panes);
+		
+		setItemFactory(this::createItem);
+		setTemplateSetter(this::setTemplate);
+		setItemCopier(this::copy);
 	}
 	
 	@Override
@@ -38,19 +49,6 @@ public class LiteratureBaseEditFactoryController extends GroupedItemEditFactoryC
 	protected void copy(LiteratureBase from, LiteratureBase to) {
 		to.setShortcut(from.getShortcut());
 		to.setValue(from.getValue());
-	}
-
-	@Override
-	protected List<TitledPane> createGroupedProperties(LiteratureBase item) {
-		List<TitledPane> panes = new ArrayList<TitledPane>();
-		
-		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-		generalProperties.add(new PropertyEntry("Shortcut", textFieldShortcut));
-		generalProperties.add(new PropertyEntry("Name", textFieldValue));
-		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-		panes.add(generalPane);
-		
-		return panes;
 	}
 	
 }

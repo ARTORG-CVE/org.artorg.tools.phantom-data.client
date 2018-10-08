@@ -39,6 +39,9 @@ public class TableViewFactory {
 			e.printStackTrace();
 		}
 		tableView.setTable(table);
+		
+//		if (table instanceof DbTable)
+//			((DbTable<T>) table).readAllData();
 
 		return tableView;
 	}

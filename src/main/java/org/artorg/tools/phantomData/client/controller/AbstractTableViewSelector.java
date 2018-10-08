@@ -19,7 +19,8 @@ import javafx.util.Callback;
 public abstract class AbstractTableViewSelector<ITEM> {
 	private TableView<?> tableView1;
 	private TableView<?> tableView2;
-	
+	private String name;
+
 	public abstract Class<?> getSubItemClass();
 	
 	public abstract void moveToSelected(Object item);
@@ -99,22 +100,30 @@ public abstract class AbstractTableViewSelector<ITEM> {
 		return column;
 	}
 	
-	public TableView getTableView1() {
-		return tableView1;
+	@SuppressWarnings("unchecked")
+	public TableView<Object> getTableView1() {
+		return (TableView<Object>) tableView1;
 	}
 
 	public void setTableView1(TableView<?> tableView1) {
 		this.tableView1 = tableView1;
-		tableView1.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 	}
 
-	public TableView getTableView2() {
-		return tableView2;
+	@SuppressWarnings("unchecked")
+	public TableView<Object> getTableView2() {
+		return (TableView<Object>) tableView2;
 	}
 
 	public void setTableView2(TableView<?> tableView2) {
 		this.tableView2 = tableView2;
-		tableView2.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }

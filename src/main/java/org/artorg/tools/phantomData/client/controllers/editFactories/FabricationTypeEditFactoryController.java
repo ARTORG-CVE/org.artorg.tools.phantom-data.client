@@ -6,11 +6,8 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.server.model.FabricationType;
-import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 
-import javafx.collections.ObservableList;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
@@ -21,6 +18,18 @@ public class FabricationTypeEditFactoryController extends GroupedItemEditFactory
 	{
 		textFieldShortcut = new TextField();
 		textFieldValue = new TextField();
+		
+		List<TitledPane> panes = new ArrayList<TitledPane>();
+		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
+		generalProperties.add(new PropertyEntry("Shortcut", textFieldShortcut));
+		generalProperties.add(new PropertyEntry("Name", textFieldValue));;
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		panes.add(generalPane);
+		setTitledPanes(panes);
+		
+		setItemFactory(this::createItem);
+		setTemplateSetter(this::setTemplate);
+		setItemCopier(this::copy);
 	}
 
 	@Override
@@ -40,19 +49,6 @@ public class FabricationTypeEditFactoryController extends GroupedItemEditFactory
 	protected void copy(FabricationType from, FabricationType to) {
 		to.setShortcut(from.getShortcut());
 		to.setValue(from.getValue());
-	}
-
-	@Override
-	protected List<TitledPane> createGroupedProperties(FabricationType item) {
-		List<TitledPane> panes = new ArrayList<TitledPane>();
-		
-		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-		generalProperties.add(new PropertyEntry("Shortcut", textFieldShortcut));
-		generalProperties.add(new PropertyEntry("Name", textFieldValue));;
-		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-		panes.add(generalPane);
-		
-		return panes;
 	}
 
 }

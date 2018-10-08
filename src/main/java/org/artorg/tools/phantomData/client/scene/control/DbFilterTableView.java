@@ -15,7 +15,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 
 public class DbFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends DbTableView<ITEM> {
@@ -68,16 +67,6 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends DbTabl
 
 	    // creating columns
 	    List<TableColumn<ITEM,?>> columns = new ArrayList<TableColumn<ITEM,?>>();
-	    
-	    TableColumn<ITEM,String> headerColumn = new TableColumn<ITEM,String>();
-	    headerColumn.setCellFactory(col -> {
-	    	TableCell<ITEM,String> cell = new TableCell<ITEM,String>();
-	        cell.getStyleClass().add("row-header-cell");
-	        return cell ;
-	    });
-	    headerColumn.setSortable(false);
-	    columns.add(headerColumn);
-	    
 		List<String> columnNames = table.getFilteredColumnNames();
 		
 		

@@ -7,7 +7,6 @@ import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 
@@ -26,6 +25,21 @@ public class FileEditFactoryController extends GroupedItemEditFactoryController<
 		textFieldName = new TextField();
 		textFieldExtension = new TextField();
 		comboBoxFileType = new ComboBox<FileType>();
+		
+		List<TitledPane> panes = new ArrayList<TitledPane>();
+		createComboBox(comboBoxFileType, HttpConnectorSpring.getOrCreate(FileType.class), d -> String.valueOf(d.getName()));
+		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
+		generalProperties.add(new PropertyEntry("Path", textFieldPath));
+		generalProperties.add(new PropertyEntry("Name", textFieldName));
+		generalProperties.add(new PropertyEntry("Extension", textFieldExtension));
+		generalProperties.add(new PropertyEntry("File Type", comboBoxFileType));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		panes.add(generalPane);
+		setTitledPanes(panes);
+		
+		setItemFactory(this::createItem);
+		setTemplateSetter(this::setTemplate);
+		setItemCopier(this::copy);
 	}
 	
 	@Override
@@ -52,22 +66,6 @@ public class FileEditFactoryController extends GroupedItemEditFactoryController<
 		to.setFileType(from.getFileType());
 		to.setName(from.getName());
 		to.setPath(from.getPath());
-	}
-	
-	@Override
-	protected List<TitledPane> createGroupedProperties(PhantomFile item) {
-		List<TitledPane> panes = new ArrayList<TitledPane>();
-		
-		createComboBox(comboBoxFileType, HttpConnectorSpring.getOrCreate(FileType.class), d -> String.valueOf(d.getName()));
-		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-		generalProperties.add(new PropertyEntry("Path", textFieldPath));
-		generalProperties.add(new PropertyEntry("Name", textFieldName));
-		generalProperties.add(new PropertyEntry("Extension", textFieldExtension));
-		generalProperties.add(new PropertyEntry("File Type", comboBoxFileType));
-		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-		panes.add(generalPane);
-		
-		return panes;
 	}
 
 }
