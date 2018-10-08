@@ -12,6 +12,7 @@ import org.artorg.tools.phantomData.client.scene.control.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.ProTableView;
+import org.artorg.tools.phantomData.client.scene.control.ProTreeTableView;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
@@ -62,6 +63,10 @@ public class LayoutController {
 	public <T extends DbPersistent<T,?>> void setSecondTable(Class<T> itemClass) {
 		ProTableView<T> table = createTable(itemClass);
 		setSecondTable(table);
+	}
+	
+	public void setSecondTreeTable(ProTreeTableView treeTableView) {
+		secondTable.setTreeTableView(treeTableView);
 	}
 
 	@SuppressWarnings("unchecked")

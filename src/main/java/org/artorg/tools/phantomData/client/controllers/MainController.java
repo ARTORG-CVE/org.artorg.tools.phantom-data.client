@@ -1,10 +1,15 @@
 package org.artorg.tools.phantomData.client.controllers;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.connector.Connectors;
+import org.artorg.tools.phantomData.client.connector.CrudConnectors;
 import org.artorg.tools.phantomData.client.io.IOutil;
+import org.artorg.tools.phantomData.client.scene.control.ProTableView;
+import org.artorg.tools.phantomData.client.scene.control.ProTreeTableView;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
@@ -137,7 +142,17 @@ public class MainController {
         layoutController.init();
         
         layoutController.openMainTableTab(Phantom.class);
-        layoutController.setSecondTable(PhantomFile.class);
+//        layoutController.setSecondTable(PhantomFile.class);
+        
+        ProTreeTableView treeTableView = new ProTreeTableView();
+        treeTableView.initTable();
+        
+        CrudConnectors<Phantom,?> connector = CrudConnectors.getConnector(Phantom.class);
+        List<Phantom> phantoms = connector.readAllAsList();
+        treeTableView.setItems(phantoms);
+        layoutController.setSecondTreeTable(treeTableView);
+        
+        
 		layoutController.set3dFile(IOutil.readResourceAsFile("model.stl"));
 	}
     
