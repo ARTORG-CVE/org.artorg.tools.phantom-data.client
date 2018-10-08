@@ -12,10 +12,24 @@
 
 .table-view {
 	-fx-focus-color: transparent;
+	-fx-border-color: red;
+	
+    -fx-border-width: 0px 0px 0px 0px;
+
+  -fx-background-insets: 0;
+  -fx-padding: 0;
+
+}
+
+.split-pane {
+	-fx-border-color: transparent;
+	-fx-padding: 0;
+	-fx-border-width: 0px 0px 0px 0px;
 }
 
 .split-pane *.split-pane-divider {
     -fx-padding: 0 1 0 1;
+    -fx-border-color: transparent;
 }
 
 .noheader .column-header-background {
@@ -24,6 +38,31 @@
     -fx-min-height: 0;
 }
 
+
+.titled-pane > .content > * {
+	-fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
 .titled-pane > *.content {
     -fx-border-color: transparent;
+}
+
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.table-view,
+.table-view .column-header-background,
+.table-view .column-header,
+.table-view .filler {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header,
+.table-view .column-header .filler,
+.table-view .column-header-background .filler {
+    -fx-background-color: transparent;
 }

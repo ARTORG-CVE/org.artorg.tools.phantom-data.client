@@ -13,7 +13,7 @@ import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditContro
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.ProTableView;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
-import org.artorg.tools.phantomData.client.table.Table;
+import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -67,7 +67,7 @@ public class LayoutController {
 	@SuppressWarnings("unchecked")
 	private <T extends DbPersistent<T,?>> ProTableView<T> createTable(
 			Class<T> itemClass) {
-		return TableViewFactory.createTable(itemClass, DbUndoRedoFactoryEditFilterTable.class, DbUndoRedoAddEditControlFilterTableView.class);
+		return TableViewFactory.createInitializedTable(itemClass, DbUndoRedoFactoryEditFilterTable.class, DbUndoRedoAddEditControlFilterTableView.class);
 	}
 
 	private <T extends DbPersistent<T, ?>> void openMainTableTab(ProTableView<T> table,

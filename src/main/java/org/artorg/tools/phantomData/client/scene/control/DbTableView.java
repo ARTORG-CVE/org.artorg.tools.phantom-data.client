@@ -1,7 +1,7 @@
 package org.artorg.tools.phantomData.client.scene.control;
 
 import org.artorg.tools.phantomData.client.table.IDbTable;
-import org.artorg.tools.phantomData.client.table.Table;
+import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 public class DbTableView<ITEM extends DbPersistent<ITEM,?>> extends ProTableView<ITEM> {
@@ -16,10 +16,10 @@ public class DbTableView<ITEM extends DbPersistent<ITEM,?>> extends ProTableView
 	
 	
 	@Override
-	public void setTable(Table<ITEM> table) {
+	public void setTable(TableBase<ITEM> table) {
 		super.setTable(table);
-		reload();
-		initTable();
+//		reload();
+//		initTable();
 	}
 	
 	@SuppressWarnings("unchecked")

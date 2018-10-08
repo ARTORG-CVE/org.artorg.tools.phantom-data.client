@@ -14,15 +14,15 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.server.model.property.IPropertyContainer;
 import org.artorg.tools.phantomData.server.model.property.Property;
-import org.artorg.tools.phantomData.server.model.property.PropertyContainer;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.ObservableList;
 
 public interface IPropertyColumns {
 	
-	default <ITEM extends PropertyContainer & DbPersistent<ITEM,ID>, ID> 
+	default <ITEM extends IPropertyContainer & DbPersistent<ITEM,ID>, ID> 
 		void createPropertyColumns(List<AbstractColumn<ITEM>> columns, 
 				ObservableList<ITEM> items) {
 		createPropertyColumns(columns, items, 

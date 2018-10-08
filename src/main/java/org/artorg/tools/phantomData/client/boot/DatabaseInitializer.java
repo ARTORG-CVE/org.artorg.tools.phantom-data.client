@@ -68,9 +68,9 @@ public class DatabaseInitializer {
 	}
 
 	private static void initSpecial() {
-		PropertyField field1 = new PropertyField("hasLeaflets", "has leaflets?");
-		PropertyField field2 = new PropertyField("hasCoronaries", "has coronaries?");
-		PropertyField field3 = new PropertyField("nSimulations", "num. of simulations?");
+		PropertyField field1 = new PropertyField("has leaflets?", "", Special.class);
+		PropertyField field2 = new PropertyField("has coronaries?", "", Special.class);
+		PropertyField field3 = new PropertyField("num. of simulations?", "", Special.class);
 		fieldConn.create(field1);
 		fieldConn.create(field2);
 		fieldConn.create(field3);

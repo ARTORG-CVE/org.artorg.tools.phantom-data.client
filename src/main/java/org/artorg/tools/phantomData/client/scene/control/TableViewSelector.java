@@ -60,7 +60,7 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM,?>> extends Abstra
 		}
 		
 		this.getTableView1().getColumns().add(0, createButtonCellColumn("+", this::moveToSelected));
-		this.getTableView2().getColumns().add(0, createButtonCellColumn("-", this::moveToSelected));
+		this.getTableView2().getColumns().add(0, createButtonCellColumn("-", this::moveToSelectable));
 		((ProTableView<ITEM>)this.getTableView2()).removeHeaderRow();
 		
 		getTableView1().setRowFactory(new Callback<TableView<Object>,TableRow<Object>>() {

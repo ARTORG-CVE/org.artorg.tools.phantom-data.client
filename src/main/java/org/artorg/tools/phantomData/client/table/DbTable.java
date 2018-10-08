@@ -7,7 +7,7 @@ import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 @SuppressWarnings("unchecked")
-public class DbTable<ITEM extends DbPersistent<ITEM,?>> extends Table<ITEM> implements IDbTable<ITEM> {
+public class DbTable<ITEM extends DbPersistent<ITEM,?>> extends TableBase<ITEM> implements IDbTable<ITEM> {
 	private ICrudConnector<ITEM,?> connector;
 	
 	{

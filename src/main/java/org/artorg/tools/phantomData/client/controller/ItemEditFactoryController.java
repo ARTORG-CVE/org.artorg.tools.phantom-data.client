@@ -106,7 +106,6 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 				Set<Object> selectableItemSet = (Set<Object>) connector.readAllAsSet();
 				
 				if (selectableItemSet.size() > 0) {
-//					TitledPaneTableViewSelector<ITEM> titledSelector = new TitledPaneTableViewSelector<ITEM>(Object.class);
 					AbstractTableViewSelector<ITEM> titledSelector = new TitledPaneTableViewSelector<ITEM>(subItemClass);
 					titledSelector.setSelectableItems(selectableItemSet);
 					

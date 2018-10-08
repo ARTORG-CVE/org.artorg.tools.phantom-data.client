@@ -54,7 +54,6 @@ public class GroupedItemEditFactoryController<ITEM extends DbPersistent<ITEM, ?>
 	protected AnchorPane createRootPane() {
 		AnchorPane rootPane = new AnchorPane();
 		VBox vBox = new VBox();
-
 		AnchorPane buttonPane = createButtonPane(applyButton);
 
 		rootPane.getChildren().add(vBox);

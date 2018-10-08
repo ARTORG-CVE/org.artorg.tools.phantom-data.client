@@ -9,7 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 @SuppressWarnings("unchecked")
-public class Table<ITEM> implements ITable<ITEM> {
+public class TableBase<ITEM> implements ITable<ITEM> {
 	private ObservableList<ITEM> items;
 	private List<AbstractColumn<ITEM>> columns;
 	private boolean isIdColumnVisible;
@@ -23,11 +23,11 @@ public class Table<ITEM> implements ITable<ITEM> {
 		isIdColumnVisible = true;
 	}
 	
-	public Table() {
+	public TableBase() {
 		itemClass = (Class<ITEM>) Reflect.findGenericClasstype(this);
 	}
 	
-	public Table(Class<ITEM> itemClass) {
+	public TableBase(Class<ITEM> itemClass) {
 		this.itemClass = itemClass;
 	}
 	

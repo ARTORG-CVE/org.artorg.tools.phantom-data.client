@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
-import org.artorg.tools.phantomData.client.table.Table;
+import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 
@@ -17,7 +17,7 @@ import javafx.scene.text.Text;
 
 public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> implements AddableToAnchorPane {
 	private final Class<ITEM> itemClass;
-	private Table<ITEM> table;
+	private TableBase<ITEM> table;
 	private ListChangeListener<ITEM> listenerChangedListenerRefresh;
 	
 	
@@ -90,13 +90,13 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> imp
 	    return headerColumn;
 	}
 	
-	public void setTable(Table<ITEM> table) {
+	public void setTable(TableBase<ITEM> table) {
 		this.table = table;
 		initTable();
 		table.getItems().addListener(listenerChangedListenerRefresh);
 	}
 	
-	public Table<ITEM> getTable() {
+	public TableBase<ITEM> getTable() {
 		return table;
 	}
 	
