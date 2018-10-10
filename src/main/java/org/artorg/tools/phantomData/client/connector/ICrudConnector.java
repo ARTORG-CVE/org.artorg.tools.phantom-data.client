@@ -24,6 +24,8 @@ public interface ICrudConnector<T extends Identifiable<ID>, ID> {
 	
 	<V> T readByAttribute(V attribute, String annString);
 	
+	Boolean existById(ID id);
+	
 	default boolean create(List<T> t) {
 		return varArgHelper(this::create, t);
 	}
@@ -76,6 +78,12 @@ public interface ICrudConnector<T extends Identifiable<ID>, ID> {
 	default boolean update(T... t) {
 		return varArgHelper(this::update, t);
 	}
+	
+	default boolean existById(T t) {
+		return existById(t.getId());
+	}
+	
+	
 	
 	default boolean varArgHelper(Function<T,Boolean> func, List<T> list) {
 		boolean succesful = true;

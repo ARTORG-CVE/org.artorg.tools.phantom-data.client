@@ -127,6 +127,7 @@ public class MainController {
         assert contentPane != null : "fx:id=\"contentPane\" was not injected: check your FXML file 'Table.fxml'.";
     }
 	
+	@SuppressWarnings("unchecked")
 	public void init() {
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
@@ -147,7 +148,7 @@ public class MainController {
         ProTreeTableView treeTableView = new ProTreeTableView();
         treeTableView.initTable();
         
-        CrudConnectors<Phantom,?> connector = CrudConnectors.getConnector(Phantom.class);
+        CrudConnectors<Phantom,?> connector = (CrudConnectors<Phantom,?>) CrudConnectors.getConnector(Phantom.class);
         List<Phantom> phantoms = connector.readAllAsList();
         treeTableView.setItems(phantoms);
         layoutController.setSecondTreeTable(treeTableView);

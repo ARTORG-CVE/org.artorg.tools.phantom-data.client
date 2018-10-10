@@ -1,7 +1,11 @@
 package org.artorg.tools.phantomData.client.boot;
 
+import java.util.UUID;
+
+import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controllers.MainController;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.server.model.Phantom;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -32,6 +36,14 @@ public class MainFx extends Application {
 		stage.requestFocus();
 		stage.toFront();
 		isStarted = true;
+		
+//		HttpConnectorSpring<Phantom> phantomConn = HttpConnectorSpring.getOrCreate(Phantom.class);
+//		
+//		UUID id = phantomConn.readAllAsList().get(0).getId();
+//		System.out.println(id.toString());
+//		
+//		System.out.println(phantomConn.existById(id));
+//		System.out.println(phantomConn.existById(UUID.randomUUID()));
 	}
     
     public static boolean isStarted() {

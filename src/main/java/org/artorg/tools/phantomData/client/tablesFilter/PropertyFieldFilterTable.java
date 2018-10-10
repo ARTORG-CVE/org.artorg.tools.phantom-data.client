@@ -23,15 +23,8 @@ public class PropertyFieldFilterTable extends DbUndoRedoFactoryEditFilterTable<P
 				(path,value) -> path.setDescription((String) value)));
 		columns.add(new FilterColumn<PropertyField>(
 				"entity", item -> item, 
-				path -> path.getParentItemClass().getSimpleName(), 
-				(path,value) -> {
-					try {
-						path.setParentItemClass(Class.forName(value));
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
-					}
-					throw new RuntimeException();
-				}));
+				path -> path.getParentItemClass(), 
+				(path,value) -> path.setParentItemClass(value)));
 		
 		this.setColumns(columns);
 		

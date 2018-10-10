@@ -11,7 +11,8 @@ public class Collectors2 {
 	            Collectors.toList(),
 	            list -> {
 	                if (list.size() != 1) {
-	                    throw new IllegalStateException();
+	                	System.err.println(list.toString());
+	                    throw new IllegalStateException("Stream should return one item. Size is: " +list.size());
 	                }
 	                return list.get(0);
 	            }

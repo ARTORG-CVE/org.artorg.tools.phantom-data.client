@@ -2,6 +2,7 @@ package org.artorg.tools.phantomData.client.boot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
@@ -35,6 +36,9 @@ public class DatabaseInitializer {
 		initFiles();
 		initPhantoms();
 		System.out.println("Database initialized succesful");
+		
+		
+		
 	}
 	
 	public static boolean isInitialized() {

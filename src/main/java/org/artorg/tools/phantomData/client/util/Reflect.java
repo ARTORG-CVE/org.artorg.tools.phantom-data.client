@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,6 +26,8 @@ import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 
 public class Reflect {
+	
+	
 	
 	
 	
@@ -168,16 +171,19 @@ public class Reflect {
 	
 	
 	
+	public static Method getFirstMethod(Class<?> cls, Function<Stream<Method>, Stream<Method>> filteringStream) {
+		return getFirstMethod(filteringStream.apply(Arrays.asList(cls.getMethods()).stream()));
+	}
 	
 	
-	
-	
+	public static Method getFirstMethod(Stream<Method> stream) {
+		return stream.findFirst().get();
+	}
 	
 	
 	public static Method getMethod(Stream<Method> stream) {
 		return stream.limit(2l).collect(Collectors2.toSingleton());
 	}
-	
 	
 	public static Method getMethod(Class<?> cls, Function<Stream<Method>, Stream<Method>> filteringStream) {
 		return getMethod(filteringStream.apply(Arrays.asList(cls.getMethods()).stream()));
