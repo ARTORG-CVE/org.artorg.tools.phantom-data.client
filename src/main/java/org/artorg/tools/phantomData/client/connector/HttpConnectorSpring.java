@@ -45,6 +45,7 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 	private final String annoStringDelete;
 	private final String annoStringUpdate;
 	private final String annoStringExist;
+	
 	private final Class<?> itemClass;
 	private final Class<?> arrayItemClass;
 	private final Class<?> controllerClass;
@@ -77,8 +78,8 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 			throw new NullPointerException();
 		this.controllerClass = controllerClass;
 
-//		System.out.println(String.format("create connector: itemClass = %s, arrayClass = %s, controllerClass = %s",
-//				itemClass.getSimpleName(), arrayItemClass.getSimpleName(), controllerClass.getSimpleName()));
+		System.out.println(String.format("create connector: itemClass = %s, arrayClass = %s, controllerClass = %s",
+				itemClass.getSimpleName(), arrayItemClass.getSimpleName(), controllerClass.getSimpleName()));
 
 		// class annotation
 		RequestMapping anno = getControllerClass().getAnnotation(RequestMapping.class);
@@ -97,6 +98,8 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 				m -> m.getAnnotation(DeleteMapping.class).value()[0]);
 		annoStringExist = getAnnotatedValue("existById", GetMapping.class,
 				m -> m.getAnnotation(GetMapping.class).value()[0]);
+		
+		System.out.println();
 
 	}
 
@@ -104,9 +107,11 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 			Function<Method, String> stringAnnosFunc) {
 		Predicate<Method> predicate1 = m -> m.getName().equals(methodName);
 		Predicate<Method> predicate2 = m -> m.isAnnotationPresent(annotationClass);
-		Predicate<Method> predicate3 = m -> Modifier.isPublic(m.getModifiers());
-		Predicate<Method> predicate4 = m -> !Modifier.isAbstract(m.getModifiers());
-		Predicate<Method> filterPredicate = predicate1.and(predicate2).and(predicate3).and(predicate4);
+//		Predicate<Method> predicate3 = m -> Modifier.isPublic(m.getModifiers());
+//		Predicate<Method> predicate4 = m -> !Modifier.isAbstract(m.getModifiers());
+		Predicate<Method> filterPredicate = predicate1.and(predicate2)
+//				.and(predicate3).and(predicate4)
+				;
 		return getAnnotatedValue(annotationClass, filterPredicate, stringAnnosFunc);
 	}
 
@@ -132,6 +137,8 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 
 	private static Method getAnnotatedMethod(Class<?> methodsClass, Class<? extends Annotation> annotationClass,
 			Predicate<Method> filterPredicate) {
+		List<Method> methods = Arrays.asList(methodsClass.getMethods());
+		
 		return Reflect.getFirstMethod(methodsClass,
 				stream -> stream.filter(m -> m.isAnnotationPresent(annotationClass)).filter(filterPredicate));
 	}
@@ -206,6 +213,15 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 		}
 		return false;
 	}
+	
+	@Override
+	public Boolean existById(UUID id) {
+		HttpHeaders headers = createHttpHeaders();
+		RestTemplate restTemplate = new RestTemplate();
+		String url = createUrl(getAnnoStringExist());
+		Boolean result = (Boolean) restTemplate.getForObject(url, Boolean.class, id);
+		return result;
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -227,6 +243,8 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 		RestTemplate restTemplate = new RestTemplate();
 		String url = getUrlLocalhost() + "/" + getAnnoStringControlClass() + "/"
 				+ getAnnotationStringRead(attributeName);
+//		String url = createUrl(getAnnoStringRead());
+		
 		T result = (T) restTemplate.getForObject(url, getModelClass(), attribute);
 		return result;
 	}
@@ -330,15 +348,12 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 	public final String getAnnoStringDelete() {
 		return annoStringDelete;
 	}
-
-	@Override
-	public Boolean existById(UUID id) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		RestTemplate restTemplate = new RestTemplate();
-		String url = getUrlLocalhost() + "/" + getAnnoStringControlClass() + "/" + getAnnoStringRead();
-		Boolean result = (Boolean) restTemplate.getForObject(url, Boolean.class, id);
-		return result;
+	
+	public String getAnnoStringExist() {
+		return annoStringExist;
 	}
+
+
+	
 
 }

@@ -155,18 +155,18 @@ public class DatabaseInitializer {
 		phantoms[14] = createPhantom(21, "A", "P", "N", 1);
 
 		List<PhantomFile> files0 = new ArrayList<PhantomFile>();
-		files0.add(fileConn.readByAttribute("model", "NAME"));
-		files0.add(fileConn.readByAttribute("model2", "NAME"));
+		files0.add(fileConn.readByAttribute("model", "name"));
+		files0.add(fileConn.readByAttribute("model2", "name"));
 		phantoms[0].setFiles(files0);
 		phantomConn.create(phantoms);
 	}
 
 	private static Phantom createPhantom(int annulusDiameter, String fType, String litBase,
 			String special, int number) {
-		AnnulusDiameter annulusDiameter2 = adConn.readByAttribute(annulusDiameter, "SHORTCUT");
-		FabricationType fType2 = fTypeConn.readByAttribute(fType, "SHORTCUT");
-		LiteratureBase litBase2 = litBaseConn.readByAttribute(litBase, "SHORTCUT");
-		Special special2 = specConn.readByAttribute(special, "SHORTCUT");
+		AnnulusDiameter annulusDiameter2 = adConn.readByAttribute(annulusDiameter, "shortcut");
+		FabricationType fType2 = fTypeConn.readByAttribute(fType, "shortcut");
+		LiteratureBase litBase2 = litBaseConn.readByAttribute(litBase, "shortcut");
+		Special special2 = specConn.readByAttribute(special, "shortcut");
 		return new Phantom(annulusDiameter2, fType2, litBase2, special2, number);
 	}
 
