@@ -5,6 +5,8 @@ import java.util.UUID;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controllers.MainController;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.server.BootApplication;
+import org.artorg.tools.phantomData.server.beans.BeanMap;
 import org.artorg.tools.phantomData.server.model.Phantom;
 
 import javafx.application.Application;
@@ -36,6 +38,10 @@ public class MainFx extends Application {
 		stage.requestFocus();
 		stage.toFront();
 		isStarted = true;
+		
+		BeanMap beanMap = BootApplication.getBeanmap();
+		
+		System.out.println(beanMap.getMap().size());
 		
 //		HttpConnectorSpring<Phantom> phantomConn = HttpConnectorSpring.getOrCreate(Phantom.class);
 //		

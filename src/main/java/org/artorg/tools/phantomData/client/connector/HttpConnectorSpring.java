@@ -34,6 +34,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.artorg.tools.phantomData.server.BootApplication;
+import org.artorg.tools.phantomData.server.beans.PersistentIntrospector;
 import org.artorg.tools.phantomData.server.controller.*;
 
 @SuppressWarnings("unused")
@@ -161,6 +163,12 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 	public boolean create(T t) {
 		try {
 			System.out.println("create " + getModelClass() + ": " + t.toString());
+			
+			PersistentIntrospector introspector = BootApplication.getBeanmap().getIntrospector(t.getClass());
+			
+			System.out.println(introspector.get)
+			
+			
 			HttpHeaders headers = createHttpHeaders();
 			RestTemplate restTemplate = new RestTemplate();
 			String url = createUrl(getAnnoStringCreate());
