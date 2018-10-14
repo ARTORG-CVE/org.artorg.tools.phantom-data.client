@@ -1,11 +1,13 @@
 package org.artorg.tools.phantomData.client;
 
 import org.artorg.tools.phantomData.client.boot.ClientBooter;
+import org.artorg.tools.phantomData.server.beans.EntityBeanInfos;
 import org.reflections.Reflections;
 
 public class Main extends DesktopSwingBootApplication {
 	private static ClientBooter clientBooter;
 	private static final Reflections reflections = new Reflections("org.artorg.tools.phantomData");
+	private static final EntityBeanInfos beanInfos = new EntityBeanInfos(reflections);
 
 	public static Reflections getReflections() {
 		return reflections;
@@ -21,6 +23,10 @@ public class Main extends DesktopSwingBootApplication {
 
 	public static void setClientBooter(ClientBooter clientBooter) {
 		Main.clientBooter = clientBooter;
+	}
+
+	public static EntityBeanInfos getBeaninfos() {
+		return beanInfos;
 	}
 
 }

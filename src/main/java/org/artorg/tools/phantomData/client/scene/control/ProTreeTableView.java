@@ -2,7 +2,9 @@ package org.artorg.tools.phantomData.client.scene.control;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.util.FxUtil;
@@ -91,15 +93,33 @@ public class ProTreeTableView extends TreeTableView<Object> implements AddableTo
 	public void setItems(List<Phantom> items) {
 		List<TreeItem<Object>> treeItems = new ArrayList<TreeItem<Object>>();
 		items.forEach(item -> {
-			TreeItem<Object> childNode1 = new TreeItem<>(item.getProductId());
+			TreeItem<Object> node = new TreeItem<>(item);
+			node.getChildren().addAll(createTreeItems(item));
+			treeItems.add(node);
 			
-			TreeItem<Object> childNode2 = new TreeItem<>(item.getAnnulusDiameter());
-			childNode1.getChildren().add(childNode2);
-			
-			treeItems.add(childNode1);
+//			TreeItem<Object> childNode1 = new TreeItem<>(item.getProductId());
+//			
+//			TreeItem<Object> childNode2 = new TreeItem<>(item.getAnnulusDiameter());
+//			childNode1.getChildren().add(childNode2);
+//			
+//			treeItems.add(childNode1);
 		});
 		root.getChildren().clear();
 		root.getChildren().addAll(treeItems);
+	}
+	
+	private List<TreeItem<Object>> createTreeItems(Object bean) {
+		List<Object> entities = Main.getBeaninfos().getEntities(bean);
+		List<TreeItem<Object>> entityTreeItems = entities.stream()
+				.map(entity -> {
+					TreeItem<Object> node = new TreeItem<>(entity);
+					node.getChildren().addAll(createTreeItems(entity));
+					return node;
+				}).collect(Collectors.toList());
+		List<Object> properties = Main.getBeaninfos().getProperties(bean);
+		List<TreeItem<Object>> propertyTreeItems = properties.stream().map(o -> new TreeItem<>(o)).collect(Collectors.toList());
+		entityTreeItems.addAll(propertyTreeItems);
+		return entityTreeItems;
 	}
 	
 	public void setTable(TableBase<Phantom> table) {

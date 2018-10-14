@@ -164,9 +164,9 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 		try {
 			System.out.println("create " + getModelClass() + ": " + t.toString());
 			
-			PersistentIntrospector introspector = BootApplication.getBeanmap().getIntrospector(t.getClass());
-			
-			System.out.println(introspector.get)
+//			PersistentIntrospector introspector = BootApplication.getBeanmap().getIntrospector(t.getClass());
+//			
+//			System.out.println(introspector.get)
 			
 			
 			HttpHeaders headers = createHttpHeaders();
