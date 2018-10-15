@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
+import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
@@ -27,7 +28,7 @@ public class FileEditFactoryController extends GroupedItemEditFactoryController<
 		comboBoxFileType = new ComboBox<FileType>();
 		
 		List<TitledPane> panes = new ArrayList<TitledPane>();
-		createComboBox(comboBoxFileType, HttpConnectorSpring.getOrCreate(FileType.class), d -> String.valueOf(d.getName()));
+		createComboBox(comboBoxFileType, PersonalizedHttpConnectorSpring.getOrCreate(FileType.class), d -> String.valueOf(d.getName()));
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
 		generalProperties.add(new PropertyEntry("Path", textFieldPath));
 		generalProperties.add(new PropertyEntry("Name", textFieldName));

@@ -11,10 +11,12 @@ import org.artorg.tools.phantomData.client.io.IOutil;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.server.model.AcademicTitle;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
+import org.artorg.tools.phantomData.server.model.Person;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.model.Special;
@@ -58,7 +60,8 @@ public class MainController {
     
     @FXML
     private MenuItem menuItemTablePhantoms, menuItemTableAnnulusDiameters, menuItemTableLiteratureBases, 
-    	menuItemTableFabricationTypes, menuItemTableSpecials, menuItemTableProperties,
+    	menuItemTableFabricationTypes, menuItemTableSpecials,
+    	menuItemTableAcademicTitles, menuItemTablePersons, menuItemTableProperties,
     	menuItemTableFiles, menuItemTableFileTypes, menuItemTablePropertyFields;
     
     @FXML
@@ -120,6 +123,8 @@ public class MainController {
         assert menuItemTableLiteratureBases != null : "fx:id=\"menuItemTableLiteratureBase\" was not injected: check your FXML file 'Main.fxml'.";
         assert menuItemTableFabricationTypes != null : "fx:id=\"menuItemTableFabricationType\" was not injected: check your FXML file 'Main.fxml'.";
         assert menuItemTableSpecials != null : "fx:id=\"menuItemTableSpecials\" was not injected: check your FXML file 'Main.fxml'.";
+        assert menuItemTablePersons != null : "fx:id=\"menuitemTablePersons\" was not injected: check your FXML file 'Table.fxml'.";
+        assert menuItemTableAcademicTitles != null : "fx:id=\"menuItemTableAcademicTitles\" was not injected: check your FXML file 'Table.fxml'.";
         assert menuItemTableProperties != null : "fx:id=\"menuItemTableProperties\" was not injected: check your FXML file 'Main.fxml'.";
         assert menuItemTableFiles != null : "fx:id=\"menuItemTableFiles\" was not injected: check your FXML file 'Main.fxml'.";
         assert menuItemTableFileTypes != null : "fx:id=\"menuItemTableFileTypes\" was not injected: check your FXML file 'Main.fxml'.";
@@ -209,6 +214,16 @@ public class MainController {
 	@FXML
     void openTablePropertyFields(ActionEvent event) {
 		layoutController.openMainTableTab(PropertyField.class);
+    }
+	
+	@FXML
+    void openTableAcademicTitles(ActionEvent event) {
+		layoutController.openMainTableTab(AcademicTitle.class);
+    }
+	
+	@FXML
+    void openTablePersons(ActionEvent event) {
+		layoutController.openMainTableTab(Person.class);
     }
 	
 	@FXML

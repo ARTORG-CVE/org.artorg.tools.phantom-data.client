@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
+import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
+import org.artorg.tools.phantomData.server.model.AcademicTitle;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.FileType;
+import org.artorg.tools.phantomData.server.model.Gender;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
+import org.artorg.tools.phantomData.server.model.Person;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.model.Special;
@@ -17,18 +22,22 @@ import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 public class DatabaseInitializer {
-	private static HttpConnectorSpring<AnnulusDiameter> adConn = HttpConnectorSpring.getOrCreate(AnnulusDiameter.class);
-	private static HttpConnectorSpring<FabricationType> fTypeConn = HttpConnectorSpring.getOrCreate(FabricationType.class);
-	private static HttpConnectorSpring<LiteratureBase> litBaseConn = HttpConnectorSpring.getOrCreate(LiteratureBase.class);
-	private static HttpConnectorSpring<PropertyField> fieldConn = HttpConnectorSpring.getOrCreate(PropertyField.class);
-	private static HttpConnectorSpring<BooleanProperty> boolPropConn = HttpConnectorSpring.getOrCreate(BooleanProperty.class);
-	private static HttpConnectorSpring<IntegerProperty> intPropConn = HttpConnectorSpring.getOrCreate(IntegerProperty.class);
-	private static HttpConnectorSpring<Special> specConn = HttpConnectorSpring.getOrCreate(Special.class);
-	private static HttpConnectorSpring<Phantom> phantomConn = HttpConnectorSpring.getOrCreate(Phantom.class);
-	private static HttpConnectorSpring<FileType> fileTypeConn = HttpConnectorSpring.getOrCreate(FileType.class);
-	private static HttpConnectorSpring<PhantomFile> fileConn = HttpConnectorSpring.getOrCreate(PhantomFile.class);
+	private static HttpConnectorSpring<Gender> genderConn = HttpConnectorSpring.getOrCreate(Gender.class);
+	private static PersonalizedHttpConnectorSpring<AcademicTitle> academicTitleConn = PersonalizedHttpConnectorSpring.getOrCreate(AcademicTitle.class);
+	private static PersonalizedHttpConnectorSpring<Person> personConn = PersonalizedHttpConnectorSpring.getOrCreate(Person.class);
+	private static PersonalizedHttpConnectorSpring<AnnulusDiameter> adConn = PersonalizedHttpConnectorSpring.getOrCreate(AnnulusDiameter.class);
+	private static PersonalizedHttpConnectorSpring<FabricationType> fTypeConn = PersonalizedHttpConnectorSpring.getOrCreate(FabricationType.class);
+	private static PersonalizedHttpConnectorSpring<LiteratureBase> litBaseConn = PersonalizedHttpConnectorSpring.getOrCreate(LiteratureBase.class);
+	private static PersonalizedHttpConnectorSpring<PropertyField> fieldConn = PersonalizedHttpConnectorSpring.getOrCreate(PropertyField.class);
+	private static PersonalizedHttpConnectorSpring<BooleanProperty> boolPropConn = PersonalizedHttpConnectorSpring.getOrCreate(BooleanProperty.class);
+	private static PersonalizedHttpConnectorSpring<IntegerProperty> intPropConn = PersonalizedHttpConnectorSpring.getOrCreate(IntegerProperty.class);
+	private static PersonalizedHttpConnectorSpring<Special> specConn = PersonalizedHttpConnectorSpring.getOrCreate(Special.class);
+	private static PersonalizedHttpConnectorSpring<Phantom> phantomConn = PersonalizedHttpConnectorSpring.getOrCreate(Phantom.class);
+	private static PersonalizedHttpConnectorSpring<FileType> fileTypeConn = PersonalizedHttpConnectorSpring.getOrCreate(FileType.class);
+	private static PersonalizedHttpConnectorSpring<PhantomFile> fileConn = PersonalizedHttpConnectorSpring.getOrCreate(PhantomFile.class);
 
 	public static void initDatabase() {
+		initPerson();
 		initAnnulusDiameter();
 		initFabricationtype();
 		initLiteratureBase();
@@ -37,7 +46,7 @@ public class DatabaseInitializer {
 		initPhantoms();
 		System.out.println("Database initialized succesful");
 		
-		
+		UserAdmin.logout();
 		
 	}
 	
@@ -48,6 +57,35 @@ public class DatabaseInitializer {
 		return false;
 	}
 
+	
+	private static void initPerson() {
+		HttpConnectorSpring<AcademicTitle> academicTitleConnInit = HttpConnectorSpring.getOrCreate(AcademicTitle.class);
+		HttpConnectorSpring<Person> personConnInit = HttpConnectorSpring.getOrCreate(Person.class);
+		Gender male = new Gender("Male");
+		Gender female = new Gender("Female");
+		genderConn.create(male, female);
+		AcademicTitle noAcademicTitle = new AcademicTitle("", "No title");
+		academicTitleConnInit.create(noAcademicTitle);
+		Person hutzli = new Person(noAcademicTitle, "Marc", "Hutzli", male);
+		personConnInit.create(hutzli);
+		hutzli.setCreator(hutzli);
+		hutzli.setChanger(hutzli);
+		personConnInit.update(hutzli);
+		noAcademicTitle.setCreator(hutzli);
+		noAcademicTitle.setChanger(hutzli);
+		academicTitleConnInit.update(noAcademicTitle);
+		
+		UserAdmin.login(hutzli);
+		AcademicTitle master = new AcademicTitle("M.Sc.", "Master of Science");
+		academicTitleConn.create(new AcademicTitle("Dr.", "General Doctor title"));
+		academicTitleConn.create(new AcademicTitle("Dr. med.", "Doctor title in medicine"));
+		academicTitleConn.create(new AcademicTitle("Dr. phil.", "Doctor title in philosophy"));
+		academicTitleConn.create(master);
+		academicTitleConn.create(new AcademicTitle("B.Sc.", "Bachelor of Science"));
+		personConn.create(new Person(master, "Silje", "Ekroll Jahren", female));
+	}
+	
+	
 	private static void initAnnulusDiameter() {
 		adConn.create(new AnnulusDiameter(21, 21.0));
 		adConn.create(new AnnulusDiameter(25, 25.0));

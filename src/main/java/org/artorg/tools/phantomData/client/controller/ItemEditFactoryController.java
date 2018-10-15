@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
 import org.artorg.tools.phantomData.client.scene.control.TitledPaneTableViewSelector;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.table.FxFactory;
@@ -156,10 +157,14 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 			}
 	}
 	
+	protected <T extends DbPersistent<T,ID>, ID> void createComboBox(ComboBox<T> comboBox, 
+			Class<T> itemClass, Function<T,String> mapper) {
+		createComboBox(comboBox, itemClass, mapper, item -> {});
+	}
 	@SuppressWarnings("unchecked")
 	protected <T extends DbPersistent<T,ID>, ID> void createComboBox(ComboBox<T> comboBox, 
 			Class<T> itemClass, Function<T,String> mapper, Consumer<T> selectedItemChangedConsumer) {
-		ICrudConnector<T,ID> connector = (ICrudConnector<T, ID>) HttpConnectorSpring.getOrCreate(itemClass);
+		ICrudConnector<T,ID> connector = (ICrudConnector<T, ID>) PersonalizedHttpConnectorSpring.getOrCreate(itemClass);
     	createComboBox(comboBox, connector, mapper);
         
         ChangeListener<T> listener = (observable, oldValue, newValue) -> {
