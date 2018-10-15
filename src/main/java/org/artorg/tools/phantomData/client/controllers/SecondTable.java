@@ -1,7 +1,7 @@
 package org.artorg.tools.phantomData.client.controllers;
 
-import org.artorg.tools.phantomData.client.scene.control.ProTableView;
-import org.artorg.tools.phantomData.client.scene.control.ProTreeTableView;
+import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
+import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
 import org.artorg.tools.phantomData.client.scene.layout.AnchorPaneAddableTo;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 

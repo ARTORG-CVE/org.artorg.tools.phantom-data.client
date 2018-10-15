@@ -1,9 +1,10 @@
-package org.artorg.tools.phantomData.client.scene.control;
+package org.artorg.tools.phantomData.client.scene.control.tableView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.FilterColumn;
 import org.artorg.tools.phantomData.client.table.IDbTable;

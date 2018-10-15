@@ -30,7 +30,7 @@ public class MainTableTabPane extends TabPane implements AddableToAnchorPane {
 	}	
 
 	@SuppressWarnings("unchecked")
-	public <ITEM extends DbPersistent<ITEM,?>, TABLE extends org.artorg.tools.phantomData.client.scene.control.ProTableView<ITEM>> void openTableTab(
+	public <ITEM extends DbPersistent<ITEM,?>, TABLE extends org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView<ITEM>> void openTableTab(
 			TABLE tableViewSpring, String name) {
 		Tab tab = new Tab(name);
 		tab.setContent(tableViewSpring);

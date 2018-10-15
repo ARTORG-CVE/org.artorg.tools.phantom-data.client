@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.scene.control;
+package org.artorg.tools.phantomData.client.scene.control.tableView;
 
 import org.artorg.tools.phantomData.client.table.IEditFilterTable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;

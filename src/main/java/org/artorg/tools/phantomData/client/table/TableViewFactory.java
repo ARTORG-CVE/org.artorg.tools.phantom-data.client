@@ -3,8 +3,8 @@ package org.artorg.tools.phantomData.client.table;
 import java.lang.reflect.InvocationTargetException;
 
 import org.artorg.tools.phantomData.client.Main;
-import org.artorg.tools.phantomData.client.scene.control.DbTableView;
-import org.artorg.tools.phantomData.client.scene.control.ProTableView;
+import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
+import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 

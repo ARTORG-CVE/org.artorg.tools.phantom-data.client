@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.scene.control;
+package org.artorg.tools.phantomData.client.scene.control.treeTableView;
 
 import org.artorg.tools.phantomData.client.table.IDbTable;
 import org.artorg.tools.phantomData.client.table.TableBase;

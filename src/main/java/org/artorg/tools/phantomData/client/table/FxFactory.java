@@ -1,6 +1,6 @@
 package org.artorg.tools.phantomData.client.table;
 
-import org.artorg.tools.phantomData.client.scene.control.ProTableView;
+import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 
 import javafx.scene.Node;
 

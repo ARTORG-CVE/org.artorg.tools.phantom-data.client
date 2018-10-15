@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.scene.control;
+package org.artorg.tools.phantomData.client.scene.control.tableView;
 
 import java.util.ArrayList;
 import java.util.List;

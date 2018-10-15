@@ -7,12 +7,12 @@ import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.connector.Connectors;
-import org.artorg.tools.phantomData.client.scene.control.DbFilterTableView;
-import org.artorg.tools.phantomData.client.scene.control.DbTableView;
-import org.artorg.tools.phantomData.client.scene.control.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
-import org.artorg.tools.phantomData.client.scene.control.ProTableView;
-import org.artorg.tools.phantomData.client.scene.control.ProTreeTableView;
+import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
+import org.artorg.tools.phantomData.client.scene.control.tableView.DbUndoRedoAddEditControlFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
+import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
