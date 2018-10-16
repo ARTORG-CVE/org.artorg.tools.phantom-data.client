@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -13,9 +14,9 @@ import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
+import org.artorg.tools.phantomData.server.util.Reflect;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.ObservableList;
@@ -28,7 +29,8 @@ import javafx.scene.layout.AnchorPane;
 import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.Person;
 
-public class ProTreeTableView extends TreeTableView<Object> implements AddableToAnchorPane {
+public class ProTreeTableView extends TreeTableView<Object>
+	implements AddableToAnchorPane {
 	private Class<Phantom> itemClass;
 	private TableBase<Phantom> table;
 	private TreeItem<Object> root = new TreeItem<Object>("Root node");
@@ -47,28 +49,36 @@ public class ProTreeTableView extends TreeTableView<Object> implements AddableTo
 
 		column = new TreeTableColumn<>("Item type");
 		column.setPrefWidth(150);
-		column.setCellValueFactory((TreeTableColumn.CellDataFeatures<Object, String> param) -> {
-			Object item = param.getValue().getValue();
-			if (item == null)
-				return new ReadOnlyStringWrapper("null");
-			return new ReadOnlyStringWrapper(param.getValue().getValue().getClass().getSimpleName());
-		});
+		column.setCellValueFactory(
+			(TreeTableColumn.CellDataFeatures<Object, String> param) -> {
+				Object item = param.getValue().getValue();
+				if (item == null)
+					return new ReadOnlyStringWrapper("null");
+				return new ReadOnlyStringWrapper(
+					param.getValue().getValue().getClass()
+						.getSimpleName());
+			});
 		getColumns().add(column);
 
-		column = createColumn("Name", item -> item.createName(), item -> item.toString());
+		column = createColumn("Name", item -> item.createName(),
+			item -> item.toString());
 		getColumns().add(column);
 
 		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-		column = createColumn("Last modified", item -> format.format(item.getDateLastModified()));
+		column = createColumn("Last modified",
+			item -> format.format(item.getDateLastModified()));
 		getColumns().add(column);
 
-		column = createColumn("Changed by", item -> item.getChanger().getSimpleAcademicName());
-		getColumns().add(column);
-		
-		column = createColumn("Added", item -> format.format(item.getDateAdded()));
+		column = createColumn("Changed by",
+			item -> item.getChanger().getSimpleAcademicName());
 		getColumns().add(column);
 
-		column = createColumn("Creator", item -> item.getCreator().getSimpleAcademicName());
+		column = createColumn("Added",
+			item -> format.format(item.getDateAdded()));
+		getColumns().add(column);
+
+		column = createColumn("Creator",
+			item -> item.getCreator().getSimpleAcademicName());
 		getColumns().add(column);
 
 		root.setExpanded(true);
@@ -82,27 +92,31 @@ public class ProTreeTableView extends TreeTableView<Object> implements AddableTo
 	}
 
 	private TreeTableColumn<Object, String> createColumn(String columnName,
-			Function<AbstractBaseEntity<?>, String> mapper) {
+		Function<AbstractBaseEntity<?>, String> mapper) {
 		return createColumn(columnName, mapper, item -> "");
 	}
 
 	private TreeTableColumn<Object, String> createColumn(String columnName,
-			Function<AbstractBaseEntity<?>, String> mapper, Function<Object, String> orMapper) {
-		TreeTableColumn<Object, String> column = new TreeTableColumn<>(columnName);
+		Function<AbstractBaseEntity<?>, String> mapper,
+		Function<Object, String> orMapper) {
+		TreeTableColumn<Object, String> column = new TreeTableColumn<>(
+			columnName);
 		column.setPrefWidth(400);
-		column.setCellValueFactory((TreeTableColumn.CellDataFeatures<Object, String> param) -> {
-			Object item = param.getValue().getValue();
-			if (item == null)
-				return new ReadOnlyStringWrapper("null");
-			if (item instanceof AbstractBaseEntity) {
-				try {
-					return new ReadOnlyStringWrapper(mapper.apply(((AbstractBaseEntity<?>) item)));
-				} catch (NullPointerException e) {}
-				return new ReadOnlyStringWrapper("null");
-			}
-			else
-				return new ReadOnlyStringWrapper(orMapper.apply(item));
-		});
+		column.setCellValueFactory(
+			(TreeTableColumn.CellDataFeatures<Object, String> param) -> {
+				Object item = param.getValue().getValue();
+				if (item == null)
+					return new ReadOnlyStringWrapper("null");
+				if (item instanceof AbstractBaseEntity) {
+					try {
+						return new ReadOnlyStringWrapper(mapper
+							.apply(((AbstractBaseEntity<?>) item)));
+					} catch (NullPointerException e) {
+					}
+					return new ReadOnlyStringWrapper("null");
+				} else
+					return new ReadOnlyStringWrapper(orMapper.apply(item));
+			});
 		return column;
 	}
 
@@ -117,38 +131,65 @@ public class ProTreeTableView extends TreeTableView<Object> implements AddableTo
 		root.getChildren().addAll(treeItems);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings("rawtypes")
 	private List<TreeItem<Object>> createTreeItems(Object bean, int level) {
-		if (level>20) return new ArrayList<TreeItem<Object>>();
+		if (level > 20)
+			return new ArrayList<TreeItem<Object>>();
+		
 		List<Object> entities = Main.getBeaninfos().getEntities(bean);
-		entities = entities.stream().filter(entity -> entity != bean).filter(entity -> !(entity instanceof Person)).collect(Collectors.toList());
-		List<TreeItem<Object>> entityTreeItems = entities.stream().filter(entity -> entity != null).map(entity -> {
-			TreeItem<Object> node = new TreeItem<>(entity);
-			node.getChildren().addAll(createTreeItems(entity, level +1));
-			return node;
-		}).collect(Collectors.toList());
+		entities = entities.stream()
+			.filter(entity -> entity != bean)
+			.filter(entity -> !(entity instanceof Person))
+			.collect(Collectors.toList());
+		List<TreeItem<Object>> entityTreeItems = entities.stream()
+			.filter(entity -> entity != null)
+			.map(entity -> {
+				TreeItem<Object> node = new TreeItem<>(entity);
+				node.getChildren()
+					.addAll(createTreeItems(entity, level + 1));
+				return node;
+			}).collect(Collectors.toList());
+
+		List<Collection<Object>> entityCollections = Main.getBeaninfos()
+			.getEntityCollections(bean);
+		entityCollections = entityCollections.stream()
+			.filter(entity -> entity != bean)
+			.filter(entity -> !(entity instanceof Person))
+			.collect(Collectors.toList());
+		List<TreeItem<Object>> entityCollectionTreeItems = entityCollections
+			.stream()
+			.filter(entity -> entity != null)
+			.map(entity -> {
+				TreeItem<Object> node = new TreeItem<>(entity);
+				List<TreeItem<Object>> childrenNodes = entity.stream()
+					.flatMap(subEntity -> createTreeItems(subEntity, level + 1)
+						.stream())
+					.collect(Collectors.toList());
+				node.getChildren()
+					.addAll(childrenNodes);
+				return node;
+			}).collect(Collectors.toList());
+
 		List<Object> properties = Main.getBeaninfos().getProperties(bean);
-		Function<Object,Stream<Object>> flatMapper = p -> {
-			Stream<Object> stream;
-			if (p instanceof Collection)
-				stream = ((Collection)p).stream();
-			stream = Arrays.asList(p).stream();
-			return stream;
-		}; 
-		properties = properties.stream()
-				.filter(p -> !(p instanceof Class))
-				.filter(p -> {
-					if (p instanceof Collection) {
-						Collection<?> coll = (Collection)p;
-						if (coll.isEmpty())
-							return false;
-					}
-					return true;
-				})
-//				.flatMap(flatMapper)
-				.collect(Collectors.toList());
-		List<TreeItem<Object>> propertyTreeItems = properties.stream().map(o -> new TreeItem<>(o))
-				.collect(Collectors.toList());
+		properties = properties.stream().filter(p -> !(p instanceof Class))
+			.filter(p -> {
+				if (p instanceof Collection) {
+					Collection<?> coll = (Collection) p;
+					if (coll.isEmpty())
+						return false;
+				}
+				return true;
+			}).sorted((p1,p2) -> {
+				if (UUID.class.isAssignableFrom(p1.getClass()))
+					return -1;
+				return 0;
+			}).collect(Collectors.toList());
+		
+		List<TreeItem<Object>> propertyTreeItems = properties.stream()
+			.map(o -> new TreeItem<>(o))
+			.collect(Collectors.toList());
+		
+		entityTreeItems.addAll(entityCollectionTreeItems);
 		entityTreeItems.addAll(propertyTreeItems);
 		return entityTreeItems;
 	}

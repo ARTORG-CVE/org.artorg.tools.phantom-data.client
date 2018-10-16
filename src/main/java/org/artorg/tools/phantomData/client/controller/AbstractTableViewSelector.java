@@ -3,7 +3,7 @@ package org.artorg.tools.phantomData.client.controller;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.artorg.tools.phantomData.client.util.Reflect;
+import org.artorg.tools.phantomData.server.util.Reflect;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;

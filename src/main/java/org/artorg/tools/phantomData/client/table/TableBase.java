@@ -3,7 +3,7 @@ package org.artorg.tools.phantomData.client.table;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.util.Reflect;
+import org.artorg.tools.phantomData.server.util.Reflect;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

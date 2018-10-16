@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.artorg.tools.phantomData.client.Main;
-import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.client.util.StreamUtils;
 import org.artorg.tools.phantomData.server.specification.ControllerSpec;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
+import org.artorg.tools.phantomData.server.util.Reflect;
 import org.reflections.Reflections;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

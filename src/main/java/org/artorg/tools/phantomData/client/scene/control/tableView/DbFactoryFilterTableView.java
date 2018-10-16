@@ -4,8 +4,8 @@ import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.table.FxFactory;
 import org.artorg.tools.phantomData.client.table.IDbFactoryTableView;
-import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.util.Reflect;
 
 @SuppressWarnings("unchecked")
 public class DbFactoryFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends DbFilterTableView<ITEM> implements IDbFactoryTableView<ITEM> {

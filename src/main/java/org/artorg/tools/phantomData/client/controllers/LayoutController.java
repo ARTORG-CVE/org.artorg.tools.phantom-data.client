@@ -16,8 +16,8 @@ import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTa
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
-import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.util.Reflect;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
