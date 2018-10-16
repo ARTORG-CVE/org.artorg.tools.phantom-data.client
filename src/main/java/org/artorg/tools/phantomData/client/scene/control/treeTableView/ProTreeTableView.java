@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
-import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.Person;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -21,7 +20,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeSortMode;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
-import javafx.scene.layout.AnchorPane;
 
 public class ProTreeTableView<ITEM extends DbPersistent<ITEM,?>> extends TreeTableView<Object>
 	implements AddableToAnchorPane {
@@ -199,10 +197,6 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM,?>> extends TreeTab
 
 	public Class<?> getItemClass() {
 		return itemClass;
-	}
-
-	public void addTo(AnchorPane pane) {
-		FxUtil.addToAnchorPane(pane, this);
 	}
 
 }

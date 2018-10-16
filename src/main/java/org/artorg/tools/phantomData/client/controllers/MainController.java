@@ -123,29 +123,26 @@ public class MainController {
         });
         
         layoutController = new LayoutController();
-        
-        AnchorPane layout = FxUtil.loadFXML("fxml/PhantomLayout.fxml", layoutController);
-        FxUtil.addToAnchorPane(contentPane, layout);
+        layoutController.addTo(contentPane);
         layoutController.init();
-        
-        layoutController.openMainTableTab(Phantom.class);
+        layoutController.openTableTab(Phantom.class);
         layoutController.openBottomTreeTableTab(Phantom.class);
 
 	}
     
 	@FXML
     void openTableFileTypes(ActionEvent event) {
-		layoutController.openMainTableTab(FileType.class);
+		layoutController.openTableTab(FileType.class);
     }
     
 	@FXML
     void openTableFiles(ActionEvent event) {
-		layoutController.openMainTableTab(PhantomFile.class);
+		layoutController.openTableTab(PhantomFile.class);
     }
     
 	@FXML
     void openTablePhantoms(ActionEvent event) {    	
-		layoutController.openMainTableTab(Phantom.class);
+		layoutController.openTableTab(Phantom.class);
     }
 	
 //	private Button createTabButton(String iconName) {
@@ -159,62 +156,62 @@ public class MainController {
     
 	@FXML
     void openTableProperties(ActionEvent event) {
-		layoutController.openMainTableTab(BooleanProperty.class);
+		layoutController.openTableTab(BooleanProperty.class);
     }
     
 	@FXML
     void openTableSpecials(ActionEvent event) {
-		layoutController.openMainTableTab(Special.class);
+		layoutController.openTableTab(Special.class);
     }
     
 	@FXML
     void openTableAnnulusDiameter(ActionEvent event) {
-		layoutController.openMainTableTab(AnnulusDiameter.class);
+		layoutController.openTableTab(AnnulusDiameter.class);
     }
     
 	@FXML
     void openTableFabricationTypes(ActionEvent event) {
-		layoutController.openMainTableTab(FabricationType.class);
+		layoutController.openTableTab(FabricationType.class);
     }
     
 	@FXML
     void openTableLiteratureBases(ActionEvent event) {
-		layoutController.openMainTableTab(LiteratureBase.class);
+		layoutController.openTableTab(LiteratureBase.class);
     }
     
 	@FXML
     void openTablePropertyFields(ActionEvent event) {
-		layoutController.openMainTableTab(PropertyField.class);
+		layoutController.openTableTab(PropertyField.class);
     }
 	
 	@FXML
     void openTableAcademicTitles(ActionEvent event) {
-		layoutController.openMainTableTab(AcademicTitle.class);
+		layoutController.openTableTab(AcademicTitle.class);
     }
 	
 	@FXML
     void openTablePersons(ActionEvent event) {
-		layoutController.openMainTableTab(Person.class);
+		layoutController.openTableTab(Person.class);
     }
 	
 	@FXML
     void openTableBooleanProperties(ActionEvent event) {
-		layoutController.openMainTableTab(BooleanProperty.class);
+		layoutController.openTableTab(BooleanProperty.class);
     }
 
     @FXML
     void openTableDoubleProperties(ActionEvent event) {
-    	layoutController.openMainTableTab(DoubleProperty.class);
+    	layoutController.openTableTab(DoubleProperty.class);
     }
     
     @FXML
     void openTableIntegerProperties(ActionEvent event) {
-    	layoutController.openMainTableTab(IntegerProperty.class);
+    	layoutController.openTableTab(IntegerProperty.class);
     }
 
     @FXML
     void openTableStringProperties(ActionEvent event) {
-    	layoutController.openMainTableTab(StringProperty.class);
+    	layoutController.openTableTab(StringProperty.class);
     }
     
     public static String getUrlLocalhost() {

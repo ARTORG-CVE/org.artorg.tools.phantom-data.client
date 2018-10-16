@@ -1,9 +1,14 @@
 package org.artorg.tools.phantomData.client.scene.layout;
 
+import org.artorg.tools.phantomData.client.util.FxUtil;
+
+import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 
 public interface AddableToAnchorPane {
 	
-	void addTo(AnchorPane pane);
+	default void addTo(AnchorPane pane) {
+		FxUtil.addToAnchorPane(pane, (Node) this);
+	}
 
 }

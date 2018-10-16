@@ -1,51 +1,51 @@
 package org.artorg.tools.phantomData.client.controllers;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
+import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-import javafx.fxml.FXML;
-import javafx.scene.layout.AnchorPane;
+import javafx.geometry.Orientation;
+import javafx.scene.control.SplitPane;
 
-public class LayoutController {
+public class LayoutController extends SplitPane implements AddableToAnchorPane {
+	private SplitPane splitPane;
+	private List<SplitTabView> splitTabViews;
 	private SplitTabView mainSplitPane;
 	private SplitTabView bottomSplitPane;
 
-	@FXML
-	private ResourceBundle resources;
-
-	@FXML
-	private URL location;
-
-	@FXML
-	private AnchorPane parentPane, mainTablePane, bottomTablePane;
-
-	@FXML
-	void initialize() {
-		assert parentPane != null : "fx:id=\"parentPane\" was not injected: check your FXML file 'PhantomLayout.fxml'.";
-		assert mainTablePane != null : "fx:id=\"mainTablePane\" was not injected: check your FXML file 'PhantomLayout.fxml'.";
-		assert bottomTablePane != null : "fx:id=\"tableBottomPane\" was not injected: check your FXML file 'PhantomLayout.fxml'.";
+	{
+		this.splitPane = this;
+		mainSplitPane = new SplitTabView();
+		bottomSplitPane = new SplitTabView();
+		splitTabViews = new ArrayList<SplitTabView>();
+		splitTabViews.add(mainSplitPane);
+		splitTabViews.add(bottomSplitPane);
+		
+		splitPane.setOrientation(Orientation.VERTICAL);
+		splitPane.getItems().addAll(splitTabViews.get(0), splitTabViews.get(1));
 	}
 
 	public void init() {
-		mainSplitPane = new SplitTabView();
-		mainSplitPane.addTo(mainTablePane);
 		
-		bottomSplitPane = new SplitTabView();
-		bottomSplitPane.addTo(bottomTablePane);
 	}
 
-	public <T extends DbPersistent<T,?>> void openMainTableTab(Class<T> itemClass) {
+	public <T extends DbPersistent<T,?>> void openTableTab(Class<T> itemClass) {
 		ProTableView<T> table = createTable(itemClass);
-		openMainTableTab(table, table.getTable().getTableName());
+		openTab(table, table.getTable().getTableName());
+	}
+	
+	public <T extends DbPersistent<T,?>> void openTreeTableTab(Class<T> itemClass) {
+		ProTreeTableView<T> table = createTreeTable(itemClass);
+		openTab(table, table.getTable().getTableName());
 	}
 
 	public <T extends DbPersistent<T,?>> void openBottomTreeTableTab(Class<T> itemClass) {
@@ -65,13 +65,17 @@ public class LayoutController {
 		return TableViewFactory.createInitializedTreeTable(itemClass, DbTable.class, DbTreeTableView.class);
 	}
 
-	private <T extends DbPersistent<T, ?>> void openMainTableTab(ProTableView<T> table,
+	private <T extends DbPersistent<T, ?>> void openTab(ProTableView<T> table,
 			String name) {
-		mainSplitPane.openTab(table, name);
+		splitTabViews.get(0).openTab(table, name);
+	}
+	
+	private <T extends DbPersistent<T, ?>> void openTab(ProTreeTableView<T> table, String name) {
+		splitTabViews.get(0).openTab(table, name);
 	}
 
 	private <T extends DbPersistent<T, ?>> void setSecondTable(ProTreeTableView<T> table, String name) {
-		bottomSplitPane.openTab(table, name);
+		splitTabViews.get(1).openTab(table, name);
 	}
 
 }

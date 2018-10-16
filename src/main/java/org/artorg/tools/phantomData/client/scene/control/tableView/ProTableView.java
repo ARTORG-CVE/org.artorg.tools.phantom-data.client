@@ -5,14 +5,12 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
-import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.util.Reflect;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
 public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> implements AddableToAnchorPane {
@@ -119,10 +117,6 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> imp
 	
 	public javafx.scene.control.TableView<ITEM> getGraphic() {
 		return this;
-	}
-	
-	public void addTo(AnchorPane pane) {
-		FxUtil.addToAnchorPane(pane, this);
 	}
 	
 	@Override

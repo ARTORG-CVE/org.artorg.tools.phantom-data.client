@@ -12,7 +12,6 @@ import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTabl
 import org.artorg.tools.phantomData.client.table.FxFactory;
 import org.artorg.tools.phantomData.client.table.IDbFactoryTableView;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
-import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -30,7 +29,6 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
-import javafx.scene.layout.AnchorPane;
 
 public class SplitTabView extends SplitPane implements AddableToAnchorPane {
 	private SplitPane splitPane;
@@ -241,11 +239,6 @@ public class SplitTabView extends SplitPane implements AddableToAnchorPane {
 
 	public void setTableTabPane(TabPane tabPane) {
 		this.tableTabPane = tabPane;
-	}
-
-	@Override
-	public void addTo(AnchorPane pane) {
-		FxUtil.addToAnchorPane(pane, this);
 	}
 
 }
