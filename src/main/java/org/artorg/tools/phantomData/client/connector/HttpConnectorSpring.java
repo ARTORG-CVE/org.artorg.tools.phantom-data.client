@@ -100,8 +100,6 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 				m -> m.getAnnotation(DeleteMapping.class).value()[0]);
 		annoStringExist = getAnnotatedValue("existById", GetMapping.class,
 				m -> m.getAnnotation(GetMapping.class).value()[0]);
-		
-		System.out.println();
 
 	}
 

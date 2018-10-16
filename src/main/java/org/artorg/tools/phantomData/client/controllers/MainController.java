@@ -1,30 +1,12 @@
 package org.artorg.tools.phantomData.client.controllers;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.Main;
-import org.artorg.tools.phantomData.client.connector.Connectors;
-import org.artorg.tools.phantomData.client.connector.CrudConnectors;
-import org.artorg.tools.phantomData.client.io.IOutil;
-import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
-import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.model.AcademicTitle;
-import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
-import org.artorg.tools.phantomData.server.model.FabricationType;
-import org.artorg.tools.phantomData.server.model.FileType;
-import org.artorg.tools.phantomData.server.model.LiteratureBase;
-import org.artorg.tools.phantomData.server.model.Person;
-import org.artorg.tools.phantomData.server.model.Phantom;
-import org.artorg.tools.phantomData.server.model.PhantomFile;
-import org.artorg.tools.phantomData.server.model.Special;
-import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
-import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
-import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
-import org.artorg.tools.phantomData.server.model.property.PropertyField;
-import org.artorg.tools.phantomData.server.model.property.StringProperty;
+import org.artorg.tools.phantomData.server.model.*;
+import org.artorg.tools.phantomData.server.model.property.*;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -132,7 +114,6 @@ public class MainController {
         assert contentPane != null : "fx:id=\"contentPane\" was not injected: check your FXML file 'Table.fxml'.";
     }
 	
-	@SuppressWarnings("unchecked")
 	public void init() {
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
@@ -148,18 +129,8 @@ public class MainController {
         layoutController.init();
         
         layoutController.openMainTableTab(Phantom.class);
-//        layoutController.setSecondTable(PhantomFile.class);
-        
-        ProTreeTableView treeTableView = new ProTreeTableView();
-        treeTableView.initTable();
-        
-        CrudConnectors<Phantom,?> connector = (CrudConnectors<Phantom,?>) CrudConnectors.getConnector(Phantom.class);
-        List<Phantom> phantoms = connector.readAllAsList();
-        treeTableView.setItems(phantoms);
-        layoutController.setSecondTreeTable(treeTableView);
-        
-        
-		layoutController.set3dFile(IOutil.readResourceAsFile("model.stl"));
+        layoutController.openBottomTreeTableTab(Phantom.class);
+
 	}
     
 	@FXML

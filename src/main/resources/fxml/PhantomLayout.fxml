@@ -7,16 +7,7 @@
 	<children>
       <SplitPane dividerPositions="0.7894736842105263" layoutY="-143.0" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <items>
-            <AnchorPane prefHeight="200.0" prefWidth="200.0">
-               <children>
-                  <SplitPane dividerPositions="0.6237458193979933" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <items>
-                        		<AnchorPane fx:id="mainTablePane" prefHeight="636.0" prefWidth="844.0" />
-      						<AnchorPane fx:id="pane3d" />
-                     </items>
-                  </SplitPane>
-               </children>
-            </AnchorPane>
+            		<AnchorPane fx:id="mainTablePane" prefHeight="636.0" prefWidth="844.0" />
             <AnchorPane fx:id="bottomTablePane" />
          </items>
       </SplitPane>

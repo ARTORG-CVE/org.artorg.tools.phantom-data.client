@@ -2,46 +2,35 @@ package org.artorg.tools.phantomData.client.scene.control.treeTableView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.model.Phantom;
+import org.artorg.tools.phantomData.server.model.Person;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
-import org.artorg.tools.phantomData.server.util.Reflect;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeSortMode;
 import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTableColumn.CellDataFeatures;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.AnchorPane;
-import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
-import org.artorg.tools.phantomData.server.model.Person;
 
-public class ProTreeTableView extends TreeTableView<Object>
+public class ProTreeTableView<ITEM extends DbPersistent<ITEM,?>> extends TreeTableView<Object>
 	implements AddableToAnchorPane {
-	private Class<Phantom> itemClass;
-	private TableBase<Phantom> table;
+	private Class<?> itemClass;
+	private TableBase<ITEM> table;
 	private TreeItem<Object> root = new TreeItem<Object>("Root node");
 
-//	@SuppressWarnings("unchecked")
-	public ProTreeTableView() {
-//		itemClass = (Class<ITEM>) Reflect.findSubClassParameterType(this, ProTableView.class, 0);
-	}
-
-	public ProTreeTableView(Class<Phantom> itemClass) {
-//		this.itemClass = itemClass;
+	public ProTreeTableView(Class<?> itemClass) {
+		this.itemClass = itemClass;
 	}
 
 	public void initTable() {
@@ -120,7 +109,7 @@ public class ProTreeTableView extends TreeTableView<Object>
 		return column;
 	}
 
-	public void setItems(List<Phantom> items) {
+	public void setItems(List<ITEM> items) {
 		List<TreeItem<Object>> treeItems = new ArrayList<TreeItem<Object>>();
 		items.forEach(item -> {
 			TreeItem<Object> node = new TreeItem<>(item);
@@ -194,12 +183,13 @@ public class ProTreeTableView extends TreeTableView<Object>
 		return entityTreeItems;
 	}
 
-	public void setTable(TableBase<Phantom> table) {
+	public void setTable(TableBase<ITEM> table) {
 		this.table = table;
 		initTable();
+		setItems(table.getItems());
 	}
 
-	public TableBase<Phantom> getTable() {
+	public TableBase<ITEM> getTable() {
 		return table;
 	}
 
@@ -207,7 +197,7 @@ public class ProTreeTableView extends TreeTableView<Object>
 		return this;
 	}
 
-	public Class<Phantom> getItemClass() {
+	public Class<?> getItemClass() {
 		return itemClass;
 	}
 

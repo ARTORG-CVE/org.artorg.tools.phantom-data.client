@@ -5,19 +5,15 @@ import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class DbTreeTableView extends ProTreeTableView {
+public class DbTreeTableView<ITEM extends DbPersistent<ITEM,?>> extends ProTreeTableView<ITEM> {
 	
-	public DbTreeTableView() {
-		super();
-	}
-	
-	public DbTreeTableView(Class<Phantom> itemClass) {
+	public DbTreeTableView(Class<ITEM> itemClass) {
 		super(itemClass);
 	}
 	
 	
 	@Override
-	public void setTable(TableBase<Phantom> table) {
+	public void setTable(TableBase<ITEM> table) {
 		super.setTable(table);
 //		reload();
 //		initTable();
