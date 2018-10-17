@@ -124,7 +124,6 @@ public class MainController {
         
         layoutController = new LayoutController();
         layoutController.addTo(contentPane);
-        layoutController.init();
         layoutController.openTableTab(Phantom.class);
         layoutController.openBottomTreeTableTab(Phantom.class);
 

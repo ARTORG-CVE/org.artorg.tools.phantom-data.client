@@ -9,6 +9,7 @@ import org.artorg.tools.phantomData.server.util.Reflect;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.text.Text;
@@ -75,6 +76,7 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> imp
 	    super.getColumns().addAll(columns);
 	    super.setItems(table.getItems());
 	    autoResizeColumns();
+	    super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	}
 	
 	protected TableColumn<ITEM,String> createHeaderColumn() {

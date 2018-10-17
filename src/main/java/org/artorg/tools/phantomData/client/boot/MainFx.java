@@ -1,13 +1,9 @@
 package org.artorg.tools.phantomData.client.boot;
 
-import java.util.UUID;
-
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controllers.MainController;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.BootApplication;
 import org.artorg.tools.phantomData.server.beans.BeanMap;
-import org.artorg.tools.phantomData.server.model.Phantom;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -16,18 +12,22 @@ import javafx.stage.Stage;
 
 public class MainFx extends Application {
 	private static boolean isStarted;
+	private static Scene scene;
+	private static Stage stage;
 
 	{
 		isStarted = false;
 	}
     
-    @Override
+    @SuppressWarnings("static-access")
+	@Override
 	public void start(Stage stage) throws Exception {
+    	this.stage = stage;
 		MainController controller = new MainController(stage);
 		AnchorPane pane = FxUtil.loadFXML("fxml/Table.fxml", controller);
 		controller.init();
 		
-    	Scene scene = new Scene(pane);
+    	scene = new Scene(pane);
 		scene.getStylesheets().add(FxUtil.readCSSstylesheet("css/application.css"));
 		
 		stage.setScene(scene);
@@ -52,8 +52,26 @@ public class MainFx extends Application {
 //		System.out.println(phantomConn.existById(UUID.randomUUID()));
 	}
     
+    
+    
     public static boolean isStarted() {
 		return isStarted;
+	}
+    
+    public static Scene getScene() {
+		return scene;
+	}
+
+	public static void setScene(Scene scene) {
+		MainFx.scene = scene;
+	}
+
+	public static Stage getStage() {
+		return stage;
+	}
+
+	public static void setStage(Stage stage) {
+		MainFx.stage = stage;
 	}
     
 }

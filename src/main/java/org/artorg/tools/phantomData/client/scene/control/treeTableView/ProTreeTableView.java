@@ -16,6 +16,7 @@ import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntit
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeSortMode;
 import javafx.scene.control.TreeTableColumn;
@@ -75,6 +76,7 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM,?>> extends TreeTab
 
 		super.setSortMode(TreeSortMode.ONLY_FIRST_LEVEL);
 		super.refresh();
+		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 	}
 

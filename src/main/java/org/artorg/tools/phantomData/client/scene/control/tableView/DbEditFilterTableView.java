@@ -5,6 +5,7 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 
@@ -45,6 +46,8 @@ public abstract class DbEditFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 				}
 			});
 		}
+		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		
 	}
 
 }
