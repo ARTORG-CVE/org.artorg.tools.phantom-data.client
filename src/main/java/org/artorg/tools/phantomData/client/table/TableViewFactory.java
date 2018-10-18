@@ -2,7 +2,6 @@ package org.artorg.tools.phantomData.client.table;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;

@@ -5,37 +5,45 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.server.model.Person;
-import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeSortMode;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 
-public class ProTreeTableView<ITEM extends DbPersistent<ITEM,?>> extends TreeTableView<Object>
+public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
+	extends TreeTableView<Object>
 	implements AddableToAnchorPane {
 	private Class<?> itemClass;
 	private TableBase<ITEM> table;
 	private TreeItem<Object> root = new TreeItem<Object>("Root node");
+	private List<DbTreeTableColumn> treeTableColumns;
+
+	{
+		treeTableColumns = new ArrayList<DbTreeTableColumn>();
+	}
 
 	public ProTreeTableView(Class<?> itemClass) {
 		this.itemClass = itemClass;
 	}
 
 	public void initTable() {
-		TreeTableColumn<Object, String> column;
+		super.getColumns().clear();
+		treeTableColumns = new ArrayList<DbTreeTableColumn>();
+		DbTreeTableColumn column;
 
-		column = new TreeTableColumn<>("Item type");
+		column = new DbTreeTableColumn("Type");
 		column.setPrefWidth(150);
 		column.setCellValueFactory(
 			(TreeTableColumn.CellDataFeatures<Object, String> param) -> {
@@ -46,69 +54,47 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM,?>> extends TreeTab
 					param.getValue().getValue().getClass()
 						.getSimpleName());
 			});
-		getColumns().add(column);
+		column.setPrefAutosizeWidth(180.0);
+		column.setMaxAutosizeWidth(300.0);
+		treeTableColumns.add(column);
 
-		column = createColumn("Name", item -> item.createName(),
+		column = new DbTreeTableColumn("Name", item -> item.createName(),
 			item -> item.toString());
-		getColumns().add(column);
+		column.setPrefAutosizeWidth(300.0);
+		column.setMaxAutosizeWidth(600.0);
+		treeTableColumns.add(column);
 
 		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-		column = createColumn("Last modified",
+		column = new DbTreeTableColumn("Last modified",
 			item -> format.format(item.getDateLastModified()));
-		getColumns().add(column);
+		treeTableColumns.add(column);
 
-		column = createColumn("Changed by",
+		column = new DbTreeTableColumn("Changed by",
 			item -> item.getChanger().getSimpleAcademicName());
-		getColumns().add(column);
+		treeTableColumns.add(column);
 
-		column = createColumn("Added",
+		column = new DbTreeTableColumn("Added",
 			item -> format.format(item.getDateAdded()));
-		getColumns().add(column);
+		treeTableColumns.add(column);
 
-		column = createColumn("Creator",
+		column = new DbTreeTableColumn("Creator",
 			item -> item.getCreator().getSimpleAcademicName());
-		getColumns().add(column);
+		treeTableColumns.add(column);
+		
+		getColumns().addAll(treeTableColumns);
 
 		root.setExpanded(true);
 		super.setRoot(root);
-		setPrefWidth(152);
 		setShowRoot(false);
+		autoResizeColumns();
 
 		super.setSortMode(TreeSortMode.ONLY_FIRST_LEVEL);
 		super.refresh();
+
 		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 	}
-
-	private TreeTableColumn<Object, String> createColumn(String columnName,
-		Function<AbstractBaseEntity<?>, String> mapper) {
-		return createColumn(columnName, mapper, item -> "");
-	}
-
-	private TreeTableColumn<Object, String> createColumn(String columnName,
-		Function<AbstractBaseEntity<?>, String> mapper,
-		Function<Object, String> orMapper) {
-		TreeTableColumn<Object, String> column = new TreeTableColumn<>(
-			columnName);
-		column.setPrefWidth(400);
-		column.setCellValueFactory(
-			(TreeTableColumn.CellDataFeatures<Object, String> param) -> {
-				Object item = param.getValue().getValue();
-				if (item == null)
-					return new ReadOnlyStringWrapper("null");
-				if (item instanceof AbstractBaseEntity) {
-					try {
-						return new ReadOnlyStringWrapper(mapper
-							.apply(((AbstractBaseEntity<?>) item)));
-					} catch (NullPointerException e) {
-					}
-					return new ReadOnlyStringWrapper("null");
-				} else
-					return new ReadOnlyStringWrapper(orMapper.apply(item));
-			});
-		return column;
-	}
-
+	
 	public void setItems(List<ITEM> items) {
 		List<TreeItem<Object>> treeItems = new ArrayList<TreeItem<Object>>();
 		items.forEach(item -> {
@@ -116,15 +102,34 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM,?>> extends TreeTab
 			node.getChildren().addAll(createTreeItems(item, 0));
 			treeItems.add(node);
 		});
+
+		treeItems.stream()
+			.forEach(treeItem -> addResizeColumnsExpandListener(treeItem));
+
 		root.getChildren().clear();
 		root.getChildren().addAll(treeItems);
+	}
+
+	private void addResizeColumnsExpandListener(TreeItem<Object> treeItem) {
+		treeItem.expandedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(
+				ObservableValue<? extends Boolean> observable,
+				Boolean oldValue, Boolean newValue) {
+				if (newValue)
+					autoResizeColumns();
+			}
+		});
+		if (!treeItem.isLeaf())
+			treeItem.getChildren().stream().forEach(
+				subTreeItem -> addResizeColumnsExpandListener(subTreeItem));
 	}
 
 	@SuppressWarnings("rawtypes")
 	private List<TreeItem<Object>> createTreeItems(Object bean, int level) {
 		if (level > 20)
 			return new ArrayList<TreeItem<Object>>();
-		
+
 		List<Object> entities = Main.getBeaninfos().getEntities(bean);
 		entities = entities.stream()
 			.filter(entity -> entity != bean)
@@ -168,19 +173,28 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM,?>> extends TreeTab
 						return false;
 				}
 				return true;
-			}).sorted((p1,p2) -> {
+			}).sorted((p1, p2) -> {
 				if (UUID.class.isAssignableFrom(p1.getClass()))
 					return -1;
 				return 0;
 			}).collect(Collectors.toList());
-		
+
 		List<TreeItem<Object>> propertyTreeItems = properties.stream()
 			.map(o -> new TreeItem<>(o))
 			.collect(Collectors.toList());
-		
+
 		entityTreeItems.addAll(entityCollectionTreeItems);
 		entityTreeItems.addAll(propertyTreeItems);
+
 		return entityTreeItems;
+	}
+
+	public void autoResizeColumns() {
+		super.setColumnResizePolicy(
+		javafx.scene.control.TreeTableView.UNCONSTRAINED_RESIZE_POLICY);
+		
+		treeTableColumns.stream().forEach(column -> 
+			column.autoResizeWidth(getRoot().getChildren()));
 	}
 
 	public void setTable(TableBase<ITEM> table) {

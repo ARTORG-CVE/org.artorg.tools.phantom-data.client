@@ -3,6 +3,8 @@ package org.artorg.tools.phantomData.client.scene.control;
 import java.util.List;
 import java.util.function.Supplier;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -10,116 +12,159 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
 public class SmartTabPane {
+	public static final HeaderMode SHOW;
+	public static final HeaderMode HIDE;
+	public static final HeaderMode REMOVE_IF_SINGLE;
+	private HeaderMode headerMode;
 	private TabPane tabPane;
 	private Node contentNode;
 	private Supplier<ObservableList<Node>> parentItemsSupplier;
-	private boolean initialized = false;
+	private boolean headerVisible = true;
 
+	static {
+		SHOW = new HeaderMode();
+		HIDE = new HeaderMode();
+		REMOVE_IF_SINGLE = new HeaderMode();
+		
+	}
 	public SmartTabPane(Supplier<ObservableList<Node>> parentItemsSupplier) {
+		this.headerMode  = HIDE;
 		this.parentItemsSupplier = parentItemsSupplier;
 		this.tabPane = new TabPane();
+		getTabPane().getTabs()
+		.addListener(createTabsListener());
+		contentNode = null;
+		
+	}
+	
+	public static class HeaderMode {}
+
+	public boolean isHeaderVisible() {
+		return headerVisible;
 	}
 
-	public void init() {
-		if (!initialized) {
-			Tab tab = getSelectedTab(getTabPane());
-			contentNode = tab.getContent();
-			getTabPane().getTabs()
-				.addListener(createListChangeListener(getTabPane(), tab));
-			initialized = true;
-		}
-	}
-
-	public void showHeader() {
-		if (!initialized)
-			init();
-		Tab tab = getSelectedTab(getTabPane());
-		showHeader(getTabPane(), tab);
+	public void removeHeader(HeaderMode headerMode) {
+		if (headerMode == REMOVE_IF_SINGLE) {
+			if (tabPane.getTabs().size() == 1)
+				removeHeader();
+		} else if (headerMode == HIDE)
+			removeHeader();
 	}
 
 	public void removeHeader() {
-		if (!initialized)
-			init();
-		Tab tab = getSelectedTab(getTabPane());
-		removeHeader(getTabPane(), tab);
-	}
-
-	private Tab getSelectedTab(TabPane tabPane) {
-		try {
-			return tabPane.getSelectionModel().getSelectedItem();
-		} catch (Exception e) {
-		}
-		if (tabPane.getTabs().size() != 0)
-			return tabPane.getTabs().get(0);
-		throw new NullPointerException();
-	}
-
-	private void removeHeader(TabPane tabPane, Tab tab) {
-		if (tabPane.getTabs().size() == 1) {
-			ObservableList<Node> nodes = parentItemsSupplier.get();
-			for (int i = 0; i < nodes.size(); i++)
-				if (nodes.get(i) == tabPane) {
-					int index = nodes.indexOf(tabPane);
-					nodes.remove(index);
-					contentNode = tabPane.getTabs().get(0).getContent();
-					nodes.add(index, contentNode);
-				}
-		}
-	}
-
-	private void showHeader(TabPane tabPane, Tab tab) {
-		ObservableList<Node> nodes2 = parentItemsSupplier.get();
-		int selectedTabIndex = getTabPane().getSelectionModel()
-			.getSelectedIndex();
-		for (int i = 0; i < nodes2.size(); i++)
-			if (nodes2.get(i) == contentNode) {
-				int index = nodes2.indexOf(contentNode);
-				nodes2.remove(index);
-
-				TabPane tabPane2 = new TabPane();
-				setTabPane(tabPane2);
-				nodes2.add(index, tabPane2);
-				List<Tab> tabs = tabPane.getTabs();
-				for (int j = 0; j < tabs.size(); j++) {
-					tabPane2.getTabs().add(tabs.get(j));
-					tabPane2.getSelectionModel().select(j);
-				}
-				tabPane2.getSelectionModel().select(selectedTabIndex);
-				tabPane2.getTabs()
-					.addListener(createListChangeListener(tabPane2, tab));
+		ObservableList<Node> parentNodes = parentItemsSupplier.get();
+		for (int i = 0; i < parentNodes.size(); i++)
+			if (parentNodes.get(i) == tabPane) {
+				int index = parentNodes.indexOf(tabPane);
+				parentNodes.remove(index);
+				contentNode = tabPane.getTabs().get(0).getContent();
+				parentNodes.add(index, contentNode);
+				headerVisible = false;
 			}
 	}
+	
+	public void showHeader(HeaderMode headerMode) {
+		if (headerMode == REMOVE_IF_SINGLE) {
+			if (tabPane.getTabs().size() > 1)
+				showHeader();
+		} else if (headerMode == SHOW)
+			showHeader();
+		else {
+			
+		}
+			
+	}
 
-	private ListChangeListener<Tab> createListChangeListener(TabPane tabPane,
-		Tab tab) {
+	public void showHeader() {
+		ObservableList<Node> parentNodes = parentItemsSupplier.get();
+		int selectedTabIndex = getTabPane().getSelectionModel()
+			.getSelectedIndex();
+		for (int i = 0; i < parentNodes.size(); i++)
+			if (parentNodes.get(i) == contentNode) {
+				int index = parentNodes.indexOf(contentNode);
+				parentNodes.remove(index);
+
+				TabPane oldTabPane = tabPane;
+				tabPane = new TabPane();
+				parentNodes.add(index, tabPane);
+				List<Tab> tabs = oldTabPane.getTabs();
+				for (int j = 0; j < tabs.size(); j++) {
+					tabPane.getTabs().add(tabs.get(j));
+					tabPane.getSelectionModel().select(j);
+				}
+				tabPane.getSelectionModel().select(selectedTabIndex);
+				tabPane.getTabs()
+					.addListener(createTabsListener());
+				headerVisible = true;
+			}
+	}
+	
+
+	private ListChangeListener<Tab> createTabsListener() {
 		ListChangeListener<Tab> changeListener = new ListChangeListener<Tab>() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void onChanged(Change<? extends Tab> c) {
 				if (c.next()) {
 					if (c.wasAdded()) {
-						showHeader(tabPane, tab);
+						boolean initialized = !(contentNode == null);
+						if (!initialized)
+							contentNode = tabPane.getTabs().get(0).getContent();						
+						
+						showHeader(headerMode);
 						List<Tab> tabs = (List<Tab>) c.getAddedSubList();
+						tabs.forEach(addedTab -> addedTab.contentProperty().addListener(createContentListener()));
 						getTabPane().getSelectionModel()
 							.select(tabs.get(tabs.size() - 1));
+						contentNode = tabPane.getSelectionModel().getSelectedItem().getContent();
+						if (parentNodes)
+
+						ObservableList<Node> parentNodes = parentItemsSupplier
+							.get();
+						if (isHeaderVisible()) {
+							if (!parentNodes.contains(tabPane))
+								parentNodes.add(tabPane);
+						} else if (!parentNodes.contains(contentNode))
+							parentNodes.add(contentNode);
+						
+						if (!initialized)
+							removeHeader(headerMode);
 					} else if (c.wasRemoved()) {
-						removeHeader(tabPane, tab);
+						removeHeader(headerMode);
+						if (tabPane.getTabs().size() == 0)  {
+							parentItemsSupplier
+								.get().removeAll(tabPane, contentNode);
+							contentNode = null;
+						}						
 					}
 				}
 				getTabPane().getSelectionModel()
 					.select(getTabPane().getTabs().size() - 1);
-
 			}
 		};
 		return changeListener;
 	}
+	
+	private ChangeListener<Node> createContentListener() {
+		ChangeListener<Node> contentListener = new ChangeListener<Node>() {
+			@Override
+			public void changed(
+				ObservableValue<? extends Node> observable, Node oldValue,
+				Node newValue) {
+				if (!isHeaderVisible()) {
+					ObservableList<Node> parentNodes = parentItemsSupplier
+						.get();
+					int index = parentNodes.indexOf(oldValue);
+					parentNodes.set(index, newValue);
+					contentNode = newValue;
+				}
+			}
+		};
+		return contentListener;
+	}
 
 	public TabPane getTabPane() {
 		return tabPane;
-	}
-
-	private void setTabPane(TabPane tabPane) {
-		this.tabPane = tabPane;
 	}
 
 }

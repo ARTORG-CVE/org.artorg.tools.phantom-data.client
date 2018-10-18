@@ -101,7 +101,7 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> imp
 	}
 	
 	public void autoResizeColumns() {
-		super.setColumnResizePolicy(ProTableView.UNCONSTRAINED_RESIZE_POLICY);
+		super.setColumnResizePolicy(javafx.scene.control.TableView.UNCONSTRAINED_RESIZE_POLICY);
 	    super.getColumns().stream().forEach( (column) -> {
 	        Text t = new Text( column.getText() );
 	        double max = t.getLayoutBounds().getWidth()+45.0;

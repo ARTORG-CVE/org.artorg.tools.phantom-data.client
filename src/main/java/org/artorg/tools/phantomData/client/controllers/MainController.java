@@ -1,18 +1,48 @@
 package org.artorg.tools.phantomData.client.controllers;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.scene.control.Scene3D;
+import org.artorg.tools.phantomData.client.scene.control.tableView.DbUndoRedoAddEditControlFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
+import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
+import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
+import org.artorg.tools.phantomData.client.table.DbTable;
+import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
+import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.model.*;
-import org.artorg.tools.phantomData.server.model.property.*;
+import org.artorg.tools.phantomData.server.model.AcademicTitle;
+import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
+import org.artorg.tools.phantomData.server.model.FabricationType;
+import org.artorg.tools.phantomData.server.model.FileType;
+import org.artorg.tools.phantomData.server.model.LiteratureBase;
+import org.artorg.tools.phantomData.server.model.Person;
+import org.artorg.tools.phantomData.server.model.Phantom;
+import org.artorg.tools.phantomData.server.model.PhantomFile;
+import org.artorg.tools.phantomData.server.model.Special;
+import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
+import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
+import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
+import org.artorg.tools.phantomData.server.model.property.PropertyField;
+import org.artorg.tools.phantomData.server.model.property.StringProperty;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
+import huma.io.IOutil;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -20,8 +50,10 @@ import javafx.stage.WindowEvent;
 public class MainController {
 	private static String urlLocalhost;
 	private static String urlShutdownActuator;
-	private LayoutController layoutController;
 	private Stage stage;
+	
+	private SplitPane splitPane;
+	private ObservableList<SplitTabView> splitTabViews;
 	
 	public MainController(Stage stage) {
 		this.stage = stage;
@@ -122,26 +154,109 @@ public class MainController {
             }
         });
         
-        layoutController = new LayoutController();
-        layoutController.addTo(contentPane);
-        layoutController.openTableTab(Phantom.class);
-        layoutController.openBottomTreeTableTab(Phantom.class);
+		
+		this.splitPane = new SplitPane();
+		splitPane.setOrientation(Orientation.VERTICAL);
+		splitTabViews = FXCollections.<SplitTabView>observableArrayList();
+		splitTabViews.addListener(new ListChangeListener<SplitTabView>() {
+			@Override
+			public void onChanged(Change<? extends SplitTabView> c) {
+				if (c.next())
+					do {
+						if (c.wasAdded())
+							splitPane.getItems().addAll(c.getAddedSubList());
+						if (c.wasRemoved())
+							splitPane.getItems().removeAll(c.getRemoved());
+					} while (c.next());
+			}
+		});
+		
+		splitTabViews.add(new SplitTabView());
+		splitTabViews.add(new SplitTabView());
+      	getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
+      	File file = IOutil.readResourceAsFile("model.stl");
+      	getOrCreate(0).openViewerTab(createScene3dTab(file));
+      	getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));
+		
+      	FxUtil.addToAnchorPane(contentPane, splitPane);
 
 	}
+	
+	public <T extends DbPersistent<T, ?>> void openTable(Class<T> itemClass) {
+		openTableViewTab(0, itemClass);
+	}
+	
+	public <T extends DbPersistent<T, ?>> void openTableViewTab(int row,
+		Class<T> itemClass) {
+		ProTableView<T> table = createTable(itemClass);
+		openTableTab(row, table, table.getTable().getTableName());
+	}
+	
+	private Tab createScene3dTab(File file) {
+		Tab tab = new Tab("3D Viewer");
+		Scene3D scene3d = new Scene3D();
+		scene3d.loadFile(file);
+		tab.setContent(scene3d);
+		return tab;
+	}
+
+	private <T extends DbPersistent<T, ?>> Tab createTableViewTab(Class<T> itemClass) {
+		ProTableView<T> table = createTable(itemClass);
+		Tab tab = new Tab(table.getTable().getTableName());
+		tab.setContent(table);
+		return tab;
+	}
+	
+	private <T extends DbPersistent<T, ?>> Tab createTreeTableViewTab(Class<T> itemClass) {
+		ProTreeTableView<T> table = createTreeTable(itemClass);
+		Tab tab = new Tab(table.getTable().getTableName());
+		tab.setContent(table);
+		return tab;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T extends DbPersistent<T, ?>> ProTableView<T> createTable(
+		Class<T> itemClass) {
+		return TableViewFactory.createInitializedTable(itemClass,
+			DbUndoRedoFactoryEditFilterTable.class,
+			DbUndoRedoAddEditControlFilterTableView.class);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends DbPersistent<T, ?>> ProTreeTableView<T> createTreeTable(
+		Class<T> itemClass) {
+		return TableViewFactory.createInitializedTreeTable(itemClass,
+			DbTable.class, DbTreeTableView.class);
+	}
+
+	public <T extends DbPersistent<T, ?>> void openTableTab(int row,
+		Node table, String name) {
+		Tab tab = new Tab(name);
+		tab.setContent(table);
+		getOrCreate(row).openTableTab(tab);
+	}
+
+	public SplitTabView getOrCreate(int row) {
+		if (splitTabViews.size() - 1 < row)
+			for (int i = splitTabViews.size() - 1; i < row; i++)
+				splitTabViews.add(new SplitTabView());
+		return splitTabViews.get(row);
+	}
+	
     
 	@FXML
     void openTableFileTypes(ActionEvent event) {
-		layoutController.openTableTab(FileType.class);
+		openTable(FileType.class);
     }
     
 	@FXML
     void openTableFiles(ActionEvent event) {
-		layoutController.openTableTab(PhantomFile.class);
+		openTable(PhantomFile.class);
     }
     
 	@FXML
     void openTablePhantoms(ActionEvent event) {    	
-		layoutController.openTableTab(Phantom.class);
+		openTable(Phantom.class);
     }
 	
 //	private Button createTabButton(String iconName) {
@@ -155,62 +270,62 @@ public class MainController {
     
 	@FXML
     void openTableProperties(ActionEvent event) {
-		layoutController.openTableTab(BooleanProperty.class);
+		openTable(BooleanProperty.class);
     }
     
 	@FXML
     void openTableSpecials(ActionEvent event) {
-		layoutController.openTableTab(Special.class);
+		openTable(Special.class);
     }
     
 	@FXML
     void openTableAnnulusDiameter(ActionEvent event) {
-		layoutController.openTableTab(AnnulusDiameter.class);
+		openTable(AnnulusDiameter.class);
     }
     
 	@FXML
     void openTableFabricationTypes(ActionEvent event) {
-		layoutController.openTableTab(FabricationType.class);
+		openTable(FabricationType.class);
     }
     
 	@FXML
     void openTableLiteratureBases(ActionEvent event) {
-		layoutController.openTableTab(LiteratureBase.class);
+		openTable(LiteratureBase.class);
     }
     
 	@FXML
     void openTablePropertyFields(ActionEvent event) {
-		layoutController.openTableTab(PropertyField.class);
+		openTable(PropertyField.class);
     }
 	
 	@FXML
     void openTableAcademicTitles(ActionEvent event) {
-		layoutController.openTableTab(AcademicTitle.class);
+		openTable(AcademicTitle.class);
     }
 	
 	@FXML
     void openTablePersons(ActionEvent event) {
-		layoutController.openTableTab(Person.class);
+		openTable(Person.class);
     }
 	
 	@FXML
     void openTableBooleanProperties(ActionEvent event) {
-		layoutController.openTableTab(BooleanProperty.class);
+		openTable(BooleanProperty.class);
     }
 
     @FXML
     void openTableDoubleProperties(ActionEvent event) {
-    	layoutController.openTableTab(DoubleProperty.class);
+    	openTable(DoubleProperty.class);
     }
     
     @FXML
     void openTableIntegerProperties(ActionEvent event) {
-    	layoutController.openTableTab(IntegerProperty.class);
+    	openTable(IntegerProperty.class);
     }
 
     @FXML
     void openTableStringProperties(ActionEvent event) {
-    	layoutController.openTableTab(StringProperty.class);
+    	openTable(StringProperty.class);
     }
     
     public static String getUrlLocalhost() {
