@@ -1,5 +1,7 @@
 package org.artorg.tools.phantomData.client.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -7,10 +9,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
@@ -25,6 +31,7 @@ import org.artorg.tools.phantomData.server.util.Reflect;
 
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -233,11 +240,26 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 		if (item != null)
 			setTemplate(item);
 		applyButton.setOnAction(event -> {
-			ITEM newItem = createItem();
-			selectors.forEach(selector -> selector.setSelectedChildItems(item));
-			this.getTableView().getItems().add(newItem);
-			getConnector().create(newItem);
-			this.initDefaultValues();
+			Task<Void> task = new Task<Void>() {
+				@Override
+				protected Void call() throws Exception {
+					ITEM newItem = createItem();
+					selectors.forEach(selector -> selector.setSelectedChildItems(item));
+					getTableView().getItems().add(newItem);
+					getConnector().create(newItem);
+					initDefaultValues();
+					return null;
+				}
+			};
+			task.setOnSucceeded(taskEvent -> {
+			});
+			ExecutorService executor = Executors.newSingleThreadExecutor(); 
+			executor.submit(task);
+			try {
+				executor.awaitTermination(30, TimeUnit.DAYS);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		});
 		applyButton.setText("Create");
 		return pane;

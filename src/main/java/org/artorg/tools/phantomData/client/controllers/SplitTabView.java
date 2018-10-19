@@ -3,7 +3,14 @@ package org.artorg.tools.phantomData.client.controllers;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.artorg.tools.phantomData.client.boot.MainFx;
@@ -26,6 +33,8 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
@@ -59,7 +68,7 @@ public class SplitTabView extends SplitPane implements AddableToAnchorPane {
 		menuItemUpdater = new ArrayList<Runnable>();
 
 		splitPane.setOrientation(Orientation.HORIZONTAL);
-		
+
 		Platform.runLater(() -> {
 			MainFx.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
 				controlDown = event.isControlDown();
@@ -70,17 +79,17 @@ public class SplitTabView extends SplitPane implements AddableToAnchorPane {
 				menuItemUpdater.stream().forEach(rc -> rc.run());
 			});
 		});
-		
+
 	}
 
 	public <ITEM extends DbPersistent<ITEM, ?>> void openViewerTab(Tab tab) {
 		setTab(viewerTabPane.getTabPane(), tab, tab.getContent());
 	}
-	
+
 	public <ITEM extends DbPersistent<ITEM, ?>> void openTableTab(Tab tab) {
 		setTab(tableTabPane.getTabPane(), tab, tab.getContent());
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private <ITEM extends DbPersistent<ITEM, ?>> void changeToTreeTableView(
 		ProTableView<ITEM> tableView) {
@@ -180,32 +189,61 @@ public class SplitTabView extends SplitPane implements AddableToAnchorPane {
 		addMenuItem(rowMenu, "Refresh", event -> {
 			tableViewSpring.refresh();
 		});
-		
+
 		if (tableViewSpring.getItemClass() == PhantomFile.class)
 			addMenuItem(rowMenu, "Download", event -> {
-				PhantomFile dbFile = ((PhantomFile)row.getItem());
-				
+//				PhantomFile dbFile = ((PhantomFile) row.getItem());
+
+				ObservableList<ITEM> selectedItems =
+					tableViewSpring.getSelectionModel().getSelectedItems();
+				List<PhantomFile> selectedDbFiles =
+					selectedItems.stream().filter(item -> item instanceof PhantomFile)
+						.map(item -> ((PhantomFile) item)).collect(Collectors.toList());
+
 				DirectoryChooser chooser = new DirectoryChooser();
 				chooser.setTitle("Select target dir");
 				File desktopDir = new File(
 					System.getProperty("user.home") + "\\Desktop\\");
 				chooser.setInitialDirectory(desktopDir);
 				File targetDir = chooser.showDialog(MainFx.getStage());
-				File srcFile = dbFile.getFile();
-				
-				File destFile = new File(targetDir +"\\" +dbFile.getName() +"." +dbFile.getExtension());
+
+
+				Task<Void> task = new Task<Void>() {
+					@Override
+					protected Void call() throws Exception {
+						selectedDbFiles.stream().forEach(dbFile -> {
+							File srcFile = dbFile.getFile();
+							File destFile = new File(
+								targetDir + "\\" + dbFile.getName() + "."
+									+ dbFile.getExtension());
+							try {
+								FileUtils.copyFile(srcFile, destFile);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						});
+
+						return null;
+					}
+				};
+				task.setOnSucceeded(taskEvent -> {
+				});
+				ExecutorService executor = Executors.newSingleThreadExecutor(); 
+				executor.submit(task);
 				try {
-					FileUtils.copyFile(srcFile, destFile);
-				} catch (IOException e) {
+					executor.awaitTermination(30, TimeUnit.DAYS);
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+
 			});
 
 		if (tableViewSpring instanceof IDbFactoryTableView) {
 			addMenuItem(rowMenu, "Edit item", event -> {
 				FxFactory<ITEM> controller = ((IDbFactoryTableView<ITEM>) tableViewSpring)
 					.createFxFactory();
-				Node node = controller.edit(row.getItem(), tableViewSpring.getItemClass());
+				Node node =
+					controller.edit(row.getItem(), tableViewSpring.getItemClass());
 				addTab(itemAddEditTabPane.getTabPane(), node, "Edit "
 					+ tableViewSpring.getTable().getItemName());
 			});
@@ -213,7 +251,8 @@ public class SplitTabView extends SplitPane implements AddableToAnchorPane {
 			addMenuItem(rowMenu, "Add item", event -> {
 				FxFactory<ITEM> controller = ((IDbFactoryTableView<ITEM>) tableViewSpring)
 					.createFxFactory();
-				Node node = controller.create(row.getItem(), tableViewSpring.getItemClass());
+				Node node =
+					controller.create(row.getItem(), tableViewSpring.getItemClass());
 				addTab(itemAddEditTabPane.getTabPane(), node, "Add "
 					+ tableViewSpring.getTable().getItemName());
 			});
@@ -252,9 +291,10 @@ public class SplitTabView extends SplitPane implements AddableToAnchorPane {
 		return row;
 	}
 
-	private <ITEM extends DbPersistent<ITEM, ?>> TreeTableRow<Object> createTreeTableViewContext(
-		ProTreeTableView<ITEM> proTreeTableView,
-		TreeTableView<Object> tableView) {
+	private <ITEM extends DbPersistent<ITEM, ?>> TreeTableRow<Object>
+		createTreeTableViewContext(
+			ProTreeTableView<ITEM> proTreeTableView,
+			TreeTableView<Object> tableView) {
 		final TreeTableRow<Object> row = new TreeTableRow<Object>();
 		final ContextMenu rowMenu = new ContextMenu();
 
