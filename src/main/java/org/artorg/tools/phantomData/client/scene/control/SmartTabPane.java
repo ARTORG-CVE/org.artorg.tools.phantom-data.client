@@ -13,7 +13,6 @@ import javafx.scene.control.TabPane;
 
 public class SmartTabPane {
 	public static final HeaderMode SHOW;
-	public static final HeaderMode HIDE;
 	public static final HeaderMode REMOVE_IF_SINGLE;
 	private HeaderMode headerMode;
 	private TabPane tabPane;
@@ -23,12 +22,11 @@ public class SmartTabPane {
 
 	static {
 		SHOW = new HeaderMode();
-		HIDE = new HeaderMode();
 		REMOVE_IF_SINGLE = new HeaderMode();
-		
 	}
+	
 	public SmartTabPane(Supplier<ObservableList<Node>> parentItemsSupplier) {
-		this.headerMode  = HIDE;
+		this.headerMode  = SHOW;
 		this.parentItemsSupplier = parentItemsSupplier;
 		this.tabPane = new TabPane();
 		getTabPane().getTabs()
@@ -44,11 +42,9 @@ public class SmartTabPane {
 	}
 
 	public void removeHeader(HeaderMode headerMode) {
-		if (headerMode == REMOVE_IF_SINGLE) {
+		if (headerMode == REMOVE_IF_SINGLE)
 			if (tabPane.getTabs().size() == 1)
 				removeHeader();
-		} else if (headerMode == HIDE)
-			removeHeader();
 	}
 
 	public void removeHeader() {
@@ -69,10 +65,6 @@ public class SmartTabPane {
 				showHeader();
 		} else if (headerMode == SHOW)
 			showHeader();
-		else {
-			
-		}
-			
 	}
 
 	public void showHeader() {
@@ -98,7 +90,6 @@ public class SmartTabPane {
 				headerVisible = true;
 			}
 	}
-	
 
 	private ListChangeListener<Tab> createTabsListener() {
 		ListChangeListener<Tab> changeListener = new ListChangeListener<Tab>() {
@@ -116,11 +107,9 @@ public class SmartTabPane {
 						tabs.forEach(addedTab -> addedTab.contentProperty().addListener(createContentListener()));
 						getTabPane().getSelectionModel()
 							.select(tabs.get(tabs.size() - 1));
-						contentNode = tabPane.getSelectionModel().getSelectedItem().getContent();
-						if (parentNodes)
-
 						ObservableList<Node> parentNodes = parentItemsSupplier
 							.get();
+						
 						if (isHeaderVisible()) {
 							if (!parentNodes.contains(tabPane))
 								parentNodes.add(tabPane);

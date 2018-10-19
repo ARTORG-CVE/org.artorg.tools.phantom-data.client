@@ -14,10 +14,6 @@ public class FileFilterTable extends DbUndoRedoFactoryEditFilterTable<PhantomFil
 		List<AbstractColumn<PhantomFile>> columns =
 				new ArrayList<AbstractColumn<PhantomFile>>();
 		columns.add(new FilterColumn<PhantomFile>(
-				"path", item -> item, 
-				path -> path.getPath(), 
-				(path,value) -> path.setPath(value)));
-		columns.add(new FilterColumn<PhantomFile>(
 				"name", item -> item, 
 				path -> path.getName(), 
 				(path,value) -> path.setName(value)));

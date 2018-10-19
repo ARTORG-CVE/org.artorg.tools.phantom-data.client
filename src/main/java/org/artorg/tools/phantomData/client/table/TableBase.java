@@ -25,10 +25,12 @@ public class TableBase<ITEM> implements ITable<ITEM> {
 	
 	public TableBase() {
 		itemClass = (Class<ITEM>) Reflect.findGenericClasstype(this);
+		this.itemName = itemClass.getSimpleName();
 	}
 	
 	public TableBase(Class<ITEM> itemClass) {
 		this.itemClass = itemClass;
+		this.itemName = itemClass.getSimpleName();
 	}
 	
 	public void setItems(ObservableList<ITEM> items) {

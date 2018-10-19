@@ -169,9 +169,9 @@ public class DatabaseInitializer {
 		fileTypeConn.create(fileType3);
 		fileTypeConn.create(fileType4);
 
-		fileConn.create(new PhantomFile("", "model", "stl", fileTypeConn.read(fileType1)));
-		fileConn.create(new PhantomFile("", "model2", "stl", fileTypeConn.read(fileType1)));
-		fileConn.create(new PhantomFile("", "model3", "stl", fileTypeConn.read(fileType3)));
+//		fileConn.create(new PhantomFile("", "model", "stl", fileTypeConn.read(fileType1)));
+//		fileConn.create(new PhantomFile("", "model2", "stl", fileTypeConn.read(fileType1)));
+//		fileConn.create(new PhantomFile("", "model3", "stl", fileTypeConn.read(fileType3)));
 	}
 
 	private static void initPhantoms() {
@@ -192,10 +192,10 @@ public class DatabaseInitializer {
 		phantoms[13] = createPhantom(25, "A", "J", "N", 2);
 		phantoms[14] = createPhantom(21, "A", "P", "N", 1);
 
-		List<PhantomFile> files0 = new ArrayList<PhantomFile>();
-		files0.add(fileConn.readByAttribute("model", "name"));
-		files0.add(fileConn.readByAttribute("model2", "name"));
-		phantoms[0].setFiles(files0);
+//		List<PhantomFile> files0 = new ArrayList<PhantomFile>();
+//		files0.add(fileConn.readByAttribute("model", "name"));
+//		files0.add(fileConn.readByAttribute("model2", "name"));
+//		phantoms[0].setFiles(files0);
 		phantomConn.create(phantoms);
 	}
 

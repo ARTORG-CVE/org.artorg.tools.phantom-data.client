@@ -10,10 +10,10 @@ public interface FxFactory<ITEM> {
 	
 	void setTableView(ProTableView<ITEM> table);
 	
-	Node create(ITEM item);
+	Node create(ITEM item, Class<?> itemClass);
 	
-	Node edit(ITEM item);
+	Node edit(ITEM item, Class<?> itemClass);
 
-	Node create();
+	Node create(Class<?> itemClass);
 
 }

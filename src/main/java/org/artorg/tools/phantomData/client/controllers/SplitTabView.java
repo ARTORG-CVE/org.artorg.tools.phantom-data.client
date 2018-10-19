@@ -1,8 +1,11 @@
 package org.artorg.tools.phantomData.client.controllers;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.artorg.tools.phantomData.client.boot.MainFx;
 import org.artorg.tools.phantomData.client.io.IOutil;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
@@ -17,6 +20,7 @@ import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTabl
 import org.artorg.tools.phantomData.client.table.FxFactory;
 import org.artorg.tools.phantomData.client.table.IDbFactoryTableView;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
+import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -36,6 +40,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 
 public class SplitTabView extends SplitPane implements AddableToAnchorPane {
 	private SplitPane splitPane;
@@ -144,7 +150,7 @@ public class SplitTabView extends SplitPane implements AddableToAnchorPane {
 		editItem.setOnAction(event -> {
 			FxFactory<ITEM> controller = ((IDbFactoryTableView<ITEM>) tableViewSpring)
 				.createFxFactory();
-			Node node = controller.create();
+			Node node = controller.create(tableViewSpring.getItemClass());
 			addTab(itemAddEditTabPane.getTabPane(), node,
 				"Add " + tableViewSpring.getTable().getItemName());
 		});
@@ -174,12 +180,32 @@ public class SplitTabView extends SplitPane implements AddableToAnchorPane {
 		addMenuItem(rowMenu, "Refresh", event -> {
 			tableViewSpring.refresh();
 		});
+		
+		if (tableViewSpring.getItemClass() == PhantomFile.class)
+			addMenuItem(rowMenu, "Download", event -> {
+				PhantomFile dbFile = ((PhantomFile)row.getItem());
+				
+				DirectoryChooser chooser = new DirectoryChooser();
+				chooser.setTitle("Select target dir");
+				File desktopDir = new File(
+					System.getProperty("user.home") + "\\Desktop\\");
+				chooser.setInitialDirectory(desktopDir);
+				File targetDir = chooser.showDialog(MainFx.getStage());
+				File srcFile = dbFile.getFile();
+				
+				File destFile = new File(targetDir +"\\" +dbFile.getName() +"." +dbFile.getExtension());
+				try {
+					FileUtils.copyFile(srcFile, destFile);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			});
 
 		if (tableViewSpring instanceof IDbFactoryTableView) {
 			addMenuItem(rowMenu, "Edit item", event -> {
 				FxFactory<ITEM> controller = ((IDbFactoryTableView<ITEM>) tableViewSpring)
 					.createFxFactory();
-				Node node = controller.edit(row.getItem());
+				Node node = controller.edit(row.getItem(), tableViewSpring.getItemClass());
 				addTab(itemAddEditTabPane.getTabPane(), node, "Edit "
 					+ tableViewSpring.getTable().getItemName());
 			});
@@ -187,7 +213,7 @@ public class SplitTabView extends SplitPane implements AddableToAnchorPane {
 			addMenuItem(rowMenu, "Add item", event -> {
 				FxFactory<ITEM> controller = ((IDbFactoryTableView<ITEM>) tableViewSpring)
 					.createFxFactory();
-				Node node = controller.create(row.getItem());
+				Node node = controller.create(row.getItem(), tableViewSpring.getItemClass());
 				addTab(itemAddEditTabPane.getTabPane(), node, "Add "
 					+ tableViewSpring.getTable().getItemName());
 			});

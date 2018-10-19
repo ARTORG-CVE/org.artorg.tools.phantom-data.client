@@ -88,10 +88,10 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<AbstractTableViewSelector<ITEM>> createSelectors(ITEM item) {
+	private List<AbstractTableViewSelector<ITEM>> createSelectors(ITEM item, Class<?> itemClass) {
 		List<AbstractTableViewSelector<ITEM>> selectors = new ArrayList<AbstractTableViewSelector<ITEM>>();
 		
-		List<Class<? extends DbPersistent<?,?>>> subItemClasses = Reflect.getCollectionSetterMethods(item.getClass())
+		List<Class<? extends DbPersistent<?,?>>> subItemClasses = Reflect.getCollectionSetterMethods(itemClass)
 				.map(m -> {
 					Type type = m.getGenericParameterTypes()[0];
 					Class<? extends DbPersistent<?,?>> cls = (Class<? extends DbPersistent<?, ?>>) Reflect.getGenericTypeClass(type);
@@ -102,7 +102,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 				.collect(Collectors.toList());
 		
 		subItemClasses.forEach(subItemClass -> {
-			if (Reflect.containsCollectionSetter(item, subItemClass)) {
+			if (Reflect.containsCollectionSetter(itemClass, subItemClass)) {
 				ICrudConnector<?,?> connector = Connectors.getConnector(subItemClass);
 				Set<Object> selectableItemSet = (Set<Object>) connector.readAllAsSet();
 				
@@ -110,7 +110,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 					AbstractTableViewSelector<ITEM> titledSelector = new TitledPaneTableViewSelector<ITEM>(subItemClass);
 					titledSelector.setSelectableItems(selectableItemSet);
 					
-					Method selectedMethod = Reflect.getMethodByGenericReturnType(item, subItemClass);
+					Method selectedMethod = Reflect.getMethodByGenericReturnType(itemClass, subItemClass);
 					Function<ITEM, Collection<Object>> subItemGetter2; 
 					subItemGetter2 = i -> {
 						try {
@@ -220,12 +220,12 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 		node.setMaxWidth(Double.MAX_VALUE);
     }
     
-    public AnchorPane create() {
-		return create(null);
+    public AnchorPane create(Class<?> itemClass) {
+		return create(null, itemClass);
     }
     
-    public AnchorPane create(ITEM item) {
-    	selectors = createSelectors(item);
+    public AnchorPane create(ITEM item, Class<?> itemClass) {
+    	selectors = createSelectors(item, itemClass);
 		addProperties(item); 
 		createRightNodes(getPropertyEntries());
 		initDefaultValues();
@@ -243,8 +243,8 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM,?
 		return pane;
     }
     
-    public AnchorPane edit(ITEM item) {
-    	selectors = createSelectors(item);
+    public AnchorPane edit(ITEM item, Class<?> itemClass) {
+    	selectors = createSelectors(item, itemClass);
     	Label label = new Label();
     	label.setText(item.getId().toString());
     	label.setDisable(true);

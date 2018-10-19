@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
+import javafx.scene.Node;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
