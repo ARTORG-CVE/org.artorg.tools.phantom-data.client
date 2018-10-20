@@ -1,11 +1,15 @@
 package org.artorg.tools.phantomData.client.util;
 
+import static huma.io.IOutil.readResource;
+
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
-
-import static org.artorg.tools.phantomData.client.io.IOutil.*;
 
 public class FxUtil {
 	private static Class<?> mainClass;
@@ -50,4 +54,18 @@ public class FxUtil {
     	AnchorPane.setTopAnchor(node, 0.0);
 	}
 
+	public static void runNewSingleThreaded(Runnable rc) {
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				rc.run();
+				return null;
+			}
+		};
+		task.setOnSucceeded(taskEvent -> {
+		});
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		executor.submit(task);
+		executor.shutdown();
+	}
 }
