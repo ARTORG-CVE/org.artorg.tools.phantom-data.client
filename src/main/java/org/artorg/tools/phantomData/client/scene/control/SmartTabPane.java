@@ -1,6 +1,7 @@
 package org.artorg.tools.phantomData.client.scene.control;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javafx.beans.value.ChangeListener;
@@ -19,15 +20,20 @@ public class SmartTabPane {
 	private Node contentNode;
 	private Supplier<ObservableList<Node>> parentItemsSupplier;
 	private boolean headerVisible = true;
+	
+	private Consumer<TabPane> addTabPanePolicy;
+	private Consumer<TabPane> dividerPositionsPolicy;
 
 	static {
 		SHOW = new HeaderMode();
 		REMOVE_IF_SINGLE = new HeaderMode();
 	}
 	
-	public SmartTabPane(Supplier<ObservableList<Node>> parentItemsSupplier) {
+	public SmartTabPane(Supplier<ObservableList<Node>> parentItemsSupplier, Consumer<TabPane> addTabPanePolicy, Consumer<TabPane> dividerPositionsPolicy) {
 		this.headerMode  = SHOW;
 		this.parentItemsSupplier = parentItemsSupplier;
+		this.addTabPanePolicy = addTabPanePolicy;
+		this.dividerPositionsPolicy = dividerPositionsPolicy;
 		this.tabPane = new TabPane();
 		getTabPane().getTabs()
 		.addListener(createTabsListener());
@@ -110,11 +116,18 @@ public class SmartTabPane {
 						ObservableList<Node> parentNodes = parentItemsSupplier
 							.get();
 						
-						if (isHeaderVisible()) {
+						if (isHeaderVisible())
 							if (!parentNodes.contains(tabPane))
-								parentNodes.add(tabPane);
+								addTabPanePolicy.accept(tabPane);
+						
+						if (isHeaderVisible()) {
+//							if (!parentNodes.contains(tabPane))
+//								parentNodes.add(tabPane);
 						} else if (!parentNodes.contains(contentNode))
 							parentNodes.add(contentNode);
+						
+						
+						dividerPositionsPolicy.accept(tabPane);
 						
 						if (!initialized)
 							removeHeader(headerMode);

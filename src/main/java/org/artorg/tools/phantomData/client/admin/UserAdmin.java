@@ -29,6 +29,7 @@ public class UserAdmin {
 	
 	public static void logout() {
 		UserAdmin.user = null;
+		PersonalizedHttpConnectorSpring.setUserSupplier(() -> getUser());
 	}
 	
 	public static Person getUser() {

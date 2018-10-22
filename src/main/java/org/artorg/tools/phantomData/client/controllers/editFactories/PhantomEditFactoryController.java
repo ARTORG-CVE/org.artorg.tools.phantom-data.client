@@ -2,7 +2,9 @@ package org.artorg.tools.phantomData.client.controllers.editFactories;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
@@ -10,6 +12,7 @@ import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.Phantom;
+import org.artorg.tools.phantomData.server.model.Phantomina;
 import org.artorg.tools.phantomData.server.model.Special;
 
 import javafx.scene.control.ComboBox;
@@ -82,27 +85,38 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
     	String sNumber = textFieldModelNumber.getText();
     	int number = Integer.valueOf(sNumber);
     	
-    	return new Phantom(annulusDiameter, fabricationType, literatureBase, special, number);
+    	PersonalizedHttpConnectorSpring<Phantomina> phantominaConn = PersonalizedHttpConnectorSpring.getOrCreate(Phantomina.class);
+    	Phantomina phantomina = new Phantomina(annulusDiameter, fabricationType, literatureBase, special);
+		final Phantomina finalPhantomina = phantomina;
+		List<Phantomina> phantominas = phantominaConn.readAllAsStream().filter(p -> p.equals(finalPhantomina)).collect(Collectors.toList());
+		if (phantominas.size() == 0)
+			phantominaConn.create(phantomina);
+		else if (phantominas.size() == 1)
+			phantomina = phantominas.get(0);
+		else {
+			phantomina = phantominas.get(0);
+			throw new UnsupportedOperationException();
+		}
+		
+		return new Phantom(phantomina, number);
 	}
 
 	@Override
 	protected void setTemplate(Phantom item) {
-		super.selectComboBoxItem(comboBoxAnnulus, item.getAnnulusDiameter());
-		super.selectComboBoxItem(comboBoxFabricationType, item.getFabricationType());
-		super.selectComboBoxItem(comboBoxLiterature, item.getLiteratureBase());
-		super.selectComboBoxItem(comboBoxSpecials, item.getSpecial());
+		super.selectComboBoxItem(comboBoxAnnulus, item.getPhantomina().getAnnulusDiameter());
+		super.selectComboBoxItem(comboBoxFabricationType, item.getPhantomina().getFabricationType());
+		super.selectComboBoxItem(comboBoxLiterature, item.getPhantomina().getLiteratureBase());
+		super.selectComboBoxItem(comboBoxSpecials, item.getPhantomina().getSpecial());
 		textFieldModelNumber.setText(Integer.toString(item.getNumber()));
 	}
 
 	@Override
 	protected void copy(Phantom from, Phantom to) {
-		to.setAnnulusDiameter(from.getAnnulusDiameter());
-		to.setFabricationType(from.getFabricationType());
-		to.setFiles(from.getFiles());
-		to.setLiteratureBase(from.getLiteratureBase());
+		to.setPhantomina(from.getPhantomina());
 		to.setNumber(from.getNumber());
 		to.setProductId(from.getProductId());
-		to.setSpecial(from.getSpecial());
+		
+		to.setFiles(from.getFiles());
 		
 		to.setBooleanProperties(from.getBooleanProperties());
 		to.setDateProperties(from.getDateProperties());

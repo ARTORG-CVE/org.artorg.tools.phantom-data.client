@@ -49,6 +49,11 @@
                         <MenuItem fx:id="menuItemTableStringProperties" mnemonicParsing="false" onAction="#openTableStringProperties" text="String Properties" />
 							</items>
 						</Menu>
+                  <Menu fx:id="menuDatabase" mnemonicParsing="false" text="Database">
+                    <items>
+                      <MenuItem fx:id="menuItemExecuteQuery" mnemonicParsing="false" onAction="#executeQuery" text="Execute Query" />
+                    </items>
+                  </Menu>
 						<Menu mnemonicParsing="false" text="Help">
 							<items>
 								<MenuItem fx:id="menuItemAbout" mnemonicParsing="false" onAction="#about" text="About" />

@@ -2,6 +2,10 @@ package org.artorg.tools.phantomData.client.controllers;
 
 import java.io.File;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ResourceBundle;
 
 import org.artorg.tools.phantomData.client.Main;
@@ -39,11 +43,17 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -51,110 +61,160 @@ public class MainController {
 	private static String urlLocalhost;
 	private static String urlShutdownActuator;
 	private Stage stage;
-	
+
 	private SplitPane splitPane;
 	private ObservableList<SplitTabView> splitTabViews;
-	
+
 	public MainController(Stage stage) {
 		this.stage = stage;
 	}
-	
-    @FXML
-    private ResourceBundle resources;
 
-    @FXML
-    private URL location;
-
-    @FXML
-    private AnchorPane rootPane, contentPane;
-
-    @FXML
-    private MenuItem menuItemSave, menuItemRefresh, menuItemClose,
-    	menuitemUndo, menuItemRedo, menuItemAbout;
-    
-    @FXML
-    private MenuItem menuItemTablePhantoms, menuItemTableAnnulusDiameters, menuItemTableLiteratureBases, 
-    	menuItemTableFabricationTypes, menuItemTableSpecials,
-    	menuItemTableAcademicTitles, menuItemTablePersons, menuItemTableProperties,
-    	menuItemTableFiles, menuItemTableFileTypes, menuItemTablePropertyFields;
-    
-    @FXML
-    private MenuItem menuItemTableBooleanProperties, menuItemTableDoubleProperties,
-    	menuItemTableIntegerProperties, menuItemTableStringProperties;
-    
-    @FXML
-    void about(ActionEvent event) {
-
-    }
-
-    @FXML
-    void close(ActionEvent event) {
-    	close();
-    }
-    
-    private void close() {
-    	stage.hide();
-    	
-    	if (Main.getClientBooter().getServerBooter().isServerStartedEmbedded())
-    		Main.getClientBooter().getServerBooter().shutdownSpringServer();
-    	
-    	Platform.exit();
-    	
-    	System.exit(0);
-    }
-    
-    @FXML
-    void refresh(ActionEvent event) {
-    	
-    }
-
-    @FXML
-    void save(ActionEvent event) {
-//    	table.getTable().getUndoManager().save();
-    }
-
-    @FXML
-    void undo(ActionEvent event) {
-//    	table.getTable().getUndoManager().undo();
-    }
-    
-    @FXML
-    void redo(ActionEvent event) {
-//    	table.getTable().getUndoManager().redo();
-    }
-    
 	@FXML
-    void initialize() {
-        assert rootPane != null : "fx:id=\"rootPane\" was not injected: check your FXML file 'Table.fxml'.";
-        assert menuItemSave != null : "fx:id=\"menuItemSave\" was not injected: check your FXML file 'Table.fxml'.";
-        assert menuItemRefresh != null : "fx:id=\"menuItemRefresh\" was not injected: check your FXML file 'Table.fxml'.";
-        assert menuItemClose != null : "fx:id=\"menuItemClose\" was not injected: check your FXML file 'Table.fxml'.";
-        assert menuitemUndo != null : "fx:id=\"menuitemUndo\" was not injected: check your FXML file 'Table.fxml'.";
-        assert menuItemRedo != null : "fx:id=\"menuItemRedo\" was not injected: check your FXML file 'Table.fxml'.";
-        assert menuItemAbout != null : "fx:id=\"menuItemAbout\" was not injected: check your FXML file 'Table.fxml'.";
-        assert menuItemTablePhantoms != null : "fx:id=\"menuItemTablePhantoms\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemTableAnnulusDiameters != null : "fx:id=\"menuItemTableAnnulusDiameter\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemTableLiteratureBases != null : "fx:id=\"menuItemTableLiteratureBase\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemTableFabricationTypes != null : "fx:id=\"menuItemTableFabricationType\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemTableSpecials != null : "fx:id=\"menuItemTableSpecials\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemTablePersons != null : "fx:id=\"menuitemTablePersons\" was not injected: check your FXML file 'Table.fxml'.";
-        assert menuItemTableAcademicTitles != null : "fx:id=\"menuItemTableAcademicTitles\" was not injected: check your FXML file 'Table.fxml'.";
-        assert menuItemTableProperties != null : "fx:id=\"menuItemTableProperties\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemTableFiles != null : "fx:id=\"menuItemTableFiles\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemTableFileTypes != null : "fx:id=\"menuItemTableFileTypes\" was not injected: check your FXML file 'Main.fxml'.";
-        assert menuItemTablePropertyFields != null : "fx:id=\"menuItemTablePropertyField\" was not injected: check your FXML file 'Main.fxml'.";
-        assert contentPane != null : "fx:id=\"contentPane\" was not injected: check your FXML file 'Table.fxml'.";
-    }
-	
+	private ResourceBundle resources;
+
+	@FXML
+	private URL location;
+
+	@FXML
+	private AnchorPane rootPane, contentPane;
+
+	@FXML
+	private MenuItem menuItemSave, menuItemRefresh, menuItemClose,
+		menuitemUndo, menuItemRedo, menuItemAbout;
+
+	@FXML
+	private MenuItem menuItemTablePhantoms, menuItemTableAnnulusDiameters,
+		menuItemTableLiteratureBases,
+		menuItemTableFabricationTypes, menuItemTableSpecials,
+		menuItemTableAcademicTitles, menuItemTablePersons, menuItemTableProperties,
+		menuItemTableFiles, menuItemTableFileTypes, menuItemTablePropertyFields;
+
+	@FXML
+	private MenuItem menuItemTableBooleanProperties, menuItemTableDoubleProperties,
+		menuItemTableIntegerProperties, menuItemTableStringProperties;
+
+	@FXML
+	private MenuItem menuItemExecuteQuery;
+
+	@FXML
+	void about(ActionEvent event) {
+
+	}
+
+	@FXML
+	void close(ActionEvent event) {
+		close();
+	}
+
+	private void close() {
+		stage.hide();
+
+		if (Main.getClientBooter().getServerBooter().isServerStartedEmbedded())
+			Main.getClientBooter().getServerBooter().shutdownSpringServer();
+
+		Platform.exit();
+
+		System.exit(0);
+	}
+
+	@FXML
+	void refresh(ActionEvent event) {
+
+	}
+
+	@FXML
+	void save(ActionEvent event) {
+//    	table.getTable().getUndoManager().save();
+	}
+
+	@FXML
+	void undo(ActionEvent event) {
+//    	table.getTable().getUndoManager().undo();
+	}
+
+	@FXML
+	void redo(ActionEvent event) {
+//    	table.getTable().getUndoManager().redo();
+	}
+
+	@FXML
+	void executeQuery(ActionEvent event) {
+		AnchorPane root = new AnchorPane();
+		Scene scene = new Scene(root, 400, 400);
+		Stage stage = new Stage();
+		stage.setScene(scene);
+
+		TextField textField = new TextField();
+		textField.setAlignment(Pos.TOP_LEFT);
+		VBox vBox = new VBox();
+		ChoiceBox<String> choiceBox = new ChoiceBox<String>();
+		String EXECUTE = "execute";
+		String UPDATE = "executeUpdate";
+		ObservableList<String> choiceBoxItems =
+			FXCollections.observableArrayList(EXECUTE, UPDATE);
+		choiceBox.setItems(choiceBoxItems);
+		Button button = new Button("Execute Query");
+		button.setOnAction(buttonEvent -> {
+			Connection conn = Main.getClientBooter().getServerBooter().getConnection();
+			String statementChoice = choiceBox.getSelectionModel().getSelectedItem();
+			Statement statement = null;
+
+			if (statementChoice.equals(EXECUTE)) {
+				try {
+					statement = conn.createStatement();
+					statement.execute(textField.getText());
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} else if (statementChoice.equals(UPDATE)) {
+				try {
+					statement = conn.createStatement();
+					statement.executeUpdate(textField.getText());
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+
+		});
+		vBox.getChildren().addAll(choiceBox, textField, button);
+
+		FxUtil.addToAnchorPane(root, vBox);
+
+		stage.show();
+	}
+
+	@FXML
+	void initialize() {
+		assert rootPane != null : "fx:id=\"rootPane\" was not injected: check your FXML file 'Table.fxml'.";
+		assert menuItemSave != null : "fx:id=\"menuItemSave\" was not injected: check your FXML file 'Table.fxml'.";
+		assert menuItemRefresh != null : "fx:id=\"menuItemRefresh\" was not injected: check your FXML file 'Table.fxml'.";
+		assert menuItemClose != null : "fx:id=\"menuItemClose\" was not injected: check your FXML file 'Table.fxml'.";
+		assert menuitemUndo != null : "fx:id=\"menuitemUndo\" was not injected: check your FXML file 'Table.fxml'.";
+		assert menuItemRedo != null : "fx:id=\"menuItemRedo\" was not injected: check your FXML file 'Table.fxml'.";
+		assert menuItemAbout != null : "fx:id=\"menuItemAbout\" was not injected: check your FXML file 'Table.fxml'.";
+		assert menuItemTablePhantoms != null : "fx:id=\"menuItemTablePhantoms\" was not injected: check your FXML file 'Main.fxml'.";
+		assert menuItemTableAnnulusDiameters != null : "fx:id=\"menuItemTableAnnulusDiameter\" was not injected: check your FXML file 'Main.fxml'.";
+		assert menuItemTableLiteratureBases != null : "fx:id=\"menuItemTableLiteratureBase\" was not injected: check your FXML file 'Main.fxml'.";
+		assert menuItemTableFabricationTypes != null : "fx:id=\"menuItemTableFabricationType\" was not injected: check your FXML file 'Main.fxml'.";
+		assert menuItemTableSpecials != null : "fx:id=\"menuItemTableSpecials\" was not injected: check your FXML file 'Main.fxml'.";
+		assert menuItemTablePersons != null : "fx:id=\"menuitemTablePersons\" was not injected: check your FXML file 'Table.fxml'.";
+		assert menuItemTableAcademicTitles != null : "fx:id=\"menuItemTableAcademicTitles\" was not injected: check your FXML file 'Table.fxml'.";
+		assert menuItemTableProperties != null : "fx:id=\"menuItemTableProperties\" was not injected: check your FXML file 'Main.fxml'.";
+		assert menuItemTableFiles != null : "fx:id=\"menuItemTableFiles\" was not injected: check your FXML file 'Main.fxml'.";
+		assert menuItemTableFileTypes != null : "fx:id=\"menuItemTableFileTypes\" was not injected: check your FXML file 'Main.fxml'.";
+		assert menuItemTablePropertyFields != null : "fx:id=\"menuItemTablePropertyField\" was not injected: check your FXML file 'Main.fxml'.";
+		assert menuItemExecuteQuery != null : "fx:id=\"menuItemTablePropertyField\" was not injected: check your FXML file 'Main.fxml'.";
+		assert contentPane != null : "fx:id=\"contentPane\" was not injected: check your FXML file 'Table.fxml'.";
+	}
+
 	public void init() {
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-            	close();
-            }
-        });
-        
-		
+			@Override
+			public void handle(WindowEvent event) {
+				close();
+			}
+		});
+
 		this.splitPane = new SplitPane();
 		splitPane.setOrientation(Orientation.VERTICAL);
 		splitTabViews = FXCollections.<SplitTabView>observableArrayList();
@@ -163,35 +223,66 @@ public class MainController {
 			public void onChanged(Change<? extends SplitTabView> c) {
 				if (c.next())
 					do {
-						if (c.wasAdded())
-							splitPane.getItems().addAll(c.getAddedSubList());
-						if (c.wasRemoved())
-							splitPane.getItems().removeAll(c.getRemoved());
-					} while (c.next());
+					if (c.wasAdded())
+						splitPane.getItems().addAll(c.getAddedSubList());
+					if (c.wasRemoved())
+						splitPane.getItems().removeAll(c.getRemoved());
+				} while (c.next());
 			}
 		});
-		
+
 		splitTabViews.add(new SplitTabView());
 		splitTabViews.add(new SplitTabView());
-      	getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
-      	File file = IOutil.readResourceAsFile("model.stl");
-      	getOrCreate(0).openViewerTab(createScene3dTab(file));
-      	getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));
-		
-      	FxUtil.addToAnchorPane(contentPane, splitPane);
+		getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
+		File file = IOutil.readResourceAsFile("model.stl");
+		getOrCreate(0).openViewerTab(createScene3dTab(file));
+		getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));
+
+		FxUtil.addToAnchorPane(contentPane, splitPane);
+
+//      	Platform.runLater(() -> {
+//      	Connection conn = Main.getClientBooter().getServerBooter().getConnection();
+//      	Statement statement = null;
+//      	try {
+//			 statement = conn.createStatement();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//      	
+//      	try {
+//			statement.execute("CALL CSVWRITE('D:/Users/Marc/Desktop/test2.csv', 'SELECT * FROM ANNULUS_DIAMETERS')");
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+
+//      	Connection conn = Main.getClientBooter().getServerBooter().getConnection();
+//      	Statement statement = null;
+//      	try {
+//			 statement = conn.createStatement();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//      	
+//      	try {
+//			statement.execute("INSERT INTO SELECT * FROM CSVREAD('D:/Users/Marc/Desktop/test2.csv')");
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//      	
+//      	});
 
 	}
-	
+
 	public <T extends DbPersistent<T, ?>> void openTable(Class<T> itemClass) {
 		openTableViewTab(0, itemClass);
 	}
-	
+
 	public <T extends DbPersistent<T, ?>> void openTableViewTab(int row,
 		Class<T> itemClass) {
 		ProTableView<T> table = createTable(itemClass);
 		openTableTab(row, table, table.getTable().getTableName());
 	}
-	
+
 	private Tab createScene3dTab(File file) {
 		Tab tab = new Tab("3D Viewer");
 		Scene3D scene3d = new Scene3D();
@@ -206,14 +297,15 @@ public class MainController {
 		tab.setContent(table);
 		return tab;
 	}
-	
-	private <T extends DbPersistent<T, ?>> Tab createTreeTableViewTab(Class<T> itemClass) {
+
+	private <T extends DbPersistent<T, ?>> Tab
+		createTreeTableViewTab(Class<T> itemClass) {
 		ProTreeTableView<T> table = createTreeTable(itemClass);
 		Tab tab = new Tab(table.getTable().getTableName());
 		tab.setContent(table);
 		return tab;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private <T extends DbPersistent<T, ?>> ProTableView<T> createTable(
 		Class<T> itemClass) {
@@ -239,26 +331,25 @@ public class MainController {
 	public SplitTabView getOrCreate(int row) {
 		if (splitTabViews.size() - 1 < row)
 			for (int i = splitTabViews.size() - 1; i < row; i++)
-				splitTabViews.add(new SplitTabView());
+			splitTabViews.add(new SplitTabView());
 		return splitTabViews.get(row);
 	}
-	
-    
+
 	@FXML
-    void openTableFileTypes(ActionEvent event) {
+	void openTableFileTypes(ActionEvent event) {
 		openTable(FileType.class);
-    }
-    
+	}
+
 	@FXML
-    void openTableFiles(ActionEvent event) {
+	void openTableFiles(ActionEvent event) {
 		openTable(PhantomFile.class);
-    }
-    
+	}
+
 	@FXML
-    void openTablePhantoms(ActionEvent event) {    	
+	void openTablePhantoms(ActionEvent event) {
 		openTable(Phantom.class);
-    }
-	
+	}
+
 //	private Button createTabButton(String iconName) {
 //        Button button = new Button();
 //        ImageView imageView = new ImageView(new Image(IOutil.readResourceAsStream(iconName),
@@ -267,68 +358,68 @@ public class MainController {
 //        button.getStyleClass().add("tab-button");
 //        return button;
 //    }
-    
+
 	@FXML
-    void openTableProperties(ActionEvent event) {
+	void openTableProperties(ActionEvent event) {
 		openTable(BooleanProperty.class);
-    }
-    
+	}
+
 	@FXML
-    void openTableSpecials(ActionEvent event) {
+	void openTableSpecials(ActionEvent event) {
 		openTable(Special.class);
-    }
-    
+	}
+
 	@FXML
-    void openTableAnnulusDiameter(ActionEvent event) {
+	void openTableAnnulusDiameter(ActionEvent event) {
 		openTable(AnnulusDiameter.class);
-    }
-    
+	}
+
 	@FXML
-    void openTableFabricationTypes(ActionEvent event) {
+	void openTableFabricationTypes(ActionEvent event) {
 		openTable(FabricationType.class);
-    }
-    
+	}
+
 	@FXML
-    void openTableLiteratureBases(ActionEvent event) {
+	void openTableLiteratureBases(ActionEvent event) {
 		openTable(LiteratureBase.class);
-    }
-    
+	}
+
 	@FXML
-    void openTablePropertyFields(ActionEvent event) {
+	void openTablePropertyFields(ActionEvent event) {
 		openTable(PropertyField.class);
-    }
-	
+	}
+
 	@FXML
-    void openTableAcademicTitles(ActionEvent event) {
+	void openTableAcademicTitles(ActionEvent event) {
 		openTable(AcademicTitle.class);
-    }
-	
+	}
+
 	@FXML
-    void openTablePersons(ActionEvent event) {
+	void openTablePersons(ActionEvent event) {
 		openTable(Person.class);
-    }
-	
+	}
+
 	@FXML
-    void openTableBooleanProperties(ActionEvent event) {
+	void openTableBooleanProperties(ActionEvent event) {
 		openTable(BooleanProperty.class);
-    }
+	}
 
-    @FXML
-    void openTableDoubleProperties(ActionEvent event) {
-    	openTable(DoubleProperty.class);
-    }
-    
-    @FXML
-    void openTableIntegerProperties(ActionEvent event) {
-    	openTable(IntegerProperty.class);
-    }
+	@FXML
+	void openTableDoubleProperties(ActionEvent event) {
+		openTable(DoubleProperty.class);
+	}
 
-    @FXML
-    void openTableStringProperties(ActionEvent event) {
-    	openTable(StringProperty.class);
-    }
-    
-    public static String getUrlLocalhost() {
+	@FXML
+	void openTableIntegerProperties(ActionEvent event) {
+		openTable(IntegerProperty.class);
+	}
+
+	@FXML
+	void openTableStringProperties(ActionEvent event) {
+		openTable(StringProperty.class);
+	}
+
+	public static String getUrlLocalhost() {
 		return urlLocalhost;
 	}
 
@@ -344,5 +435,5 @@ public class MainController {
 	public static void setUrlShutdownActuator(String urlShutdownActuator) {
 		MainController.urlShutdownActuator = urlShutdownActuator;
 	}
-    
+
 }

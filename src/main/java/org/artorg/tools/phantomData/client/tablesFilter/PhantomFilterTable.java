@@ -21,19 +21,19 @@ public class PhantomFilterTable extends DbUndoRedoFactoryEditFilterTable<Phantom
 		column.setAscendingSortComparator((p1,p2) -> comparePid(p1,p2));
 		columns.add(column);
 		columns.add(new FilterColumn<Phantom>(
-				"annulus [mm]", item -> item.getAnnulusDiameter(), 
+				"annulus [mm]", item -> item.getPhantomina().getAnnulusDiameter(), 
 				path -> String.valueOf(path.getValue()), 
 				(path,value) -> path.setValue(Double.valueOf(value))));
 		columns.add(new FilterColumn<Phantom>(
-				"type", item -> item.getFabricationType(), 
+				"type", item -> item.getPhantomina().getFabricationType(), 
 				path -> path.getValue(), 
 				(path,value) -> path.setValue(value)));
 		columns.add(new FilterColumn<Phantom>(
-				"literature", item -> item.getLiteratureBase(), 
+				"literature", item -> item.getPhantomina().getLiteratureBase(), 
 				path -> path.getValue(), 
 				(path,value) -> path.setValue(value)));
 		column = new FilterColumn<Phantom>(
-				"special", item -> item.getSpecial(), 
+				"special", item -> item.getPhantomina().getSpecial(), 
 				path -> path.getShortcut(), 
 				(path,value) -> path.setShortcut(value));
 		columns.add(column);

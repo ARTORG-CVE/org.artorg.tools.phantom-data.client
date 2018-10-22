@@ -239,8 +239,8 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 			FxUtil.runNewSingleThreaded(() -> {
 				ITEM newItem = createItem();
 				selectors.forEach(selector -> selector.setSelectedChildItems(item));
-				getTableView().getItems().add(newItem);
 				getConnector().create(newItem);
+				getTableView().getItems().add(newItem);
 				Platform.runLater(() -> {
 					initDefaultValues();
 				});

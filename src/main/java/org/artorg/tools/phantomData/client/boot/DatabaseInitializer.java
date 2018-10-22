@@ -3,6 +3,7 @@ package org.artorg.tools.phantomData.client.boot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
@@ -16,6 +17,7 @@ import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.Person;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
+import org.artorg.tools.phantomData.server.model.Phantomina;
 import org.artorg.tools.phantomData.server.model.Special;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
@@ -32,6 +34,7 @@ public class DatabaseInitializer {
 	private static PersonalizedHttpConnectorSpring<BooleanProperty> boolPropConn = PersonalizedHttpConnectorSpring.getOrCreate(BooleanProperty.class);
 	private static PersonalizedHttpConnectorSpring<IntegerProperty> intPropConn = PersonalizedHttpConnectorSpring.getOrCreate(IntegerProperty.class);
 	private static PersonalizedHttpConnectorSpring<Special> specConn = PersonalizedHttpConnectorSpring.getOrCreate(Special.class);
+	private static PersonalizedHttpConnectorSpring<Phantomina> phantominaConn = PersonalizedHttpConnectorSpring.getOrCreate(Phantomina.class);
 	private static PersonalizedHttpConnectorSpring<Phantom> phantomConn = PersonalizedHttpConnectorSpring.getOrCreate(Phantom.class);
 	private static PersonalizedHttpConnectorSpring<FileType> fileTypeConn = PersonalizedHttpConnectorSpring.getOrCreate(FileType.class);
 	private static PersonalizedHttpConnectorSpring<PhantomFile> fileConn = PersonalizedHttpConnectorSpring.getOrCreate(PhantomFile.class);
@@ -205,7 +208,19 @@ public class DatabaseInitializer {
 		FabricationType fType2 = fTypeConn.readByAttribute(fType, "shortcut");
 		LiteratureBase litBase2 = litBaseConn.readByAttribute(litBase, "shortcut");
 		Special special2 = specConn.readByAttribute(special, "shortcut");
-		return new Phantom(annulusDiameter2, fType2, litBase2, special2, number);
+		Phantomina phantomina = new Phantomina(annulusDiameter2, fType2, litBase2, special2);
+		final Phantomina finalPhantomina = phantomina;
+		List<Phantomina> phantominas = phantominaConn.readAllAsStream().filter(p -> p.equals(finalPhantomina)).collect(Collectors.toList());
+		if (phantominas.size() == 0)
+			phantominaConn.create(phantomina);
+		else if (phantominas.size() == 1)
+			phantomina = phantominas.get(0);
+		else {
+			phantomina = phantominas.get(0);
+			throw new UnsupportedOperationException();
+		}
+		
+		return new Phantom(phantomina, number);
 	}
 
 }

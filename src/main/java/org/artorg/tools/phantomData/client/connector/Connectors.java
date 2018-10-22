@@ -16,7 +16,7 @@ public class Connectors {
 	@SuppressWarnings("unchecked")
 	public static <ITEM extends DbPersistent<ITEM,ID>, ID> CrudConnectors<ITEM, ID> getConnector(Class<?> itemClass) {
 		
-		return (CrudConnectors<ITEM, ID>) HttpConnectorSpring.getOrCreate(itemClass);
+		return (CrudConnectors<ITEM, ID>) PersonalizedHttpConnectorSpring.getOrCreate(itemClass);
 		
 //		
 //		Map<Class<?>,HttpConnectorSpring<?>> connectorMap;

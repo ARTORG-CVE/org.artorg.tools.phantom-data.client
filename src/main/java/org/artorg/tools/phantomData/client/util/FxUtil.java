@@ -58,7 +58,11 @@ public class FxUtil {
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
+				try {
 				rc.run();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				return null;
 			}
 		};
