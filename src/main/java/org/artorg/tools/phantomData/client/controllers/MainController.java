@@ -3,10 +3,10 @@ package org.artorg.tools.phantomData.client.controllers;
 import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
@@ -48,7 +48,8 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
@@ -56,6 +57,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+
+import static org.artorg.tools.phantomData.client.util.FxUtil.addMenuItem;
 
 public class MainController {
 	private static String urlLocalhost;
@@ -79,22 +82,7 @@ public class MainController {
 	private AnchorPane rootPane, contentPane;
 
 	@FXML
-	private MenuItem menuItemSave, menuItemRefresh, menuItemClose,
-		menuitemUndo, menuItemRedo, menuItemAbout;
-
-	@FXML
-	private MenuItem menuItemTablePhantoms, menuItemTableAnnulusDiameters,
-		menuItemTableLiteratureBases,
-		menuItemTableFabricationTypes, menuItemTableSpecials,
-		menuItemTableAcademicTitles, menuItemTablePersons, menuItemTableProperties,
-		menuItemTableFiles, menuItemTableFileTypes, menuItemTablePropertyFields;
-
-	@FXML
-	private MenuItem menuItemTableBooleanProperties, menuItemTableDoubleProperties,
-		menuItemTableIntegerProperties, menuItemTableStringProperties;
-
-	@FXML
-	private MenuItem menuItemExecuteQuery;
+	private Menu menuTables;
 
 	@FXML
 	void about(ActionEvent event) {
@@ -186,24 +174,6 @@ public class MainController {
 	@FXML
 	void initialize() {
 		assert rootPane != null : "fx:id=\"rootPane\" was not injected: check your FXML file 'Table.fxml'.";
-		assert menuItemSave != null : "fx:id=\"menuItemSave\" was not injected: check your FXML file 'Table.fxml'.";
-		assert menuItemRefresh != null : "fx:id=\"menuItemRefresh\" was not injected: check your FXML file 'Table.fxml'.";
-		assert menuItemClose != null : "fx:id=\"menuItemClose\" was not injected: check your FXML file 'Table.fxml'.";
-		assert menuitemUndo != null : "fx:id=\"menuitemUndo\" was not injected: check your FXML file 'Table.fxml'.";
-		assert menuItemRedo != null : "fx:id=\"menuItemRedo\" was not injected: check your FXML file 'Table.fxml'.";
-		assert menuItemAbout != null : "fx:id=\"menuItemAbout\" was not injected: check your FXML file 'Table.fxml'.";
-		assert menuItemTablePhantoms != null : "fx:id=\"menuItemTablePhantoms\" was not injected: check your FXML file 'Main.fxml'.";
-		assert menuItemTableAnnulusDiameters != null : "fx:id=\"menuItemTableAnnulusDiameter\" was not injected: check your FXML file 'Main.fxml'.";
-		assert menuItemTableLiteratureBases != null : "fx:id=\"menuItemTableLiteratureBase\" was not injected: check your FXML file 'Main.fxml'.";
-		assert menuItemTableFabricationTypes != null : "fx:id=\"menuItemTableFabricationType\" was not injected: check your FXML file 'Main.fxml'.";
-		assert menuItemTableSpecials != null : "fx:id=\"menuItemTableSpecials\" was not injected: check your FXML file 'Main.fxml'.";
-		assert menuItemTablePersons != null : "fx:id=\"menuitemTablePersons\" was not injected: check your FXML file 'Table.fxml'.";
-		assert menuItemTableAcademicTitles != null : "fx:id=\"menuItemTableAcademicTitles\" was not injected: check your FXML file 'Table.fxml'.";
-		assert menuItemTableProperties != null : "fx:id=\"menuItemTableProperties\" was not injected: check your FXML file 'Main.fxml'.";
-		assert menuItemTableFiles != null : "fx:id=\"menuItemTableFiles\" was not injected: check your FXML file 'Main.fxml'.";
-		assert menuItemTableFileTypes != null : "fx:id=\"menuItemTableFileTypes\" was not injected: check your FXML file 'Main.fxml'.";
-		assert menuItemTablePropertyFields != null : "fx:id=\"menuItemTablePropertyField\" was not injected: check your FXML file 'Main.fxml'.";
-		assert menuItemExecuteQuery != null : "fx:id=\"menuItemTablePropertyField\" was not injected: check your FXML file 'Main.fxml'.";
 		assert contentPane != null : "fx:id=\"contentPane\" was not injected: check your FXML file 'Table.fxml'.";
 	}
 
@@ -224,15 +194,21 @@ public class MainController {
 				if (c.next())
 					do {
 					if (c.wasAdded())
-						splitPane.getItems().addAll(c.getAddedSubList());
+						splitPane.getItems()
+							.addAll(c.getAddedSubList().stream()
+								.map(splitTabView -> splitTabView.getSplitPane())
+								.collect(Collectors.toList()));
 					if (c.wasRemoved())
-						splitPane.getItems().removeAll(c.getRemoved());
+						splitPane.getItems()
+							.removeAll(c.getRemoved().stream()
+								.map(splitTabView -> splitTabView.getSplitPane())
+								.collect(Collectors.toList()));
 				} while (c.next());
 			}
 		});
 
-		splitTabViews.add(new SplitTabView());
-		splitTabViews.add(new SplitTabView());
+		addSplitTabView();
+		addSplitTabView();		
 		getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
 		File file = IOutil.readResourceAsFile("model.stl");
 		getOrCreate(0).openViewerTab(createScene3dTab(file));
@@ -240,37 +216,63 @@ public class MainController {
 
 		FxUtil.addToAnchorPane(contentPane, splitPane);
 
-//      	Platform.runLater(() -> {
-//      	Connection conn = Main.getClientBooter().getServerBooter().getConnection();
-//      	Statement statement = null;
-//      	try {
-//			 statement = conn.createStatement();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//      	
-//      	try {
-//			statement.execute("CALL CSVWRITE('D:/Users/Marc/Desktop/test2.csv', 'SELECT * FROM ANNULUS_DIAMETERS')");
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
+	}
 
-//      	Connection conn = Main.getClientBooter().getServerBooter().getConnection();
-//      	Statement statement = null;
-//      	try {
-//			 statement = conn.createStatement();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//      	
-//      	try {
-//			statement.execute("INSERT INTO SELECT * FROM CSVREAD('D:/Users/Marc/Desktop/test2.csv')");
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//      	
-//      	});
+	@FXML
+	void export(ActionEvent event) {
 
+	}
+
+	@FXML
+	void newEntity(ActionEvent event) {
+
+	}
+
+	@FXML
+	void newSplitTabPane(ActionEvent event) {
+		addSplitTabView();
+	}
+	
+	private void addSplitTabView() {
+		SplitTabView splitTabView = new SplitTabView();
+		
+		ContextMenu contextMenu = new ContextMenu();
+		addMenuItem(contextMenu, "Close", event -> {
+			splitTabViews.remove(splitTabView);
+		});
+		splitTabView.getSplitPane().setContextMenu(contextMenu);
+		
+		splitTabViews.add(splitTabView);
+	}
+
+	@FXML
+	void openPerspectiveComparePhantoms(ActionEvent event) {
+
+	}
+
+	@FXML
+	void preferences(ActionEvent event) {
+
+	}
+
+	@FXML
+	void resetPerspective(ActionEvent event) {
+
+	}
+
+	@FXML
+	void changeUser(ActionEvent event) {
+		System.out.println("change user");
+	}
+
+	@FXML
+	void login(ActionEvent event) {
+		System.out.println("login");
+	}
+
+	@FXML
+	void logout(ActionEvent event) {
+		System.out.println("logout");
 	}
 
 	public <T extends DbPersistent<T, ?>> void openTable(Class<T> itemClass) {
@@ -342,6 +344,7 @@ public class MainController {
 
 	@FXML
 	void openTableFiles(ActionEvent event) {
+		System.out.println(event.getSource().getClass());
 		openTable(PhantomFile.class);
 	}
 
@@ -359,10 +362,6 @@ public class MainController {
 //        return button;
 //    }
 
-	@FXML
-	void openTableProperties(ActionEvent event) {
-		openTable(BooleanProperty.class);
-	}
 
 	@FXML
 	void openTableSpecials(ActionEvent event) {

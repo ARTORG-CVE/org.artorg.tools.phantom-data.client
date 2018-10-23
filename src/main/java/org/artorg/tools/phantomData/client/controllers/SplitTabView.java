@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.artorg.tools.phantomData.client.boot.MainFx;
 import org.artorg.tools.phantomData.client.io.IOutil;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
+import org.artorg.tools.phantomData.client.scene.control.SmartSplitTabPane;
 import org.artorg.tools.phantomData.client.scene.control.SmartTabPane;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
@@ -34,8 +35,6 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -50,23 +49,30 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.DirectoryChooser;
 
-public class SplitTabView extends SplitPane implements AddableToAnchorPane {
-	private SplitPane splitPane;
-	private SmartTabPane tableTabPane;
+import static org.artorg.tools.phantomData.client.util.FxUtil.addMenuItem;
 
-	private SmartTabPane itemAddEditTabPane;
-	private SmartTabPane viewerTabPane;
+public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPane {
+	private final SplitPane splitPane;
+	private final SmartTabPane tableTabPane;
+	private final SmartTabPane itemAddEditTabPane;
+	private final SmartTabPane viewerTabPane;
 	private boolean controlDown;
 	private List<Runnable> menuItemUpdater;
 
 	{
-		splitPane = this;
+		splitPane = super.getSplitPane();
+
 		Consumer<TabPane> addTabPanePolicy = tabPane -> addTabPanePolicy(tabPane);
-		Consumer<TabPane> dividerPositionsPolicy = tabPane -> dividerPositionsPolicy(tabPane);
-		tableTabPane = new SmartTabPane(() -> splitPane.getItems(), addTabPanePolicy, dividerPositionsPolicy);
-		itemAddEditTabPane =
-			new SmartTabPane(() -> splitPane.getItems(), addTabPanePolicy, dividerPositionsPolicy);
-		viewerTabPane = new SmartTabPane(() -> splitPane.getItems(), addTabPanePolicy, dividerPositionsPolicy);
+		tableTabPane = createSmartTabPane();
+		itemAddEditTabPane = createSmartTabPane();
+		viewerTabPane = createSmartTabPane();
+
+		super.setNodeAddPolicy(addTabPanePolicy);
+
+		super.getTabPanes().add(tableTabPane);
+		super.getTabPanes().add(itemAddEditTabPane);
+		super.getTabPanes().add(viewerTabPane);
+
 		menuItemUpdater = new ArrayList<Runnable>();
 
 		splitPane.setOrientation(Orientation.HORIZONTAL);
@@ -81,7 +87,16 @@ public class SplitTabView extends SplitPane implements AddableToAnchorPane {
 				menuItemUpdater.stream().forEach(rc -> rc.run());
 			});
 		});
+		
+		
 
+	}
+
+	private SmartTabPane createSmartTabPane() {
+		SmartTabPane smartTabPane = new SmartTabPane();
+		smartTabPane.setParentItemsSupplier(() -> this.getSplitPane().getItems());
+		smartTabPane.setNodeAddPolicy(tabPane -> addTabPanePolicy((TabPane) tabPane));
+		return smartTabPane;
 	}
 
 	public <ITEM extends DbPersistent<ITEM, ?>> void openViewerTab(Tab tab) {
@@ -340,78 +355,38 @@ public class SplitTabView extends SplitPane implements AddableToAnchorPane {
 		return row;
 	}
 
-	private <ITEM extends DbPersistent<ITEM, ?>> void addMenuItem(ContextMenu rowMenu,
-		String name,
-		EventHandler<ActionEvent> eventHandler) {
-		MenuItem menuItem = new MenuItem(name);
-		menuItem.setOnAction(eventHandler);
-		rowMenu.getItems().add(menuItem);
-	}
-
-	private void addTab(TabPane tabePane, Node node, String tabName) {
-		Tab tab = new Tab(tabName);
-		tab.setContent(node);
-		tab.setOnClosed(closeEvent -> {
-			if (tabePane.getTabs().size() == 0)
-				splitPane.getItems().remove(tabePane);
-		});
-
-		tabePane.getTabs().add(tab);
-		tabePane.getSelectionModel().select(tab);
-	}
-
 	public void addTabPanePolicy(TabPane tabPane) {
-		if (tabPane == getTableTabPane().getTabPane()) {
+		if (tabPane == getTableTabPane().getTabPane())
 			splitPane.getItems().add(0, tabPane);
-		}
-		if (tabPane == getItemAddEditTabPane().getTabPane()) {
+		else if (tabPane == getItemAddEditTabPane().getTabPane())
 			splitPane.getItems().add(1, tabPane);
-		}
-		if (tabPane == getViewerTabPane().getTabPane()) {
+		else if (tabPane == getViewerTabPane().getTabPane())
 			splitPane.getItems().add(splitPane.getItems().size(), tabPane);
-		}
+		dividerPositionsPolicy(tabPane);
 	}
 
 	public void dividerPositionsPolicy(TabPane tabPane) {
 		final double tablePortion = 0.7;
 		final double viewerPortion = 0.3;
 		final double itemEditPortion = 0.3;
-		if (tabPane == getTableTabPane().getTabPane()) {
-			int nItems = splitPane.getItems().size();
-			double[] positions = splitPane.getDividerPositions();
-			if (nItems == 2) {
+
+		int nItems = splitPane.getItems().size();
+		double[] positions = splitPane.getDividerPositions();
+
+		if (nItems == 2) {
+			if (tabPane == getTableTabPane().getTabPane())
 				positions[0] = tablePortion;
-			}
-			if (nItems == 3) {
-				positions[1] = itemEditPortion;
-				positions[0] = 1 - positions[1];
-			}
-			splitPane.setDividerPositions(positions);
-		}
-		if (tabPane == getItemAddEditTabPane().getTabPane()) {
-			int nItems = splitPane.getItems().size();
-			double[] positions = splitPane.getDividerPositions();
-			if (nItems == 2) {
+			if (tabPane == getItemAddEditTabPane().getTabPane())
 				positions[0] = 1 - itemEditPortion;
-			}
-			if (nItems == 3) {
-				positions[1] = itemEditPortion;
-				positions[0] = 1 - positions[1];
-			}
-			splitPane.setDividerPositions(positions);
-		}
-		if (tabPane == getViewerTabPane().getTabPane()) {
-			int nItems = splitPane.getItems().size();
-			double[] positions = splitPane.getDividerPositions();
-			if (nItems == 2) {
+			if (tabPane == getViewerTabPane().getTabPane())
 				positions[0] = 1 - viewerPortion;
-			}
-			if (nItems == 3) {
-				positions[1] = viewerPortion;
-				positions[0] = 1 - positions[1];
-			}
-			splitPane.setDividerPositions(positions);
 		}
+		if (nItems == 3) {
+			positions[1] = 1 - viewerPortion;
+			positions[0] = positions[1] - itemEditPortion;
+		}
+		splitPane.setDividerPositions(positions);
+
 	}
 
 	public SmartTabPane getTableTabPane() {

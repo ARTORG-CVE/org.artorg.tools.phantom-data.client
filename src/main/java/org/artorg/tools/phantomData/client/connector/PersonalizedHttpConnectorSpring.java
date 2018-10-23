@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.server.model.Person;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
@@ -59,10 +60,10 @@ public class PersonalizedHttpConnectorSpring<T extends Identifiable<UUID>> exten
 		return super.update(t);
 	}
 	
-	public Person getUser() {
+	public Person getUser() throws NoUserLoggedInException {
 		Person user = userSupplier.get();
 		if (user == null)
-			throw new UnsupportedOperationException("No user logged in for connector.");
+			throw new NoUserLoggedInException();
 		return user;
 	}
 	

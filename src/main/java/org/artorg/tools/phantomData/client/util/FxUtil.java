@@ -7,8 +7,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 
 public class FxUtil {
@@ -16,6 +20,14 @@ public class FxUtil {
 	
 	static {
 		mainClass = null;
+	}
+	
+	public static void addMenuItem(ContextMenu rowMenu,
+		String name,
+		EventHandler<ActionEvent> eventHandler) {
+		MenuItem menuItem = new MenuItem(name);
+		menuItem.setOnAction(eventHandler);
+		rowMenu.getItems().add(menuItem);
 	}
 	
 	public static void setMainFxClass(Class<?> mainClass) {

@@ -15,48 +15,78 @@
 					<menus>
 						<Menu mnemonicParsing="false" text="File">
 							<items>
-								<MenuItem fx:id="menuItemSave" mnemonicParsing="false" onAction="#save" text="Save" />
-								<MenuItem fx:id="menuItemRefresh" mnemonicParsing="false" onAction="#refresh" text="Refresh" />
-								<MenuItem fx:id="menuItemClose" mnemonicParsing="false" onAction="#close" text="Close" />
+                        <MenuItem mnemonicParsing="false" onAction="#newEntity" text="New" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+								<MenuItem mnemonicParsing="false" onAction="#save" text="Save" />
+								<MenuItem mnemonicParsing="false" onAction="#refresh" text="Refresh" />
+                        <MenuItem mnemonicParsing="false" onAction="#export" text="Export" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#preferences" text="Preferences..." />
+								<MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
 							</items>
 						</Menu>
 						<Menu mnemonicParsing="false" text="Edit">
 							<items>
-								<MenuItem fx:id="menuitemUndo" mnemonicParsing="false" onAction="#undo" text="Undo" />
-								<MenuItem fx:id="menuItemRedo" mnemonicParsing="false" onAction="#redo" text="Redo" />
+								<MenuItem mnemonicParsing="false" onAction="#undo" text="Undo" />
+								<MenuItem mnemonicParsing="false" onAction="#redo" text="Redo" />
 							</items>
 						</Menu>
 						<Menu fx:id="menuTables" mnemonicParsing="false" text="Tables">
 							<items>
-								<MenuItem fx:id="menuItemTablePhantoms" mnemonicParsing="false" onAction="#openTablePhantoms" text="Phantoms" />
-								<MenuItem fx:id="menuItemTableAnnulusDiameters" mnemonicParsing="false" onAction="#openTableAnnulusDiameter" text="Annulus Diameters" />
-								<MenuItem fx:id="menuItemTableLiteratureBases" mnemonicParsing="false" onAction="#openTableLiteratureBases" text="Literature Bases" />
-								<MenuItem fx:id="menuItemTableFabricationTypes" mnemonicParsing="false" onAction="#openTableFabricationTypes" text="Fabrication Types" />
+								<MenuItem mnemonicParsing="false" onAction="#openTablePhantoms" text="Phantoms" />
+								<MenuItem mnemonicParsing="false" onAction="#openTableAnnulusDiameter" text="Annulus Diameters" />
+								<MenuItem mnemonicParsing="false" onAction="#openTableLiteratureBases" text="Literature Bases" />
+								<MenuItem mnemonicParsing="false" onAction="#openTableFabricationTypes" text="Fabrication Types" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-								<MenuItem fx:id="menuItemTableSpecials" mnemonicParsing="false" onAction="#openTableSpecials" text="Specials" />
-								<MenuItem fx:id="menuItemTableProperties" mnemonicParsing="false" onAction="#openTableProperties" text="Properties" />
-								<MenuItem fx:id="menuItemTablePropertyFields" mnemonicParsing="false" onAction="#openTablePropertyFields" text="Property Fields" />
+								<MenuItem mnemonicParsing="false" onAction="#openTableSpecials" text="Specials" />
+								<MenuItem mnemonicParsing="false" onAction="#openTablePropertyFields" text="Property Fields" />
 								<SeparatorMenuItem mnemonicParsing="false" />
-								<MenuItem fx:id="menuItemTableFiles" mnemonicParsing="false" onAction="#openTableFiles" text="Files" />
-								<MenuItem fx:id="menuItemTableFileTypes" mnemonicParsing="false" onAction="#openTableFileTypes" text="File Types" />
+								<MenuItem mnemonicParsing="false" onAction="#openTableFiles" text="Files" />
+								<MenuItem mnemonicParsing="false" onAction="#openTableFileTypes" text="File Types" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="menuItemTablePersons" mnemonicParsing="false" onAction="#openTablePersons" text="Persons" />
-                        <MenuItem fx:id="menuItemTableAcademicTitles" mnemonicParsing="false" onAction="#openTableAcademicTitles" text="Academic Titles" />
+                        <MenuItem mnemonicParsing="false" onAction="#openTablePersons" text="Persons" />
+                        <MenuItem mnemonicParsing="false" onAction="#openTableAcademicTitles" text="Academic Titles" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="menuItemTableBooleanProperties" mnemonicParsing="false" onAction="#openTableBooleanProperties" text="Boolean Properties" />
-                        <MenuItem fx:id="menuItemTableDoubleProperties" mnemonicParsing="false" onAction="#openTableDoubleProperties" text="Double Properties" />
-                        <MenuItem fx:id="menuItemTableIntegerProperties" mnemonicParsing="false" onAction="#openTableIntegerProperties" text="Integer Properties" />
-                        <MenuItem fx:id="menuItemTableStringProperties" mnemonicParsing="false" onAction="#openTableStringProperties" text="String Properties" />
+                        <Menu mnemonicParsing="false" text="Properties">
+                           <items>
+                              <MenuItem mnemonicParsing="false" onAction="#openTableBooleanProperties" text="Boolean Properties" />
+                              <MenuItem mnemonicParsing="false" onAction="#openTableIntegerProperties" text="Integer Properties" />
+                              <MenuItem mnemonicParsing="false" onAction="#openTableDoubleProperties" text="Double Properties" />
+                              <MenuItem mnemonicParsing="false" onAction="#openTableStringProperties" text="String Properties" />
+                           </items>
+                        </Menu>
 							</items>
 						</Menu>
                   <Menu fx:id="menuDatabase" mnemonicParsing="false" text="Database">
                     <items>
-                      <MenuItem fx:id="menuItemExecuteQuery" mnemonicParsing="false" onAction="#executeQuery" text="Execute Query" />
+                      <MenuItem mnemonicParsing="false" onAction="#executeQuery" text="Execute Query" />
+                        <Menu mnemonicParsing="false" text="User">
+                           <items>
+                              <MenuItem fx:id="menuItemLogin" mnemonicParsing="false" onAction="#login" text="Login" />
+                              <MenuItem fx:id="menuItemChangeUser" mnemonicParsing="false" onAction="#changeUser" text="Change User" />
+                              <MenuItem fx:id="menuItemLogout" mnemonicParsing="false" onAction="#logout" text="Logout" />
+                           </items>
+                        </Menu>
+                    </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Window">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#newSplitTabPane" text="New SplitTabPane" />
+                        <Menu mnemonicParsing="false" text="Perspective...">
+                          <items>
+                              <Menu mnemonicParsing="false" text="Open Perspective">
+                                <items>
+                                  <MenuItem mnemonicParsing="false" onAction="#openPerspectiveComparePhantoms" text="Compare Phantoms" />
+                                </items>
+                              </Menu>
+                            <MenuItem mnemonicParsing="false" onAction="#resetPerspective" text="Reset Perspective" />
+                          </items>
+                        </Menu>
                     </items>
                   </Menu>
 						<Menu mnemonicParsing="false" text="Help">
 							<items>
-								<MenuItem fx:id="menuItemAbout" mnemonicParsing="false" onAction="#about" text="About" />
+								<MenuItem mnemonicParsing="false" onAction="#about" text="About" />
 							</items>
 						</Menu>
 					</menus>
