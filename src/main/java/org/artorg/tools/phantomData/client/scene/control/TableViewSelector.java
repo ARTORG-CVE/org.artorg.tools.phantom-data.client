@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.controller.AbstractTableViewSelector;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
+import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import org.artorg.tools.phantomData.server.util.Reflect;
 
@@ -46,7 +47,7 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM,?>> extends Abstra
 	public void init() {
 		getTableView2().getItems().stream().forEach(item2 -> {
 			List<?> doublettes = (List<?>) getTableView1().getItems().stream()
-//					.filter(item1 -> ((DbPersistent<?,UUID>)item2).getId().compareTo(((DbPersistent<?,UUID>)item1).getId()) == 0)
+					.filter(item1 -> ((DbPersistent<?,?>)item2).getId().equals(((DbPersistent<?,?>)item1).getId()))
 					.collect(Collectors.toList());
 			getTableView1().getItems().removeAll(doublettes);
 		});
@@ -60,8 +61,8 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM,?>> extends Abstra
 			autoResizeColumns(getTableView2());
 		}
 		
-		this.getTableView1().getColumns().add(0, createButtonCellColumn("+", this::moveToSelected));
-		this.getTableView2().getColumns().add(0, createButtonCellColumn("-", this::moveToSelectable));
+		this.getTableView1().getColumns().add(0, FxUtil.createButtonCellColumn("+", this::moveToSelected));
+		this.getTableView2().getColumns().add(0, FxUtil.createButtonCellColumn("-", this::moveToSelectable));
 		((ProTableView<ITEM>)this.getTableView2()).removeHeaderRow();
 		
 		getTableView1().setRowFactory(new Callback<TableView<Object>,TableRow<Object>>() {

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -17,12 +18,15 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 
@@ -31,6 +35,39 @@ public class FxUtil {
 
 	static {
 		mainClass = null;
+	}
+	
+	public static TableColumn<Object, Void> createButtonCellColumn(String text, Consumer<Object> consumer) {
+		TableColumn<Object, Void> column = new TableColumn<Object, Void>();
+		column.setCellFactory(new Callback<TableColumn<Object, Void>, TableCell<Object, Void>>() {
+			@Override
+			public TableCell<Object, Void> call(final TableColumn<Object, Void> param) {
+				return new TableCell<Object, Void>() {
+					TableCell<Object, Void> cell = this;
+
+					@Override
+					public void updateItem(Void item, boolean empty) {
+						super.updateItem(item, empty);
+						if (empty) {
+							cell.setGraphic(null);
+							cell.setText("");
+							cell.setOnMouseClicked(null);
+						} else {
+							cell.setOnMouseClicked(event -> consumer.accept(getTableView().getItems().get(cell.getIndex())));
+							cell.setAlignment(Pos.CENTER);
+							cell.setText(text);
+						}
+					}
+				};
+			}
+		});
+		double width = 15.0;
+		column.setMinWidth(width);
+		column.setPrefWidth(width);
+		column.setMaxWidth(width);
+		column.setSortable(false);
+		
+		return column;
 	}
 
 	public static <T extends DbPersistent<T, ID>, ID> void createDbComboBox(

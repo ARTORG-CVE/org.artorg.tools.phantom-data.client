@@ -1,20 +1,16 @@
 package org.artorg.tools.phantomData.client.controller;
 
 import java.util.Set;
-import java.util.function.Consumer;
 
 import org.artorg.tools.phantomData.server.util.Reflect;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.util.Callback;
 
 public abstract class AbstractTableViewSelector<ITEM> {
 	private TableView<?> tableView1;
@@ -55,39 +51,6 @@ public abstract class AbstractTableViewSelector<ITEM> {
 		ObservableList<Object> items = FXCollections.observableArrayList();
 		items.addAll(set);
 		getTableView2().setItems(items);
-	}
-	
-	protected TableColumn<Object, Void> createButtonCellColumn(String text, Consumer<Object> consumer) {
-		TableColumn<Object, Void> column = new TableColumn<Object, Void>();
-		column.setCellFactory(new Callback<TableColumn<Object, Void>, TableCell<Object, Void>>() {
-			@Override
-			public TableCell<Object, Void> call(final TableColumn<Object, Void> param) {
-				return new TableCell<Object, Void>() {
-					TableCell<Object, Void> cell = this;
-
-					@Override
-					public void updateItem(Void item, boolean empty) {
-						super.updateItem(item, empty);
-						if (empty) {
-							cell.setGraphic(null);
-							cell.setText("");
-							cell.setOnMouseClicked(null);
-						} else {
-							cell.setOnMouseClicked(event -> consumer.accept(getTableView().getItems().get(cell.getIndex())));
-							cell.setAlignment(Pos.CENTER);
-							cell.setText(text);
-						}
-					}
-				};
-			}
-		});
-		double width = 15.0;
-		column.setMinWidth(width);
-		column.setPrefWidth(width);
-		column.setMaxWidth(width);
-		column.setSortable(false);
-		
-		return column;
 	}
 	
 	protected TableColumn<Object, String> createValueColumn(String columnName) {
