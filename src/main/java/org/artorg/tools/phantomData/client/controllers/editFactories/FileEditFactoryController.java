@@ -9,6 +9,7 @@ import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSp
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 
@@ -54,7 +55,7 @@ public class FileEditFactoryController
 		});
 
 		List<TitledPane> panes = new ArrayList<TitledPane>();
-		createComboBox(comboBoxFileType,
+		FxUtil.createDbComboBox(comboBoxFileType,
 			PersonalizedHttpConnectorSpring.getOrCreate(FileType.class),
 			d -> String.valueOf(d.getName()));
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();

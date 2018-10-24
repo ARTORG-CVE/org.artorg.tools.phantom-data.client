@@ -2,12 +2,12 @@ package org.artorg.tools.phantomData.client.boot;
 
 import org.artorg.tools.phantomData.client.controllers.MainController;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.BootApplication;
-import org.artorg.tools.phantomData.server.beans.BeanMap;
 
 import javafx.application.Application;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class MainFx extends Application {
@@ -24,7 +24,7 @@ public class MainFx extends Application {
 	public void start(Stage stage) throws Exception {
     	this.stage = stage;
 		MainController controller = new MainController(stage);
-		AnchorPane pane = FxUtil.loadFXML("fxml/Table.fxml", controller);
+		StackPane pane = FxUtil.loadFXML("fxml/Table.fxml", controller);
 		controller.init();
 		
     	scene = new Scene(pane);
@@ -38,21 +38,21 @@ public class MainFx extends Application {
 		stage.requestFocus();
 		stage.toFront();
 		isStarted = true;
-		
-		BeanMap beanMap = BootApplication.getBeanmap();
-		
-		System.out.println(beanMap.getMap().size());
-		
-//		HttpConnectorSpring<Phantom> phantomConn = HttpConnectorSpring.getOrCreate(Phantom.class);
-//		
-//		UUID id = phantomConn.readAllAsList().get(0).getId();
-//		System.out.println(id.toString());
-//		
-//		System.out.println(phantomConn.existById(id));
-//		System.out.println(phantomConn.existById(UUID.randomUUID()));
 	}
     
-    
+    public static void openFrame(String title, Node node) {
+    	Stage stage = new Stage();
+		AnchorPane root = new AnchorPane();
+		Scene scene = new Scene(root);
+		
+		FxUtil.addToAnchorPane(root, node);
+		scene.setRoot(root);
+		
+		stage.setScene(scene);
+		stage.sizeToScene();
+		stage.setTitle(title);
+		stage.show();
+    }
     
     public static boolean isStarted() {
 		return isStarted;

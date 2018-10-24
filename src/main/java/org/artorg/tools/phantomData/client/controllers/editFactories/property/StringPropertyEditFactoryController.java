@@ -8,6 +8,7 @@ import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSp
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import org.artorg.tools.phantomData.server.model.property.StringProperty;
 
@@ -25,7 +26,7 @@ public class StringPropertyEditFactoryController extends GroupedItemEditFactoryC
 		
 		List<TitledPane> panes = new ArrayList<TitledPane>();
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-		createComboBox(comboBoxPropertyField, PersonalizedHttpConnectorSpring.getOrCreate(PropertyField.class), d -> String.valueOf(d.getName()));
+		FxUtil.createDbComboBox(comboBoxPropertyField, PersonalizedHttpConnectorSpring.getOrCreate(PropertyField.class), d -> String.valueOf(d.getName()));
 		generalProperties.add(new PropertyEntry("Property Field", comboBoxPropertyField));
 		generalProperties.add(new PropertyEntry("Value", textFieldValue));
 		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");

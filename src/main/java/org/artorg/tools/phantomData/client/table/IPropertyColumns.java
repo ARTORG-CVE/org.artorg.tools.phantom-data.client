@@ -22,7 +22,7 @@ import javafx.collections.ObservableList;
 
 public interface IPropertyColumns {
 	
-	default <ITEM extends IPropertyContainer & DbPersistent<ITEM,ID>, ID> 
+	default <ITEM extends IPropertyContainer<ITEM> & DbPersistent<ITEM,ID>, ID> 
 		void createPropertyColumns(List<AbstractColumn<ITEM>> columns, 
 				ObservableList<ITEM> items) {
 		createPropertyColumns(columns, items, 

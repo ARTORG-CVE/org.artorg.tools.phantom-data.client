@@ -5,11 +5,13 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="rootPane" prefHeight="245.0" prefWidth="419.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
-	<children>
-		<VBox fx:id="vbox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+
+<StackPane fx:id="rootPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+		<VBox fx:id="vbox">
 			<children>
 				<MenuBar>
 					<menus>
@@ -19,7 +21,8 @@
                         <SeparatorMenuItem mnemonicParsing="false" />
 								<MenuItem mnemonicParsing="false" onAction="#save" text="Save" />
 								<MenuItem mnemonicParsing="false" onAction="#refresh" text="Refresh" />
-                        <MenuItem mnemonicParsing="false" onAction="#export" text="Export" />
+                        <MenuItem mnemonicParsing="false" onAction="#export" text="Export..." />
+                        <MenuItem fx:id="menuItemLoginLogout" mnemonicParsing="false" onAction="#loginLogout" text="Login/Logout..." />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" onAction="#preferences" text="Preferences..." />
 								<MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
@@ -57,16 +60,9 @@
                         </Menu>
 							</items>
 						</Menu>
-                  <Menu fx:id="menuDatabase" mnemonicParsing="false" text="Database">
+                  <Menu fx:id="menuDatabase" mnemonicParsing="false" text="Dev. Tools">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#executeQuery" text="Execute Query" />
-                        <Menu mnemonicParsing="false" text="User">
-                           <items>
-                              <MenuItem fx:id="menuItemLogin" mnemonicParsing="false" onAction="#login" text="Login" />
-                              <MenuItem fx:id="menuItemChangeUser" mnemonicParsing="false" onAction="#changeUser" text="Change User" />
-                              <MenuItem fx:id="menuItemLogout" mnemonicParsing="false" onAction="#logout" text="Logout" />
-                           </items>
-                        </Menu>
                     </items>
                   </Menu>
                   <Menu mnemonicParsing="false" text="Window">
@@ -94,5 +90,5 @@
             <AnchorPane fx:id="contentPane" VBox.vgrow="ALWAYS" />
 			</children>
 		</VBox>
-	</children>
-</AnchorPane>
+   </children>
+</StackPane>

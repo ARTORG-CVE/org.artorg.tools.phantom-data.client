@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.boot.MainFx;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
@@ -50,10 +51,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -79,10 +82,16 @@ public class MainController {
 	private URL location;
 
 	@FXML
-	private AnchorPane rootPane, contentPane;
+	private StackPane rootPane;
+
+	@FXML
+	private AnchorPane contentPane;
 
 	@FXML
 	private Menu menuTables;
+
+	@FXML
+	MenuItem menuItemLoginLogout;
 
 	@FXML
 	void about(ActionEvent event) {
@@ -175,6 +184,7 @@ public class MainController {
 	void initialize() {
 		assert rootPane != null : "fx:id=\"rootPane\" was not injected: check your FXML file 'Table.fxml'.";
 		assert contentPane != null : "fx:id=\"contentPane\" was not injected: check your FXML file 'Table.fxml'.";
+		assert menuItemLoginLogout != null : "fx:id=\"menuItemLoginLogout\" was not injected: check your FXML file 'Table.fxml'.";
 	}
 
 	public void init() {
@@ -208,7 +218,7 @@ public class MainController {
 		});
 
 		addSplitTabView();
-		addSplitTabView();		
+		addSplitTabView();
 		getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
 		File file = IOutil.readResourceAsFile("model.stl");
 		getOrCreate(0).openViewerTab(createScene3dTab(file));
@@ -232,16 +242,16 @@ public class MainController {
 	void newSplitTabPane(ActionEvent event) {
 		addSplitTabView();
 	}
-	
+
 	private void addSplitTabView() {
 		SplitTabView splitTabView = new SplitTabView();
-		
+
 		ContextMenu contextMenu = new ContextMenu();
 		addMenuItem(contextMenu, "Close", event -> {
 			splitTabViews.remove(splitTabView);
 		});
 		splitTabView.getSplitPane().setContextMenu(contextMenu);
-		
+
 		splitTabViews.add(splitTabView);
 	}
 
@@ -261,18 +271,8 @@ public class MainController {
 	}
 
 	@FXML
-	void changeUser(ActionEvent event) {
-		System.out.println("change user");
-	}
-
-	@FXML
-	void login(ActionEvent event) {
-		System.out.println("login");
-	}
-
-	@FXML
-	void logout(ActionEvent event) {
-		System.out.println("logout");
+	void loginLogout(ActionEvent event) {
+		MainFx.openFrame("Login/Logout", new LoginController());
 	}
 
 	public <T extends DbPersistent<T, ?>> void openTable(Class<T> itemClass) {
@@ -361,7 +361,6 @@ public class MainController {
 //        button.getStyleClass().add("tab-button");
 //        return button;
 //    }
-
 
 	@FXML
 	void openTableSpecials(ActionEvent event) {

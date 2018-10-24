@@ -25,11 +25,15 @@ public class UserAdmin {
 
 	public static void login(Person user) {
 		UserAdmin.user = user;
+		System.out.println("User logged in: " +user.getAcademicName());
 	}
 	
 	public static void logout() {
+		if (user != null)
+			System.out.println("User logged out: " +user.getAcademicName());
 		UserAdmin.user = null;
 		PersonalizedHttpConnectorSpring.setUserSupplier(() -> getUser());
+		
 	}
 	
 	public static Person getUser() {

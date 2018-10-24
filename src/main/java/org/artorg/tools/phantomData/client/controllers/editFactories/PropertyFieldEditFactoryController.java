@@ -7,7 +7,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
+import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.Special;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
@@ -36,7 +36,7 @@ public class PropertyFieldEditFactoryController extends GroupedItemEditFactoryCo
 		observableParentItemClasses.addAll(parentItemClasses);
 		comboBoxParentItemClass.setItems(observableParentItemClasses);
 		comboBoxParentItemClass.getSelectionModel().selectFirst();
-		Callback<ListView<Class<?>>, ListCell<Class<?>>> cellFactory = createComboBoxCellFactory((Class<?> c) -> c.getSimpleName());
+		Callback<ListView<Class<?>>, ListCell<Class<?>>> cellFactory = FxUtil.createComboBoxCellFactory((Class<?> c) -> c.getSimpleName());
 		comboBoxParentItemClass.setButtonCell(cellFactory.call(null));
 		comboBoxParentItemClass.setCellFactory(cellFactory);
 		

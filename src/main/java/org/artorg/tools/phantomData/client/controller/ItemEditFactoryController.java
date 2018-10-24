@@ -25,7 +25,6 @@ import org.artorg.tools.phantomData.server.util.Reflect;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -33,13 +32,10 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import javafx.util.Callback;
 
 public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, ?>>
 	implements FxFactory<ITEM> {
@@ -184,7 +180,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 		ICrudConnector<T, ID> connector =
 			(ICrudConnector<T, ID>) PersonalizedHttpConnectorSpring
 				.getOrCreate(itemClass);
-		createComboBox(comboBox, connector, mapper);
+		FxUtil.createDbComboBox(comboBox, connector, mapper);
 
 		ChangeListener<T> listener = (observable, oldValue, newValue) -> {
 			try {
@@ -195,36 +191,9 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 		comboBox.getSelectionModel().selectedItemProperty().addListener(listener);
 	}
 
-	protected <T extends DbPersistent<T, ID>, ID> void createComboBox(
-		ComboBox<T> comboBox,
-		ICrudConnector<T, ID> connector, Function<T, String> mapper) {
-		List<T> fabricationType =
-			connector.readAllAsStream().distinct().collect(Collectors.toList());
-		comboBox.setItems(FXCollections.observableList(fabricationType));
-		comboBox.getSelectionModel().selectFirst();
-		Callback<ListView<T>, ListCell<T>> cellFactory =
-			createComboBoxCellFactory(mapper);
-		comboBox.setButtonCell(cellFactory.call(null));
-		comboBox.setCellFactory(cellFactory);
-	}
+	
 
-	protected <T> Callback<ListView<T>, ListCell<T>>
-		createComboBoxCellFactory(Function<T, String> mapper) {
-		return param -> {
-			return new ListCell<T>() {
-				@Override
-				protected void updateItem(T item, boolean empty) {
-					super.updateItem(item, empty);
-					if (item == null || empty) {
-						setGraphic(null);
-					} else {
-						setText(mapper.apply(item));
-					}
-				}
-			};
-		};
-	}
-
+	
 	protected void addProperty(String labelText, TextField textField, Runnable rc) {
 		textField.textProperty().addListener(event -> {
 			rc.run();
