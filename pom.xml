@@ -4,7 +4,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.artorg.tools</groupId>
 	<artifactId>phantom-data-client</artifactId>
-	<version>0.1.6-SNAPSHOT</version>
+	<version>0.1.6</version>
 	<packaging>jar</packaging>
 
 	<organization>
@@ -58,7 +58,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		<dependency>
 			<groupId>org.artorg.tools</groupId>
 			<artifactId>phantom-data-server</artifactId>
-			<version>0.1.6-SNAPSHOT</version>
+			<version>0.1.6</version>
 		</dependency>
 
 		<dependency>

@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 import org.artorg.tools.phantomData.client.io.IOutil;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
-import org.artorg.tools.phantomData.client.table.FilterColumn;
+import org.artorg.tools.phantomData.client.table.AbstractFilterColumn;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -38,7 +38,7 @@ public class FilterMenuButton<ITEM> extends MenuButton {
 	private final CheckBoxItemFilterAll itemFilterAll;
 	private final List<CheckBoxItemFilter> itemsFilter;
 	private String regex;
-	private FilterColumn<ITEM> column;
+	private AbstractFilterColumn<ITEM> column;
 	private Runnable refresh;
 
 	static {
@@ -127,7 +127,7 @@ public class FilterMenuButton<ITEM> extends MenuButton {
 		return column;
 	}
 
-	public void setColumn(FilterColumn<ITEM> column, Runnable refresh) {
+	public void setColumn(AbstractFilterColumn<ITEM> column, Runnable refresh) {
 		this.column = column;		
 		this.refresh = refresh;
 		this.addEventHandler(ComboBox.ON_HIDDEN, event -> {

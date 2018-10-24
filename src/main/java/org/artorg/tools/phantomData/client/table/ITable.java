@@ -15,7 +15,7 @@ public interface ITable<ITEM> {
 	
 	List<AbstractColumn<ITEM>> getColumns();
 	
-	void setColumns(List<AbstractColumn<ITEM>> columns);
+	void updateColumns();
 	
 	Class<ITEM> getItemClass();
 	
@@ -30,6 +30,8 @@ public interface ITable<ITEM> {
 	void setItems(ObservableList<ITEM> items);
 	
 	String getItemName();
+	
+	void refresh();
 	
 	default AbstractColumn<ITEM> getIdColumn() {
 		return getColumns().stream().filter(c -> c.isIdColumn()).collect(Collectors2.toSingleton());

@@ -8,24 +8,23 @@ import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class OptionalColumn<T extends DbPersistent<T,?>> extends AbstractColumn<T> {
+public class OptionalFilterColumn<T> extends AbstractFilterColumn<T> {
 	private final Function<T, Optional<? extends Object>> itemToPropertyGetter;
 	private final Function<Object, String> propertyToValueGetter;
 	private final BiConsumer<Object, String> propertyToValueSetter;
 	private final String emptyValue;
-	
+
 	@SuppressWarnings("unchecked")
-	public <SUB extends DbPersistent<SUB,?>> OptionalColumn( String columnName,
+	public <SUB extends DbPersistent<SUB,?>> OptionalFilterColumn(String columnName, 
 			Function<T, Optional<SUB>> itemToPropertyGetter, 
 			Function<SUB, String> propertyToValueGetter, 
 			BiConsumer<SUB, String> propertyToValueSetter,
-			String emptyValue
-			) {
+			String emtpyValue) {
 		super(columnName);
 		this.itemToPropertyGetter = item -> itemToPropertyGetter.apply(item);
-		this.propertyToValueGetter = sub -> propertyToValueGetter.apply((SUB)sub);
-		this.propertyToValueSetter = (sub,value) -> propertyToValueSetter.accept(((SUB)sub), value);
-		this.emptyValue = emptyValue;
+		this.propertyToValueGetter = (Function<Object, String>) propertyToValueGetter;
+		this.propertyToValueSetter = (BiConsumer<Object, String>) propertyToValueSetter;
+		this.emptyValue = emtpyValue;
 	}
 	
 	@Override
@@ -42,7 +41,7 @@ public class OptionalColumn<T extends DbPersistent<T,?>> extends AbstractColumn<
 		if (path.isPresent())
 			propertyToValueSetter.accept(path.get(), value);
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public <U extends DbPersistent<U,SUB_ID>, SUB_ID>  boolean update(T item) {

@@ -59,14 +59,14 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 	}
 	
 	@Override
-	public void setColumns(List<AbstractColumn<ITEM>> columns) {
-		super.setColumns(columns);
+	public void updateColumns() {
+		super.updateColumns();
 		
 		int nCols = getNcols();
 		
 		mappedColumnIndexes = new ArrayList<Integer>(nCols);
 		for (int i=0; i<nCols; i++)
-			if (columns.get(i).isVisible())
+			if (getColumns().get(i).isVisible())
 				mappedColumnIndexes.add(i);
 		nFilteredCols = mappedColumnIndexes.size();
 		for (int i=0; i<nCols; i++) {
@@ -113,8 +113,8 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 	}
 	
 	@Override
-	public List<FilterColumn<ITEM>> getFilteredColumns() {
-		return mappedColumnIndexes.stream().map(i -> (FilterColumn<ITEM>)getColumns().get(i)).collect(Collectors.toList());
+	public List<AbstractFilterColumn<ITEM>> getFilteredColumns() {
+		return mappedColumnIndexes.stream().map(i -> (AbstractFilterColumn<ITEM>)getColumns().get(i)).collect(Collectors.toList());
 	}
 	
 	@Override

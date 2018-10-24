@@ -11,15 +11,18 @@ import org.artorg.tools.phantomData.server.model.FileType;
 public class FileTypeFilterTable extends DbUndoRedoFactoryEditFilterTable<FileType> {
 
 	{
-		List<AbstractColumn<FileType>> columns =
+		setTableName("File Types");
+
+		setColumnCreator(items -> {
+			List<AbstractColumn<FileType>> columns =
 				new ArrayList<AbstractColumn<FileType>>();
-		columns.add(new FilterColumn<FileType>(
-				"name", item -> item, 
-				path -> path.getName(), 
-				(path,value) -> path.setName((String) value)));
-		this.setColumns(columns);
-		
-		this.setTableName("File Types");
+			columns.add(new FilterColumn<FileType>(
+				"name", item -> item,
+				path -> path.getName(),
+				(path, value) -> path.setName((String) value)));
+			return columns;
+		});
+
 	}
-	
+
 }

@@ -2,10 +2,12 @@ package org.artorg.tools.phantomData.client.table;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import org.artorg.tools.phantomData.server.util.Reflect;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 @SuppressWarnings("unchecked")
@@ -16,11 +18,24 @@ public class TableBase<ITEM> implements ITable<ITEM> {
 	private String tableName;
 	private String itemName;
 	private final Class<ITEM> itemClass;
-	
+	private Function<List<ITEM>,List<AbstractColumn<ITEM>>> columnCreator;
+
 	{
 		items = FXCollections.observableArrayList();
 		columns = new ArrayList<AbstractColumn<ITEM>>();
 		isIdColumnVisible = true;
+		columnCreator = items -> new ArrayList<AbstractColumn<ITEM>>();
+		items.addListener(new ListChangeListener<ITEM>() {
+			@Override
+			public void onChanged(Change<? extends ITEM> c) {
+				updateColumns();
+			}
+		});
+	}
+	
+	@Override
+	public void refresh() {
+		updateColumns();
 	}
 	
 	public TableBase() {
@@ -35,7 +50,7 @@ public class TableBase<ITEM> implements ITable<ITEM> {
 	
 	public void setItems(ObservableList<ITEM> items) {
 		this.items = items;
-		getColumns().stream().forEach(column -> column.setItems(items));
+		updateColumns();
 	}
 	
 	public boolean isIdColumnVisible() {
@@ -47,8 +62,8 @@ public class TableBase<ITEM> implements ITable<ITEM> {
 	}
 	
 	@Override
-	public void setColumns(List<AbstractColumn<ITEM>> columns) {
-		this.columns = columns;
+	public void updateColumns() {
+		this.columns = columnCreator.apply(getItems());
 		getColumns().stream().forEach(column ->column.setItems(getItems()));
 	}	
 	
@@ -91,5 +106,17 @@ public class TableBase<ITEM> implements ITable<ITEM> {
 	public final Class<ITEM> getItemClass() {
 		return this.itemClass;
 	}
+	
+	public Function<List<ITEM>, List<AbstractColumn<ITEM>>> getColumnCreator() {
+		return columnCreator;
+	}
+
+	public void
+		setColumnCreator(Function<List<ITEM>, List<AbstractColumn<ITEM>>> columnCreator) {
+		this.columnCreator = columnCreator;
+		updateColumns();
+	}
+
+	
 
 }

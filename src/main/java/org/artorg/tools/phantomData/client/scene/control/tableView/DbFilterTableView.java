@@ -5,8 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
-import org.artorg.tools.phantomData.client.table.AbstractColumn;
-import org.artorg.tools.phantomData.client.table.FilterColumn;
+import org.artorg.tools.phantomData.client.table.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.table.IDbTable;
 import org.artorg.tools.phantomData.client.table.IFilterTable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -81,8 +80,7 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends DbTabl
 			FilterMenuButton<ITEM> filterMenuButton = new FilterMenuButton<ITEM>();
 			filterMenuButton.setText(columnNames.get(col));
 			
-			AbstractColumn<ITEM> filterTableColumn = table.getFilteredColumns().get(localCol);
-			FilterColumn<ITEM> filterColumn = (FilterColumn<ITEM>)filterTableColumn;
+			AbstractFilterColumn<ITEM> filterColumn = table.getFilteredColumns().get(localCol);
 			filterColumn.setSortComparatorQueue(table.getSortComparatorQueue());
 			filterMenuButton.setColumn(filterColumn, () -> table.applyFilter()); 
 			filterMenuButtons.add(filterMenuButton);

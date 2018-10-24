@@ -5,7 +5,7 @@ import org.artorg.tools.phantomData.server.model.property.StringProperty;
 public class StringPropertyFilterTable extends PropertyFilterTable<StringProperty, String> {
 	
 	{
-		this.setTableName("String Properties");
+		setTableName("String Properties");
 	}
 
 	@Override

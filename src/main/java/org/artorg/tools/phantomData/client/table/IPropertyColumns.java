@@ -69,9 +69,9 @@ public interface IPropertyColumns {
 			Set<PROPERTY_TYPE> set = items.stream().flatMap(s -> propsGetter.apply(s).stream())
 					.collect(Collectors.toSet());
 			set.stream().sorted((p1, p2) -> p1.getPropertyField().getId().compareTo(p2.getPropertyField().getId()))
-					.forEach(p -> map.put(p.getPropertyField().getId(), p.getPropertyField().getDescription()));
+					.forEach(p -> map.put(p.getPropertyField().getId(), p.getPropertyField().getName()));
 			map.entrySet().stream()
-					.forEach(entry -> columns.add(new OptionalColumn<ITEM>(entry.getValue(),
+					.forEach(entry -> columns.add(new OptionalFilterColumn<ITEM>(entry.getValue(),
 							item -> propsGetter.apply(item).stream()
 									.filter(p -> p.getPropertyField().getId() == entry.getKey()).findFirst(),
 							path -> toStringFun.apply(path.getValue()),

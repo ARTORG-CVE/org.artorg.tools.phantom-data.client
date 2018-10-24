@@ -7,7 +7,7 @@ import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class Column<T extends DbPersistent<T,?>> extends AbstractColumn<T> {
+public class Column<T> extends AbstractColumn<T> {
 	private final Function<T, Object> itemToPropertyGetter;
 	private final Function<Object, String> propertyToValueGetter;
 	private final BiConsumer<Object, String> propertyToValueSetter;
@@ -34,15 +34,9 @@ public class Column<T extends DbPersistent<T,?>> extends AbstractColumn<T> {
 
 	@SuppressWarnings("unchecked")
 	public <U extends DbPersistent<U,SUB_ID>, SUB_ID> boolean update(T item) {
-		System.out.println("updated value in database :)");
 		U path = (U) itemToPropertyGetter.apply(item);
 		ICrudConnector<U,SUB_ID> connector = Connectors.getConnector(path.getItemClass());
 		return connector.update(path);
-	}
-
-	@Override
-	public boolean isIdColumn() {
-		throw new UnsupportedOperationException();
 	}
 	
 }

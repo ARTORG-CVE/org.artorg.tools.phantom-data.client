@@ -56,7 +56,15 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> imp
 	}
 	
 	public void initTable() {
-		super.getColumns().removeAll(super.getColumns());
+	    refreshColumns();
+	    
+	    super.setItems(table.getItems());
+	    autoResizeColumns();
+	    super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+	}
+	
+	private void refreshColumns() {
+		super.getColumns().clear();
 
 	    // creating columns
 	    List<TableColumn<ITEM,?>> columns = new ArrayList<TableColumn<ITEM,?>>();
@@ -74,9 +82,6 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> imp
 		}
 		
 	    super.getColumns().addAll(columns);
-	    super.setItems(table.getItems());
-	    autoResizeColumns();
-	    super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	}
 	
 	protected TableColumn<ITEM,String> createHeaderColumn() {
@@ -123,7 +128,9 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> imp
 	
 	@Override
 	public void refresh() {
+		getTable().refresh();
 		super.refresh();
+		refreshColumns();
 	}
 	
 	public Class<ITEM> getItemClass() {

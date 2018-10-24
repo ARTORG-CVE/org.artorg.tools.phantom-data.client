@@ -8,27 +8,30 @@ import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTabl
 import org.artorg.tools.phantomData.client.table.FilterColumn;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
-public class PropertyFieldFilterTable extends DbUndoRedoFactoryEditFilterTable<PropertyField> {
-	
+public class PropertyFieldFilterTable
+	extends DbUndoRedoFactoryEditFilterTable<PropertyField> {
+
 	{
-		List<AbstractColumn<PropertyField>> columns =
+		setTableName("Property Field");
+
+		setColumnCreator(items -> {
+			List<AbstractColumn<PropertyField>> columns =
 				new ArrayList<AbstractColumn<PropertyField>>();
-		columns.add(new FilterColumn<PropertyField>(
-				"name", item -> item, 
-				path -> path.getName(), 
-				(path,value) -> path.setName((String) value)));
-		columns.add(new FilterColumn<PropertyField>(
-				"description", item -> item, 
-				path -> path.getDescription(), 
-				(path,value) -> path.setDescription((String) value)));
-		columns.add(new FilterColumn<PropertyField>(
-				"entity", item -> item, 
-				path -> path.getParentItemClass(), 
-				(path,value) -> path.setParentItemClass(value)));
-		
-		this.setColumns(columns);
-		
-		this.setTableName("Property Field");
+			columns.add(new FilterColumn<PropertyField>(
+				"name", item -> item,
+				path -> path.getName(),
+				(path, value) -> path.setName((String) value)));
+			columns.add(new FilterColumn<PropertyField>(
+				"description", item -> item,
+				path -> path.getDescription(),
+				(path, value) -> path.setDescription((String) value)));
+			columns.add(new FilterColumn<PropertyField>(
+				"entity", item -> item,
+				path -> path.getParentItemClass(),
+				(path, value) -> path.setParentItemClass(value)));
+			return columns;
+		});
+
 	}
 
 }
