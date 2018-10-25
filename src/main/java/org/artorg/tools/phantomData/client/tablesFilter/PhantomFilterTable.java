@@ -48,7 +48,7 @@ public class PhantomFilterTable extends DbUndoRedoFactoryEditFilterTable<Phantom
 			columns.add(column);
 			column.setAscendingSortComparator((p1, p2) -> ((Integer) p1.getNumber())
 				.compareTo((Integer) p2.getNumber()));
-			createPropertyColumns(columns, this.getItems());
+//			createPropertyColumns(columns, this.getItems());
 			return columns;
 		});
 

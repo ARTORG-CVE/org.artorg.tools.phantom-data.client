@@ -118,11 +118,7 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 		
 		to.setFiles(from.getFiles());
 		
-		to.setBooleanProperties(from.getBooleanProperties());
-		to.setDateProperties(from.getDateProperties());
-		to.setDoubleProperties(from.getDoubleProperties());
-		to.setIntegerProperties(from.getIntegerProperties());
-		to.setStringProperties(from.getStringProperties());
+		to.setProperties(from.getProperties());
 	}
 	
 }

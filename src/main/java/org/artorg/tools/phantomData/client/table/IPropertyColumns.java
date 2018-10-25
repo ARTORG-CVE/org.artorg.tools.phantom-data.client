@@ -14,7 +14,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.server.model.property.IPropertyContainer;
+import org.artorg.tools.phantomData.server.model.property.IProperties;
 import org.artorg.tools.phantomData.server.model.property.Property;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -22,23 +22,23 @@ import javafx.collections.ObservableList;
 
 public interface IPropertyColumns {
 	
-	default <ITEM extends IPropertyContainer<ITEM> & DbPersistent<ITEM,ID>, ID> 
+	default <ITEM extends IProperties & DbPersistent<ITEM,ID>, ID extends Comparable<ID>> 
 		void createPropertyColumns(List<AbstractColumn<ITEM>> columns, 
 				ObservableList<ITEM> items) {
 		createPropertyColumns(columns, items, 
-				container -> container.getBooleanProperties(), 
+				container -> container.getProperties().getBooleanProperties(), 
 				bool -> String.valueOf(bool),
 				s -> Boolean.valueOf(s));
 		createPropertyColumns(columns, items, 
-				container -> container.getDoubleProperties(), 
+				container -> container.getProperties().getDoubleProperties(), 
 				bool -> String.valueOf(bool),
 				s -> Double.valueOf(s));
 		createPropertyColumns(columns, items, 
-				container -> container.getIntegerProperties(), 
+				container -> container.getProperties().getIntegerProperties(), 
 				bool -> String.valueOf(bool),
 				s -> Integer.valueOf(s));
 		createPropertyColumns(columns, items, 
-				container -> container.getStringProperties(), 
+				container -> container.getProperties().getStringProperties(), 
 				s -> s,
 				s -> s);
 		
@@ -52,7 +52,7 @@ public interface IPropertyColumns {
 				throw new IllegalArgumentException();
 		};
 		createPropertyColumns(columns, items, 
-				container -> container.getDateProperties(), 
+				container -> container.getProperties().getDateProperties(), 
 				date -> String.valueOf(date),
 				stringDateFunc);
 	}

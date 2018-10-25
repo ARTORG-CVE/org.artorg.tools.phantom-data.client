@@ -43,9 +43,9 @@ public class OptionalColumn<T extends DbPersistent<T,?>> extends AbstractColumn<
 			propertyToValueSetter.accept(path.get(), value);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <U extends DbPersistent<U,SUB_ID>, SUB_ID>  boolean update(T item) {
+	@SuppressWarnings("unchecked")
+	public <U extends DbPersistent<U,SUB_ID>, SUB_ID extends Comparable<SUB_ID>>  boolean update(T item) {
 		Optional<U> optional = (Optional<U>) itemToPropertyGetter.apply(item);
 		if (!optional.isPresent()) return false;
 		U sub = optional.get();

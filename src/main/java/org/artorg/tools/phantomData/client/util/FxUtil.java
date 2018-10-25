@@ -70,7 +70,7 @@ public class FxUtil {
 		return column;
 	}
 
-	public static <T extends DbPersistent<T, ID>, ID> void createDbComboBox(
+	public static <T extends DbPersistent<T, ID>, ID extends Comparable<ID>> void createDbComboBox(
 		ComboBox<T> comboBox,
 		ICrudConnector<T, ID> connector, Function<T, String> mapper) {
 		List<T> items =

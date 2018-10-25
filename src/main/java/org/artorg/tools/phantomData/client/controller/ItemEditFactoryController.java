@@ -166,7 +166,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 			}
 	}
 
-	protected <T extends DbPersistent<T, ID>, ID> void createComboBox(
+	protected <T extends DbPersistent<T, ID>, ID extends Comparable<ID>> void createComboBox(
 		ComboBox<T> comboBox, Class<T> itemClass,
 		Function<T, String> mapper) {
 		createComboBox(comboBox, itemClass, mapper, item -> {
@@ -174,7 +174,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <T extends DbPersistent<T, ID>, ID> void createComboBox(
+	protected <T extends DbPersistent<T, ID>, ID extends Comparable<ID>> void createComboBox(
 		ComboBox<T> comboBox, Class<T> itemClass,
 		Function<T, String> mapper, Consumer<T> selectedItemChangedConsumer) {
 		ICrudConnector<T, ID> connector =

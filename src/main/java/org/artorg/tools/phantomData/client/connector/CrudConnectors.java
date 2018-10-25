@@ -5,7 +5,7 @@ import java.util.function.Function;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 
-public abstract class CrudConnectors<T extends Identifiable<ID>, ID> implements ICrudConnector<T,ID> {
+public abstract class CrudConnectors<T extends Identifiable<ID>, ID extends Comparable<ID>> implements ICrudConnector<T,ID> {
 
 	public static Function<Class<?>,CrudConnectors<?,?>> connectorGetter = null;
 	

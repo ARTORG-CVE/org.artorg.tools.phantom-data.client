@@ -14,7 +14,7 @@ import org.artorg.tools.phantomData.server.util.Reflect;
 public class Connectors {
 	
 	@SuppressWarnings("unchecked")
-	public static <ITEM extends DbPersistent<ITEM,ID>, ID> CrudConnectors<ITEM, ID> getConnector(Class<?> itemClass) {
+	public static <ITEM extends DbPersistent<ITEM,ID>, ID extends Comparable<ID>> CrudConnectors<ITEM, ID> getConnector(Class<?> itemClass) {
 		
 		return (CrudConnectors<ITEM, ID>) PersonalizedHttpConnectorSpring.getOrCreate(itemClass);
 		

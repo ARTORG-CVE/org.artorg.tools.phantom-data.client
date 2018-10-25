@@ -18,6 +18,7 @@ import org.artorg.tools.phantomData.server.model.Person;
 import org.artorg.tools.phantomData.server.model.Phantom;
 import org.artorg.tools.phantomData.server.model.PhantomFile;
 import org.artorg.tools.phantomData.server.model.Phantomina;
+import org.artorg.tools.phantomData.server.model.Properties;
 import org.artorg.tools.phantomData.server.model.Special;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
@@ -31,6 +32,7 @@ public class DatabaseInitializer {
 	private static PersonalizedHttpConnectorSpring<FabricationType> fTypeConn = PersonalizedHttpConnectorSpring.getOrCreate(FabricationType.class);
 	private static PersonalizedHttpConnectorSpring<LiteratureBase> litBaseConn = PersonalizedHttpConnectorSpring.getOrCreate(LiteratureBase.class);
 	private static PersonalizedHttpConnectorSpring<PropertyField> fieldConn = PersonalizedHttpConnectorSpring.getOrCreate(PropertyField.class);
+	private static PersonalizedHttpConnectorSpring<Properties> propsConn = PersonalizedHttpConnectorSpring.getOrCreate(Properties.class);
 	private static PersonalizedHttpConnectorSpring<BooleanProperty> boolPropConn = PersonalizedHttpConnectorSpring.getOrCreate(BooleanProperty.class);
 	private static PersonalizedHttpConnectorSpring<IntegerProperty> intPropConn = PersonalizedHttpConnectorSpring.getOrCreate(IntegerProperty.class);
 	private static PersonalizedHttpConnectorSpring<Special> specConn = PersonalizedHttpConnectorSpring.getOrCreate(Special.class);
@@ -141,22 +143,34 @@ public class DatabaseInitializer {
 		int1 = intPropConn.read(int1);
 		
 		Special special1 = new Special("L");
-		special1.addProperty(bool1);
-		special1.addProperty(bool4);
+		Properties properties1 = new Properties();
+		propsConn.create(properties1);
+		special1.setProperties(properties1);
+		properties1.getBooleanProperties().add(bool1);
+		properties1.getBooleanProperties().add(bool4);
 		specConn.create(special1);
 		
 		Special special2 = new Special("C");
-		special2.addProperty(bool2);
-		special2.addProperty(bool3);
+		Properties properties2 = new Properties();
+		propsConn.create(properties2);
+		special2.setProperties(properties2);
+		properties2.getBooleanProperties().add(bool2);
+		properties2.getBooleanProperties().add(bool3);
 		specConn.create(special2);
 		
 		Special special3 = new Special("N");
-		special3.addProperty(bool2);
-		special3.addProperty(bool4);
+		Properties properties3 = new Properties();
+		propsConn.create(properties3);
+		special3.setProperties(properties3);
+		properties3.getBooleanProperties().add(bool2);
+		properties3.getBooleanProperties().add(bool4);
 		specConn.create(special3);
 		
 		Special special4 = new Special("ZZ");
-		special4.addProperty(int1);
+		Properties properties4 = new Properties();
+		propsConn.create(properties4);
+		special4.setProperties(properties4);
+		properties4.getIntegerProperties().add(int1);
 		specConn.create(special4);
 
 	}

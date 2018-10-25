@@ -32,8 +32,9 @@ public class FilterColumn<T> extends AbstractFilterColumn<T> {
 		propertyToValueSetter.accept(itemToPropertyGetter.apply(item), value);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
-	public <U extends DbPersistent<U, SUB_ID>, SUB_ID> boolean update(T item) {
+	public <U extends DbPersistent<U, SUB_ID>, SUB_ID extends Comparable<SUB_ID>> boolean update(T item) {
 		U path = (U) itemToPropertyGetter.apply(item);
 		ICrudConnector<U, SUB_ID> connector = Connectors.getConnector(path.getItemClass());
 		return connector.update(path);

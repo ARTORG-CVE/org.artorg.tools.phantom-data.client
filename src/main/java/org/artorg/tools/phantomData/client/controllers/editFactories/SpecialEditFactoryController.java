@@ -44,11 +44,8 @@ public class SpecialEditFactoryController extends GroupedItemEditFactoryControll
 	protected void copy(Special from, Special to) {
 		to.setShortcut(from.getShortcut());
 		
-		to.setBooleanProperties(from.getBooleanProperties());
-		to.setDateProperties(from.getDateProperties());
-		to.setDoubleProperties(from.getDoubleProperties());
-		to.setIntegerProperties(from.getIntegerProperties());
-		to.setStringProperties(from.getStringProperties());
+		to.setProperties(from.getProperties());
+		
 	}
 	
 }
