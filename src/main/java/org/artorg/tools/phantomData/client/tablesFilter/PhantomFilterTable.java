@@ -6,9 +6,10 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.FilterColumn;
+import org.artorg.tools.phantomData.client.table.IPropertyColumns;
 import org.artorg.tools.phantomData.server.model.Phantom;
 
-public class PhantomFilterTable extends DbUndoRedoFactoryEditFilterTable<Phantom> {
+public class PhantomFilterTable extends DbUndoRedoFactoryEditFilterTable<Phantom> implements IPropertyColumns {
 
 	{
 		setTableName("Phantoms");
@@ -47,6 +48,7 @@ public class PhantomFilterTable extends DbUndoRedoFactoryEditFilterTable<Phantom
 			columns.add(column);
 			column.setAscendingSortComparator((p1, p2) -> ((Integer) p1.getNumber())
 				.compareTo((Integer) p2.getNumber()));
+			createPropertyColumns(columns, this.getItems());
 			return columns;
 		});
 

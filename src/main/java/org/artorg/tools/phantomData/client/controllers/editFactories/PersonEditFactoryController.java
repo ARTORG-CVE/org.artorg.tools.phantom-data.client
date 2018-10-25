@@ -7,12 +7,8 @@ import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryCont
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
 import org.artorg.tools.phantomData.server.model.AcademicTitle;
-import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
-import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.Gender;
-import org.artorg.tools.phantomData.server.model.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.Person;
-import org.artorg.tools.phantomData.server.model.Special;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;

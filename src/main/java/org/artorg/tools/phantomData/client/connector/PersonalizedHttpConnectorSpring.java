@@ -31,6 +31,7 @@ public class PersonalizedHttpConnectorSpring<T extends Identifiable<UUID>> exten
 	public static <U extends Identifiable<UUID>> PersonalizedHttpConnectorSpring<U> getOrCreate(Class<?> cls) {
 		if (connectorMap.containsKey(cls))
 			return (PersonalizedHttpConnectorSpring<U>) connectorMap.get(cls);
+		
 		PersonalizedHttpConnectorSpring<U> connector = new PersonalizedHttpConnectorSpring<U>(cls);
 		connectorMap.put(cls, connector);
 		return connector;

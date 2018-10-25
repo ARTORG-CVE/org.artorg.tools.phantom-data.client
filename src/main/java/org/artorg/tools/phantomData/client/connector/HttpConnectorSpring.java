@@ -63,9 +63,7 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 		if (itemClass == null)
 			itemClass = Reflect.findGenericClasstype(this);
 		this.itemClass = itemClass;
-		if (connectorMap.containsKey(this.itemClass))
-			throw new IllegalArgumentException();
-
+		
 		arrayItemClass = Reflect.getArrayClass(itemClass);
 		Class<?> controllerClass;
 		List<Class<?>> controllerClasses = Reflect.getSubclasses(ControllerSpec.class, Main.getReflections());
