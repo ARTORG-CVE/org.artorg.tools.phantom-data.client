@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
-import org.artorg.tools.phantomData.server.model.Person;
+import org.artorg.tools.phantomData.server.model.person.Person;
 
 public class UserAdmin {
 	private static Person user;

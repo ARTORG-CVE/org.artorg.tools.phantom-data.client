@@ -8,8 +8,8 @@ import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryCont
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.model.Phantom;
-import org.artorg.tools.phantomData.server.model.Special;
+import org.artorg.tools.phantomData.server.model.phantom.Phantom;
+import org.artorg.tools.phantomData.server.model.phantom.Special;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 import javafx.collections.FXCollections;

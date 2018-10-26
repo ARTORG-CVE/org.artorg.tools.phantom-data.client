@@ -7,7 +7,7 @@ import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.FilterColumn;
 import org.artorg.tools.phantomData.client.table.IPropertyColumns;
-import org.artorg.tools.phantomData.server.model.Phantom;
+import org.artorg.tools.phantomData.server.model.phantom.Phantom;
 
 public class PhantomFilterTable extends DbUndoRedoFactoryEditFilterTable<Phantom> implements IPropertyColumns {
 

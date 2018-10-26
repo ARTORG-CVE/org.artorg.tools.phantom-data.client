@@ -8,12 +8,12 @@ import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSp
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
-import org.artorg.tools.phantomData.server.model.FabricationType;
-import org.artorg.tools.phantomData.server.model.LiteratureBase;
-import org.artorg.tools.phantomData.server.model.Phantom;
-import org.artorg.tools.phantomData.server.model.Phantomina;
-import org.artorg.tools.phantomData.server.model.Special;
+import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
+import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
+import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
+import org.artorg.tools.phantomData.server.model.phantom.Phantom;
+import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
+import org.artorg.tools.phantomData.server.model.phantom.Special;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -98,6 +98,11 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 			throw new UnsupportedOperationException();
 		}
 		
+		phantomina.setAnnulusDiameter(annulusDiameter);
+		phantomina.setFabricationType(fabricationType);
+		phantomina.setLiteratureBase(literatureBase);
+		phantomina.setSpecial(special);
+		
 		return new Phantom(phantomina, number);
 	}
 
@@ -112,7 +117,14 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 
 	@Override
 	protected void copy(Phantom from, Phantom to) {
-		to.setPhantomina(from.getPhantomina());
+//		to.setPhantomina(from.getPhantomina());
+		
+		to.getPhantomina().setAnnulusDiameter(from.getPhantomina().getAnnulusDiameter());
+		to.getPhantomina().setFabricationType(from.getPhantomina().getFabricationType());
+		to.getPhantomina().setLiteratureBase(from.getPhantomina().getLiteratureBase());
+		to.getPhantomina().setSpecial(from.getPhantomina().getSpecial());
+		
+		
 		to.setNumber(from.getNumber());
 		to.setProductId(from.getProductId());
 		

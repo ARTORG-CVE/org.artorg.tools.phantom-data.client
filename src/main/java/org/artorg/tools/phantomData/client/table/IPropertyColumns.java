@@ -14,8 +14,8 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.server.model.property.IProperties;
-import org.artorg.tools.phantomData.server.model.property.Property;
+import org.artorg.tools.phantomData.server.model.specification.AbstractProperty;
+import org.artorg.tools.phantomData.server.model.specification.IProperties;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.ObservableList;
@@ -58,7 +58,7 @@ public interface IPropertyColumns {
 	}
 	
 	default <ITEM extends DbPersistent<ITEM,?>, 
-			PROPERTY_TYPE extends Property<PROPERTY_TYPE, PROPERTY_VALUE_TYPE>, 
+			PROPERTY_TYPE extends AbstractProperty<PROPERTY_TYPE, PROPERTY_VALUE_TYPE>, 
 			PROPERTY_VALUE_TYPE extends Comparable<PROPERTY_VALUE_TYPE>> 
 			void createPropertyColumns(List<AbstractColumn<ITEM>> columns, ObservableList<ITEM> items, 
 					Function<ITEM,Collection<PROPERTY_TYPE>> propsGetter, 

@@ -8,20 +8,20 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
-import org.artorg.tools.phantomData.server.model.AcademicTitle;
-import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
-import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.FileType;
-import org.artorg.tools.phantomData.server.model.Gender;
-import org.artorg.tools.phantomData.server.model.LiteratureBase;
-import org.artorg.tools.phantomData.server.model.Person;
-import org.artorg.tools.phantomData.server.model.Phantom;
-import org.artorg.tools.phantomData.server.model.PhantomFile;
-import org.artorg.tools.phantomData.server.model.Phantomina;
-import org.artorg.tools.phantomData.server.model.Properties;
-import org.artorg.tools.phantomData.server.model.Special;
+import org.artorg.tools.phantomData.server.model.DbFile;
+import org.artorg.tools.phantomData.server.model.person.AcademicTitle;
+import org.artorg.tools.phantomData.server.model.person.Gender;
+import org.artorg.tools.phantomData.server.model.person.Person;
+import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
+import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
+import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
+import org.artorg.tools.phantomData.server.model.phantom.Phantom;
+import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
+import org.artorg.tools.phantomData.server.model.phantom.Special;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
+import org.artorg.tools.phantomData.server.model.property.Properties;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 public class DatabaseInitializer {
@@ -39,7 +39,7 @@ public class DatabaseInitializer {
 	private static PersonalizedHttpConnectorSpring<Phantomina> phantominaConn = PersonalizedHttpConnectorSpring.getOrCreate(Phantomina.class);
 	private static PersonalizedHttpConnectorSpring<Phantom> phantomConn = PersonalizedHttpConnectorSpring.getOrCreate(Phantom.class);
 	private static PersonalizedHttpConnectorSpring<FileType> fileTypeConn = PersonalizedHttpConnectorSpring.getOrCreate(FileType.class);
-	private static PersonalizedHttpConnectorSpring<PhantomFile> fileConn = PersonalizedHttpConnectorSpring.getOrCreate(PhantomFile.class);
+	private static PersonalizedHttpConnectorSpring<DbFile> fileConn = PersonalizedHttpConnectorSpring.getOrCreate(DbFile.class);
 
 	public static void initDatabase() {
 		initPerson();
@@ -73,11 +73,11 @@ public class DatabaseInitializer {
 		academicTitleConnInit.create(noAcademicTitle);
 		Person hutzli = new Person(noAcademicTitle, "Marc", "Hutzli", male);
 		personConnInit.create(hutzli);
-		hutzli.setCreator(hutzli);
-		hutzli.setChanger(hutzli);
+//		hutzli.setCreator(hutzli);
+//		hutzli.setChanger(hutzli);
 		personConnInit.update(hutzli);
-		noAcademicTitle.setCreator(hutzli);
-		noAcademicTitle.setChanger(hutzli);
+//		noAcademicTitle.setCreator(hutzli);
+//		noAcademicTitle.setChanger(hutzli);
 		academicTitleConnInit.update(noAcademicTitle);
 		
 		UserAdmin.login(hutzli);

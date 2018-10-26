@@ -11,7 +11,7 @@ import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.FileType;
-import org.artorg.tools.phantomData.server.model.PhantomFile;
+import org.artorg.tools.phantomData.server.model.DbFile;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -20,7 +20,7 @@ import javafx.scene.control.TitledPane;
 import javafx.stage.FileChooser;
 
 public class FileEditFactoryController
-	extends GroupedItemEditFactoryController<PhantomFile> {
+	extends GroupedItemEditFactoryController<DbFile> {
 	private TextField textFieldPath;
 	private TextField textFieldName;
 	private TextField textFieldExtension;
@@ -84,18 +84,18 @@ public class FileEditFactoryController
 	}
 
 	@Override
-	public PhantomFile createItem() {
+	public DbFile createItem() {
 		String path = textFieldPath.getText();
 		String name = textFieldName.getText();
 		String extension = textFieldExtension.getText();
 		FileType fileType = comboBoxFileType.getSelectionModel()
 			.getSelectedItem();
 
-		return new PhantomFile(new File(path), name, extension, fileType);
+		return new DbFile(new File(path), name, extension, fileType);
 	}
 
 	@Override
-	protected void setTemplate(PhantomFile item) {
+	protected void setTemplate(DbFile item) {
 		textFieldPath.setText("");
 		textFieldName.setText(item.getName());
 		textFieldExtension.setText(item.getExtension());
@@ -103,7 +103,7 @@ public class FileEditFactoryController
 	}
 
 	@Override
-	protected void copy(PhantomFile from, PhantomFile to) {
+	protected void copy(DbFile from, DbFile to) {
 		to.setExtension(from.getExtension());
 		to.setFileType(from.getFileType());
 		to.setName(from.getName());

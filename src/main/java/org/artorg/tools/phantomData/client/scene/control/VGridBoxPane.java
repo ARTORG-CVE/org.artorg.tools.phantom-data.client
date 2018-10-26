@@ -7,6 +7,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -56,7 +57,15 @@ public class VGridBoxPane extends AnchorPaneAddableTo {
 		return buttonPane;
     }
 	
-	public void addProperty(String labelText, Control node) {
+	public void addRow(String labelText, TextField textField, Runnable rc) {
+		textField.textProperty().addListener(event -> {
+			rc.run();
+		});
+		addRow(labelText, textField);
+
+	}
+	
+	public void addRow(String labelText, Control node) {
     	int row = nRows;
     	nRows++;
     	

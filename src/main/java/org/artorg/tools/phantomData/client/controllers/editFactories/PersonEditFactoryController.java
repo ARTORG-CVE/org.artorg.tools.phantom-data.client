@@ -6,9 +6,9 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.server.model.AcademicTitle;
-import org.artorg.tools.phantomData.server.model.Gender;
-import org.artorg.tools.phantomData.server.model.Person;
+import org.artorg.tools.phantomData.server.model.person.AcademicTitle;
+import org.artorg.tools.phantomData.server.model.person.Gender;
+import org.artorg.tools.phantomData.server.model.person.Person;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;

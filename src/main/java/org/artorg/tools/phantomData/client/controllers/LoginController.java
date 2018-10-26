@@ -4,7 +4,7 @@ import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
 import org.artorg.tools.phantomData.client.scene.control.VGridBoxPane;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.model.Person;
+import org.artorg.tools.phantomData.server.model.person.Person;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -27,9 +27,9 @@ public class LoginController extends VGridBoxPane {
 		FxUtil.createDbComboBox(personChoiceBox,
 			PersonalizedHttpConnectorSpring.getOrCreate(Person.class),
 			p -> p.getAcademicName());
-		addProperty("Users", personChoiceBox);
+		addRow("Users", personChoiceBox);
 		
-		addProperty("User", activeUser);
+		addRow("User", activeUser);
 		
 		Button loginButton = new Button("Login");
 		loginButton.setOnAction(event -> {

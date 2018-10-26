@@ -27,7 +27,7 @@ import org.artorg.tools.phantomData.client.table.FxFactory;
 import org.artorg.tools.phantomData.client.table.IDbFactoryTableView;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.model.PhantomFile;
+import org.artorg.tools.phantomData.server.model.DbFile;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -201,13 +201,13 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 		final TableRow<ITEM> row = new TableRow<ITEM>();
 		final ContextMenu rowMenu = new ContextMenu();
 
-		if (tableViewSpring.getItemClass() == PhantomFile.class) {
+		if (tableViewSpring.getItemClass() == DbFile.class) {
 			addMenuItem(rowMenu, "Open", event -> {
 				ObservableList<ITEM> selectedItems =
 					tableViewSpring.getSelectionModel().getSelectedItems();
-				List<PhantomFile> selectedDbFiles =
-					selectedItems.stream().filter(item -> item instanceof PhantomFile)
-						.map(item -> ((PhantomFile) item)).collect(Collectors.toList());
+				List<DbFile> selectedDbFiles =
+					selectedItems.stream().filter(item -> item instanceof DbFile)
+						.map(item -> ((DbFile) item)).collect(Collectors.toList());
 
 				Task<Void> task = new Task<Void>() {
 					@Override
@@ -236,9 +236,9 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 			addMenuItem(rowMenu, "Download", event -> {
 				ObservableList<ITEM> selectedItems =
 					tableViewSpring.getSelectionModel().getSelectedItems();
-				List<PhantomFile> selectedDbFiles =
-					selectedItems.stream().filter(item -> item instanceof PhantomFile)
-						.map(item -> ((PhantomFile) item)).collect(Collectors.toList());
+				List<DbFile> selectedDbFiles =
+					selectedItems.stream().filter(item -> item instanceof DbFile)
+						.map(item -> ((DbFile) item)).collect(Collectors.toList());
 
 				DirectoryChooser chooser = new DirectoryChooser();
 				chooser.setTitle("Select target dir");
@@ -266,7 +266,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 					Task<Void> task = new Task<Void>() {
 						@Override
 						protected Void call() throws Exception {
-							File srcFile = ((PhantomFile) row.getItem()).getFile();
+							File srcFile = ((DbFile) row.getItem()).getFile();
 							try {
 								Desktop.getDesktop().open(srcFile);
 							} catch (IOException e) {
@@ -317,7 +317,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 			Scene3D scene3d = new Scene3D();
 			scene3d.loadFile(IOutil.readResourceAsFile("model.stl"));
 			addTab(viewerTabPane.getTabPane(), scene3d,
-				"3D Viewer - " + ((AbstractBaseEntity) row.getItem()).createName());
+				"3D Viewer - " + ((AbstractBaseEntity) row.getItem()).toName());
 		});
 
 		MenuItem treeMenuItem = new MenuItem("Show Tree View");

@@ -6,7 +6,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
-import org.artorg.tools.phantomData.server.model.Person;
+import org.artorg.tools.phantomData.server.model.person.Person;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 

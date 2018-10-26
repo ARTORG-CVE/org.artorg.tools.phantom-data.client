@@ -6,7 +6,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
-import org.artorg.tools.phantomData.server.model.FabricationType;
+import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
 
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;

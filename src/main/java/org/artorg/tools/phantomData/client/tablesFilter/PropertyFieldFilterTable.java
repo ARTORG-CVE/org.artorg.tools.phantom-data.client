@@ -18,6 +18,17 @@ public class PropertyFieldFilterTable
 			List<AbstractColumn<PropertyField>> columns =
 				new ArrayList<AbstractColumn<PropertyField>>();
 			columns.add(new FilterColumn<PropertyField>(
+				"type", item -> item,
+				path -> {
+					try {
+						return Class.forName(path.getType()).getSimpleName();
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
+					return path.getType();
+				},
+				(path, value) -> {}));
+			columns.add(new FilterColumn<PropertyField>(
 				"name", item -> item,
 				path -> path.getName(),
 				(path, value) -> path.setName((String) value)));
@@ -25,10 +36,7 @@ public class PropertyFieldFilterTable
 				"description", item -> item,
 				path -> path.getDescription(),
 				(path, value) -> path.setDescription((String) value)));
-			columns.add(new FilterColumn<PropertyField>(
-				"entity", item -> item,
-				path -> path.getParentItemClass(),
-				(path, value) -> path.setParentItemClass(value)));
+			
 			return columns;
 		});
 

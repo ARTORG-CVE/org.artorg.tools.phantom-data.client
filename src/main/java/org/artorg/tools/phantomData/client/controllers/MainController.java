@@ -19,15 +19,15 @@ import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.model.AcademicTitle;
-import org.artorg.tools.phantomData.server.model.AnnulusDiameter;
-import org.artorg.tools.phantomData.server.model.FabricationType;
 import org.artorg.tools.phantomData.server.model.FileType;
-import org.artorg.tools.phantomData.server.model.LiteratureBase;
-import org.artorg.tools.phantomData.server.model.Person;
-import org.artorg.tools.phantomData.server.model.Phantom;
-import org.artorg.tools.phantomData.server.model.PhantomFile;
-import org.artorg.tools.phantomData.server.model.Special;
+import org.artorg.tools.phantomData.server.model.DbFile;
+import org.artorg.tools.phantomData.server.model.person.AcademicTitle;
+import org.artorg.tools.phantomData.server.model.person.Person;
+import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
+import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
+import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
+import org.artorg.tools.phantomData.server.model.phantom.Phantom;
+import org.artorg.tools.phantomData.server.model.phantom.Special;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
@@ -345,7 +345,7 @@ public class MainController {
 	@FXML
 	void openTableFiles(ActionEvent event) {
 		System.out.println(event.getSource().getClass());
-		openTable(PhantomFile.class);
+		openTable(DbFile.class);
 	}
 
 	@FXML

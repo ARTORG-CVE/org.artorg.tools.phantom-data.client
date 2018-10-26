@@ -6,7 +6,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.FilterColumn;
-import org.artorg.tools.phantomData.server.model.AcademicTitle;
+import org.artorg.tools.phantomData.server.model.person.AcademicTitle;
 
 public class AcademicTitleFilterTable
 	extends DbUndoRedoFactoryEditFilterTable<AcademicTitle> {

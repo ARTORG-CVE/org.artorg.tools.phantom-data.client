@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
-import org.artorg.tools.phantomData.server.model.Person;
+import org.artorg.tools.phantomData.server.model.person.Person;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -58,7 +58,7 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 		column.setMaxAutosizeWidth(300.0);
 		treeTableColumns.add(column);
 
-		column = new DbTreeTableColumn("Name", item -> item.createName(),
+		column = new DbTreeTableColumn("Name", item -> item.toName(),
 			item -> item.toString());
 		column.setPrefAutosizeWidth(300.0);
 		column.setMaxAutosizeWidth(600.0);

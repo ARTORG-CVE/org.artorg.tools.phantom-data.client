@@ -14,7 +14,7 @@ import org.artorg.tools.phantomData.server.BootApplication;
 import org.artorg.tools.phantomData.server.DesktopSwingBootServer;
 import org.artorg.tools.phantomData.server.boot.SwingConsoleFrame;
 import org.artorg.tools.phantomData.server.boot.SwingStartupProgressFrame;
-import org.artorg.tools.phantomData.server.model.PhantomFile;
+import org.artorg.tools.phantomData.server.model.DbFile;
 
 import huma.io.ConsoleDiverter;
 import javafx.application.Application;
@@ -42,7 +42,7 @@ public class DesktopSwingBootApplication extends SwingConsoleStartupClientBooter
 			getServerBooter().setStartupFrame(new SwingStartupProgressFrame());
 			getServerBooter().init();
 			getServerBooter().prepareFileStructure();
-			PhantomFile.setFilesPath(getServerBooter().getFilesPath());
+			DbFile.setFilesPath(getServerBooter().getFilesPath());
 			
 			getStartupFrame().setVisible(true);
 			getStartupFrame().setTitle("Phantom Database");
