@@ -1,7 +1,10 @@
 package org.artorg.tools.phantomData.client.scene.control.treeTableView;
 
+import java.beans.PropertyDescriptor;
+import java.util.List;
 import java.util.function.Function;
 
+import org.artorg.tools.phantomData.server.beans.DbProperty;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -30,6 +33,20 @@ public class DbTreeTableColumn extends TreeTableColumn<Object, String> {
 				Object item = param.getValue().getValue();
 				if (item == null)
 					return new ReadOnlyStringWrapper("null");
+				
+//				if (item instanceof PropertyDescriptor) {
+//					((PropertyDescriptor)item).
+//				}
+				
+//				if (item instanceof NamedValue) {
+//					try {
+//					String name = ((NamedValue)item).getValue().toString();
+//					return new ReadOnlyStringWrapper(name);
+//					} catch (Exception e) {}
+//					return new ReadOnlyStringWrapper("ERROR");
+//				}
+				
+				
 				if (item instanceof AbstractBaseEntity) {
 					try {
 						return new ReadOnlyStringWrapper(mapper
@@ -37,7 +54,9 @@ public class DbTreeTableColumn extends TreeTableColumn<Object, String> {
 					} catch (NullPointerException e) {
 					}
 					return new ReadOnlyStringWrapper("null");
-				} else
+				} else if (item instanceof List) 
+					return new ReadOnlyStringWrapper("----LIST-----");
+				else
 					return new ReadOnlyStringWrapper(orMapper.apply(item));
 			});
 	}
