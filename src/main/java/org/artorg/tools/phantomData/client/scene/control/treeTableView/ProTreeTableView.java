@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.persistence.Entity;
+
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
@@ -54,11 +56,6 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 				Object item = param.getValue().getValue();
 				if (item == null) return new ReadOnlyStringWrapper("null");
 
-				if (item instanceof PropertyDescriptor) {
-					String name = ((PropertyDescriptor) item).getName();
-					return new ReadOnlyStringWrapper(name);
-				}
-
 				if (item instanceof DbProperty) {
 					String name = ((DbProperty) item).getName();
 					return new ReadOnlyStringWrapper(name);
@@ -77,8 +74,8 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 		column.setMaxAutosizeWidth(300.0);
 		treeTableColumns.add(column);
 
-		column =
-			new DbTreeTableColumn("Value", item -> item.toName(), item -> item.toString());
+		column = new DbTreeTableColumn("Value", item -> item.toName(),
+			item -> item.toString());
 		column.setPrefAutosizeWidth(300.0);
 		column.setMaxAutosizeWidth(600.0);
 		column.setCellValueFactory(
@@ -87,6 +84,8 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 				if (item instanceof DbProperty) {
 					Object value = ((DbProperty) item).getValue();
 
+					
+					
 					if (value instanceof AbstractBaseEntity) {
 						try {
 							return new ReadOnlyStringWrapper(
@@ -147,7 +146,7 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 		root.getChildren().addAll(treeItems);
 	}
 
-	private void addResizeColumnsExpandListener(TreeItem<Object> treeItem) {
+	private void addResizeColumnsExpandListener(TreeItem<?> treeItem) {
 		treeItem.expandedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable,
@@ -159,85 +158,127 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 			.forEach(subTreeItem -> addResizeColumnsExpandListener(subTreeItem));
 	}
 	
+	
+	
+	
+	
+	private TreeItem<DbProperty> createTreeItem(Object o, String name) {
+		TreeItem<DbProperty> root = new TreeItem<DbProperty>(new DbProperty(o,name));
+		if (!isEntity(o)) {
+			if (isCollection(o)) {
+				List<Object> list = ((Collection<?>)o).stream().collect(Collectors.toList());
+				for (int i=0; i<list.size(); i++) {
+					root.getChildren().add(createTreeItem(list.get(i), "[" +i +"]"));
+				}
+			}
+		} else {
+			List<TreeItem<Object>> children = createTreeItems(o, 0);
+//			root.getChildren().addAll(children);
+			
+		}
+		
+		return root;
+		
+	}
+	
+	private boolean isEntity(Object o) {
+		return !o.getClass().isAnnotationPresent(Entity.class);
+	}
+	
+	private boolean isCollection(Object o) {
+		return o instanceof Collection;
+	}
+
 	private List<TreeItem<Object>> createTreeItems(Object bean, int level) {
 		if (level > 20) return new ArrayList<TreeItem<Object>>();
 
-		List<Object> entities = Main.getBeaninfos().getEntities(bean);
-		entities = entities.stream().filter(entity -> entity != bean)
-			.filter(entity -> !(entity instanceof Person)).collect(Collectors.toList());
-		List<TreeItem<Object>> entityTreeItems =
-			entities.stream().filter(entity -> entity != null).map(entity -> {
-				TreeItem<Object> node = new TreeItem<>(entity);
-				node.getChildren().addAll(createTreeItems(entity, level + 1));
-				return node;
-			}).collect(Collectors.toList());
-
-		List<Collection<Object>> entityCollections =
-			Main.getBeaninfos().getEntityCollections(bean);
-		entityCollections = entityCollections.stream().filter(entity -> entity != bean)
-			.filter(entity -> !(entity instanceof Person)).collect(Collectors.toList());
-		List<TreeItem<Object>> entityCollectionTreeItems =
-			entityCollections.stream().filter(entity -> entity != null).map(entity -> {
-				TreeItem<Object> node = new TreeItem<>(entity);
-				List<TreeItem<Object>> childrenNodes = entity.stream()
-					.flatMap(subEntity -> createTreeItems(subEntity, level + 1).stream())
-					.collect(Collectors.toList());
-				node.getChildren().addAll(childrenNodes);
-				return node;
-			}).collect(Collectors.toList());
-
+		if (bean == null)
+			throw new NullPointerException();
+		
+		List<TreeItem<Object>> treeItems = new ArrayList<TreeItem<Object>>();
 		EntityBeanInfo beanInfo = Main.getBeaninfos().getEntityBeanInfo(bean.getClass());
-		List<DbProperty> namedValues = beanInfo.getNamedPropertiesValues(bean);
 
-		namedValues = namedValues.stream()
-			.filter(
-				namedValue -> namedValue.getDescriptor().getPropertyType() != Class.class)
+		// adds entities - every entity has children if they are not null or empty
+		List<DbProperty> entities = beanInfo.getNamedEntityValues(bean);
+		entities = entities.stream().filter(entity -> entity.getValue() != null)
 			.collect(Collectors.toList());
-		List<TreeItem<Object>> propertyTreeItems =
-			namedValues.stream().map(namedValue -> (Object) namedValue)
-				.map(o -> new TreeItem<>(o)).collect(Collectors.toList());
-
-//		descriptors.get(0).getPropertyType()
-
-//		List<Object> properties = descriptors.stream()
-
-//			.filter(p -> p.getPropertyType() != Class.class)
-//			.filter(p -> {
-//			if (p instanceof Collection) {
-//				Collection<?> coll = (Collection) p;
-//				if (coll.isEmpty())
-//					return false;
-//			}
-//			return true;
-//			})
-//			.collect(Collectors.toList());
-//		List<TreeItem<Object>> propertyTreeItems = properties.stream()
-//			.map(o -> new TreeItem<>(o))
-//			.collect(Collectors.toList());
-
-//		List<Object> properties = Main.getBeaninfos().getProperties(bean);
-//			properties = properties.stream().filter(p -> !(p instanceof Class))
-//			.filter(p -> {
-//				if (p instanceof Collection) {
-//					Collection<?> coll = (Collection) p;
-//					if (coll.isEmpty())
-//						return false;
-//				}
-//				return true;
-//			}).sorted((p1, p2) -> {
-//				if (UUID.class.isAssignableFrom(p1.getClass()))
-//					return -1;
-//				return 0;
+		List<TreeItem<Object>> entityTreeItems =
+			entities.stream().filter(entity -> entity.getValue() != null).map(entity -> {
+				TreeItem<Object> node = new TreeItem<>(entity);
+				node.getChildren().addAll(createTreeItems(entity.getValue(), level + 1));
+				return node;
+			}).collect(Collectors.toList());
+		treeItems.addAll(entityTreeItems);
+		
+		
+		
+//		List<DbProperty> entityCollections = beanInfo.getNamedCollectionValues(bean);
+//			Main.getBeaninfos().getEntityCollections(bean);
+//			List<TreeItem<Object>> entityCollectionTreeItems =
+//				entityCollections.stream().filter(entity -> entity.getValue() != null).map(entity -> {
+//					TreeItem<Object> node = new TreeItem<>(entity);
+//					node.getChildren().addAll(createCollectionTreeItems((Collection<?>) entity.getValue(), level + 1));
+//					return node;
+//				}).collect(Collectors.toList());
+//			treeItems.addAll(entityCollectionTreeItems);
+			
+			
+//		List<TreeItem<Object>> entityCollectionTreeItems =
+//			entityCollections.stream().filter(entity -> entity != null).map(entity -> {
+//				TreeItem<Object> node = new TreeItem<>(entity);
+//				List<TreeItem<Object>> childrenNodes = entity.stream()
+//					.flatMap(subEntity -> createTreeItems(subEntity, level + 1).stream())
+//					.collect(Collectors.toList());
+//				node.getChildren().addAll(childrenNodes);
+//				return node;
 //			}).collect(Collectors.toList());
-//		List<TreeItem<Object>> propertyTreeItems = properties.stream()
-//			.map(o -> new TreeItem<>(o))
+//		treeItems.addAll(entityCollectionTreeItems);
+		
+		
+//		List<Collection<Object>> entityCollections =
+//			Main.getBeaninfos().getEntityCollections(bean);
+//		entityCollections = entityCollections.stream()
 //			.collect(Collectors.toList());
+//		List<TreeItem<Object>> entityCollectionTreeItems =
+//			entityCollections.stream().filter(entity -> entity != null).map(entity -> {
+//				TreeItem<Object> node = new TreeItem<>(entity);
+//				List<TreeItem<Object>> childrenNodes = entity.stream()
+//					.flatMap(subEntity -> createTreeItems(subEntity, level + 1).stream())
+//					.collect(Collectors.toList());
+//				node.getChildren().addAll(childrenNodes);
+//				return node;
+//			}).collect(Collectors.toList());
+//		treeItems.addAll(entityCollectionTreeItems);
 
-		entityTreeItems.addAll(entityCollectionTreeItems);
-		entityTreeItems.addAll(propertyTreeItems);
+		List<DbProperty> properties = beanInfo.getNamedPropertiesValues(bean);
+		properties = properties.stream()
+			.filter(
+				namedValue -> namedValue.getValue().getClass() != Class.class)
+			.collect(Collectors.toList());
+		List<TreeItem<Object>> propertyTreeItems = properties.stream()
+			.map(o -> new TreeItem<>((Object) o)).collect(Collectors.toList());
+		treeItems.addAll(propertyTreeItems);
 
-		return entityTreeItems;
+		return treeItems;
 	}
+	
+//	private List<TreeItem<Object>> createCollectionTreeItems(Collection<?> collection, int level) {
+//		if (level > 20) return new ArrayList<TreeItem<Object>>();
+//		
+//		if (collection == null)
+//			throw new NullPointerException();
+//		
+//		List<TreeItem<Object>> treeItems = new ArrayList<TreeItem<Object>>();
+//		
+//		
+//		
+//		collection.stream().(e -> {
+//			if (EntityBeanInfo.isEntity(e))
+//				
+//			});
+//		
+//		
+//	}
 
 	public void autoResizeColumns() {
 		super.setColumnResizePolicy(
