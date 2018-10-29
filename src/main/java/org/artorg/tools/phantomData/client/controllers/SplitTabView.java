@@ -27,6 +27,7 @@ import org.artorg.tools.phantomData.client.table.FxFactory;
 import org.artorg.tools.phantomData.client.table.IDbFactoryTableView;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.server.beans.DbNode;
 import org.artorg.tools.phantomData.server.model.DbFile;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -337,10 +338,10 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 		return row;
 	}
 
-	private <ITEM extends DbPersistent<ITEM, ?>> TreeTableRow<Object>
+	private <ITEM extends DbPersistent<ITEM, ?>> TreeTableRow<DbNode>
 		createTreeTableViewContext(
-			ProTreeTableView<ITEM> proTreeTableView, TreeTableView<Object> tableView) {
-		final TreeTableRow<Object> row = new TreeTableRow<Object>();
+			ProTreeTableView<ITEM> proTreeTableView, TreeTableView<DbNode> tableView) {
+		final TreeTableRow<DbNode> row = new TreeTableRow<DbNode>();
 		final ContextMenu rowMenu = new ContextMenu();
 
 		addMenuItem(rowMenu, "Show Table View", event -> {

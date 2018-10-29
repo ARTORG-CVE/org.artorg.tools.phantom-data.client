@@ -1,10 +1,9 @@
 package org.artorg.tools.phantomData.client.scene.control.treeTableView;
 
-import java.beans.PropertyDescriptor;
 import java.util.List;
 import java.util.function.Function;
 
-import org.artorg.tools.phantomData.server.beans.DbProperty;
+import org.artorg.tools.phantomData.server.beans.DbNode;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -13,7 +12,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.text.Text;
 
-public class DbTreeTableColumn extends TreeTableColumn<Object, String> {
+public class DbTreeTableColumn extends TreeTableColumn<DbNode, String> {
 	private double minAutosizeWidth = 0.0;
 	private double prefAutosizeWidth = 0.0;
 	private double maxAutosizeWidth = Double.MAX_VALUE;
@@ -29,7 +28,7 @@ public class DbTreeTableColumn extends TreeTableColumn<Object, String> {
 		this(columnName);
 
 		setCellValueFactory(
-			(TreeTableColumn.CellDataFeatures<Object, String> param) -> {
+			(TreeTableColumn.CellDataFeatures<DbNode, String> param) -> {
 				Object item = param.getValue().getValue();
 				if (item == null)
 					return new ReadOnlyStringWrapper("null");
@@ -66,7 +65,7 @@ public class DbTreeTableColumn extends TreeTableColumn<Object, String> {
 		setPrefWidth(200);
 	}
 
-	public void autoResizeWidth(ObservableList<TreeItem<Object>> treeItems) {
+	public <T> void autoResizeWidth(ObservableList<TreeItem<T>> treeItems) {
 		Text t = new Text(getText());
 		double max = t.getLayoutBounds().getWidth() + 45.0;
 		for (int i = 0; i < treeItems.size(); i++) {

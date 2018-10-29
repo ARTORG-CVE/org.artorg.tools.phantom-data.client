@@ -1,12 +1,9 @@
 package org.artorg.tools.phantomData.client.scene.control.treeTableView;
 
-import java.beans.PropertyDescriptor;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
@@ -14,9 +11,8 @@ import javax.persistence.Entity;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
+import org.artorg.tools.phantomData.server.beans.DbNode;
 import org.artorg.tools.phantomData.server.beans.EntityBeanInfo;
-import org.artorg.tools.phantomData.server.beans.DbProperty;
-import org.artorg.tools.phantomData.server.model.person.Person;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -30,10 +26,10 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 
 public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
-	extends TreeTableView<Object> implements AddableToAnchorPane {
+	extends TreeTableView<DbNode> implements AddableToAnchorPane {
 	private Class<?> itemClass;
 	private TableBase<ITEM> table;
-	private TreeItem<Object> root = new TreeItem<Object>("Root node");
+	private TreeItem<DbNode> root = new TreeItem<DbNode>(new DbNode("Root node", "Root node"));
 	private List<DbTreeTableColumn> treeTableColumns;
 
 	{
@@ -52,12 +48,12 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 		column = new DbTreeTableColumn("Name");
 		column.setPrefWidth(150);
 		column.setCellValueFactory(
-			(TreeTableColumn.CellDataFeatures<Object, String> param) -> {
+			(TreeTableColumn.CellDataFeatures<DbNode, String> param) -> {
 				Object item = param.getValue().getValue();
 				if (item == null) return new ReadOnlyStringWrapper("null");
 
-				if (item instanceof DbProperty) {
-					String name = ((DbProperty) item).getName();
+				if (item instanceof DbNode) {
+					String name = ((DbNode) item).getName();
 					return new ReadOnlyStringWrapper(name);
 				}
 
@@ -79,10 +75,10 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 		column.setPrefAutosizeWidth(300.0);
 		column.setMaxAutosizeWidth(600.0);
 		column.setCellValueFactory(
-			(TreeTableColumn.CellDataFeatures<Object, String> param) -> {
+			(TreeTableColumn.CellDataFeatures<DbNode, String> param) -> {
 				Object item = param.getValue().getValue();
-				if (item instanceof DbProperty) {
-					Object value = ((DbProperty) item).getValue();
+				if (item instanceof DbNode) {
+					Object value = ((DbNode) item).getValue();
 
 					
 					
@@ -133,9 +129,9 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 	}
 
 	public void setItems(List<ITEM> items) {
-		List<TreeItem<Object>> treeItems = new ArrayList<TreeItem<Object>>();
+		List<TreeItem<DbNode>> treeItems = new ArrayList<TreeItem<DbNode>>();
 		items.forEach(item -> {
-			TreeItem<Object> node = new TreeItem<>(item);
+			TreeItem<DbNode> node = new TreeItem<DbNode>(new DbNode(item, "test"));
 			node.getChildren().addAll(createTreeItems(item, 0));
 			treeItems.add(node);
 		});
@@ -162,8 +158,8 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 	
 	
 	
-	private TreeItem<DbProperty> createTreeItem(Object o, String name) {
-		TreeItem<DbProperty> root = new TreeItem<DbProperty>(new DbProperty(o,name));
+	private TreeItem<DbNode> createTreeItem(Object o, String name) {
+		TreeItem<DbNode> root = new TreeItem<DbNode>(new DbNode(o,name));
 		if (!isEntity(o)) {
 			if (isCollection(o)) {
 				List<Object> list = ((Collection<?>)o).stream().collect(Collectors.toList());
@@ -172,7 +168,7 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 				}
 			}
 		} else {
-			List<TreeItem<Object>> children = createTreeItems(o, 0);
+			List<TreeItem<DbNode>> children = createTreeItems(o, 0);
 //			root.getChildren().addAll(children);
 			
 		}
@@ -189,22 +185,22 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 		return o instanceof Collection;
 	}
 
-	private List<TreeItem<Object>> createTreeItems(Object bean, int level) {
-		if (level > 20) return new ArrayList<TreeItem<Object>>();
+	private List<TreeItem<DbNode>> createTreeItems(Object bean, int level) {
+		if (level > 20) return new ArrayList<TreeItem<DbNode>>();
 
 		if (bean == null)
 			throw new NullPointerException();
 		
-		List<TreeItem<Object>> treeItems = new ArrayList<TreeItem<Object>>();
+		List<TreeItem<DbNode>> treeItems = new ArrayList<TreeItem<DbNode>>();
 		EntityBeanInfo beanInfo = Main.getBeaninfos().getEntityBeanInfo(bean.getClass());
 
 		// adds entities - every entity has children if they are not null or empty
-		List<DbProperty> entities = beanInfo.getNamedEntityValues(bean);
+		List<DbNode> entities = beanInfo.getNamedEntityValues(bean);
 		entities = entities.stream().filter(entity -> entity.getValue() != null)
 			.collect(Collectors.toList());
-		List<TreeItem<Object>> entityTreeItems =
+		List<TreeItem<DbNode>> entityTreeItems =
 			entities.stream().filter(entity -> entity.getValue() != null).map(entity -> {
-				TreeItem<Object> node = new TreeItem<>(entity);
+				TreeItem<DbNode> node = new TreeItem<>(entity);
 				node.getChildren().addAll(createTreeItems(entity.getValue(), level + 1));
 				return node;
 			}).collect(Collectors.toList());
@@ -250,13 +246,13 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 //			}).collect(Collectors.toList());
 //		treeItems.addAll(entityCollectionTreeItems);
 
-		List<DbProperty> properties = beanInfo.getNamedPropertiesValues(bean);
+		List<DbNode> properties = beanInfo.getNamedPropertiesValues(bean);
 		properties = properties.stream()
 			.filter(
 				namedValue -> namedValue.getValue().getClass() != Class.class)
 			.collect(Collectors.toList());
-		List<TreeItem<Object>> propertyTreeItems = properties.stream()
-			.map(o -> new TreeItem<>((Object) o)).collect(Collectors.toList());
+		List<TreeItem<DbNode>> propertyTreeItems = properties.stream()
+			.map(o -> new TreeItem<>((DbNode) o)).collect(Collectors.toList());
 		treeItems.addAll(propertyTreeItems);
 
 		return treeItems;
