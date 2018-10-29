@@ -193,37 +193,6 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 			.filter(
 				namedValue -> namedValue.getDescriptor().getPropertyType() != Class.class)
 			.collect(Collectors.toList());
-
-//		
-//		List<PropertyDescriptor> descriptors = beanInfo.getNotBasePropertyDescriptors();
-//		
-//		
-//		descriptors = descriptors.stream()
-//		
-//		.filter(p -> p.getPropertyType() != Class.class)
-////		.filter(p -> {
-////		if (p instanceof Collection) {
-////			Collection<?> coll = (Collection) p;
-////			if (coll.isEmpty())
-////				return false;
-////		}
-////		return true;
-////		})
-//		.collect(Collectors.toList());
-//		
-//		
-////		List<Object> properties = Main.getBeaninfos().getProperties(bean);
-//		List<NamedValue> namedValues = new ArrayList<NamedValue>();
-//		
-//		for (int i=0; i<descriptors.size(); i++) {
-//			try {
-//			NamedValue namedValue = new NamedValue(descriptors.get(i), bean); 
-//			namedValues.add(namedValue);
-//			} catch (Exception e) {
-////				e.printStackTrace();
-//			}
-//		}
-
 		List<TreeItem<Object>> propertyTreeItems =
 			namedValues.stream().map(namedValue -> (Object) namedValue)
 				.map(o -> new TreeItem<>(o)).collect(Collectors.toList());
