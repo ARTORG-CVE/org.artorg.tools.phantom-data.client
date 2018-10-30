@@ -8,7 +8,6 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-
 <StackPane fx:id="rootPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
 		<VBox fx:id="vbox">
@@ -37,21 +36,27 @@
 						<Menu fx:id="menuTables" mnemonicParsing="false" text="Tables">
 							<items>
 								<MenuItem mnemonicParsing="false" onAction="#openTablePhantoms" text="Phantoms" />
-								<MenuItem mnemonicParsing="false" onAction="#openTableAnnulusDiameter" text="Annulus Diameters" />
-								<MenuItem mnemonicParsing="false" onAction="#openTableLiteratureBases" text="Literature Bases" />
-								<MenuItem mnemonicParsing="false" onAction="#openTableFabricationTypes" text="Fabrication Types" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-								<MenuItem mnemonicParsing="false" onAction="#openTableSpecials" text="Specials" />
-								<MenuItem mnemonicParsing="false" onAction="#openTablePropertyFields" text="Property Fields" />
-								<SeparatorMenuItem mnemonicParsing="false" />
 								<MenuItem mnemonicParsing="false" onAction="#openTableFiles" text="Files" />
 								<MenuItem mnemonicParsing="false" onAction="#openTableFileTypes" text="File Types" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
+								<SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" onAction="#openTablePersons" text="Persons" />
                         <MenuItem mnemonicParsing="false" onAction="#openTableAcademicTitles" text="Academic Titles" />
                         <SeparatorMenuItem mnemonicParsing="false" />
+                        <Menu mnemonicParsing="false" text="Phantoms">
+                           <items>
+                              <MenuItem mnemonicParsing="false" onAction="#openTablePhantominas" text="Phantominas" />
+      								<MenuItem mnemonicParsing="false" onAction="#openTableAnnulusDiameter" text="Annulus Diameters" />
+      								<MenuItem mnemonicParsing="false" onAction="#openTableLiteratureBases" text="Literature Bases" />
+      								<MenuItem mnemonicParsing="false" onAction="#openTableFabricationTypes" text="Fabrication Types" />
+      								<MenuItem mnemonicParsing="false" onAction="#openTableSpecials" text="Specials" />
+                           </items>
+                        </Menu>
                         <Menu mnemonicParsing="false" text="Properties">
                            <items>
+                              <MenuItem mnemonicParsing="false" onAction="#openTableProperties" text="Properties" />
+      								<MenuItem mnemonicParsing="false" onAction="#openTablePropertyFields" text="Property Fields" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
                               <MenuItem mnemonicParsing="false" onAction="#openTableBooleanProperties" text="Boolean Properties" />
                               <MenuItem mnemonicParsing="false" onAction="#openTableIntegerProperties" text="Integer Properties" />
                               <MenuItem mnemonicParsing="false" onAction="#openTableDoubleProperties" text="Double Properties" />

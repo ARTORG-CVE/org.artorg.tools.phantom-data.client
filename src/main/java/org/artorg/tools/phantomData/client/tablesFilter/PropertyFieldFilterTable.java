@@ -6,10 +6,11 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.FilterColumn;
+import org.artorg.tools.phantomData.client.table.IBaseColumns;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 public class PropertyFieldFilterTable
-	extends DbUndoRedoFactoryEditFilterTable<PropertyField> {
+	extends DbUndoRedoFactoryEditFilterTable<PropertyField> implements IBaseColumns {
 
 	{
 		setTableName("Property Field");
@@ -36,6 +37,7 @@ public class PropertyFieldFilterTable
 				"description", item -> item,
 				path -> path.getDescription(),
 				(path, value) -> path.setDescription((String) value)));
+			createBaseColumns(columns);
 			
 			return columns;
 		});

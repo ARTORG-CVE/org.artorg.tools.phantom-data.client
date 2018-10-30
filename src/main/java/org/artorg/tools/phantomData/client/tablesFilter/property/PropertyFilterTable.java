@@ -7,13 +7,14 @@ import java.util.UUID;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.FilterColumn;
+import org.artorg.tools.phantomData.client.table.IBaseColumns;
 import org.artorg.tools.phantomData.server.model.specification.AbstractProperty;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 public abstract class PropertyFilterTable<
 	ITEM extends AbstractProperty<ITEM, VALUE> & DbPersistent<ITEM, UUID>,
 	VALUE extends Comparable<VALUE>>
-	extends DbUndoRedoFactoryEditFilterTable<ITEM> {
+	extends DbUndoRedoFactoryEditFilterTable<ITEM> implements IBaseColumns {
 
 	{
 		setColumnCreator(items -> {
@@ -27,6 +28,7 @@ public abstract class PropertyFilterTable<
 				"value", item -> item,
 				path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(fromString(value))));
+			createBaseColumns(columns);
 			return columns;
 		});
 	}

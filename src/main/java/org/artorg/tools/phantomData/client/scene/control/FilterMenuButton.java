@@ -158,6 +158,8 @@ public class FilterMenuButton<ITEM> extends MenuButton {
 		});
 		this.addEventHandler(ComboBox.ON_SHOWING, event -> {
 			this.updateNodes();
+			itemAscending.getCheckBox().setSelected(false);
+			itemDescending.getCheckBox().setSelected(false);
 		});
 		
 		addAction(itemReset, refresh);

@@ -6,9 +6,10 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.FilterColumn;
+import org.artorg.tools.phantomData.client.table.IBaseColumns;
 import org.artorg.tools.phantomData.server.model.DbFile;
 
-public class FileFilterTable extends DbUndoRedoFactoryEditFilterTable<DbFile> {
+public class FileFilterTable extends DbUndoRedoFactoryEditFilterTable<DbFile> implements IBaseColumns {
 
 	{
 		setTableName("Files");
@@ -28,6 +29,7 @@ public class FileFilterTable extends DbUndoRedoFactoryEditFilterTable<DbFile> {
 				"file type", item -> item.getFileType(),
 				path -> path.getName(),
 				(path, value) -> path.setName(value)));
+			createBaseColumns(columns);
 			return columns;
 		});
 

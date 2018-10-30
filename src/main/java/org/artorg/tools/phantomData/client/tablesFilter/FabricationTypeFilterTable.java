@@ -6,10 +6,11 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.FilterColumn;
+import org.artorg.tools.phantomData.client.table.IBaseColumns;
 import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
 
 public class FabricationTypeFilterTable
-	extends DbUndoRedoFactoryEditFilterTable<FabricationType> {
+	extends DbUndoRedoFactoryEditFilterTable<FabricationType> implements IBaseColumns {
 
 	{
 		setTableName("Fabrication Types");
@@ -25,6 +26,7 @@ public class FabricationTypeFilterTable
 				"value", item -> item,
 				path -> path.getValue(),
 				(path, value) -> path.setValue(value)));
+			createBaseColumns(columns);
 			return columns;
 		});
 

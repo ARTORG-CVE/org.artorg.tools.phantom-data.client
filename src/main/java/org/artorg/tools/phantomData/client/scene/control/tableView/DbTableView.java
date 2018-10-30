@@ -30,5 +30,7 @@ public class DbTableView<ITEM extends DbPersistent<ITEM,?>> extends ProTableView
 		getTable().getItems().addListener(getListenerChangedListenerRefresh());
 		refresh();
 	}
+	
+	
 
 }

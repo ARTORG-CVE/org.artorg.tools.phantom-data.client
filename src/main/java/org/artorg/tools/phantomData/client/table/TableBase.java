@@ -63,7 +63,24 @@ public class TableBase<ITEM> implements ITable<ITEM> {
 	
 	@Override
 	public void updateColumns() {
-		this.columns = columnCreator.apply(getItems());
+		List<AbstractColumn<ITEM>> newColumns = columnCreator.apply(getItems()); 
+		if (this.columns.isEmpty()) this.columns.addAll(newColumns);
+		else {
+			List<AbstractColumn<ITEM>> removableColumns = new ArrayList<>();
+			List<AbstractColumn<ITEM>> addableColumns = new ArrayList<>();
+			for (int i=0; i<columns.size(); i++) {
+				final int j = i; 
+				if (!newColumns.stream().filter(column -> column.getColumnName().equals(columns.get(j).getColumnName())).findFirst().isPresent())
+					removableColumns.add(this.columns.get(i));
+			}
+			for (int i=0; i<newColumns.size(); i++) {
+				final int j = i; 
+				if (!columns.stream().filter(column -> column.getColumnName().equals(newColumns.get(j).getColumnName())).findFirst().isPresent())
+					addableColumns.add(newColumns.get(i));
+			}
+			this.columns.removeAll(removableColumns);
+			this.columns.addAll(addableColumns);
+		}
 		getColumns().stream().forEach(column ->column.setItems(getItems()));
 	}	
 	

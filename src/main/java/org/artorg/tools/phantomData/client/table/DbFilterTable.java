@@ -75,6 +75,10 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM,?>> extends DbTable<IT
 		}
 		columnIndexMapper = i -> mappedColumnIndexes.get(i);
 		
+		getFilteredColumns().stream().forEach(column -> {
+			column.setFilteredItems(getFilteredItems());	
+		});
+		
 		applyFilter();
 		
 	}

@@ -6,10 +6,11 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.FilterColumn;
+import org.artorg.tools.phantomData.client.table.IBaseColumns;
 import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
 
 public class LiteratureBaseFilterTable
-	extends DbUndoRedoFactoryEditFilterTable<LiteratureBase> {
+	extends DbUndoRedoFactoryEditFilterTable<LiteratureBase> implements IBaseColumns {
 
 	{
 		setTableName("Literature Bases");
@@ -25,6 +26,7 @@ public class LiteratureBaseFilterTable
 				"value", item -> item,
 				path -> path.getValue(),
 				(path, value) -> path.setValue((String) value)));
+			createBaseColumns(columns);
 			return columns;
 		});
 

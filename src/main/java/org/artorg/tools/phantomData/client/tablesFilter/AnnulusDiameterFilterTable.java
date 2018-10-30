@@ -6,10 +6,11 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.FilterColumn;
+import org.artorg.tools.phantomData.client.table.IBaseColumns;
 import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
 
 public class AnnulusDiameterFilterTable
-	extends DbUndoRedoFactoryEditFilterTable<AnnulusDiameter> {
+	extends DbUndoRedoFactoryEditFilterTable<AnnulusDiameter> implements IBaseColumns {
 
 	{
 		setTableName("Annulus Diameters");
@@ -25,6 +26,7 @@ public class AnnulusDiameterFilterTable
 				"value", item -> item,
 				path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(Double.valueOf(value))));
+			createBaseColumns(columns);
 			return columns;
 		});
 

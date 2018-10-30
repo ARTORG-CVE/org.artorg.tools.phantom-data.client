@@ -8,53 +8,45 @@ import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTabl
 import org.artorg.tools.phantomData.client.table.FilterColumn;
 import org.artorg.tools.phantomData.client.table.IBaseColumns;
 import org.artorg.tools.phantomData.client.table.IPropertyColumns;
-import org.artorg.tools.phantomData.server.model.phantom.Phantom;
 import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
 
-public class PhantomFilterTable extends DbUndoRedoFactoryEditFilterTable<Phantom> implements IPropertyColumns, IBaseColumns {
+public class PhantominaFilterTable extends DbUndoRedoFactoryEditFilterTable<Phantomina> implements IPropertyColumns, IBaseColumns {
 
 	{
-		setTableName("Phantoms");
+		setTableName("Phantominas");
 
 		setColumnCreator(items -> {
-			List<AbstractColumn<Phantom>> columns =
-				new ArrayList<AbstractColumn<Phantom>>();
-			FilterColumn<Phantom> column;
-			column = new FilterColumn<Phantom>(
+			List<AbstractColumn<Phantomina>> columns =
+				new ArrayList<AbstractColumn<Phantomina>>();
+			FilterColumn<Phantomina> column;
+			column = new FilterColumn<Phantomina>(
 				"PID", item -> item,
 				path -> path.getProductId(),
 				(path, value) -> path.setProductId(value));
 			column.setAscendingSortComparator((p1, p2) -> Phantomina.comparePid(p1.getProductId(), p2.getProductId()));
 			columns.add(column);
-			columns.add(new FilterColumn<Phantom>(
-				"annulus [mm]", item -> item.getPhantomina().getAnnulusDiameter(),
+			columns.add(new FilterColumn<Phantomina>(
+				"annulus [mm]", item -> item.getAnnulusDiameter(),
 				path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(Double.valueOf(value))));
-			columns.add(new FilterColumn<Phantom>(
-				"type", item -> item.getPhantomina().getFabricationType(),
+			columns.add(new FilterColumn<Phantomina>(
+				"type", item -> item.getFabricationType(),
 				path -> path.getValue(),
 				(path, value) -> path.setValue(value)));
-			columns.add(new FilterColumn<Phantom>(
-				"literature", item -> item.getPhantomina().getLiteratureBase(),
+			columns.add(new FilterColumn<Phantomina>(
+				"literature", item -> item.getLiteratureBase(),
 				path -> path.getValue(),
 				(path, value) -> path.setValue(value)));
-			column = new FilterColumn<Phantom>(
-				"special", item -> item.getPhantomina().getSpecial(),
+			column = new FilterColumn<Phantomina>(
+				"special", item -> item.getSpecial(),
 				path -> path.getShortcut(),
 				(path, value) -> path.setShortcut(value));
 			columns.add(column);
-			column = new FilterColumn<Phantom>(
-				"number", item -> item,
-				path -> String.valueOf(path.getNumber()),
-				(path, value) -> path.setNumber(Integer.valueOf(value)));
-			columns.add(column);
-			column.setAscendingSortComparator((p1, p2) -> ((Integer) p1.getNumber())
-				.compareTo((Integer) p2.getNumber()));
 //			createPropertyColumns(columns, this.getItems());
 			createBaseColumns(columns);
 			return columns;
 		});
 
 	}
-
+	
 }

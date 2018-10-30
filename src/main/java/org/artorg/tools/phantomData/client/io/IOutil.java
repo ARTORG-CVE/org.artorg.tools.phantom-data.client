@@ -46,7 +46,7 @@ public class IOutil extends huma.io.IOutil {
 	}
 	
 	public static Image readResourceAsImage(String path) {
-		InputStream normalStream = readResourceAsStream("img/arrow.png");
+		InputStream normalStream = readResourceAsStream(path);
 		return new Image(normalStream);
 	}
 	

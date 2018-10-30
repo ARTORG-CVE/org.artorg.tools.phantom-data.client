@@ -27,10 +27,12 @@ import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.phantom.Phantom;
+import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.model.phantom.Special;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
+import org.artorg.tools.phantomData.server.model.property.Properties;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import org.artorg.tools.phantomData.server.model.property.StringProperty;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -201,18 +203,15 @@ public class MainController {
 		splitTabViews.addListener(new ListChangeListener<SplitTabView>() {
 			@Override
 			public void onChanged(Change<? extends SplitTabView> c) {
-				if (c.next())
-					do {
-					if (c.wasAdded())
-						splitPane.getItems()
-							.addAll(c.getAddedSubList().stream()
-								.map(splitTabView -> splitTabView.getSplitPane())
-								.collect(Collectors.toList()));
-					if (c.wasRemoved())
-						splitPane.getItems()
-							.removeAll(c.getRemoved().stream()
-								.map(splitTabView -> splitTabView.getSplitPane())
-								.collect(Collectors.toList()));
+				if (c.next()) do {
+					if (c.wasAdded()) splitPane.getItems()
+						.addAll(c.getAddedSubList().stream()
+							.map(splitTabView -> splitTabView.getSplitPane())
+							.collect(Collectors.toList()));
+					if (c.wasRemoved()) splitPane.getItems()
+						.removeAll(c.getRemoved().stream()
+							.map(splitTabView -> splitTabView.getSplitPane())
+							.collect(Collectors.toList()));
 				} while (c.next());
 			}
 		});
@@ -309,22 +308,22 @@ public class MainController {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends DbPersistent<T, ?>> ProTableView<T> createTable(
-		Class<T> itemClass) {
+	private <T extends DbPersistent<T, ?>> ProTableView<T>
+		createTable(Class<T> itemClass) {
 		return TableViewFactory.createInitializedTable(itemClass,
 			DbUndoRedoFactoryEditFilterTable.class,
 			DbUndoRedoAddEditControlFilterTableView.class);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends DbPersistent<T, ?>> ProTreeTableView<T> createTreeTable(
-		Class<T> itemClass) {
-		return TableViewFactory.createInitializedTreeTable(itemClass,
-			DbTable.class, DbTreeTableView.class);
+	private <T extends DbPersistent<T, ?>> ProTreeTableView<T>
+		createTreeTable(Class<T> itemClass) {
+		return TableViewFactory.createInitializedTreeTable(itemClass, DbTable.class,
+			DbTreeTableView.class);
 	}
 
-	public <T extends DbPersistent<T, ?>> void openTableTab(int row,
-		Node table, String name) {
+	public <T extends DbPersistent<T, ?>> void openTableTab(int row, Node table,
+		String name) {
 		Tab tab = new Tab(name);
 		tab.setContent(table);
 		getOrCreate(row).openTableTab(tab);
@@ -351,6 +350,12 @@ public class MainController {
 	@FXML
 	void openTablePhantoms(ActionEvent event) {
 		openTable(Phantom.class);
+	}
+	
+	
+	@FXML
+	void openTablePhantominas(ActionEvent event) {
+		openTable(Phantomina.class);
 	}
 
 //	private Button createTabButton(String iconName) {
@@ -395,6 +400,11 @@ public class MainController {
 	@FXML
 	void openTablePersons(ActionEvent event) {
 		openTable(Person.class);
+	}
+
+	@FXML
+	void openTableProperties(ActionEvent event) {
+		openTable(Properties.class);
 	}
 
 	@FXML

@@ -56,6 +56,8 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends DbTabl
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initTable() {
+		
+		
 		if (getTable() instanceof IFilterTable)
 			initFilterTable((IFilterTable<ITEM>)getTable());
 		else 
@@ -96,8 +98,7 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends DbTabl
 	    
 	    Platform.runLater(() -> showFilterButtons());
 	}
-	
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public void reload() {
