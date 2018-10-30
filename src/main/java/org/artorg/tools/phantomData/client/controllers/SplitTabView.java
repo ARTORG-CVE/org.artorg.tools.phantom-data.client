@@ -88,8 +88,6 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 				menuItemUpdater.stream().forEach(rc -> rc.run());
 			});
 		});
-		
-		
 
 	}
 
@@ -116,30 +114,26 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 				DbTreeTableView.class, tableView.getSelectionModel().getSelectedItems());
 		Tab tab;
 		tab = findTabByContent(tableTabPane.getTabPane(), tableView);
-		if (controlDown)
-			tab = new Tab(tab.getText());
+		if (controlDown) tab = new Tab(tab.getText());
 		setTab(tableTabPane.getTabPane(), tab, treeTableView);
 	}
 
 	@SuppressWarnings("unchecked")
 	private <ITEM extends DbPersistent<ITEM, ?>> void
 		changeToTableView(ProTreeTableView<ITEM> tableView) {
-		ProTableView<ITEM> treeTableView =
-			TableViewFactory.createTable(tableView.getItemClass(),
-				DbUndoRedoFactoryEditFilterTable.class,
-				DbUndoRedoAddEditControlFilterTableView.class,
-				tableView.getSelectionModel().getSelectedItems());
+		ProTableView<ITEM> treeTableView = TableViewFactory.createTable(
+			tableView.getItemClass(), DbUndoRedoFactoryEditFilterTable.class,
+			DbUndoRedoAddEditControlFilterTableView.class,
+			tableView.getSelectionModel().getSelectedItems());
 		Tab tab;
 		tab = findTabByContent(tableTabPane.getTabPane(), tableView);
-		if (controlDown)
-			tab = new Tab(tab.getText());
+		if (controlDown) tab = new Tab(tab.getText());
 		setTab(tableTabPane.getTabPane(), tab, treeTableView);
 	}
 
 	private Tab findTabByContent(TabPane tabPane, Node node) {
 		return tabPane.getTabs().stream().filter(tab -> tab.getContent() == node)
-			.findFirst()
-			.orElseThrow(() -> new NullPointerException());
+			.findFirst().orElseThrow(() -> new NullPointerException());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -148,17 +142,13 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 		Object content = null;
 		try {
 			content = tab.getContent();
-		} catch (NullPointerException e) {
-		}
-		if (content == null || content != node)
-			tab.setContent(node);
-		if (!tabPane.getTabs().contains(tab))
-			tabPane.getTabs().add(tab);
+		} catch (NullPointerException e) {}
+		if (content == null || content != node) tab.setContent(node);
+		if (!tabPane.getTabs().contains(tab)) tabPane.getTabs().add(tab);
 		if (tabPane.getSelectionModel().getSelectedItem() != tab)
 			tabPane.getSelectionModel().select(tab);
 
-		if (node instanceof ProTableView)
-			setTableTab(tab, (ProTableView<ITEM>) node);
+		if (node instanceof ProTableView) setTableTab(tab, (ProTableView<ITEM>) node);
 
 		if (node instanceof ProTreeTableView)
 			setTreeTableTab(tab, (ProTreeTableView<ITEM>) node);
@@ -227,8 +217,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 						return null;
 					}
 				};
-				task.setOnSucceeded(taskEvent -> {
-				});
+				task.setOnSucceeded(taskEvent -> {});
 				ExecutorService executor = Executors.newSingleThreadExecutor();
 				executor.submit(task);
 				executor.shutdown();
@@ -276,8 +265,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 							return null;
 						}
 					};
-					task.setOnSucceeded(taskEvent -> {
-					});
+					task.setOnSucceeded(taskEvent -> {});
 					ExecutorService executor = Executors.newSingleThreadExecutor();
 					executor.submit(task);
 					executor.shutdown();
@@ -324,23 +312,21 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 		MenuItem treeMenuItem = new MenuItem("Show Tree View");
 		treeMenuItem.setOnAction(event -> changeToTreeTableView(tableViewSpring));
 		menuItemUpdater.add(() -> {
-			if (controlDown)
-				treeMenuItem.setText("Show Tree View +");
-			else
-				treeMenuItem.setText("Show Tree View");
+			if (controlDown) treeMenuItem.setText("Show Tree View +");
+			else treeMenuItem.setText("Show Tree View");
 		});
 		rowMenu.getItems().add(treeMenuItem);
 
 		// only display context menu for non-null items:
-		row.contextMenuProperty().bind(
-			Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenu)
+		row.contextMenuProperty()
+			.bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenu)
 				.otherwise((ContextMenu) null));
 		return row;
 	}
 
 	private <ITEM extends DbPersistent<ITEM, ?>> TreeTableRow<DbNode>
-		createTreeTableViewContext(
-			ProTreeTableView<ITEM> proTreeTableView, TreeTableView<DbNode> tableView) {
+		createTreeTableViewContext(ProTreeTableView<ITEM> proTreeTableView,
+			TreeTableView<DbNode> tableView) {
 		final TreeTableRow<DbNode> row = new TreeTableRow<DbNode>();
 		final ContextMenu rowMenu = new ContextMenu();
 
@@ -349,8 +335,8 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 		});
 
 		// only display context menu for non-null items:
-		row.contextMenuProperty().bind(
-			Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenu)
+		row.contextMenuProperty()
+			.bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenu)
 				.otherwise((ContextMenu) null));
 
 		return row;
@@ -375,8 +361,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 		double[] positions = splitPane.getDividerPositions();
 
 		if (nItems == 2) {
-			if (tabPane == getTableTabPane().getTabPane())
-				positions[0] = tablePortion;
+			if (tabPane == getTableTabPane().getTabPane()) positions[0] = tablePortion;
 			if (tabPane == getItemAddEditTabPane().getTabPane())
 				positions[0] = 1 - itemEditPortion;
 			if (tabPane == getViewerTabPane().getTabPane())

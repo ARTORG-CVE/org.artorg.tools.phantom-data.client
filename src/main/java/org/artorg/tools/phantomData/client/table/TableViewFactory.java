@@ -8,6 +8,7 @@ import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
+import org.artorg.tools.phantomData.server.beans.DbNode;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import org.artorg.tools.phantomData.server.util.Reflect;
 
@@ -74,7 +75,7 @@ public class TableViewFactory {
 	@SuppressWarnings("unchecked")
 	public static <T extends DbPersistent<T, ?>, TABLE extends TableBase<T>, TABLE_VIEW extends ProTableView<T>> ProTableView<T> createTable(
 		Class<?> itemClass, Class<TABLE> tableClass,
-		Class<TABLE_VIEW> tableViewClass, List<TreeItem<Object>> treeItems) {
+		Class<TABLE_VIEW> tableViewClass, List<TreeItem<DbNode>> treeItems) {
 		ProTableView<T> tableView = createTable(itemClass, tableClass, tableViewClass);
 		ObservableList<T> items = FXCollections.observableArrayList();
 		for (int i=0; i<treeItems.size(); i++)
