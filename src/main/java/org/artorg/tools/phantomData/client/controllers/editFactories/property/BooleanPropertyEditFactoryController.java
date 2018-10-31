@@ -33,7 +33,7 @@ public class BooleanPropertyEditFactoryController extends GroupedItemEditFactory
 		setTitledPanes(panes);
 		
 		setItemFactory(this::createItem);
-		setTemplateSetter(this::setTemplate);
+		setTemplateSetter(this::setEditTemplate);
 		setChangeApplier(this::applyChanges);
 	}
 	
@@ -45,7 +45,7 @@ public class BooleanPropertyEditFactoryController extends GroupedItemEditFactory
 	}
 	
 	@Override
-	protected void setTemplate(BooleanProperty item) {
+	protected void setEditTemplate(BooleanProperty item) {
 		super.selectComboBoxItem(comboBoxPropertyField, item.getPropertyField());
 		checkBoxValue.setSelected(item.getValue());
 	}

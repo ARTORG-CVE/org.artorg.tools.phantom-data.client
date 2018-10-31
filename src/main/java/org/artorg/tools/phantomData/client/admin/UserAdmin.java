@@ -2,6 +2,7 @@ package org.artorg.tools.phantomData.client.admin;
 
 import java.util.List;
 
+import org.artorg.tools.phantomData.client.boot.MainFx;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
 import org.artorg.tools.phantomData.server.model.person.Person;
@@ -25,14 +26,18 @@ public class UserAdmin {
 
 	public static void login(Person user) {
 		UserAdmin.user = user;
-		System.out.println("User logged in: " +user.getAcademicName());
+		
+		if (user.getLastname().equals("Hutzli"))
+			MainFx.getMainController().addDevToolsMenu();
+		else
+			MainFx.getMainController().removeDevToolsMenu();
 	}
 	
 	public static void logout() {
-		if (user != null)
-			System.out.println("User logged out: " +user.getAcademicName());
 		UserAdmin.user = null;
 		PersonalizedHttpConnectorSpring.setUserSupplier(() -> getUser());
+		
+		MainFx.getMainController().removeDevToolsMenu();
 		
 	}
 	

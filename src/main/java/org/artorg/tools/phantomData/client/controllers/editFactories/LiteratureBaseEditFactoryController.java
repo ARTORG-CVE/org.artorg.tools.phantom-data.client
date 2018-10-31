@@ -28,12 +28,12 @@ public class LiteratureBaseEditFactoryController extends GroupedItemEditFactoryC
 		setTitledPanes(panes);
 		
 		setItemFactory(this::createItem);
-		setTemplateSetter(this::setTemplate);
+		setTemplateSetter(this::setEditTemplate);
 		setChangeApplier(this::applyChanges);
 	}
 	
 	@Override
-	protected void setTemplate(LiteratureBase item) {
+	protected void setEditTemplate(LiteratureBase item) {
 		textFieldShortcut.setText(item.getShortcut());
 		textFieldValue.setText(item.getValue());
 	}

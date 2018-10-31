@@ -12,13 +12,12 @@
    <children>
 		<VBox fx:id="vbox">
 			<children>
-				<MenuBar>
+				<MenuBar fx:id="menuBar">
 					<menus>
 						<Menu mnemonicParsing="false" text="File">
 							<items>
                         <MenuItem mnemonicParsing="false" onAction="#newEntity" text="New" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-								<MenuItem mnemonicParsing="false" onAction="#save" text="Save" />
 								<MenuItem mnemonicParsing="false" onAction="#refresh" text="Refresh" />
                         <MenuItem mnemonicParsing="false" onAction="#export" text="Export..." />
                         <MenuItem fx:id="menuItemLoginLogout" mnemonicParsing="false" onAction="#loginLogout" text="Login/Logout..." />
@@ -65,11 +64,6 @@
                         </Menu>
 							</items>
 						</Menu>
-                  <Menu fx:id="menuDatabase" mnemonicParsing="false" text="Dev. Tools">
-                    <items>
-                      <MenuItem mnemonicParsing="false" onAction="#executeQuery" text="Execute Query" />
-                    </items>
-                  </Menu>
                   <Menu mnemonicParsing="false" text="Window">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#newSplitTabPane" text="New SplitTabPane" />

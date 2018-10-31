@@ -21,7 +21,7 @@ public class PropertiesEditFactoryController extends GroupedItemEditFactoryContr
 	}
 
 	@Override
-	protected void setTemplate(Properties item) {
+	protected void setEditTemplate(Properties item) {
 
 	}
 

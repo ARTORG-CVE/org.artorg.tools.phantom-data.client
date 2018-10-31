@@ -25,7 +25,7 @@ public class FileTypeEditFactoryController extends GroupedItemEditFactoryControl
 		setTitledPanes(panes);
 		
 		setItemFactory(this::createItem);
-		setTemplateSetter(this::setTemplate);
+		setTemplateSetter(this::setEditTemplate);
 		setChangeApplier(this::applyChanges);
 	}
 	
@@ -36,7 +36,7 @@ public class FileTypeEditFactoryController extends GroupedItemEditFactoryControl
 	}
 
 	@Override
-	protected void setTemplate(FileType item) {
+	protected void setEditTemplate(FileType item) {
 		textFieldName.setText(item.getName());
 	}
 

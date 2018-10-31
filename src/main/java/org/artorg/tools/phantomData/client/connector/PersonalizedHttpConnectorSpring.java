@@ -61,6 +61,16 @@ public class PersonalizedHttpConnectorSpring<T extends Identifiable<UUID>> exten
 		return super.update(t);
 	}
 	
+	@Override
+	public boolean delete(UUID id) {
+		if (!isUserLoggedIn()) return false; 
+		return delete(id, getUser());
+	}
+	
+	public boolean delete(UUID id, Person p) {
+		return super.delete(id);
+	}
+	
 	public Person getUser() throws NoUserLoggedInException {
 		Person user = userSupplier.get();
 		if (user == null)

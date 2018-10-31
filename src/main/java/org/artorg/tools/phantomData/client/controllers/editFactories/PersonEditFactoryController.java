@@ -38,7 +38,7 @@ public class PersonEditFactoryController extends GroupedItemEditFactoryControlle
 		setTitledPanes(panes);
 		
 		setItemFactory(this::createItem);
-		setTemplateSetter(this::setTemplate);
+		setTemplateSetter(this::setEditTemplate);
 		setChangeApplier(this::applyChanges);
 	}
 	
@@ -64,7 +64,7 @@ public class PersonEditFactoryController extends GroupedItemEditFactoryControlle
 	}
 
 	@Override
-	protected void setTemplate(Person item) {
+	protected void setEditTemplate(Person item) {
 		super.selectComboBoxItem(comboBoxGender, item.getGender());
 		super.selectComboBoxItem(comboBoxTitle, item.getAcademicTitle());
 		textFieldFirstname.setText(item.getFirstname());

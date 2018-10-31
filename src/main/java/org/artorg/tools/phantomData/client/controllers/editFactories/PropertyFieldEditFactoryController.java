@@ -51,12 +51,12 @@ public class PropertyFieldEditFactoryController extends GroupedItemEditFactoryCo
 		setTitledPanes(panes);
 		
 		setItemFactory(this::createItem);
-		setTemplateSetter(this::setTemplate);
+		setTemplateSetter(this::setEditTemplate);
 		setChangeApplier(this::applyChanges);
 	}
 
 	@Override
-	protected void setTemplate(PropertyField item) {
+	protected void setEditTemplate(PropertyField item) {
 		textFielName.setText(item.getName());
 		textFieldDescription.setText(item.getDescription());
 	}

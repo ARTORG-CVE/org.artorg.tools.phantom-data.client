@@ -45,7 +45,7 @@ public class PhantominaEditFactoryController extends GroupedItemEditFactoryContr
 		setTitledPanes(panes);
 		
 		setItemFactory(this::createItem);
-		setTemplateSetter(this::setTemplate);
+		setTemplateSetter(this::setEditTemplate);
 		setChangeApplier(this::applyChanges);
 	}
 	
@@ -73,7 +73,7 @@ public class PhantominaEditFactoryController extends GroupedItemEditFactoryContr
 	}
 
 	@Override
-	protected void setTemplate(Phantomina item) {
+	protected void setEditTemplate(Phantomina item) {
 		super.selectComboBoxItem(comboBoxAnnulus, item.getAnnulusDiameter());
 		super.selectComboBoxItem(comboBoxFabricationType, item.getFabricationType());
 		super.selectComboBoxItem(comboBoxLiterature, item.getLiteratureBase());

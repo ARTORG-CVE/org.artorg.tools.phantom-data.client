@@ -54,6 +54,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
@@ -92,6 +93,9 @@ public class MainController {
 	private AnchorPane contentPane;
 
 	@FXML
+	private MenuBar menuBar;
+
+	@FXML
 	private Menu menuTables;
 
 	@FXML
@@ -124,11 +128,6 @@ public class MainController {
 	}
 
 	@FXML
-	void save(ActionEvent event) {
-//    	table.getTable().getUndoManager().save();
-	}
-
-	@FXML
 	void undo(ActionEvent event) {
 //    	table.getTable().getUndoManager().undo();
 	}
@@ -138,8 +137,75 @@ public class MainController {
 //    	table.getTable().getUndoManager().redo();
 	}
 
+	
+
 	@FXML
-	void executeQuery(ActionEvent event) {
+	void initialize() {
+		assert rootPane != null : "fx:id=\"rootPane\" was not injected: check your FXML file 'Table.fxml'.";
+		assert contentPane != null : "fx:id=\"contentPane\" was not injected: check your FXML file 'Table.fxml'.";
+		assert menuItemLoginLogout != null : "fx:id=\"menuItemLoginLogout\" was not injected: check your FXML file 'Table.fxml'.";
+		assert menuBar != null : "fx:id=\"menuBar\" was not injected: check your FXML file 'Table.fxml'.";
+	}
+
+	public void init() {
+		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			@Override
+			public void handle(WindowEvent event) {
+				close();
+			}
+		});
+
+		this.splitPane = new SplitPane();
+		splitPane.setOrientation(Orientation.VERTICAL);
+		splitTabViews = FXCollections.<SplitTabView>observableArrayList();
+		splitTabViews.addListener(new ListChangeListener<SplitTabView>() {
+			@Override
+			public void onChanged(Change<? extends SplitTabView> c) {
+				if (c.next()) do {
+					if (c.wasAdded()) splitPane.getItems()
+						.addAll(c.getAddedSubList().stream()
+							.map(splitTabView -> splitTabView.getSplitPane())
+							.collect(Collectors.toList()));
+					if (c.wasRemoved()) splitPane.getItems()
+						.removeAll(c.getRemoved().stream()
+							.map(splitTabView -> splitTabView.getSplitPane())
+							.collect(Collectors.toList()));
+				} while (c.next());
+			}
+		});
+
+		addSplitTabView();
+		addSplitTabView();
+		getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
+		File file = IOutil.readResourceAsFile("model.stl");
+		getOrCreate(0).openViewerTab(createScene3dTab(file));
+		getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));
+
+		FxUtil.addToAnchorPane(contentPane, splitPane);
+
+	}
+
+	public void addDevToolsMenu() {
+		if (menuBar.getMenus().stream()
+			.filter(menu -> menu.getText().equals("Dev. Tools")).findFirst().isPresent())
+			return;
+
+		Menu menu = new Menu("Dev. Tools");
+		MenuItem menuItem = new MenuItem("Execute Query");
+		menuItem.setOnAction(event -> executeQuery());
+		menu.getItems().add(menuItem);
+
+		menuBar.getMenus().add(menu);
+	}
+
+	public void removeDevToolsMenu() {
+		menuBar.getMenus()
+			.removeAll(menuBar.getMenus().stream()
+				.filter(menu -> menu.getText().equals("Dev. Tools"))
+				.collect(Collectors.toList()));
+	}
+	
+	private void executeQuery() {
 		AnchorPane root = new AnchorPane();
 		Scene scene = new Scene(root, 400, 400);
 		Stage stage = new Stage();
@@ -185,51 +251,6 @@ public class MainController {
 	}
 
 	@FXML
-	void initialize() {
-		assert rootPane != null : "fx:id=\"rootPane\" was not injected: check your FXML file 'Table.fxml'.";
-		assert contentPane != null : "fx:id=\"contentPane\" was not injected: check your FXML file 'Table.fxml'.";
-		assert menuItemLoginLogout != null : "fx:id=\"menuItemLoginLogout\" was not injected: check your FXML file 'Table.fxml'.";
-	}
-
-	public void init() {
-		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-			@Override
-			public void handle(WindowEvent event) {
-				close();
-			}
-		});
-
-		this.splitPane = new SplitPane();
-		splitPane.setOrientation(Orientation.VERTICAL);
-		splitTabViews = FXCollections.<SplitTabView>observableArrayList();
-		splitTabViews.addListener(new ListChangeListener<SplitTabView>() {
-			@Override
-			public void onChanged(Change<? extends SplitTabView> c) {
-				if (c.next()) do {
-					if (c.wasAdded()) splitPane.getItems()
-						.addAll(c.getAddedSubList().stream()
-							.map(splitTabView -> splitTabView.getSplitPane())
-							.collect(Collectors.toList()));
-					if (c.wasRemoved()) splitPane.getItems()
-						.removeAll(c.getRemoved().stream()
-							.map(splitTabView -> splitTabView.getSplitPane())
-							.collect(Collectors.toList()));
-				} while (c.next());
-			}
-		});
-
-		addSplitTabView();
-		addSplitTabView();
-		getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
-		File file = IOutil.readResourceAsFile("model.stl");
-		getOrCreate(0).openViewerTab(createScene3dTab(file));
-		getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));
-
-		FxUtil.addToAnchorPane(contentPane, splitPane);
-
-	}
-
-	@FXML
 	void export(ActionEvent event) {
 
 	}
@@ -247,13 +268,15 @@ public class MainController {
 	private void addSplitTabView() {
 		SplitTabView splitTabView = new SplitTabView();
 		ContextMenu contextMenu = new ContextMenu();
-		
+
 		Menu tableMenu = new Menu("Open Table");
-		createTableMenu(tableMenu, splitTabView, (view, cls) -> view.openTableTab(createTableViewTab(castClass(cls))));
+		createTableMenu(tableMenu, splitTabView,
+			(view, cls) -> view.openTableTab(createTableViewTab(castClass(cls))));
 		contextMenu.getItems().add(tableMenu);
-		
+
 		Menu treeTableMenu = new Menu("Open Tree Table");
-		createTableMenu(treeTableMenu, splitTabView, (view, cls) -> view.openTableTab(createTreeTableViewTab(castClass(cls))));
+		createTableMenu(treeTableMenu, splitTabView,
+			(view, cls) -> view.openTableTab(createTreeTableViewTab(castClass(cls))));
 		contextMenu.getItems().add(treeTableMenu);
 
 		addMenuItem(contextMenu, "Close", event -> {
@@ -263,7 +286,7 @@ public class MainController {
 
 		splitTabViews.add(splitTabView);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private <T extends DbPersistent<T, ?>> Class<T> castClass(Class<?> cls) {
 		return (Class<T>) cls;
@@ -362,8 +385,7 @@ public class MainController {
 		openTableViewTab(0, itemClass);
 	}
 
-	public void openTableViewTab(int row,
-		Class<?> itemClass) {
+	public void openTableViewTab(int row, Class<?> itemClass) {
 		ProTableView<?> table = createTable(itemClass);
 		openTableTab(row, table, table.getTable().getTableName());
 	}
@@ -383,8 +405,7 @@ public class MainController {
 		return tab;
 	}
 
-	private Tab
-		createTreeTableViewTab(Class<?> itemClass) {
+	private Tab createTreeTableViewTab(Class<?> itemClass) {
 		ProTreeTableView<?> table = createTreeTable(itemClass);
 		Tab tab = new Tab(table.getTable().getTableName());
 		tab.setContent(table);
@@ -392,16 +413,14 @@ public class MainController {
 	}
 
 	@SuppressWarnings("unchecked")
-	private ProTableView<?>
-		createTable(Class<?> itemClass) {
+	private ProTableView<?> createTable(Class<?> itemClass) {
 		return TableViewFactory.createInitializedTable(itemClass,
 			DbUndoRedoFactoryEditFilterTable.class,
 			DbUndoRedoAddEditControlFilterTableView.class);
 	}
 
 	@SuppressWarnings("unchecked")
-	private ProTreeTableView<?>
-		createTreeTable(Class<?> itemClass) {
+	private ProTreeTableView<?> createTreeTable(Class<?> itemClass) {
 		return TableViewFactory.createInitializedTreeTable(itemClass, DbTable.class,
 			DbTreeTableView.class);
 	}

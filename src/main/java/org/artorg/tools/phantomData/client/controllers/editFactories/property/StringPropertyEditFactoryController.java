@@ -33,7 +33,7 @@ public class StringPropertyEditFactoryController extends GroupedItemEditFactoryC
 		setTitledPanes(panes);
 		
 		setItemFactory(this::createItem);
-		setTemplateSetter(this::setTemplate);
+		setTemplateSetter(this::setEditTemplate);
 		setChangeApplier(this::applyChanges);
 	}
 	
@@ -45,7 +45,7 @@ public class StringPropertyEditFactoryController extends GroupedItemEditFactoryC
 	}
 
 	@Override
-	protected void setTemplate(StringProperty item) {
+	protected void setEditTemplate(StringProperty item) {
 		super.selectComboBoxItem(comboBoxPropertyField, item.getPropertyField());
 		textFieldValue.setText(item.getValue());
 	}

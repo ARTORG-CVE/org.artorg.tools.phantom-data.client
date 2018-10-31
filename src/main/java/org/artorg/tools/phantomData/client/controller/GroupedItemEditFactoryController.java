@@ -73,7 +73,7 @@ public abstract class GroupedItemEditFactoryController<ITEM extends DbPersistent
 	}
 
 	@Override
-	protected void setTemplate(ITEM item) {
+	protected void setEditTemplate(ITEM item) {
 		templateSetter.accept(item);
 	}
 	

@@ -30,7 +30,7 @@ public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactory
 		setTitledPanes(panes);
 		
 		setItemFactory(this::createItem);
-		setTemplateSetter(this::setTemplate);
+		setTemplateSetter(this::setEditTemplate);
 		setChangeApplier(this::applyChanges);
 	}
 
@@ -55,7 +55,7 @@ public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactory
 	}
 
 	@Override
-	protected void setTemplate(AnnulusDiameter item) {
+	protected void setEditTemplate(AnnulusDiameter item) {
 		textFieldValue.setText(Double.toString(item.getValue()));
 		updateLabel();
 	}

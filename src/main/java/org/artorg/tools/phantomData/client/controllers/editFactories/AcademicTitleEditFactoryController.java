@@ -28,7 +28,7 @@ public class AcademicTitleEditFactoryController extends GroupedItemEditFactoryCo
 		setTitledPanes(panes);
 		
 		setItemFactory(this::createItem);
-		setTemplateSetter(this::setTemplate);
+		setTemplateSetter(this::setEditTemplate);
 		setChangeApplier(this::applyChanges);
 	}
 	
@@ -46,7 +46,7 @@ public class AcademicTitleEditFactoryController extends GroupedItemEditFactoryCo
 	}
 
 	@Override
-	protected void setTemplate(AcademicTitle item) {
+	protected void setEditTemplate(AcademicTitle item) {
 		textFieldPrefix.setText(item.getPrefix());
 		textFieldDescription.setText(item.getDescription());
 	}

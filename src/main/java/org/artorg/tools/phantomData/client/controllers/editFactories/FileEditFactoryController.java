@@ -71,7 +71,7 @@ public class FileEditFactoryController
 		setTitledPanes(panes);
 
 		setItemFactory(this::createItem);
-		setTemplateSetter(this::setTemplate);
+		setTemplateSetter(this::setEditTemplate);
 		setChangeApplier(this::applyChanges);
 	}
 
@@ -95,7 +95,7 @@ public class FileEditFactoryController
 	}
 
 	@Override
-	protected void setTemplate(DbFile item) {
+	protected void setEditTemplate(DbFile item) {
 		textFieldPath.setText("");
 		textFieldName.setText(item.getName());
 		textFieldExtension.setText(item.getExtension());

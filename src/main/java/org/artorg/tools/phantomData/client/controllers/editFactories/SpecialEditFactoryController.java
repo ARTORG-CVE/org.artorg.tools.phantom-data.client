@@ -25,7 +25,7 @@ public class SpecialEditFactoryController extends GroupedItemEditFactoryControll
 		setTitledPanes(panes);
 		
 		setItemFactory(this::createItem);
-		setTemplateSetter(this::setTemplate);
+		setTemplateSetter(this::setEditTemplate);
 		setChangeApplier(this::applyChanges);
 	}
 
@@ -36,7 +36,7 @@ public class SpecialEditFactoryController extends GroupedItemEditFactoryControll
 	}
 
 	@Override
-	protected void setTemplate(Special item) {
+	protected void setEditTemplate(Special item) {
 		textFieldShortcut.setText(item.getShortcut());
 	}
 

@@ -39,7 +39,7 @@ import org.artorg.tools.phantomData.server.beans.PersistentIntrospector;
 import org.artorg.tools.phantomData.server.controller.*;
 
 @SuppressWarnings("unused")
-public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConnectors<T, UUID> {
+public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConnector<T, UUID> {
 	private final String annoStringControlClass;
 	private final String annoStringRead;
 	private final String annoStringReadAll;
@@ -77,9 +77,6 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 		if (controllerClass == null)
 			throw new NullPointerException();
 		this.controllerClass = controllerClass;
-
-		System.out.println(String.format("create connector: itemClass = %s, arrayClass = %s, controllerClass = %s",
-				itemClass.getSimpleName(), arrayItemClass.getSimpleName(), controllerClass.getSimpleName()));
 
 		// class annotation
 		RequestMapping anno = getControllerClass().getAnnotation(RequestMapping.class);
@@ -240,8 +237,6 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 		RestTemplate restTemplate = new RestTemplate();
 		String url = getUrlLocalhost() + "/" + getAnnoStringControlClass() + "/"
 				+ getAnnotationStringRead(attributeName);
-//		String url = createUrl(getAnnoStringRead());
-		
 		T result = (T) restTemplate.getForObject(url, getModelClass(), attribute);
 		return result;
 	}
@@ -264,11 +259,10 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 			System.exit(0);
 		}
 		if (e instanceof HttpServerErrorException) {
-			System.err.println("///// EXCEPTION HANDLER //////");
 			e = (HttpServerErrorException) e;
-			System.out.println(e.toString());
-			System.out.println(e.getMessage());
-			System.out.println(e.getCause());
+			System.err.println(e.toString());
+			System.err.println(e.getMessage());
+			System.err.println(e.getCause());
 			e.printStackTrace();
 		}
 		e.printStackTrace();

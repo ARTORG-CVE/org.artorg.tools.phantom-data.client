@@ -1,8 +1,10 @@
 package org.artorg.tools.phantomData.client.controllers;
 
 import java.awt.Desktop;
+import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -11,7 +13,10 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.boot.MainFx;
+import org.artorg.tools.phantomData.client.connector.Connectors;
+import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.io.IOutil;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.SmartSplitTabPane;
@@ -27,7 +32,9 @@ import org.artorg.tools.phantomData.client.table.FxFactory;
 import org.artorg.tools.phantomData.client.table.IDbFactoryTableView;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.server.BootApplication;
 import org.artorg.tools.phantomData.server.beans.DbNode;
+import org.artorg.tools.phantomData.server.beans.EntityBeanInfo;
 import org.artorg.tools.phantomData.server.model.DbFile;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -299,7 +306,14 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 		}
 
 		addMenuItem(rowMenu, "Delete", event -> {
-			tableViewSpring.getItems().remove(row.getItem());
+			if (!UserAdmin.isUserLoggedIn())
+				MainFx.getMainController().openLoginLogoutFrame();
+			else {
+				CrudConnector<ITEM, ?> connector = (CrudConnector<ITEM, ?>) Connectors
+					.getConnector(tableViewSpring.getItemClass());
+				if (connector.delete(row.getItem()))
+					tableViewSpring.getItems().remove(row.getItem());
+			}
 		});
 
 		addMenuItem(rowMenu, "Open 3d Viewer", event -> {
@@ -307,6 +321,59 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 			scene3d.loadFile(IOutil.readResourceAsFile("model.stl"));
 			addTab(viewerTabPane.getTabPane(), scene3d,
 				"3D Viewer - " + ((AbstractBaseEntity) row.getItem()).toName());
+		});
+
+		addMenuItem(rowMenu, "Show in Viewer", event -> {
+			if (viewerTabPane.getTabPane().getTabs().size() == 0) {
+				Scene3D scene3d = new Scene3D();
+				scene3d.loadFile(IOutil.readResourceAsFile("model.stl"));
+				addTab(viewerTabPane.getTabPane(), scene3d,
+					"3D Viewer - " + ((AbstractBaseEntity) row.getItem()).toName());
+			} else {
+				Tab tab =
+					viewerTabPane.getTabPane().getSelectionModel().getSelectedItem();
+				if (tab == null) throw new NullPointerException();
+				Node node = tab.getContent();
+
+				if (node instanceof Scene3D) {
+					ITEM item = row.getItem();
+
+					EntityBeanInfo beanInfo = BootApplication.getEntitybeaninfos()
+						.getEntityBeanInfo(item.getClass());
+
+					List<PropertyDescriptor> list = beanInfo.getAllPropertyDescriptors()
+						.stream().filter(d -> d.getName().equals("files"))
+						.collect(Collectors.toList());
+
+					if (list.size() == 1) {
+						List<DbFile> files = null;
+						try {
+							files =
+								(List<DbFile>) list.get(0).getReadMethod().invoke(item);
+						} catch (IllegalAccessException | IllegalArgumentException
+							| InvocationTargetException e) {
+							e.printStackTrace();
+						}
+
+						if (files != null && !files.isEmpty()) {
+							DbFile dbFile = files.get(0); 
+							File file = dbFile.getFile();
+							
+							Scene3D newScene3d = new Scene3D();
+							newScene3d.loadFile(file);
+							tab.setContent(newScene3d);
+							System.out.println("OU YEAH :)");
+						}
+					}
+				} else {
+					Scene3D scene3d = new Scene3D();
+					scene3d.loadFile(IOutil.readResourceAsFile("model.stl"));
+					addTab(viewerTabPane.getTabPane(), scene3d,
+						"3D Viewer - " + ((AbstractBaseEntity) row.getItem()).toName());
+				}
+
+			}
+
 		});
 
 		MenuItem treeMenuItem = new MenuItem("Show Tree View");

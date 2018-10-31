@@ -52,7 +52,11 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 
 	public abstract ITEM createItem();
 
-	protected abstract void setTemplate(ITEM item);
+	protected abstract void setEditTemplate(ITEM item);
+	
+	public void setAddTemplate(ITEM item) {
+//		setEditTemplate();
+	}
 
 	protected abstract void applyChanges(ITEM item);
 
@@ -190,24 +194,27 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 		createRightNodes(getPropertyEntries());
 		initDefaultValues();
 		pane = createRootPane();
-		if (item != null) setTemplate(item);
+		if (item != null) setAddTemplate(item);
 		applyButton.setOnAction(event -> {
-			FxUtil.runNewSingleThreaded(() -> {
-				try {
-					ITEM newItem = createItem();
-					selectors.forEach(selector -> selector.setSelectedChildItems(item));
+			if (!UserAdmin.isUserLoggedIn())
+				MainFx.getMainController().openLoginLogoutFrame();
+			else {
+				FxUtil.runNewSingleThreaded(() -> {
+					try {
+						ITEM newItem = createItem();
+						selectors
+							.forEach(selector -> selector.setSelectedChildItems(item));
+						getConnector().create(newItem);
 
-					getConnector().create(newItem);
-
-					getTableView().getItems().add(newItem);
-					Platform.runLater(() -> {
-						initDefaultValues();
-					});
-				} catch (Exception e) {
-					handleException(e);
-				}
-
-			});
+						getTableView().getItems().add(newItem);
+						Platform.runLater(() -> {
+							initDefaultValues();
+						});
+					} catch (Exception e) {
+						handleException(e);
+					}
+				});
+			}
 		});
 		applyButton.setText("Create");
 		return pane;
@@ -224,21 +231,22 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 		createRightNodes(getPropertyEntries());
 		initDefaultValues();
 		pane = createRootPane();
-		if (item != null) setTemplate(item);
+		if (item != null) setEditTemplate(item);
 		applyButton.setOnAction(event -> {
-			try {
-				if (UserAdmin.isUserLoggedIn()) {
+			if (!UserAdmin.isUserLoggedIn())
+				MainFx.getMainController().openLoginLogoutFrame();
+			else {
+				try {
 					applyChanges(item);
 
 					selectors.forEach(selector -> selector.setSelectedChildItems(item));
 					table.refresh();
 
 					getConnector().update(item);
-				} else {
-					MainFx.getMainController().openLoginLogoutFrame();
+
+				} catch (Exception e) {
+					handleException(e);
 				}
-			} catch (Exception e) {
-				handleException(e);
 			}
 		});
 

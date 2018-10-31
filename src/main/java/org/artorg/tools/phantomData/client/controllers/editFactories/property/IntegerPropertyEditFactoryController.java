@@ -33,7 +33,7 @@ public class IntegerPropertyEditFactoryController extends GroupedItemEditFactory
 		setTitledPanes(panes);
 		
 		setItemFactory(this::createItem);
-		setTemplateSetter(this::setTemplate);
+		setTemplateSetter(this::setEditTemplate);
 		setChangeApplier(this::applyChanges);
 	}
 	
@@ -45,7 +45,7 @@ public class IntegerPropertyEditFactoryController extends GroupedItemEditFactory
 	}
 
 	@Override
-	protected void setTemplate(IntegerProperty item) {
+	protected void setEditTemplate(IntegerProperty item) {
 		super.selectComboBoxItem(comboBoxPropertyField, item.getPropertyField());
 		textFieldValue.setText(Integer.toString(item.getValue()));
 	}

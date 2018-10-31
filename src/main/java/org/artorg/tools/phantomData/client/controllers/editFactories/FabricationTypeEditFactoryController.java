@@ -28,12 +28,12 @@ public class FabricationTypeEditFactoryController extends GroupedItemEditFactory
 		setTitledPanes(panes);
 		
 		setItemFactory(this::createItem);
-		setTemplateSetter(this::setTemplate);
+		setTemplateSetter(this::setEditTemplate);
 		setChangeApplier(this::applyChanges);
 	}
 
 	@Override
-	protected void setTemplate(FabricationType item) {
+	protected void setEditTemplate(FabricationType item) {
 		textFieldShortcut.setText(item.getShortcut());
 		textFieldValue.setText(item.getValue());
 	}
