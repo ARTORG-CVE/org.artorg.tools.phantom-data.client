@@ -117,12 +117,12 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 
 	@Override
 	protected void copy(Phantom from, Phantom to) {
-//		to.setPhantomina(from.getPhantomina());
+		to.setPhantomina(from.getPhantomina());
 		
-		to.getPhantomina().setAnnulusDiameter(from.getPhantomina().getAnnulusDiameter());
-		to.getPhantomina().setFabricationType(from.getPhantomina().getFabricationType());
-		to.getPhantomina().setLiteratureBase(from.getPhantomina().getLiteratureBase());
-		to.getPhantomina().setSpecial(from.getPhantomina().getSpecial());
+//		to.getPhantomina().setAnnulusDiameter(from.getPhantomina().getAnnulusDiameter());
+//		to.getPhantomina().setFabricationType(from.getPhantomina().getFabricationType());
+//		to.getPhantomina().setLiteratureBase(from.getPhantomina().getLiteratureBase());
+//		to.getPhantomina().setSpecial(from.getPhantomina().getSpecial());
 		
 		
 		to.setNumber(from.getNumber());

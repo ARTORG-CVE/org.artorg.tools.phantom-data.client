@@ -89,6 +89,10 @@ public class PhantominaEditFactoryController extends GroupedItemEditFactoryContr
 		to.setSpecial(from.getSpecial());	
 		
 		to.setProductId(from.getProductId());
+		
+		to.setFiles(from.getFiles());
+		
+		to.setProperties(from.getProperties());
 	}
 	
 }
