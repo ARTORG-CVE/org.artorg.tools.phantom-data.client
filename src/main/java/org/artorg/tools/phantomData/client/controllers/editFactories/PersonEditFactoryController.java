@@ -39,7 +39,7 @@ public class PersonEditFactoryController extends GroupedItemEditFactoryControlle
 		
 		setItemFactory(this::createItem);
 		setTemplateSetter(this::setTemplate);
-		setItemCopier(this::copy);
+		setChangeApplier(this::applyChanges);
 	}
 	
 	private void createComboBoxes() {
@@ -72,11 +72,16 @@ public class PersonEditFactoryController extends GroupedItemEditFactoryControlle
 	}
 
 	@Override
-	protected void copy(Person from, Person to) {
-		to.setGender(from.getGender());
-		to.setAcademicTitle(from.getAcademicTitle());
-		to.setFirstname(from.getFirstname());
-		to.setLastname(from.getLastname());
+	protected void applyChanges(Person item) {
+		Gender gender = comboBoxGender.getSelectionModel().getSelectedItem();
+		AcademicTitle title = comboBoxTitle.getSelectionModel().getSelectedItem();
+		String firstname = textFieldFirstname.getText();
+		String lastname = textFieldLastname.getText();
+    	
+		item.setGender(gender);
+		item.setAcademicTitle(title);
+		item.setFirstname(firstname);
+		item.setLastname(lastname);
 	}
 	
 }

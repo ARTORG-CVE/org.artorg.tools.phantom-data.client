@@ -29,7 +29,7 @@ public class LiteratureBaseEditFactoryController extends GroupedItemEditFactoryC
 		
 		setItemFactory(this::createItem);
 		setTemplateSetter(this::setTemplate);
-		setItemCopier(this::copy);
+		setChangeApplier(this::applyChanges);
 	}
 	
 	@Override
@@ -46,9 +46,12 @@ public class LiteratureBaseEditFactoryController extends GroupedItemEditFactoryC
 	}
 
 	@Override
-	protected void copy(LiteratureBase from, LiteratureBase to) {
-		to.setShortcut(from.getShortcut());
-		to.setValue(from.getValue());
+	protected void applyChanges(LiteratureBase item) {
+		String shortcut = textFieldShortcut.getText();
+		String value = textFieldValue.getText();
+    	
+		item.setShortcut(shortcut);
+		item.setValue(value);
 	}
 	
 }

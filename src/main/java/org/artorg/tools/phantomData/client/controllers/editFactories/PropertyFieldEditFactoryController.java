@@ -52,7 +52,7 @@ public class PropertyFieldEditFactoryController extends GroupedItemEditFactoryCo
 		
 		setItemFactory(this::createItem);
 		setTemplateSetter(this::setTemplate);
-		setItemCopier(this::copy);
+		setChangeApplier(this::applyChanges);
 	}
 
 	@Override
@@ -70,9 +70,14 @@ public class PropertyFieldEditFactoryController extends GroupedItemEditFactoryCo
 	}
 
 	@Override
-	protected void copy(PropertyField from, PropertyField to) {
-		to.setDescription(from.getDescription());
-		to.setName(from.getName());
+	protected void applyChanges(PropertyField item) {
+		String name = textFielName.getText();
+		String description = textFieldDescription.getText();
+		String type = comboBoxParentItemClass.getSelectionModel().getSelectedItem().getName();
+    	
+		item.setName(name);
+		item.setDescription(description);
+		item.setType(type);
 	}
 
 }

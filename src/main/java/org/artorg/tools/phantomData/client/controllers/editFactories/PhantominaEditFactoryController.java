@@ -46,8 +46,7 @@ public class PhantominaEditFactoryController extends GroupedItemEditFactoryContr
 		
 		setItemFactory(this::createItem);
 		setTemplateSetter(this::setTemplate);
-		setItemCopier(this::copy);
-		
+		setChangeApplier(this::applyChanges);
 	}
 	
 	private void updateId() {
@@ -80,19 +79,18 @@ public class PhantominaEditFactoryController extends GroupedItemEditFactoryContr
 		super.selectComboBoxItem(comboBoxLiterature, item.getLiteratureBase());
 		super.selectComboBoxItem(comboBoxSpecials, item.getSpecial());
 	}
-
+	
 	@Override
-	protected void copy(Phantomina from, Phantomina to) {
-		to.setAnnulusDiameter(from.getAnnulusDiameter());
-		to.setFabricationType(from.getFabricationType());
-		to.setLiteratureBase(from.getLiteratureBase());
-		to.setSpecial(from.getSpecial());	
-		
-		to.setProductId(from.getProductId());
-		
-		to.setFiles(from.getFiles());
-		
-		to.setProperties(from.getProperties());
+	protected void applyChanges(Phantomina item) {
+		AnnulusDiameter annulusDiameter = comboBoxAnnulus.getSelectionModel().getSelectedItem();
+    	FabricationType fabricationType = comboBoxFabricationType.getSelectionModel().getSelectedItem();
+    	LiteratureBase literatureBase = comboBoxLiterature.getSelectionModel().getSelectedItem();
+    	Special special = comboBoxSpecials.getSelectionModel().getSelectedItem();
+    	
+    	item.setAnnulusDiameter(annulusDiameter);
+    	item.setFabricationType(fabricationType);
+    	item.setLiteratureBase(literatureBase);
+    	item.setSpecial(special);
 	}
 	
 }

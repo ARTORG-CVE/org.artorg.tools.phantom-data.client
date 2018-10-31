@@ -24,12 +24,16 @@ public class FilterColumn<T> extends AbstractFilterColumn<T> {
 	
 	@Override
 	public String get(T item) {
-		return propertyToValueGetter.apply(itemToPropertyGetter.apply(item));
+		Object o = itemToPropertyGetter.apply(item);
+		if (o == null) return "";
+		return propertyToValueGetter.apply(o);
 	}
 
 	@Override
 	public void set(T item, String value) {
-		propertyToValueSetter.accept(itemToPropertyGetter.apply(item), value);
+		Object o = itemToPropertyGetter.apply(item);
+		if (o == null) return;
+		propertyToValueSetter.accept(o, value);
 	}
 
 	@Override

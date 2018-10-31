@@ -26,7 +26,7 @@ public class FileTypeEditFactoryController extends GroupedItemEditFactoryControl
 		
 		setItemFactory(this::createItem);
 		setTemplateSetter(this::setTemplate);
-		setItemCopier(this::copy);
+		setChangeApplier(this::applyChanges);
 	}
 	
 	@Override
@@ -41,8 +41,10 @@ public class FileTypeEditFactoryController extends GroupedItemEditFactoryControl
 	}
 
 	@Override
-	protected void copy(FileType from, FileType to) {
-		to.setName(from.getName());
+	protected void applyChanges(FileType item) {
+		String name = textFieldName.getText();
+    	
+		item.setName(name);
 	}
 
 }

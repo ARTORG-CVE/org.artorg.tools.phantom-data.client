@@ -26,7 +26,7 @@ public class PropertiesEditFactoryController extends GroupedItemEditFactoryContr
 	}
 
 	@Override
-	protected void copy(Properties from, Properties to) {
-
+	protected void applyChanges(Properties item) {
+		
 	}
 }

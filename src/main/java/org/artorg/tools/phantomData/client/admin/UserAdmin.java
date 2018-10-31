@@ -19,7 +19,7 @@ public class UserAdmin {
 		return personConnector.readAllAsList();
 	}
 	
-	public boolean isUserLoggedIn() {
+	public static boolean isUserLoggedIn() {
 		return user != null;
 	}
 

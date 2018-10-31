@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ResourceBundle;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
@@ -54,6 +55,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
@@ -63,7 +65,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import static org.artorg.tools.phantomData.client.util.FxUtil.addMenuItem;
+import static org.artorg.tools.phantomData.client.util.FxUtil.*;
 
 public class MainController {
 	private static String urlLocalhost;
@@ -244,14 +246,92 @@ public class MainController {
 
 	private void addSplitTabView() {
 		SplitTabView splitTabView = new SplitTabView();
-
 		ContextMenu contextMenu = new ContextMenu();
+		
+		Menu tableMenu = new Menu("Open Table");
+		createTableMenu(tableMenu, splitTabView, (view, cls) -> view.openTableTab(createTableViewTab(castClass(cls))));
+		contextMenu.getItems().add(tableMenu);
+		
+		Menu treeTableMenu = new Menu("Open Tree Table");
+		createTableMenu(treeTableMenu, splitTabView, (view, cls) -> view.openTableTab(createTreeTableViewTab(castClass(cls))));
+		contextMenu.getItems().add(treeTableMenu);
+
 		addMenuItem(contextMenu, "Close", event -> {
 			splitTabViews.remove(splitTabView);
 		});
 		splitTabView.getSplitPane().setContextMenu(contextMenu);
 
 		splitTabViews.add(splitTabView);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T extends DbPersistent<T, ?>> Class<T> castClass(Class<?> cls) {
+		return (Class<T>) cls;
+	}
+
+	private void createTableMenu(Menu menu, SplitTabView splitTabView,
+		BiConsumer<SplitTabView, Class<?>> tableFactoryCreator) {
+
+		addMenuItem(menu, "Phantom", event -> {
+			tableFactoryCreator.accept(splitTabView, Phantom.class);
+		});
+		menu.getItems().add(new SeparatorMenuItem());
+		addMenuItem(menu, "Files", event -> {
+			tableFactoryCreator.accept(splitTabView, DbFile.class);
+		});
+		addMenuItem(menu, "File Types", event -> {
+			tableFactoryCreator.accept(splitTabView, FileType.class);
+		});
+		menu.getItems().add(new SeparatorMenuItem());
+		addMenuItem(menu, "Persons", event -> {
+			tableFactoryCreator.accept(splitTabView, Person.class);
+		});
+		addMenuItem(menu, "Academic Titles", event -> {
+			tableFactoryCreator.accept(splitTabView, AcademicTitle.class);
+		});
+		menu.getItems().add(new SeparatorMenuItem());
+		{
+			Menu subMenu = new Menu("Phantominas");
+			addMenuItem(subMenu, "Phantominas", event -> {
+				tableFactoryCreator.accept(splitTabView, Phantomina.class);
+			});
+			addMenuItem(subMenu, "Annulus Diameters", event -> {
+				tableFactoryCreator.accept(splitTabView, AnnulusDiameter.class);
+			});
+			addMenuItem(subMenu, "Literatur Bases", event -> {
+				tableFactoryCreator.accept(splitTabView, LiteratureBase.class);
+			});
+			addMenuItem(subMenu, "Fabrication Types", event -> {
+				tableFactoryCreator.accept(splitTabView, FabricationType.class);
+			});
+			addMenuItem(subMenu, "Special", event -> {
+				tableFactoryCreator.accept(splitTabView, Special.class);
+			});
+			menu.getItems().add(subMenu);
+		}
+		{
+			Menu subMenu = new Menu("Properties");
+			addMenuItem(subMenu, "Properties", event -> {
+				tableFactoryCreator.accept(splitTabView, Properties.class);
+			});
+			addMenuItem(subMenu, "Property Fields", event -> {
+				tableFactoryCreator.accept(splitTabView, PropertyField.class);
+			});
+			menu.getItems().add(new SeparatorMenuItem());
+			addMenuItem(subMenu, "Boolean Properties", event -> {
+				tableFactoryCreator.accept(splitTabView, BooleanProperty.class);
+			});
+			addMenuItem(subMenu, "Integer Properties", event -> {
+				tableFactoryCreator.accept(splitTabView, IntegerProperty.class);
+			});
+			addMenuItem(subMenu, "Double Properties", event -> {
+				tableFactoryCreator.accept(splitTabView, DoubleProperty.class);
+			});
+			addMenuItem(subMenu, "String Properties", event -> {
+				tableFactoryCreator.accept(splitTabView, StringProperty.class);
+			});
+			menu.getItems().add(subMenu);
+		}
 	}
 
 	@FXML
@@ -271,16 +351,20 @@ public class MainController {
 
 	@FXML
 	void loginLogout(ActionEvent event) {
+		openLoginLogoutFrame();
+	}
+
+	public void openLoginLogoutFrame() {
 		MainFx.openFrame("Login/Logout", new LoginController());
 	}
 
-	public <T extends DbPersistent<T, ?>> void openTable(Class<T> itemClass) {
+	public void openTable(Class<?> itemClass) {
 		openTableViewTab(0, itemClass);
 	}
 
-	public <T extends DbPersistent<T, ?>> void openTableViewTab(int row,
-		Class<T> itemClass) {
-		ProTableView<T> table = createTable(itemClass);
+	public void openTableViewTab(int row,
+		Class<?> itemClass) {
+		ProTableView<?> table = createTable(itemClass);
 		openTableTab(row, table, table.getTable().getTableName());
 	}
 
@@ -292,32 +376,32 @@ public class MainController {
 		return tab;
 	}
 
-	private <T extends DbPersistent<T, ?>> Tab createTableViewTab(Class<T> itemClass) {
-		ProTableView<T> table = createTable(itemClass);
+	private Tab createTableViewTab(Class<?> itemClass) {
+		ProTableView<?> table = createTable(itemClass);
 		Tab tab = new Tab(table.getTable().getTableName());
 		tab.setContent(table);
 		return tab;
 	}
 
-	private <T extends DbPersistent<T, ?>> Tab
-		createTreeTableViewTab(Class<T> itemClass) {
-		ProTreeTableView<T> table = createTreeTable(itemClass);
+	private Tab
+		createTreeTableViewTab(Class<?> itemClass) {
+		ProTreeTableView<?> table = createTreeTable(itemClass);
 		Tab tab = new Tab(table.getTable().getTableName());
 		tab.setContent(table);
 		return tab;
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends DbPersistent<T, ?>> ProTableView<T>
-		createTable(Class<T> itemClass) {
+	private ProTableView<?>
+		createTable(Class<?> itemClass) {
 		return TableViewFactory.createInitializedTable(itemClass,
 			DbUndoRedoFactoryEditFilterTable.class,
 			DbUndoRedoAddEditControlFilterTableView.class);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends DbPersistent<T, ?>> ProTreeTableView<T>
-		createTreeTable(Class<T> itemClass) {
+	private ProTreeTableView<?>
+		createTreeTable(Class<?> itemClass) {
 		return TableViewFactory.createInitializedTreeTable(itemClass, DbTable.class,
 			DbTreeTableView.class);
 	}
@@ -351,8 +435,7 @@ public class MainController {
 	void openTablePhantoms(ActionEvent event) {
 		openTable(Phantom.class);
 	}
-	
-	
+
 	@FXML
 	void openTablePhantominas(ActionEvent event) {
 		openTable(Phantomina.class);

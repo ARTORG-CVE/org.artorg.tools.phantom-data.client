@@ -31,7 +31,7 @@ public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactory
 		
 		setItemFactory(this::createItem);
 		setTemplateSetter(this::setTemplate);
-		setItemCopier(this::copy);
+		setChangeApplier(this::applyChanges);
 	}
 
 	private void updateLabel() {
@@ -61,9 +61,12 @@ public class AnnulusDiameterEditFactoryController extends GroupedItemEditFactory
 	}
 
 	@Override
-	protected void copy(AnnulusDiameter from, AnnulusDiameter to) {
-		to.setShortcut(from.getShortcut());
-		to.setValue(from.getValue());
+	protected void applyChanges(AnnulusDiameter item) {
+		Integer shortcut = Integer.valueOf(labelShortcut.getText());
+		Double value = Double.valueOf(textFieldValue.getText());
+    	
+		item.setShortcut(shortcut);
+		item.setValue(value);
 	}
 
 }

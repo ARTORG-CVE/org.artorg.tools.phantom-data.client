@@ -3,7 +3,6 @@ package org.artorg.tools.phantomData.client.controllers.editFactories.property;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
@@ -35,7 +34,7 @@ public class DoublePropertyEditFactoryController extends GroupedItemEditFactoryC
 		
 		setItemFactory(this::createItem);
 		setTemplateSetter(this::setTemplate);
-		setItemCopier(this::copy);
+		setChangeApplier(this::applyChanges);
 	}
 	
 	@Override
@@ -52,9 +51,12 @@ public class DoublePropertyEditFactoryController extends GroupedItemEditFactoryC
 	}
 
 	@Override
-	protected void copy(DoubleProperty from, DoubleProperty to) {
-		to.setPropertyField(from.getPropertyField());
-		to.setValue(from.getValue());
+	protected void applyChanges(DoubleProperty item) {
+		PropertyField propertyField = comboBoxPropertyField.getSelectionModel().getSelectedItem();
+		Double value = Double.valueOf(textFieldValue.getText());
+    	
+		item.setPropertyField(propertyField);
+		item.setValue(value);
 	}
 
 }

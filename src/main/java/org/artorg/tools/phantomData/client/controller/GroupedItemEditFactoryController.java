@@ -2,7 +2,6 @@ package org.artorg.tools.phantomData.client.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -10,18 +9,19 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-import javafx.scene.Node;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-public class GroupedItemEditFactoryController<ITEM extends DbPersistent<ITEM, ?>>
+public abstract class GroupedItemEditFactoryController<ITEM extends DbPersistent<ITEM, ?>>
 		extends ItemEditFactoryController<ITEM> {
 	private List<TitledPane> titledPanes;
 	private Supplier<ITEM> itemFactory;
 	private Consumer<ITEM> templateSetter;
-	private BiConsumer<ITEM,ITEM> itemCopier;
+	private Consumer<ITEM> changeApplier;
+	
+
 	private List<PropertyEntry> entries;
 
 	{
@@ -76,10 +76,10 @@ public class GroupedItemEditFactoryController<ITEM extends DbPersistent<ITEM, ?>
 	protected void setTemplate(ITEM item) {
 		templateSetter.accept(item);
 	}
-
+	
 	@Override
-	protected void copy(ITEM from, ITEM to) {
-		itemCopier.accept(from, to);		
+	protected void applyChanges(ITEM item) {
+		this.changeApplier.accept(item);
 	}
 	
 	public List<TitledPane> getTitledPanes() {
@@ -105,13 +105,15 @@ public class GroupedItemEditFactoryController<ITEM extends DbPersistent<ITEM, ?>
 	public void setTemplateSetter(Consumer<ITEM> templateSetter) {
 		this.templateSetter = templateSetter;
 	}
-
-	public BiConsumer<ITEM,ITEM> getItemCopier() {
-		return itemCopier;
+	
+	public Consumer<ITEM> getChangeApplier() {
+		return changeApplier;
 	}
 
-	public void setItemCopier(BiConsumer<ITEM,ITEM> itemCopier) {
-		this.itemCopier = itemCopier;
+	public void setChangeApplier(Consumer<ITEM> changeApplier) {
+		this.changeApplier = changeApplier;
 	}
+
+	
 
 }

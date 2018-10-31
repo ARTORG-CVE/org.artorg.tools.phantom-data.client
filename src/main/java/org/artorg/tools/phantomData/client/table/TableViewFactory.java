@@ -63,13 +63,13 @@ public class TableViewFactory {
 		return tableView;
 	}
 
-	public static <T extends DbPersistent<T, ?>, TABLE extends TableBase<T>,
+	public static <T, TABLE extends TableBase<T>,
 		TABLE_VIEW extends ProTableView<T>> ProTableView<T>
 		createInitializedTable(Class<?> itemClass, Class<TABLE> tableClass,
 			Class<TABLE_VIEW> tableViewClass) {
 		ProTableView<T> tableView = createTable(itemClass, tableClass, tableViewClass);
 
-		if (tableView instanceof DbTableView) ((DbTableView<T>) tableView).reload();
+		if (tableView instanceof DbTableView) ((DbTableView<?>) tableView).reload();
 
 		tableView.initTable();
 
@@ -77,7 +77,7 @@ public class TableViewFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends DbPersistent<T, ?>, TABLE extends TableBase<T>,
+	public static <T, TABLE extends TableBase<T>,
 		TABLE_VIEW extends ProTableView<T>> ProTableView<T>
 		createTable(Class<?> itemClass, Class<TABLE> tableClass,
 			Class<TABLE_VIEW> tableViewClass, List<TreeItem<DbNode>> treeItems) {
@@ -93,7 +93,7 @@ public class TableViewFactory {
 		return tableView;
 	}
 
-	public static <T extends DbPersistent<T, ?>, TABLE extends TableBase<T>,
+	public static <T, TABLE extends TableBase<T>,
 		TABLE_VIEW extends ProTableView<T>> ProTableView<T>
 		createTable(Class<?> itemClass, Class<TABLE> tableClass,
 			Class<TABLE_VIEW> tableViewClass) {
@@ -113,7 +113,7 @@ public class TableViewFactory {
 		return tableView;
 	}
 
-	public static <T extends DbPersistent<T, ?>> TableBase<T>
+	public static <T> TableBase<T>
 		createTableBase(Class<?> itemClass, Class<? extends TableBase<T>> tableClass) {
 		return Reflect.createInstanceByGenericAndSuperClass(tableClass, itemClass,
 			Main.getReflections());

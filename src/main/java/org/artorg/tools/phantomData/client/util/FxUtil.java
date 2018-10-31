@@ -24,6 +24,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -100,6 +101,14 @@ public class FxUtil {
 		};
 	}
 
+	public static void addMenuItem(Menu menu,
+		String name,
+		EventHandler<ActionEvent> eventHandler) {
+		MenuItem menuItem = new MenuItem(name);
+		menuItem.setOnAction(eventHandler);
+		menu.getItems().add(menuItem);
+	}
+	
 	public static void addMenuItem(ContextMenu rowMenu,
 		String name,
 		EventHandler<ActionEvent> eventHandler) {

@@ -31,16 +31,22 @@ public class OptionalColumn<T extends DbPersistent<T,?>> extends AbstractColumn<
 	@Override
 	public String get(T item) {
 		Optional<? extends Object> path = itemToPropertyGetter.apply(item);
-		if (path.isPresent()) 
-			return propertyToValueGetter.apply(path.get());
+		if (path.isPresent())  {
+			Object o = path.get();
+			if (o == null) return emptyValue;
+			return propertyToValueGetter.apply(o);
+		}
 		return emptyValue;
 	}
 	
 	@Override
 	public  void set(T item, String value) {
 		Optional<? extends Object> path = itemToPropertyGetter.apply(item);
-		if (path.isPresent())
-			propertyToValueSetter.accept(path.get(), value);
+		if (path.isPresent()) {
+			Object o = path.get();
+			if (o == null) return;
+			propertyToValueSetter.accept(o, value);
+		}
 	}
 
 	@Override

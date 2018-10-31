@@ -10,8 +10,8 @@ import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryCont
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.model.FileType;
 import org.artorg.tools.phantomData.server.model.DbFile;
+import org.artorg.tools.phantomData.server.model.FileType;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -72,7 +72,7 @@ public class FileEditFactoryController
 
 		setItemFactory(this::createItem);
 		setTemplateSetter(this::setTemplate);
-		setItemCopier(this::copy);
+		setChangeApplier(this::applyChanges);
 	}
 
 	private String[] splitOffFileExtension(String name) {
@@ -103,10 +103,15 @@ public class FileEditFactoryController
 	}
 
 	@Override
-	protected void copy(DbFile from, DbFile to) {
-		to.setExtension(from.getExtension());
-		to.setFileType(from.getFileType());
-		to.setName(from.getName());
+	protected void applyChanges(DbFile item) {
+		String name = textFieldName.getText();
+		String extension = textFieldExtension.getText();
+		FileType fileType = comboBoxFileType.getSelectionModel()
+			.getSelectedItem();
+    	
+		item.setName(name);
+		item.setExtension(extension);
+		item.setFileType(fileType);
 	}
 
 }

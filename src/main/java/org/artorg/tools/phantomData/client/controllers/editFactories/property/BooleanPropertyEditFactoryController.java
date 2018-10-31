@@ -3,7 +3,6 @@ package org.artorg.tools.phantomData.client.controllers.editFactories.property;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
@@ -35,7 +34,7 @@ public class BooleanPropertyEditFactoryController extends GroupedItemEditFactory
 		
 		setItemFactory(this::createItem);
 		setTemplateSetter(this::setTemplate);
-		setItemCopier(this::copy);
+		setChangeApplier(this::applyChanges);
 	}
 	
 	@Override
@@ -50,11 +49,14 @@ public class BooleanPropertyEditFactoryController extends GroupedItemEditFactory
 		super.selectComboBoxItem(comboBoxPropertyField, item.getPropertyField());
 		checkBoxValue.setSelected(item.getValue());
 	}
-
+	
 	@Override
-	protected void copy(BooleanProperty from, BooleanProperty to) {
-		to.setPropertyField(from.getPropertyField());
-		to.setValue(from.getValue());
+	protected void applyChanges(BooleanProperty item) {
+		PropertyField propertyField = comboBoxPropertyField.getSelectionModel().getSelectedItem();
+		Boolean value = checkBoxValue.isSelected();
+    	
+		item.setPropertyField(propertyField);
+		item.setValue(value);
 	}
 
 }

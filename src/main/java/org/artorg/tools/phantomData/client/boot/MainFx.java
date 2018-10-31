@@ -14,6 +14,7 @@ public class MainFx extends Application {
 	private static boolean isStarted;
 	private static Scene scene;
 	private static Stage stage;
+	private static MainController mainController;
 
 	{
 		isStarted = false;
@@ -23,9 +24,9 @@ public class MainFx extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
     	this.stage = stage;
-		MainController controller = new MainController(stage);
-		StackPane pane = FxUtil.loadFXML("fxml/Table.fxml", controller);
-		controller.init();
+    	mainController = new MainController(stage);
+		StackPane pane = FxUtil.loadFXML("fxml/Table.fxml", mainController);
+		mainController.init();
 		
     	scene = new Scene(pane);
 		scene.getStylesheets().add(FxUtil.readCSSstylesheet("css/application.css"));
@@ -72,6 +73,14 @@ public class MainFx extends Application {
 
 	public static void setStage(Stage stage) {
 		MainFx.stage = stage;
+	}
+	
+	public static MainController getMainController() {
+		return mainController;
+	}
+
+	public static void setMainController(MainController mainController) {
+		MainFx.mainController = mainController;
 	}
     
 }

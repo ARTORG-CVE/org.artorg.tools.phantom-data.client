@@ -29,7 +29,7 @@ public class AcademicTitleEditFactoryController extends GroupedItemEditFactoryCo
 		
 		setItemFactory(this::createItem);
 		setTemplateSetter(this::setTemplate);
-		setItemCopier(this::copy);
+		setChangeApplier(this::applyChanges);
 	}
 	
 	@Override
@@ -52,9 +52,12 @@ public class AcademicTitleEditFactoryController extends GroupedItemEditFactoryCo
 	}
 
 	@Override
-	protected void copy(AcademicTitle from, AcademicTitle to) {
-		to.setPrefix(from.getPrefix());
-		to.setDescription(from.getDescription());
+	protected void applyChanges(AcademicTitle item) {
+		String prefix = textFieldPrefix.getText();
+		String description = textFieldDescription.getText();
+		
+		item.setPrefix(prefix);
+		item.setDescription(description);
 	}
 	
 }

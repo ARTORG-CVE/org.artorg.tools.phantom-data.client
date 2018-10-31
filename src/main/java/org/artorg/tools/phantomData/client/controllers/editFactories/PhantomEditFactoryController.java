@@ -53,7 +53,7 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 		
 		setItemFactory(this::createItem);
 		setTemplateSetter(this::setTemplate);
-		setItemCopier(this::copy);
+		setChangeApplier(this::applyChanges);
 		
 	}
 	
@@ -114,23 +114,21 @@ public class PhantomEditFactoryController extends GroupedItemEditFactoryControll
 		super.selectComboBoxItem(comboBoxSpecials, item.getPhantomina().getSpecial());
 		textFieldModelNumber.setText(Integer.toString(item.getNumber()));
 	}
-
+	
 	@Override
-	protected void copy(Phantom from, Phantom to) {
-		to.setPhantomina(from.getPhantomina());
-		
-//		to.getPhantomina().setAnnulusDiameter(from.getPhantomina().getAnnulusDiameter());
-//		to.getPhantomina().setFabricationType(from.getPhantomina().getFabricationType());
-//		to.getPhantomina().setLiteratureBase(from.getPhantomina().getLiteratureBase());
-//		to.getPhantomina().setSpecial(from.getPhantomina().getSpecial());
-		
-		
-		to.setNumber(from.getNumber());
-		to.setProductId(from.getProductId());
-		
-		to.setFiles(from.getFiles());
-		
-		to.setProperties(from.getProperties());
+	protected void applyChanges(Phantom item) {
+		AnnulusDiameter annulusDiameter = comboBoxAnnulus.getSelectionModel().getSelectedItem();
+    	FabricationType fabricationType = comboBoxFabricationType.getSelectionModel().getSelectedItem();
+    	LiteratureBase literatureBase = comboBoxLiterature.getSelectionModel().getSelectedItem();
+    	Special special = comboBoxSpecials.getSelectionModel().getSelectedItem();
+    	String sNumber = textFieldModelNumber.getText();
+    	int number = Integer.valueOf(sNumber);
+    	
+    	item.getPhantomina().setAnnulusDiameter(annulusDiameter);
+    	item.getPhantomina().setFabricationType(fabricationType);
+    	item.getPhantomina().setLiteratureBase(literatureBase);
+    	item.getPhantomina().setSpecial(special);
+    	item.setNumber(number);
 	}
 	
 }

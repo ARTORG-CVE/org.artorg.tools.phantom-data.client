@@ -26,7 +26,7 @@ public class SpecialEditFactoryController extends GroupedItemEditFactoryControll
 		
 		setItemFactory(this::createItem);
 		setTemplateSetter(this::setTemplate);
-		setItemCopier(this::copy);
+		setChangeApplier(this::applyChanges);
 	}
 
 	@Override
@@ -41,11 +41,10 @@ public class SpecialEditFactoryController extends GroupedItemEditFactoryControll
 	}
 
 	@Override
-	protected void copy(Special from, Special to) {
-		to.setShortcut(from.getShortcut());
-		
-		to.setProperties(from.getProperties());
-		
+	protected void applyChanges(Special item) {
+		String shortcut = textFieldShortcut.getText();
+    	
+		item.setShortcut(shortcut);
 	}
 	
 }
