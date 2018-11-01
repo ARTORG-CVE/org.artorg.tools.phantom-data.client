@@ -1,15 +1,12 @@
 package org.artorg.tools.phantomData.client.boot;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
 import org.artorg.tools.phantomData.server.model.FileType;
-import org.artorg.tools.phantomData.server.model.DbFile;
 import org.artorg.tools.phantomData.server.model.person.AcademicTitle;
 import org.artorg.tools.phantomData.server.model.person.Gender;
 import org.artorg.tools.phantomData.server.model.person.Person;
@@ -21,7 +18,6 @@ import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.model.phantom.Special;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
-import org.artorg.tools.phantomData.server.model.property.Properties;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 public class DatabaseInitializer {
@@ -32,14 +28,12 @@ public class DatabaseInitializer {
 	private static PersonalizedHttpConnectorSpring<FabricationType> fTypeConn = PersonalizedHttpConnectorSpring.getOrCreate(FabricationType.class);
 	private static PersonalizedHttpConnectorSpring<LiteratureBase> litBaseConn = PersonalizedHttpConnectorSpring.getOrCreate(LiteratureBase.class);
 	private static PersonalizedHttpConnectorSpring<PropertyField> fieldConn = PersonalizedHttpConnectorSpring.getOrCreate(PropertyField.class);
-	private static PersonalizedHttpConnectorSpring<Properties> propsConn = PersonalizedHttpConnectorSpring.getOrCreate(Properties.class);
 	private static PersonalizedHttpConnectorSpring<BooleanProperty> boolPropConn = PersonalizedHttpConnectorSpring.getOrCreate(BooleanProperty.class);
 	private static PersonalizedHttpConnectorSpring<IntegerProperty> intPropConn = PersonalizedHttpConnectorSpring.getOrCreate(IntegerProperty.class);
 	private static PersonalizedHttpConnectorSpring<Special> specConn = PersonalizedHttpConnectorSpring.getOrCreate(Special.class);
 	private static PersonalizedHttpConnectorSpring<Phantomina> phantominaConn = PersonalizedHttpConnectorSpring.getOrCreate(Phantomina.class);
 	private static PersonalizedHttpConnectorSpring<Phantom> phantomConn = PersonalizedHttpConnectorSpring.getOrCreate(Phantom.class);
 	private static PersonalizedHttpConnectorSpring<FileType> fileTypeConn = PersonalizedHttpConnectorSpring.getOrCreate(FileType.class);
-	private static PersonalizedHttpConnectorSpring<DbFile> fileConn = PersonalizedHttpConnectorSpring.getOrCreate(DbFile.class);
 
 	public static void initDatabase() {
 		initPerson();
@@ -73,11 +67,7 @@ public class DatabaseInitializer {
 		academicTitleConnInit.create(noAcademicTitle);
 		Person hutzli = new Person(noAcademicTitle, "Marc", "Hutzli", male);
 		personConnInit.create(hutzli);
-//		hutzli.setCreator(hutzli);
-//		hutzli.setChanger(hutzli);
 		personConnInit.update(hutzli);
-//		noAcademicTitle.setCreator(hutzli);
-//		noAcademicTitle.setChanger(hutzli);
 		academicTitleConnInit.update(noAcademicTitle);
 		
 		UserAdmin.login(hutzli);
@@ -143,34 +133,22 @@ public class DatabaseInitializer {
 		int1 = intPropConn.read(int1);
 		
 		Special special1 = new Special("L");
-		Properties properties1 = new Properties();
-		propsConn.create(properties1);
-		special1.setProperties(properties1);
-		properties1.getBooleanProperties().add(bool1);
-		properties1.getBooleanProperties().add(bool4);
+		special1.getBooleanProperties().add(bool1);
+		special1.getBooleanProperties().add(bool4);
 		specConn.create(special1);
 		
 		Special special2 = new Special("C");
-		Properties properties2 = new Properties();
-		propsConn.create(properties2);
-		special2.setProperties(properties2);
-		properties2.getBooleanProperties().add(bool2);
-		properties2.getBooleanProperties().add(bool3);
+		special2.getBooleanProperties().add(bool2);
+		special2.getBooleanProperties().add(bool3);
 		specConn.create(special2);
 		
 		Special special3 = new Special("N");
-		Properties properties3 = new Properties();
-		propsConn.create(properties3);
-		special3.setProperties(properties3);
-		properties3.getBooleanProperties().add(bool2);
-		properties3.getBooleanProperties().add(bool4);
+		special3.getBooleanProperties().add(bool2);
+		special3.getBooleanProperties().add(bool4);
 		specConn.create(special3);
 		
 		Special special4 = new Special("ZZ");
-		Properties properties4 = new Properties();
-		propsConn.create(properties4);
-		special4.setProperties(properties4);
-		properties4.getIntegerProperties().add(int1);
+		special4.getIntegerProperties().add(int1);
 		specConn.create(special4);
 
 	}

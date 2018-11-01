@@ -8,33 +8,32 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import org.artorg.tools.phantomData.server.util.Reflect;
 
 @SuppressWarnings("unchecked")
-public class DbFactoryFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends DbFilterTableView<ITEM> implements IDbFactoryTableView<ITEM> {
-	private final Class<?> factoryClass;
-	
+public class DbFactoryFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
+	extends DbFilterTableView<ITEM> implements IDbFactoryTableView<ITEM> {
+
 	public DbFactoryFilterTableView() {
 		super();
-		factoryClass = Reflect.getClassByGenericAndSuperClass(ItemEditFactoryController.class, super.getItemClass(), 0, Main.getReflections());
 	}
-	
+
 	public DbFactoryFilterTableView(Class<ITEM> itemClass) {
 		super(itemClass);
-		factoryClass = Reflect.getClassByGenericAndSuperClass(ItemEditFactoryController.class, super.getItemClass(), 0, Main.getReflections());
 	}
-	
-	public DbFactoryFilterTableView(Class<ITEM> itemClass, Class<?> factoryClass) {
-		super(itemClass);
-		this.factoryClass = factoryClass;
-	}
-	
+
 	public FxFactory<ITEM> createFxFactory() {
 		FxFactory<ITEM> fxFactory = null;
+
+		Class<?> factoryClass = null;
 		try {
+			factoryClass =
+				Reflect.getClassByGenericAndSuperClass(ItemEditFactoryController.class,
+					super.getItemClass(), 0, Main.getReflections());
 			fxFactory = (FxFactory<ITEM>) factoryClass.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
+			fxFactory.setTableView(this);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		fxFactory.setTableView(this);
+		
 		return fxFactory;
 	}
-	
+
 }

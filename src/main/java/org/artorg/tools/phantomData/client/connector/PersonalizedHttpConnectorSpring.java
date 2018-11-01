@@ -57,7 +57,7 @@ public class PersonalizedHttpConnectorSpring<T extends Identifiable<UUID>> exten
 	
 	private boolean update(T t, Person p) {
 		if (t instanceof AbstractBaseEntity)
-			((AbstractBaseEntity<?>)t).setChanger(p);
+			((AbstractBaseEntity<?>)t).changed(p);
 		return super.update(t);
 	}
 	

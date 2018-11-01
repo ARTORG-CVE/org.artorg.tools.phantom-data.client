@@ -101,7 +101,6 @@ public class TableViewFactory {
 		TableBase<T> table = createTableBase(itemClass, tableClass);
 		ProTableView<T> tableView = null;
 		try {
-			System.out.println("creating table");
 			tableView = tableViewClass.getConstructor(Class.class).newInstance(itemClass);
 		} catch (InstantiationException | IllegalAccessException
 			| IllegalArgumentException | InvocationTargetException | NoSuchMethodException

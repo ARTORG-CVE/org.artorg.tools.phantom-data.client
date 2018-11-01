@@ -7,40 +7,49 @@ import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
 import org.artorg.tools.phantomData.server.model.person.Person;
 
+import javafx.application.Platform;
+
 public class UserAdmin {
 	private static Person user;
 	private static HttpConnectorSpring<Person> personConnector;
-	
+
 	static {
 		personConnector = HttpConnectorSpring.getOrCreate(Person.class);
 		PersonalizedHttpConnectorSpring.setUserSupplier(() -> getUser());
 	}
-	
+
 	public static List<Person> getAllPersons() {
 		return personConnector.readAllAsList();
 	}
-	
+
 	public static boolean isUserLoggedIn() {
 		return user != null;
 	}
 
 	public static void login(Person user) {
 		UserAdmin.user = user;
-		
-		if (user.getLastname().equals("Hutzli"))
-			MainFx.getMainController().addDevToolsMenu();
-		else
-			MainFx.getMainController().removeDevToolsMenu();
+		if (MainFx.isStarted()) {
+			if (user.getLastname().equals("Hutzli")) Platform.runLater(() -> {
+				MainFx.getMainController().addDevToolsMenu();
+			});
+			else Platform.runLater(() -> {
+				MainFx.getMainController().removeDevToolsMenu();
+			});
+		}
 	}
-	
+
 	public static void logout() {
 		UserAdmin.user = null;
 		PersonalizedHttpConnectorSpring.setUserSupplier(() -> getUser());
-		
-		MainFx.getMainController().removeDevToolsMenu();
-		
+
+		if (MainFx.isStarted()) {
+			Platform.runLater(() -> {
+				MainFx.getMainController().removeDevToolsMenu();
+			});
+		}
+
 	}
-	
+
 	public static Person getUser() {
 		return user;
 	}

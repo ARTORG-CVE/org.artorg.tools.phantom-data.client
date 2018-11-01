@@ -109,14 +109,20 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 				Set<Object> selectableItemSet = (Set<Object>) connector.readAllAsSet();
 
 				if (selectableItemSet.size() > 0) {
+					try {
 					AbstractTableViewSelector<ITEM> titledSelector =
 						new TitledPaneTableViewSelector<ITEM>(subItemClass);
 					titledSelector.setSelectableItems(selectableItemSet);
 
+					
+					if (item != null) {
 					Method selectedMethod =
 						Reflect.getMethodByGenericReturnType(itemClass, subItemClass);
+					
+					if (selectedMethod != null) {
 					Function<ITEM, Collection<Object>> subItemGetter2;
 					subItemGetter2 = i -> {
+						if (i == null) return null;
 						try {
 							return (Collection<Object>) (selectedMethod.invoke(i));
 						} catch (IllegalAccessException | IllegalArgumentException
@@ -126,10 +132,15 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 						return null;
 					};
 					titledSelector.setSelectedItems(
-						subItemGetter2.apply(item).stream().collect(Collectors.toSet()));
+						subItemGetter2.apply(item).stream().filter(e -> e != null).collect(Collectors.toSet()));
+					}
+					}
 
 					titledSelector.init();
 					selectors.add(titledSelector);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		});
@@ -202,8 +213,8 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 				FxUtil.runNewSingleThreaded(() -> {
 					try {
 						ITEM newItem = createItem();
-						selectors
-							.forEach(selector -> selector.setSelectedChildItems(item));
+//						selectors
+//							.forEach(selector -> selector.setSelectedChildItems(item));
 						getConnector().create(newItem);
 
 						getTableView().getItems().add(newItem);
@@ -239,7 +250,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 				try {
 					applyChanges(item);
 
-					selectors.forEach(selector -> selector.setSelectedChildItems(item));
+//					selectors.forEach(selector -> selector.setSelectedChildItems(item));
 					table.refresh();
 
 					getConnector().update(item);

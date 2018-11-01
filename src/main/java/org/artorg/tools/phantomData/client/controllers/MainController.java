@@ -21,6 +21,7 @@ import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTabl
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.FileType;
+import org.artorg.tools.phantomData.server.model.Note;
 import org.artorg.tools.phantomData.server.model.DbFile;
 import org.artorg.tools.phantomData.server.model.person.AcademicTitle;
 import org.artorg.tools.phantomData.server.model.person.Person;
@@ -33,7 +34,6 @@ import org.artorg.tools.phantomData.server.model.phantom.Special;
 import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
 import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
-import org.artorg.tools.phantomData.server.model.property.Properties;
 import org.artorg.tools.phantomData.server.model.property.PropertyField;
 import org.artorg.tools.phantomData.server.model.property.StringProperty;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -312,6 +312,9 @@ public class MainController {
 		addMenuItem(menu, "Academic Titles", event -> {
 			tableFactoryCreator.accept(splitTabView, AcademicTitle.class);
 		});
+		addMenuItem(menu, "Note", event -> {
+			tableFactoryCreator.accept(splitTabView, Note.class);
+		});
 		menu.getItems().add(new SeparatorMenuItem());
 		{
 			Menu subMenu = new Menu("Phantominas");
@@ -334,9 +337,6 @@ public class MainController {
 		}
 		{
 			Menu subMenu = new Menu("Properties");
-			addMenuItem(subMenu, "Properties", event -> {
-				tableFactoryCreator.accept(splitTabView, Properties.class);
-			});
 			addMenuItem(subMenu, "Property Fields", event -> {
 				tableFactoryCreator.accept(splitTabView, PropertyField.class);
 			});
@@ -503,12 +503,7 @@ public class MainController {
 	void openTablePersons(ActionEvent event) {
 		openTable(Person.class);
 	}
-
-	@FXML
-	void openTableProperties(ActionEvent event) {
-		openTable(Properties.class);
-	}
-
+	
 	@FXML
 	void openTableBooleanProperties(ActionEvent event) {
 		openTable(BooleanProperty.class);
@@ -534,7 +529,7 @@ public class MainController {
 	}
 
 	public static void setUrlLocalhost(String urlLocalhost) {
-		System.out.println(urlLocalhost);
+		System.out.println("MainController: " +urlLocalhost);
 		MainController.urlLocalhost = urlLocalhost;
 	}
 
