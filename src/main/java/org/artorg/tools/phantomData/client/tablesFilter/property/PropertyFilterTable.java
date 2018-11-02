@@ -21,11 +21,22 @@ public abstract class PropertyFilterTable<
 			List<AbstractColumn<ITEM>> columns =
 				new ArrayList<AbstractColumn<ITEM>>();
 			columns.add(new FilterColumn<ITEM>(
-				"property field", item -> item.getPropertyField(),
+					"Type", item -> item,
+					path -> {
+						try {
+							return Class.forName(path.getPropertyField().getType()).getSimpleName();
+						} catch (ClassNotFoundException e) {
+							e.printStackTrace();
+						}
+						return path.getPropertyField().getType();
+					},
+					(path, value) -> {}));
+			columns.add(new FilterColumn<ITEM>(
+				"Field Name", item -> item.getPropertyField(),
 				path -> path.getName(),
 				(path, value) -> path.setName(value)));
 			columns.add(new FilterColumn<ITEM>(
-				"value", item -> item,
+				"Value", item -> item,
 				path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(fromString(value))));
 			createBaseColumns(columns);

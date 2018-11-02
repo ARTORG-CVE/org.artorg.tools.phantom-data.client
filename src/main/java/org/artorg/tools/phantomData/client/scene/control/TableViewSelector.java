@@ -39,7 +39,6 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM,?>> extends Abstra
 	
 	public TableViewSelector(Class<?> subItemClass) {
 		this.subItemClass = subItemClass;
-		System.out.println("subItemClass: " +subItemClass.getSimpleName());
 		super.setName(subItemClass.getSimpleName());
 	}
 	

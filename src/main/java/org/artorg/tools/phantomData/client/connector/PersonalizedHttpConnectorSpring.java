@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.server.model.person.Person;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
+import org.artorg.tools.phantomData.server.model.specification.AbstractPersonifiedEntity;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 
 public class PersonalizedHttpConnectorSpring<T extends Identifiable<UUID>> extends HttpConnectorSpring<T> {
@@ -43,9 +44,9 @@ public class PersonalizedHttpConnectorSpring<T extends Identifiable<UUID>> exten
 	}
 	
 	private boolean create(T t, Person p) {
-		if (t instanceof AbstractBaseEntity) {
-			((AbstractBaseEntity<?>)t).setCreator(p);
-			((AbstractBaseEntity<?>)t).setChanger(p);
+		if (t instanceof AbstractPersonifiedEntity) {
+			((AbstractPersonifiedEntity<?>)t).setCreator(p);
+			((AbstractPersonifiedEntity<?>)t).setChanger(p);
 		}
 		return super.create(t);
 	}

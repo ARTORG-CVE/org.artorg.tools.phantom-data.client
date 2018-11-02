@@ -19,11 +19,11 @@ public class AnnulusDiameterFilterTable
 			List<AbstractColumn<AnnulusDiameter>> columns =
 				new ArrayList<AbstractColumn<AnnulusDiameter>>();
 			columns.add(new FilterColumn<AnnulusDiameter>(
-				"shortcut", item -> item,
+				"Sortcut", item -> item,
 				path -> String.valueOf(path.getShortcut()),
 				(path, value) -> path.setShortcut(Integer.valueOf(value))));
 			columns.add(new FilterColumn<AnnulusDiameter>(
-				"value", item -> item,
+				"Value", item -> item,
 				path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(Double.valueOf(value))));
 			createBaseColumns(columns);

@@ -17,7 +17,7 @@ public interface IBaseColumns {
 			path -> path.getSimpleAcademicName(), (path, value) -> {}));
 		columns.add(new FilterColumn<T>("Added", item -> item,
 			path -> format.format(path.getDateAdded()), (path, value) -> {}));
-		columns.add(new FilterColumn<T>("Creator", item -> item.getCreator(),
+		columns.add(new FilterColumn<T>("Created By", item -> item.getCreator(),
 			path -> path.getSimpleAcademicName(), (path, value) -> {}));
 	}
 

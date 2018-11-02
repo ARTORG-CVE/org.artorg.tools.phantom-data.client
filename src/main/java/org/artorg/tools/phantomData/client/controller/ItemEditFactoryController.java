@@ -36,8 +36,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
-public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, ?>>
-	extends VGridBoxPane implements FxFactory<ITEM> {
+public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, ?>> extends VGridBoxPane
+		implements FxFactory<ITEM> {
 	protected Button applyButton;
 	private List<Node> rightNodes;
 	private List<AbstractTableViewSelector<ITEM>> selectors;
@@ -53,7 +53,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 	public abstract ITEM createItem();
 
 	protected abstract void setEditTemplate(ITEM item);
-	
+
 	public void setAddTemplate(ITEM item) {
 //		setEditTemplate();
 	}
@@ -79,8 +79,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 
 	public abstract List<PropertyEntry> getPropertyEntries();
 
-	protected void setSelectedChildItems(ITEM item,
-		AbstractTableViewSelector<ITEM> selector) {
+	protected void setSelectedChildItems(ITEM item, AbstractTableViewSelector<ITEM> selector) {
 		selector.setSelectedChildItems(item);
 	}
 
@@ -89,18 +88,16 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<AbstractTableViewSelector<ITEM>> createSelectors(ITEM item,
-		Class<?> itemClass) {
-		List<AbstractTableViewSelector<ITEM>> selectors =
-			new ArrayList<AbstractTableViewSelector<ITEM>>();
+	private List<AbstractTableViewSelector<ITEM>> createSelectors(ITEM item, Class<?> itemClass) {
+		List<AbstractTableViewSelector<ITEM>> selectors = new ArrayList<AbstractTableViewSelector<ITEM>>();
 
-		List<Class<? extends DbPersistent<?, ?>>> subItemClasses =
-			Reflect.getCollectionSetterMethods(itemClass).map(m -> {
-				Type type = m.getGenericParameterTypes()[0];
-				Class<? extends DbPersistent<?, ?>> cls = (Class<
-					? extends DbPersistent<?, ?>>) Reflect.getGenericTypeClass(type);
-				return cls;
-			}).filter(c -> c != null).filter(c -> DbPersistent.class.isAssignableFrom(c))
+		List<Class<? extends DbPersistent<?, ?>>> subItemClasses = Reflect.getCollectionSetterMethods(itemClass)
+				.map(m -> {
+					Type type = m.getGenericParameterTypes()[0];
+					Class<? extends DbPersistent<?, ?>> cls = (Class<? extends DbPersistent<?, ?>>) Reflect
+							.getGenericTypeClass(type);
+					return cls;
+				}).filter(c -> c != null).filter(c -> DbPersistent.class.isAssignableFrom(c))
 				.collect(Collectors.toList());
 
 		subItemClasses.forEach(subItemClass -> {
@@ -110,34 +107,33 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 
 				if (selectableItemSet.size() > 0) {
 					try {
-					AbstractTableViewSelector<ITEM> titledSelector =
-						new TitledPaneTableViewSelector<ITEM>(subItemClass);
-					titledSelector.setSelectableItems(selectableItemSet);
+						AbstractTableViewSelector<ITEM> titledSelector = new TitledPaneTableViewSelector<ITEM>(
+								subItemClass);
+						titledSelector.setSelectableItems(selectableItemSet);
 
-					
-					if (item != null) {
-					Method selectedMethod =
-						Reflect.getMethodByGenericReturnType(itemClass, subItemClass);
-					
-					if (selectedMethod != null) {
-					Function<ITEM, Collection<Object>> subItemGetter2;
-					subItemGetter2 = i -> {
-						if (i == null) return null;
-						try {
-							return (Collection<Object>) (selectedMethod.invoke(i));
-						} catch (IllegalAccessException | IllegalArgumentException
-							| InvocationTargetException e) {
-							e.printStackTrace();
+						if (item != null) {
+							Method selectedMethod = Reflect.getMethodByGenericReturnType(itemClass, subItemClass);
+
+							if (selectedMethod != null) {
+								Function<ITEM, Collection<Object>> subItemGetter2;
+								subItemGetter2 = i -> {
+									if (i == null)
+										return null;
+									try {
+										return (Collection<Object>) (selectedMethod.invoke(i));
+									} catch (IllegalAccessException | IllegalArgumentException
+											| InvocationTargetException e) {
+										e.printStackTrace();
+									}
+									return null;
+								};
+								titledSelector.setSelectedItems(subItemGetter2.apply(item).stream()
+										.filter(e -> e != null).collect(Collectors.toSet()));
+							}
 						}
-						return null;
-					};
-					titledSelector.setSelectedItems(
-						subItemGetter2.apply(item).stream().filter(e -> e != null).collect(Collectors.toSet()));
-					}
-					}
 
-					titledSelector.init();
-					selectors.add(titledSelector);
+						titledSelector.init();
+						selectors.add(titledSelector);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -159,13 +155,14 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 		rightNodes.forEach(node -> {
 			if (node instanceof ComboBox)
 				((ComboBox<?>) node).getSelectionModel().clearSelection();
-			else if (node instanceof TextField) ((TextField) node).setText("");
-			else if (node instanceof CheckBox) ((CheckBox) node).setSelected(false);
+			else if (node instanceof TextField)
+				((TextField) node).setText("");
+			else if (node instanceof CheckBox)
+				((CheckBox) node).setSelected(false);
 		});
 	}
 
-	protected <T extends Comparable<T>> void selectComboBoxItem(ComboBox<T> comboBox,
-		T item) {
+	protected <T extends Comparable<T>> void selectComboBoxItem(ComboBox<T> comboBox, T item) {
 		for (int i = 0; i < comboBox.getItems().size(); i++)
 			if (comboBox.getItems().get(i).equals(item)) {
 				comboBox.getSelectionModel().select(i);
@@ -173,24 +170,24 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 			}
 	}
 
-	protected <T extends DbPersistent<T, ID>, ID extends Comparable<ID>> void
-		createComboBox(ComboBox<T> comboBox, Class<T> itemClass,
-			Function<T, String> mapper) {
-		createComboBox(comboBox, itemClass, mapper, item -> {});
+	protected <T extends DbPersistent<T, ID>, ID extends Comparable<ID>> void createComboBox(ComboBox<T> comboBox,
+			Class<T> itemClass, Function<T, String> mapper) {
+		createComboBox(comboBox, itemClass, mapper, item -> {
+		});
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <T extends DbPersistent<T, ID>, ID extends Comparable<ID>> void
-		createComboBox(ComboBox<T> comboBox, Class<T> itemClass,
-			Function<T, String> mapper, Consumer<T> selectedItemChangedConsumer) {
-		ICrudConnector<T, ID> connector = (ICrudConnector<T,
-			ID>) PersonalizedHttpConnectorSpring.getOrCreate(itemClass);
+	protected <T extends DbPersistent<T, ID>, ID extends Comparable<ID>> void createComboBox(ComboBox<T> comboBox,
+			Class<T> itemClass, Function<T, String> mapper, Consumer<T> selectedItemChangedConsumer) {
+		ICrudConnector<T, ID> connector = (ICrudConnector<T, ID>) PersonalizedHttpConnectorSpring
+				.getOrCreate(itemClass);
 		FxUtil.createDbComboBox(comboBox, connector, mapper);
 
 		ChangeListener<T> listener = (observable, oldValue, newValue) -> {
 			try {
 				selectedItemChangedConsumer.accept(newValue);
-			} catch (Exception e) {}
+			} catch (Exception e) {
+			}
 		};
 		comboBox.getSelectionModel().selectedItemProperty().addListener(listener);
 	}
@@ -205,7 +202,8 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 		createRightNodes(getPropertyEntries());
 		initDefaultValues();
 		pane = createRootPane();
-		if (item != null) setAddTemplate(item);
+		if (item != null)
+			setAddTemplate(item);
 		applyButton.setOnAction(event -> {
 			if (!UserAdmin.isUserLoggedIn())
 				MainFx.getMainController().openLoginLogoutFrame();
@@ -213,14 +211,17 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 				FxUtil.runNewSingleThreaded(() -> {
 					try {
 						ITEM newItem = createItem();
-//						selectors
-//							.forEach(selector -> selector.setSelectedChildItems(item));
-						getConnector().create(newItem);
-
-						getTableView().getItems().add(newItem);
-						Platform.runLater(() -> {
-							initDefaultValues();
-						});
+						if (newItem != null) {
+							if (selectors != null)
+								selectors.stream().filter(selector -> selector != null)
+										.forEach(selector -> selector.setSelectedChildItems(newItem));
+							if (getConnector().create(newItem)) {
+								getTableView().getItems().add(newItem);
+								Platform.runLater(() -> {
+									initDefaultValues();
+								});
+							}
+						}
 					} catch (Exception e) {
 						handleException(e);
 					}
@@ -242,7 +243,8 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 		createRightNodes(getPropertyEntries());
 		initDefaultValues();
 		pane = createRootPane();
-		if (item != null) setEditTemplate(item);
+		if (item != null)
+			setEditTemplate(item);
 		applyButton.setOnAction(event -> {
 			if (!UserAdmin.isUserLoggedIn())
 				MainFx.getMainController().openLoginLogoutFrame();
@@ -250,10 +252,10 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 				try {
 					applyChanges(item);
 
-//					selectors.forEach(selector -> selector.setSelectedChildItems(item));
-					table.refresh();
+					selectors.forEach(selector -> selector.setSelectedChildItems(item));
 
-					getConnector().update(item);
+					if (getConnector().update(item))
+						table.refresh();
 
 				} catch (Exception e) {
 					handleException(e);
@@ -267,12 +269,12 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 
 	private void handleException(Exception e) {
 		e.printStackTrace();
-		if (e instanceof NoUserLoggedInException) System.err.println("log in !!");
+		if (e instanceof NoUserLoggedInException)
+			System.err.println("log in !!");
 	}
 
 	private void createRightNodes(List<PropertyEntry> entries) {
-		rightNodes =
-			entries.stream().map(e -> e.getRightNode()).collect(Collectors.toList());
+		rightNodes = entries.stream().map(e -> e.getRightNode()).collect(Collectors.toList());
 	}
 
 }

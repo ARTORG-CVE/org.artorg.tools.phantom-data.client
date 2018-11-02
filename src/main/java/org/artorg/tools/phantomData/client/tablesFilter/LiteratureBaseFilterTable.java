@@ -19,11 +19,11 @@ public class LiteratureBaseFilterTable
 			List<AbstractColumn<LiteratureBase>> columns =
 				new ArrayList<AbstractColumn<LiteratureBase>>();
 			columns.add(new FilterColumn<LiteratureBase>(
-				"shortcut", item -> item,
+				"Shortcut", item -> item,
 				path -> path.getShortcut(),
 				(path, value) -> path.setShortcut((String) value)));
 			columns.add(new FilterColumn<LiteratureBase>(
-				"value", item -> item,
+				"Value", item -> item,
 				path -> path.getValue(),
 				(path, value) -> path.setValue((String) value)));
 			createBaseColumns(columns);

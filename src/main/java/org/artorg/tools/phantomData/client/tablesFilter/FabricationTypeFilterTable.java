@@ -19,11 +19,11 @@ public class FabricationTypeFilterTable
 			List<AbstractColumn<FabricationType>> columns =
 				new ArrayList<AbstractColumn<FabricationType>>();
 			columns.add(new FilterColumn<FabricationType>(
-				"shortcut", item -> item,
+				"Shortcut", item -> item,
 				path -> path.getShortcut(),
 				(path, value) -> path.setShortcut(value)));
 			columns.add(new FilterColumn<FabricationType>(
-				"value", item -> item,
+				"Value", item -> item,
 				path -> path.getValue(),
 				(path, value) -> path.setValue(value)));
 			createBaseColumns(columns);

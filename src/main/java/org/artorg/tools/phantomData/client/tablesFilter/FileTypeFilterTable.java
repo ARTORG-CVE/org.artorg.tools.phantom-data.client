@@ -18,7 +18,7 @@ public class FileTypeFilterTable extends DbUndoRedoFactoryEditFilterTable<FileTy
 			List<AbstractColumn<FileType>> columns =
 				new ArrayList<AbstractColumn<FileType>>();
 			columns.add(new FilterColumn<FileType>(
-				"name", item -> item,
+				"Name", item -> item,
 				path -> path.getName(),
 				(path, value) -> path.setName((String) value)));
 			createBaseColumns(columns);

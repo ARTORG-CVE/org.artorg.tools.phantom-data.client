@@ -27,24 +27,24 @@ public class PhantomFilterTable extends DbUndoRedoFactoryEditFilterTable<Phantom
 			column.setAscendingSortComparator((p1, p2) -> Phantomina.comparePid(p1.getProductId(), p2.getProductId()));
 			columns.add(column);
 			columns.add(new FilterColumn<Phantom>(
-				"annulus [mm]", item -> item.getPhantomina().getAnnulusDiameter(),
+				"Annulus [mm]", item -> item.getPhantomina().getAnnulusDiameter(),
 				path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(Double.valueOf(value))));
 			columns.add(new FilterColumn<Phantom>(
-				"type", item -> item.getPhantomina().getFabricationType(),
+				"Type", item -> item.getPhantomina().getFabricationType(),
 				path -> path.getValue(),
 				(path, value) -> path.setValue(value)));
 			columns.add(new FilterColumn<Phantom>(
-				"literature", item -> item.getPhantomina().getLiteratureBase(),
+				"Literature", item -> item.getPhantomina().getLiteratureBase(),
 				path -> path.getValue(),
 				(path, value) -> path.setValue(value)));
 			column = new FilterColumn<Phantom>(
-				"special", item -> item.getPhantomina().getSpecial(),
+				"Special", item -> item.getPhantomina().getSpecial(),
 				path -> path.getShortcut(),
 				(path, value) -> path.setShortcut(value));
 			columns.add(column);
 			column = new FilterColumn<Phantom>(
-				"number", item -> item,
+				"Number", item -> item,
 				path -> String.valueOf(path.getNumber()),
 				(path, value) -> path.setNumber(Integer.valueOf(value)));
 			columns.add(column);

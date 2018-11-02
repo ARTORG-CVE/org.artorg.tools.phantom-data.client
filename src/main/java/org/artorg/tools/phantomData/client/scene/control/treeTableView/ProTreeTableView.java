@@ -80,7 +80,7 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 		addBaseColumn("Last modified", item -> format.format(item.getDateLastModified()));
 		addBaseColumn("Changed by", item -> item.getChanger().getSimpleAcademicName());
 		addBaseColumn("Added", item -> format.format(item.getDateAdded()));
-		addBaseColumn("Creator", item -> item.getCreator().getSimpleAcademicName());
+		addBaseColumn("Created by", item -> item.getCreator().getSimpleAcademicName());
 
 		getColumns().addAll(treeTableColumns);
 		root.setExpanded(true);

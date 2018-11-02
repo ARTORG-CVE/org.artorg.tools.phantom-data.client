@@ -22,18 +22,30 @@ import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 public class DatabaseInitializer {
 	private static HttpConnectorSpring<Gender> genderConn = HttpConnectorSpring.getOrCreate(Gender.class);
-	private static PersonalizedHttpConnectorSpring<AcademicTitle> academicTitleConn = PersonalizedHttpConnectorSpring.getOrCreate(AcademicTitle.class);
-	private static PersonalizedHttpConnectorSpring<Person> personConn = PersonalizedHttpConnectorSpring.getOrCreate(Person.class);
-	private static PersonalizedHttpConnectorSpring<AnnulusDiameter> adConn = PersonalizedHttpConnectorSpring.getOrCreate(AnnulusDiameter.class);
-	private static PersonalizedHttpConnectorSpring<FabricationType> fTypeConn = PersonalizedHttpConnectorSpring.getOrCreate(FabricationType.class);
-	private static PersonalizedHttpConnectorSpring<LiteratureBase> litBaseConn = PersonalizedHttpConnectorSpring.getOrCreate(LiteratureBase.class);
-	private static PersonalizedHttpConnectorSpring<PropertyField> fieldConn = PersonalizedHttpConnectorSpring.getOrCreate(PropertyField.class);
-	private static PersonalizedHttpConnectorSpring<BooleanProperty> boolPropConn = PersonalizedHttpConnectorSpring.getOrCreate(BooleanProperty.class);
-	private static PersonalizedHttpConnectorSpring<IntegerProperty> intPropConn = PersonalizedHttpConnectorSpring.getOrCreate(IntegerProperty.class);
-	private static PersonalizedHttpConnectorSpring<Special> specConn = PersonalizedHttpConnectorSpring.getOrCreate(Special.class);
-	private static PersonalizedHttpConnectorSpring<Phantomina> phantominaConn = PersonalizedHttpConnectorSpring.getOrCreate(Phantomina.class);
-	private static PersonalizedHttpConnectorSpring<Phantom> phantomConn = PersonalizedHttpConnectorSpring.getOrCreate(Phantom.class);
-	private static PersonalizedHttpConnectorSpring<FileType> fileTypeConn = PersonalizedHttpConnectorSpring.getOrCreate(FileType.class);
+	private static PersonalizedHttpConnectorSpring<AcademicTitle> academicTitleConn = PersonalizedHttpConnectorSpring
+			.getOrCreate(AcademicTitle.class);
+	private static PersonalizedHttpConnectorSpring<Person> personConn = PersonalizedHttpConnectorSpring
+			.getOrCreate(Person.class);
+	private static PersonalizedHttpConnectorSpring<AnnulusDiameter> adConn = PersonalizedHttpConnectorSpring
+			.getOrCreate(AnnulusDiameter.class);
+	private static PersonalizedHttpConnectorSpring<FabricationType> fTypeConn = PersonalizedHttpConnectorSpring
+			.getOrCreate(FabricationType.class);
+	private static PersonalizedHttpConnectorSpring<LiteratureBase> litBaseConn = PersonalizedHttpConnectorSpring
+			.getOrCreate(LiteratureBase.class);
+	private static PersonalizedHttpConnectorSpring<PropertyField> fieldConn = PersonalizedHttpConnectorSpring
+			.getOrCreate(PropertyField.class);
+	private static PersonalizedHttpConnectorSpring<BooleanProperty> boolPropConn = PersonalizedHttpConnectorSpring
+			.getOrCreate(BooleanProperty.class);
+	private static PersonalizedHttpConnectorSpring<IntegerProperty> intPropConn = PersonalizedHttpConnectorSpring
+			.getOrCreate(IntegerProperty.class);
+	private static PersonalizedHttpConnectorSpring<Special> specConn = PersonalizedHttpConnectorSpring
+			.getOrCreate(Special.class);
+	private static PersonalizedHttpConnectorSpring<Phantomina> phantominaConn = PersonalizedHttpConnectorSpring
+			.getOrCreate(Phantomina.class);
+	private static PersonalizedHttpConnectorSpring<Phantom> phantomConn = PersonalizedHttpConnectorSpring
+			.getOrCreate(Phantom.class);
+	private static PersonalizedHttpConnectorSpring<FileType> fileTypeConn = PersonalizedHttpConnectorSpring
+			.getOrCreate(FileType.class);
 
 	public static void initDatabase() {
 		initPerson();
@@ -44,19 +56,19 @@ public class DatabaseInitializer {
 		initFiles();
 		initPhantoms();
 		System.out.println("Database initialized succesful");
-		
+
 		UserAdmin.logout();
-		
+
 	}
-	
+
 	public static boolean isInitialized() {
 		try {
-			return  (adConn.readAll().length>0);
-		} catch (Exception e) {}
+			return (adConn.readAll().length > 0);
+		} catch (Exception e) {
+		}
 		return false;
 	}
 
-	
 	private static void initPerson() {
 		HttpConnectorSpring<AcademicTitle> academicTitleConnInit = HttpConnectorSpring.getOrCreate(AcademicTitle.class);
 		HttpConnectorSpring<Person> personConnInit = HttpConnectorSpring.getOrCreate(Person.class);
@@ -69,7 +81,7 @@ public class DatabaseInitializer {
 		personConnInit.create(hutzli);
 		personConnInit.update(hutzli);
 		academicTitleConnInit.update(noAcademicTitle);
-		
+
 		UserAdmin.login(hutzli);
 		AcademicTitle master = new AcademicTitle("M.Sc.", "Master of Science");
 		academicTitleConn.create(new AcademicTitle("Dr.", "General Doctor title"));
@@ -79,15 +91,14 @@ public class DatabaseInitializer {
 		academicTitleConn.create(new AcademicTitle("B.Sc.", "Bachelor of Science"));
 		personConn.create(new Person(master, "Silje", "Ekroll Jahren", female));
 	}
-	
-	
+
 	private static void initAnnulusDiameter() {
 		adConn.create(new AnnulusDiameter(21, 21.0));
 		adConn.create(new AnnulusDiameter(25, 25.0));
 	}
 
 	private static void initFabricationtype() {
-		FabricationType fType1 = new FabricationType("A", "Small, thin"); 
+		FabricationType fType1 = new FabricationType("A", "Small, thin");
 		fTypeConn.create(fType1);
 		fTypeConn.create(new FabricationType("B", "Small, thick"));
 		fTypeConn.create(new FabricationType("C", "Tomo, thin"));
@@ -115,7 +126,7 @@ public class DatabaseInitializer {
 		field2 = fieldConn.read(field2);
 		field3 = fieldConn.read(field3);
 
-		BooleanProperty bool1 = new BooleanProperty(field1, true); 
+		BooleanProperty bool1 = new BooleanProperty(field1, true);
 		BooleanProperty bool2 = new BooleanProperty(field1, false);
 		BooleanProperty bool3 = new BooleanProperty(field2, true);
 		BooleanProperty bool4 = new BooleanProperty(field2, false);
@@ -127,26 +138,26 @@ public class DatabaseInitializer {
 		bool2 = boolPropConn.read(bool2);
 		bool3 = boolPropConn.read(bool3);
 		bool4 = boolPropConn.read(bool4);
-		
-		IntegerProperty int1 = new IntegerProperty(field3, 20); 
+
+		IntegerProperty int1 = new IntegerProperty(field3, 20);
 		intPropConn.create(int1);
 		int1 = intPropConn.read(int1);
-		
+
 		Special special1 = new Special("L");
 		special1.getBooleanProperties().add(bool1);
 		special1.getBooleanProperties().add(bool4);
 		specConn.create(special1);
-		
+
 		Special special2 = new Special("C");
 		special2.getBooleanProperties().add(bool2);
 		special2.getBooleanProperties().add(bool3);
 		specConn.create(special2);
-		
+
 		Special special3 = new Special("N");
 		special3.getBooleanProperties().add(bool2);
 		special3.getBooleanProperties().add(bool4);
 		specConn.create(special3);
-		
+
 		Special special4 = new Special("ZZ");
 		special4.getIntegerProperties().add(int1);
 		specConn.create(special4);
@@ -157,16 +168,12 @@ public class DatabaseInitializer {
 		FileType fileType1 = new FileType("phantom-specific-geometry-main-cad-model");
 		FileType fileType2 = new FileType("phantom-specific-geometry-fabrication-part");
 		FileType fileType3 = new FileType("thesis-master");
-		FileType fileType4 = new FileType("thesis-phd"); 
-		
+		FileType fileType4 = new FileType("thesis-phd");
+
 		fileTypeConn.create(fileType1);
 		fileTypeConn.create(fileType2);
 		fileTypeConn.create(fileType3);
 		fileTypeConn.create(fileType4);
-
-//		fileConn.create(new PhantomFile("", "model", "stl", fileTypeConn.read(fileType1)));
-//		fileConn.create(new PhantomFile("", "model2", "stl", fileTypeConn.read(fileType1)));
-//		fileConn.create(new PhantomFile("", "model3", "stl", fileTypeConn.read(fileType3)));
 	}
 
 	private static void initPhantoms() {
@@ -186,23 +193,19 @@ public class DatabaseInitializer {
 		phantoms[12] = createPhantom(25, "A", "J", "N", 1);
 		phantoms[13] = createPhantom(25, "A", "J", "N", 2);
 		phantoms[14] = createPhantom(21, "A", "P", "N", 1);
-
-//		List<PhantomFile> files0 = new ArrayList<PhantomFile>();
-//		files0.add(fileConn.readByAttribute("model", "name"));
-//		files0.add(fileConn.readByAttribute("model2", "name"));
-//		phantoms[0].setFiles(files0);
 		phantomConn.create(phantoms);
 	}
 
-	private static Phantom createPhantom(int annulusDiameter, String fType, String litBase,
-			String special, int number) {
+	private static Phantom createPhantom(int annulusDiameter, String fType, String litBase, String special,
+			int number) {
 		AnnulusDiameter annulusDiameter2 = adConn.readByAttribute(annulusDiameter, "shortcut");
 		FabricationType fType2 = fTypeConn.readByAttribute(fType, "shortcut");
 		LiteratureBase litBase2 = litBaseConn.readByAttribute(litBase, "shortcut");
 		Special special2 = specConn.readByAttribute(special, "shortcut");
 		Phantomina phantomina = new Phantomina(annulusDiameter2, fType2, litBase2, special2);
 		final Phantomina finalPhantomina = phantomina;
-		List<Phantomina> phantominas = phantominaConn.readAllAsStream().filter(p -> p.equals(finalPhantomina)).collect(Collectors.toList());
+		List<Phantomina> phantominas = phantominaConn.readAllAsStream().filter(p -> p.getProductId().equals(finalPhantomina.getProductId()))
+				.collect(Collectors.toList());
 		if (phantominas.size() == 0)
 			phantominaConn.create(phantomina);
 		else if (phantominas.size() == 1)
@@ -211,7 +214,7 @@ public class DatabaseInitializer {
 			phantomina = phantominas.get(0);
 			throw new UnsupportedOperationException();
 		}
-		
+
 		return new Phantom(phantomina, number);
 	}
 

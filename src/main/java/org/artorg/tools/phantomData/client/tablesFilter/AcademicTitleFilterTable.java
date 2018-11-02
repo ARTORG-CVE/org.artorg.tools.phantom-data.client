@@ -18,11 +18,11 @@ public class AcademicTitleFilterTable
 			List<AbstractColumn<AcademicTitle>> columns =
 				new ArrayList<AbstractColumn<AcademicTitle>>();
 			columns.add(new FilterColumn<AcademicTitle>(
-				"prefix", item -> item,
+				"Prefix", item -> item,
 				path -> path.getPrefix(),
 				(path, value) -> path.setPrefix((String) value)));
 			columns.add(new FilterColumn<AcademicTitle>(
-				"descirption", item -> item,
+				"Descirption", item -> item,
 				path -> path.getDescription(),
 				(path, value) -> path.setDescription((String) value)));
 			return columns;

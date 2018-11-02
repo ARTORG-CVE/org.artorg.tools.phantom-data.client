@@ -414,14 +414,14 @@ public class MainController {
 
 	@SuppressWarnings("unchecked")
 	private ProTableView<?> createTable(Class<?> itemClass) {
-		return TableViewFactory.createInitializedTable(itemClass,
+		return TableViewFactory.createInitializedTableView(itemClass,
 			DbUndoRedoFactoryEditFilterTable.class,
 			DbUndoRedoAddEditControlFilterTableView.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	private ProTreeTableView<?> createTreeTable(Class<?> itemClass) {
-		return TableViewFactory.createInitializedTreeTable(itemClass, DbTable.class,
+		return TableViewFactory.createInitializedTreeTableView(itemClass, DbTable.class,
 			DbTreeTableView.class);
 	}
 
@@ -446,7 +446,6 @@ public class MainController {
 
 	@FXML
 	void openTableFiles(ActionEvent event) {
-		System.out.println(event.getSource().getClass());
 		openTable(DbFile.class);
 	}
 

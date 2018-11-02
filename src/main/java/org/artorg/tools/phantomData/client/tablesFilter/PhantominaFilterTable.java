@@ -26,19 +26,19 @@ public class PhantominaFilterTable extends DbUndoRedoFactoryEditFilterTable<Phan
 			column.setAscendingSortComparator((p1, p2) -> Phantomina.comparePid(p1.getProductId(), p2.getProductId()));
 			columns.add(column);
 			columns.add(new FilterColumn<Phantomina>(
-				"annulus [mm]", item -> item.getAnnulusDiameter(),
+				"Annulus [mm]", item -> item.getAnnulusDiameter(),
 				path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(Double.valueOf(value))));
 			columns.add(new FilterColumn<Phantomina>(
-				"type", item -> item.getFabricationType(),
+				"Type", item -> item.getFabricationType(),
 				path -> path.getValue(),
 				(path, value) -> path.setValue(value)));
 			columns.add(new FilterColumn<Phantomina>(
-				"literature", item -> item.getLiteratureBase(),
+				"Literature", item -> item.getLiteratureBase(),
 				path -> path.getValue(),
 				(path, value) -> path.setValue(value)));
 			column = new FilterColumn<Phantomina>(
-				"special", item -> item.getSpecial(),
+				"Special", item -> item.getSpecial(),
 				path -> path.getShortcut(),
 				(path, value) -> path.setShortcut(value));
 			columns.add(column);

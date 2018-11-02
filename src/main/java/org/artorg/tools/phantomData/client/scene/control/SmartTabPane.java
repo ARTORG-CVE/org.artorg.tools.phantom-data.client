@@ -27,7 +27,6 @@ public class SmartTabPane extends SmartNode {
 	public enum HeaderMode {SHOW, REMOVE_IF_SINGLE}
 	
 	public boolean isHeaderVisible() {
-		System.out.println("header visible: " +headerVisible);
 		return headerVisible;
 	}
 

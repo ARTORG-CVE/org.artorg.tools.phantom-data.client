@@ -20,10 +20,10 @@ public class TableViewFactory {
 
 	public static <T extends DbPersistent<T, ?>, TABLE extends TableBase<T>,
 		TABLE_VIEW extends ProTreeTableView<T>> ProTreeTableView<T>
-		createInitializedTreeTable(Class<?> itemClass, Class<TABLE> tableClass,
+		createInitializedTreeTableView(Class<?> itemClass, Class<TABLE> tableClass,
 			Class<TABLE_VIEW> tableViewClass) {
 		ProTreeTableView<T> tableView =
-			createTreeTable(itemClass, tableClass, tableViewClass);
+			createTreeTableView(itemClass, tableClass, tableViewClass);
 
 		if (tableView instanceof DbTreeTableView)
 			((DbTreeTableView<T>) tableView).reload();
@@ -35,17 +35,17 @@ public class TableViewFactory {
 
 	public static <T extends DbPersistent<T, ?>, TABLE extends TableBase<T>,
 		TABLE_VIEW extends ProTreeTableView<T>> ProTreeTableView<T>
-		createTreeTable(Class<?> itemClass, Class<TABLE> tableClass,
+		createTreeTableView(Class<?> itemClass, Class<TABLE> tableClass,
 			Class<TABLE_VIEW> tableViewClass, List<T> items) {
 		ProTreeTableView<T> treeTableView =
-			createTreeTable(itemClass, tableClass, tableViewClass);
+			createTreeTableView(itemClass, tableClass, tableViewClass);
 		treeTableView.setItems(items);
 		return treeTableView;
 	}
 
 	public static <T extends DbPersistent<T, ?>, TABLE extends TableBase<T>,
 		TABLE_VIEW extends ProTreeTableView<T>> ProTreeTableView<T>
-		createTreeTable(Class<?> itemClass, Class<TABLE> tableClass,
+		createTreeTableView(Class<?> itemClass, Class<TABLE> tableClass,
 			Class<TABLE_VIEW> tableViewClass) {
 
 		TableBase<T> table = createTableBase(itemClass, tableClass);
@@ -65,9 +65,9 @@ public class TableViewFactory {
 
 	public static <T, TABLE extends TableBase<T>,
 		TABLE_VIEW extends ProTableView<T>> ProTableView<T>
-		createInitializedTable(Class<?> itemClass, Class<TABLE> tableClass,
+		createInitializedTableView(Class<?> itemClass, Class<TABLE> tableClass,
 			Class<TABLE_VIEW> tableViewClass) {
-		ProTableView<T> tableView = createTable(itemClass, tableClass, tableViewClass);
+		ProTableView<T> tableView = createTableView(itemClass, tableClass, tableViewClass);
 
 		if (tableView instanceof DbTableView) ((DbTableView<?>) tableView).reload();
 
@@ -79,9 +79,9 @@ public class TableViewFactory {
 	@SuppressWarnings("unchecked")
 	public static <T, TABLE extends TableBase<T>,
 		TABLE_VIEW extends ProTableView<T>> ProTableView<T>
-		createTable(Class<?> itemClass, Class<TABLE> tableClass,
+		createTableView(Class<?> itemClass, Class<TABLE> tableClass,
 			Class<TABLE_VIEW> tableViewClass, List<TreeItem<DbNode>> treeItems) {
-		ProTableView<T> tableView = createTable(itemClass, tableClass, tableViewClass);
+		ProTableView<T> tableView = createTableView(itemClass, tableClass, tableViewClass);
 		ObservableList<T> items = FXCollections.observableArrayList();
 		for (int i = 0; i < treeItems.size(); i++)
 			try {
@@ -95,7 +95,7 @@ public class TableViewFactory {
 
 	public static <T, TABLE extends TableBase<T>,
 		TABLE_VIEW extends ProTableView<T>> ProTableView<T>
-		createTable(Class<?> itemClass, Class<TABLE> tableClass,
+		createTableView(Class<?> itemClass, Class<TABLE> tableClass,
 			Class<TABLE_VIEW> tableViewClass) {
 
 		TableBase<T> table = createTableBase(itemClass, tableClass);
