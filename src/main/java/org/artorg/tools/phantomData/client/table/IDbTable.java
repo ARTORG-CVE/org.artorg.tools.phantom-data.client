@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.FXCollections;
@@ -23,7 +24,14 @@ public interface IDbTable<ITEM extends DbPersistent<ITEM,?>> extends ITable<ITEM
 		
 		ObservableList<ITEM> items = FXCollections.observableArrayList();
 		items.addAll(itemSet);
-		setItems(items);
+		
+		CollectionUtil.syncLists(items, getItems());
+		
+		
+//		setItems(items);
+		
+		
+		
 		getColumns().stream().forEach(column -> column.setItems(getItems()));
 	}
 	

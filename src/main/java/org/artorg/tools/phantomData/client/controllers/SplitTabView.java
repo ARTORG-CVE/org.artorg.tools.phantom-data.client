@@ -341,32 +341,17 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 		return row;
 	}
 
-	@SuppressWarnings("unchecked")
 	private <ITEM extends DbPersistent<ITEM, ?>> void show3dInViewer(ITEM item) {
-		if (viewerTabPane.getTabPane().getTabs().size() == 0) {
-			Scene3D scene3d = new Scene3D();
-			scene3d.loadFile(IOutil.readResourceAsFile("model.stl"));
-			addTab(viewerTabPane.getTabPane(), scene3d, "3D Viewer - " + ((AbstractBaseEntity<?>) item).toName());
-		} else {
+		if (viewerTabPane.getTabPane().getTabs().size() > 0) {
 			Tab tab = viewerTabPane.getTabPane().getSelectionModel().getSelectedItem();
-			if (tab == null)
-				throw new NullPointerException();
-			Node node = tab.getContent();
-
-			if (node instanceof Scene3D) {
+			if (tab != null) {
 				List<DbFile> files = getFiles(item);
 				if (files != null && !files.isEmpty()) {
 					DbFile dbFile = files.get(0);
 					File file = dbFile.getFile();
-
 					show3dInViewer(file, tab);
 				}
-			} else {
-				Scene3D scene3d = new Scene3D();
-				scene3d.loadFile(IOutil.readResourceAsFile("model.stl"));
-				addTab(viewerTabPane.getTabPane(), scene3d, "3D Viewer - " + ((AbstractBaseEntity<?>) item).toName());
 			}
-
 		}
 	}
 
@@ -375,23 +360,23 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 		newScene3d.loadFile(file);
 		tab.setContent(newScene3d);
 	}
-	
+
 	private <ITEM extends DbPersistent<ITEM, ?>> List<DbFile> getFiles(ITEM item) {
-		if (item==null)
+		if (item == null)
 			return new ArrayList<DbFile>();
-		
+
 		if (item instanceof AbstractBaseEntity)
-			return ((AbstractBaseEntity<?>)item).getFiles();
-		
+			return ((AbstractBaseEntity<?>) item).getFiles();
+
 		List<DbFile> files = null;
 		try {
-			 files = getValue(item, "files");
+			files = getValue(item, "files");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		if (files == null)
 			return new ArrayList<DbFile>();
-		
+
 		return files;
 	}
 

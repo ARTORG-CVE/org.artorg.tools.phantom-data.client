@@ -82,7 +82,7 @@ public abstract class AbstractColumn<ITEM> {
 		this.items = items;
 	}
 	
-	public String getColumnName() {
+	public String getName() {
 		return columnName;
 	}
 	

@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.server.util.Reflect;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.control.TableColumn;
 
 @SuppressWarnings("unchecked")
 public class TableBase<ITEM> implements ITable<ITEM> {
@@ -19,19 +22,28 @@ public class TableBase<ITEM> implements ITable<ITEM> {
 	private String itemName;
 	private final Class<ITEM> itemClass;
 	private Function<List<ITEM>,List<AbstractColumn<ITEM>>> columnCreator;
+	private final ListChangeListener<ITEM> itemListChangeListener;
+
+	public ListChangeListener<ITEM> getItemListChangeListener() {
+		return itemListChangeListener;
+	}
 
 	{
 		items = FXCollections.observableArrayList();
 		columns = new ArrayList<AbstractColumn<ITEM>>();
 		isIdColumnVisible = true;
 		columnCreator = items -> new ArrayList<AbstractColumn<ITEM>>();
-		items.addListener(new ListChangeListener<ITEM>() {
+		
+		itemListChangeListener = new ListChangeListener<ITEM>() {
 			@Override
 			public void onChanged(Change<? extends ITEM> c) {
 				updateColumns();
 			}
-		});
+		}; 
+		items.addListener(itemListChangeListener);
 	}
+	
+	
 	
 	@Override
 	public void refresh() {
@@ -63,24 +75,8 @@ public class TableBase<ITEM> implements ITable<ITEM> {
 	
 	@Override
 	public void updateColumns() {
-		List<AbstractColumn<ITEM>> newColumns = columnCreator.apply(getItems()); 
-		if (this.columns.isEmpty()) this.columns.addAll(newColumns);
-		else {
-			List<AbstractColumn<ITEM>> removableColumns = new ArrayList<>();
-			List<AbstractColumn<ITEM>> addableColumns = new ArrayList<>();
-			for (int i=0; i<columns.size(); i++) {
-				final int j = i; 
-				if (!newColumns.stream().filter(column -> column.getColumnName().equals(columns.get(j).getColumnName())).findFirst().isPresent())
-					removableColumns.add(this.columns.get(i));
-			}
-			for (int i=0; i<newColumns.size(); i++) {
-				final int j = i; 
-				if (!columns.stream().filter(column -> column.getColumnName().equals(newColumns.get(j).getColumnName())).findFirst().isPresent())
-					addableColumns.add(newColumns.get(i));
-			}
-			this.columns.removeAll(removableColumns);
-			this.columns.addAll(addableColumns);
-		}
+		CollectionUtil.syncLists(this.columns, columnCreator.apply(getItems()),
+				(column, newColumn) -> column.getName().equals(newColumn.getName()));
 		getColumns().stream().forEach(column ->column.setItems(getItems()));
 	}	
 	

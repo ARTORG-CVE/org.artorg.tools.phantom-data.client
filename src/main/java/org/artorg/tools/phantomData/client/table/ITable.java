@@ -63,7 +63,7 @@ public interface ITable<ITEM> {
 	}
 	
 	default List<String> getColumnNames() {
-		return getColumns().stream().map(c -> c.getColumnName())
+		return getColumns().stream().map(c -> c.getName())
 				.collect(Collectors.toList());
 	}
 	
