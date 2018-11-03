@@ -45,22 +45,26 @@ public class CollectionUtil {
 		toList.removeAll(removableColumns);
 		toList.addAll(addableColumns);
 	}
-	
+
 	public static final <E> void syncLists(List<E> fromList, List<E> toList) {
 		addIfAbsent(fromList, toList);
 		removeIfAbsent(fromList, toList);
 	}
 
 	public static final <E> void addIfAbsent(List<E> fromList, List<E> toList) {
+		List<E> addableList = new ArrayList<E>();
 		for (int col = 0; col < fromList.size(); col++)
 			if (!toList.contains(fromList.get(col)))
-				toList.add(fromList.get(col));
+				addableList.add(fromList.get(col));
+		toList.addAll(addableList);
 	}
 
 	public static final <E> void removeIfAbsent(List<E> fromList, List<E> toList) {
+		List<E> removableList = new ArrayList<E>();
 		for (int col = 0; col < toList.size(); col++)
 			if (!fromList.contains(toList.get(col)))
-				toList.remove(fromList.get(col));
+				removableList.add(fromList.get(col));
+		toList.removeAll(removableList);
 	}
 
 }

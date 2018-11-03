@@ -27,8 +27,6 @@ public interface ITable<ITEM> {
 	
 	ObservableList<ITEM> getItems();
 	
-	void setItems(ObservableList<ITEM> items);
-	
 	String getItemName();
 	
 	void refresh();

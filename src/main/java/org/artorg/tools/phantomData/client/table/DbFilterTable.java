@@ -63,7 +63,7 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 				
 			}
 		};
-//		filteredItems.addListener(filteredListener);
+		filteredItems.addListener(filteredListener);
 
 //		ListChangeListener<ITEM> unfilteredListener = new ListChangeListener<ITEM>() {
 //			@Override
@@ -155,8 +155,11 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 	@Override
 	public void readAllData() {
 		super.readAllData();
-		filteredItems.clear();
-		filteredItems.addAll(super.getItems());
+		
+		CollectionUtil.syncLists(super.getItems(), filteredItems);
+		
+//		filteredItems.clear();
+//		filteredItems.addAll(super.getItems());
 
 		getFilteredColumns().stream().forEach(column -> {
 			column.setFilteredItems(getFilteredItems());
@@ -223,9 +226,13 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 
 		sortComparator = sortComparatorQueue.stream().reduce((c1, c2) -> c2.thenComparing(c1)).orElse((c1, c2) -> 0);
 
-		this.filteredItems.clear();
-		this.filteredItems.addAll(
-				super.getItems().stream().filter(filterPredicate).sorted(sortComparator).collect(Collectors.toList()));
+		
+		CollectionUtil.syncLists(super.getItems().stream().filter(filterPredicate).sorted(sortComparator).collect(Collectors.toList()), filteredItems);
+		
+		
+//		this.filteredItems.clear();
+//		this.filteredItems.addAll(
+//				);
 
 	}
 

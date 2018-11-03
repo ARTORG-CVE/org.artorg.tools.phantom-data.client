@@ -56,8 +56,6 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends DbTabl
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initTable() {
-		
-		
 		if (getTable() instanceof IFilterTable)
 			initFilterTable((IFilterTable<ITEM>)getTable());
 		else 
@@ -107,10 +105,10 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends DbTabl
 	}
 	
 	private <TABLE extends IDbTable<ITEM> & IFilterTable<ITEM>> void reloadFilterTable(TABLE table) {
-		table.getItems().removeListener(getListenerChangedListenerRefresh());
+//		table.getItems().removeListener(getListenerChangedListenerRefresh());
 		table.readAllData();
 		super.setItems(table.getFilteredItems());
-		getTable().getItems().addListener(getListenerChangedListenerRefresh());
+//		getTable().getItems().addListener(getListenerChangedListenerRefresh());
 		refresh();
 	}
 	

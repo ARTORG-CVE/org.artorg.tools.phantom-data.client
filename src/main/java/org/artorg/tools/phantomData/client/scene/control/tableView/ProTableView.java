@@ -22,7 +22,7 @@ import javafx.scene.text.Text;
 public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> implements AddableToAnchorPane {
 	private final Class<ITEM> itemClass;
 	private TableBase<ITEM> table;
-	private ListChangeListener<ITEM> listenerChangedListenerRefresh;
+//	private ListChangeListener<ITEM> listenerChangedListenerRefresh;
 
 	@SuppressWarnings("unchecked")
 	public ProTableView() {
@@ -41,21 +41,21 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> imp
 		}
 	}
 
-	public ListChangeListener<ITEM> getListenerChangedListenerRefresh() {
-		return listenerChangedListenerRefresh;
-	}
-
-	public void setListenerChangedListenerRefresh(ListChangeListener<ITEM> listenerChangedListenerRefresh) {
-		this.listenerChangedListenerRefresh = listenerChangedListenerRefresh;
-	}
+//	public ListChangeListener<ITEM> getListenerChangedListenerRefresh() {
+//		return listenerChangedListenerRefresh;
+//	}
+//
+//	public void setListenerChangedListenerRefresh(ListChangeListener<ITEM> listenerChangedListenerRefresh) {
+//		this.listenerChangedListenerRefresh = listenerChangedListenerRefresh;
+//	}
 
 	{
-		listenerChangedListenerRefresh = new ListChangeListener<ITEM>() {
-			@Override
-			public void onChanged(Change<? extends ITEM> c) {
-				refresh();
-			}
-		};
+//		listenerChangedListenerRefresh = new ListChangeListener<ITEM>() {
+//			@Override
+//			public void onChanged(Change<? extends ITEM> c) {
+//				refresh();
+//			}
+//		};
 	}
 
 	public void initTable() {
@@ -93,7 +93,7 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> imp
 	public void setTable(TableBase<ITEM> table) {
 		this.table = table;
 		initTable();
-		table.getItems().addListener(listenerChangedListenerRefresh);
+//		table.getItems().addListener(listenerChangedListenerRefresh);
 	}
 
 	public TableBase<ITEM> getTable() {
