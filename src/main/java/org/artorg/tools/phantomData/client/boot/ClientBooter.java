@@ -31,7 +31,6 @@ public abstract class ClientBooter extends MainFx implements IBooter {
 		} catch(Exception e2) {}
 		
 		return false;
-		
 	}
 
 	@Override

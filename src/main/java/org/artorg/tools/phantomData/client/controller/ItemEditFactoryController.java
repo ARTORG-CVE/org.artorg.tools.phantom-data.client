@@ -23,8 +23,9 @@ import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.table.FxFactory;
 import org.artorg.tools.phantomData.client.table.IDbTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
-import org.artorg.tools.phantomData.server.util.Reflect;
+import org.artorg.tools.phantomData.server.specification.Identifiable;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -162,9 +163,9 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 		});
 	}
 
-	protected <T extends Comparable<T>> void selectComboBoxItem(ComboBox<T> comboBox, T item) {
+	protected <T extends Comparable<T> & Identifiable<ID>,ID extends Comparable<ID>> void selectComboBoxItem(ComboBox<T> comboBox, T item) {
 		for (int i = 0; i < comboBox.getItems().size(); i++)
-			if (comboBox.getItems().get(i).equals(item)) {
+			if (comboBox.getItems().get(i).equalsId(item)) {
 				comboBox.getSelectionModel().select(i);
 				break;
 			}

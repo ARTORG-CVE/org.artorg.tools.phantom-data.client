@@ -4,13 +4,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.beans.DbNode;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
-import org.artorg.tools.phantomData.server.beans.DbNode;
+import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
-import org.artorg.tools.phantomData.server.util.Reflect;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

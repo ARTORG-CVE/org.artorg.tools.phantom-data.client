@@ -1,6 +1,6 @@
 package org.artorg.tools.phantomData.client.scene.control.treeTableView;
 
-import org.artorg.tools.phantomData.server.beans.DbNode;
+import org.artorg.tools.phantomData.client.beans.DbNode;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;

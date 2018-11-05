@@ -11,8 +11,6 @@ import javafx.util.Callback;
 
 public class TableViewUtils {
 	
-	
-	
 	public static <T> TableColumn<T, Void> createButtonCellColumn(String text, Consumer<T> consumer) {
 		TableColumn<T, Void> column = new TableColumn<T, Void>();
 		column.setCellFactory(new Callback<TableColumn<T, Void>, TableCell<T, Void>>() {
@@ -61,7 +59,7 @@ public class TableViewUtils {
 	        }
 	        column.setPrefWidth( max);
 	    } );
-		tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+//		tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 	}
 	
 	public static void removeColumnHeaders(TableView<?> tableView) {

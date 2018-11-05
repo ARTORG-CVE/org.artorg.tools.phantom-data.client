@@ -7,7 +7,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.artorg.tools.phantomData.server.util.Collectors2;
+import org.artorg.tools.phantomData.client.util.CollectorsHuma;
 
 import javafx.collections.ObservableList;
 
@@ -32,7 +32,7 @@ public interface ITable<ITEM> {
 	void refresh();
 	
 	default AbstractColumn<ITEM> getIdColumn() {
-		return getColumns().stream().filter(c -> c.isIdColumn()).collect(Collectors2.toSingleton());
+		return getColumns().stream().filter(c -> c.isIdColumn()).collect(CollectorsHuma.toSingleton());
 	}
 	
 	default  void setIdColumn(AbstractColumn<ITEM> column) {

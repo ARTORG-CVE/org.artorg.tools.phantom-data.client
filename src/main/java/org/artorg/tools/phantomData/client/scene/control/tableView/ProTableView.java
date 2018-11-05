@@ -1,23 +1,16 @@
 package org.artorg.tools.phantomData.client.scene.control.tableView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
-import java.util.function.Function;
-
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
-import org.artorg.tools.phantomData.server.util.Reflect;
+import org.artorg.tools.phantomData.client.util.Reflect;
+import org.artorg.tools.phantomData.client.util.TableViewUtils;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ListChangeListener;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.text.Text;
 
 public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> implements AddableToAnchorPane {
 	private final Class<ITEM> itemClass;
@@ -101,20 +94,22 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> imp
 	}
 
 	public void autoResizeColumns() {
-		super.setColumnResizePolicy(javafx.scene.control.TableView.UNCONSTRAINED_RESIZE_POLICY);
-		super.getColumns().stream().forEach((column) -> {
-			Text t = new Text(column.getText());
-			double max = t.getLayoutBounds().getWidth() + 45.0;
-			for (int i = 0; i < super.getItems().size(); i++) {
-				if (column.getCellData(i) != null) {
-					t = new Text(column.getCellData(i).toString());
-					double calcwidth = t.getLayoutBounds().getWidth() + 10;
-					if (calcwidth > max)
-						max = calcwidth;
-				}
-			}
-			column.setPrefWidth(max);
-		});
+		TableViewUtils.autoResizeColumns(this);
+//		
+//		super.setColumnResizePolicy(javafx.scene.control.TableView.UNCONSTRAINED_RESIZE_POLICY);
+//		super.getColumns().stream().forEach((column) -> {
+//			Text t = new Text(column.getText());
+//			double max = t.getLayoutBounds().getWidth() + 45.0;
+//			for (int i = 0; i < super.getItems().size(); i++) {
+//				if (column.getCellData(i) != null) {
+//					t = new Text(column.getCellData(i).toString());
+//					double calcwidth = t.getLayoutBounds().getWidth() + 10;
+//					if (calcwidth > max)
+//						max = calcwidth;
+//				}
+//			}
+//			column.setPrefWidth(max);
+//		});
 	}
 
 	public javafx.scene.control.TableView<ITEM> getGraphic() {

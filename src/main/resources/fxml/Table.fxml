@@ -37,11 +37,11 @@
 								<MenuItem mnemonicParsing="false" onAction="#openTablePhantoms" text="Phantoms" />
                         <SeparatorMenuItem mnemonicParsing="false" />
 								<MenuItem mnemonicParsing="false" onAction="#openTableFiles" text="Files" />
-								<MenuItem mnemonicParsing="false" onAction="#openTableFileTypes" text="File Types" />
 								<SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" onAction="#openTablePersons" text="Persons" />
                         <MenuItem mnemonicParsing="false" onAction="#openTableAcademicTitles" text="Academic Titles" />
                         <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#openTableFileTags" text="File Tags" />
                         <Menu mnemonicParsing="false" text="Phantoms">
                            <items>
                               <MenuItem mnemonicParsing="false" onAction="#openTablePhantominas" text="Phantominas" />

@@ -5,13 +5,11 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
-import org.artorg.tools.phantomData.server.util.Reflect;
+import org.artorg.tools.phantomData.client.util.Reflect;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TableColumn;
 
 @SuppressWarnings("unchecked")
 public class TableBase<ITEM> implements ITable<ITEM> {

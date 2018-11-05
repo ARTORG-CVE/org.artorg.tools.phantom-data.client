@@ -20,22 +20,22 @@ import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.model.FileType;
-import org.artorg.tools.phantomData.server.model.Note;
-import org.artorg.tools.phantomData.server.model.DbFile;
-import org.artorg.tools.phantomData.server.model.person.AcademicTitle;
-import org.artorg.tools.phantomData.server.model.person.Person;
+import org.artorg.tools.phantomData.server.model.base.DbFile;
+import org.artorg.tools.phantomData.server.model.base.FileTag;
+import org.artorg.tools.phantomData.server.model.base.Note;
+import org.artorg.tools.phantomData.server.model.base.person.AcademicTitle;
+import org.artorg.tools.phantomData.server.model.base.person.Person;
+import org.artorg.tools.phantomData.server.model.base.property.BooleanProperty;
+import org.artorg.tools.phantomData.server.model.base.property.DoubleProperty;
+import org.artorg.tools.phantomData.server.model.base.property.IntegerProperty;
+import org.artorg.tools.phantomData.server.model.base.property.PropertyField;
+import org.artorg.tools.phantomData.server.model.base.property.StringProperty;
 import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.phantom.Phantom;
 import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.model.phantom.Special;
-import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
-import org.artorg.tools.phantomData.server.model.property.DoubleProperty;
-import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
-import org.artorg.tools.phantomData.server.model.property.PropertyField;
-import org.artorg.tools.phantomData.server.model.property.StringProperty;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import huma.io.IOutil;
@@ -302,9 +302,6 @@ public class MainController {
 		addMenuItem(menu, "Files", event -> {
 			tableFactoryCreator.accept(splitTabView, DbFile.class);
 		});
-		addMenuItem(menu, "File Types", event -> {
-			tableFactoryCreator.accept(splitTabView, FileType.class);
-		});
 		menu.getItems().add(new SeparatorMenuItem());
 		addMenuItem(menu, "Persons", event -> {
 			tableFactoryCreator.accept(splitTabView, Person.class);
@@ -440,11 +437,6 @@ public class MainController {
 	}
 
 	@FXML
-	void openTableFileTypes(ActionEvent event) {
-		openTable(FileType.class);
-	}
-
-	@FXML
 	void openTableFiles(ActionEvent event) {
 		openTable(DbFile.class);
 	}
@@ -521,6 +513,11 @@ public class MainController {
 	@FXML
 	void openTableStringProperties(ActionEvent event) {
 		openTable(StringProperty.class);
+	}
+	
+	@FXML
+	void openTableFileTags(ActionEvent event) {
+		openTable(FileTag.class);
 	}
 
 	public static String getUrlLocalhost() {

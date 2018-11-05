@@ -5,7 +5,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.boot.MainFx;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
-import org.artorg.tools.phantomData.server.model.person.Person;
+import org.artorg.tools.phantomData.server.model.base.person.Person;
 
 import javafx.application.Platform;
 

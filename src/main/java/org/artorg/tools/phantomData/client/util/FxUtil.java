@@ -32,12 +32,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 
 public class FxUtil {
-	private static Class<?> mainClass;
-
-	static {
-		mainClass = null;
-	}
-	
 	public static TableColumn<Object, Void> createButtonCellColumn(String text, Consumer<Object> consumer) {
 		TableColumn<Object, Void> column = new TableColumn<Object, Void>();
 		column.setCellFactory(new Callback<TableColumn<Object, Void>, TableCell<Object, Void>>() {
@@ -117,14 +111,9 @@ public class FxUtil {
 		rowMenu.getItems().add(menuItem);
 	}
 
-	public static void setMainFxClass(Class<?> mainClass) {
-		if (FxUtil.mainClass != null) throw new UnsupportedOperationException();
-		FxUtil.mainClass = mainClass;
-	}
-
-	public static <T> T loadFXML(String path, Object controller) {
+	public static <T> T loadFXML(String path, Object controller, Class<?> mainFxClass) {
 		FXMLLoader loader =
-			new FXMLLoader(getMainClass().getClassLoader().getResource(path));
+			new FXMLLoader(mainFxClass.getClassLoader().getResource(path));
 		loader.setController(controller);
 		try {
 			return loader.<T>load();
@@ -135,12 +124,6 @@ public class FxUtil {
 
 	public static String readCSSstylesheet(String path) {
 		return readResource(path).toExternalForm();
-	}
-
-	public static Class<?> getMainClass() {
-		if (FxUtil.mainClass == null)
-			throw new IllegalArgumentException();
-		return FxUtil.mainClass;
 	}
 
 	public static void addToAnchorPane(AnchorPane parentPane, Node child) {

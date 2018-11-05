@@ -1,5 +1,7 @@
 package org.artorg.tools.phantomData.client.controllers;
 
+import static org.artorg.tools.phantomData.client.util.FxUtil.addMenuItem;
+
 import java.awt.Desktop;
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -13,11 +15,13 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
+import org.artorg.tools.phantomData.client.beans.DbNode;
+import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
 import org.artorg.tools.phantomData.client.boot.MainFx;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
-import org.artorg.tools.phantomData.client.io.IOutil;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.SmartSplitTabPane;
 import org.artorg.tools.phantomData.client.scene.control.SmartTabPane;
@@ -32,17 +36,14 @@ import org.artorg.tools.phantomData.client.table.FxFactory;
 import org.artorg.tools.phantomData.client.table.IDbFactoryTableView;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.BootApplication;
-import org.artorg.tools.phantomData.server.beans.DbNode;
-import org.artorg.tools.phantomData.server.beans.EntityBeanInfo;
-import org.artorg.tools.phantomData.server.model.DbFile;
+import org.artorg.tools.phantomData.client.util.IOutil;
+import org.artorg.tools.phantomData.server.model.base.DbFile;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Orientation;
@@ -58,8 +59,6 @@ import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.DirectoryChooser;
-
-import static org.artorg.tools.phantomData.client.util.FxUtil.addMenuItem;
 
 public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPane {
 	private final SplitPane splitPane;
@@ -382,7 +381,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 
 	@SuppressWarnings("unchecked")
 	private <ITEM extends DbPersistent<ITEM, ?>, T> T getValue(ITEM item, String name) {
-		EntityBeanInfo beanInfo = BootApplication.getEntitybeaninfos().getEntityBeanInfo(item.getClass());
+		EntityBeanInfo beanInfo = Main.getBeaninfos().getEntityBeanInfo(item.getClass());
 		List<PropertyDescriptor> descriptors = beanInfo.getAllPropertyDescriptors().stream()
 				.filter(d -> d.getName().equals("files")).collect(Collectors.toList());
 

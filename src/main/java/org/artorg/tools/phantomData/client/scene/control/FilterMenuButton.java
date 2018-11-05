@@ -8,9 +8,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.artorg.tools.phantomData.client.io.IOutil;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.AbstractFilterColumn;
+import org.artorg.tools.phantomData.client.util.IOutil;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;

@@ -6,19 +6,18 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
-import org.artorg.tools.phantomData.server.model.FileType;
-import org.artorg.tools.phantomData.server.model.person.AcademicTitle;
-import org.artorg.tools.phantomData.server.model.person.Gender;
-import org.artorg.tools.phantomData.server.model.person.Person;
+import org.artorg.tools.phantomData.server.model.base.person.AcademicTitle;
+import org.artorg.tools.phantomData.server.model.base.person.Gender;
+import org.artorg.tools.phantomData.server.model.base.person.Person;
+import org.artorg.tools.phantomData.server.model.base.property.BooleanProperty;
+import org.artorg.tools.phantomData.server.model.base.property.IntegerProperty;
+import org.artorg.tools.phantomData.server.model.base.property.PropertyField;
 import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
 import org.artorg.tools.phantomData.server.model.phantom.Phantom;
 import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.model.phantom.Special;
-import org.artorg.tools.phantomData.server.model.property.BooleanProperty;
-import org.artorg.tools.phantomData.server.model.property.IntegerProperty;
-import org.artorg.tools.phantomData.server.model.property.PropertyField;
 
 public class DatabaseInitializer {
 	private static HttpConnectorSpring<Gender> genderConn = HttpConnectorSpring.getOrCreate(Gender.class);
@@ -44,8 +43,6 @@ public class DatabaseInitializer {
 			.getOrCreate(Phantomina.class);
 	private static PersonalizedHttpConnectorSpring<Phantom> phantomConn = PersonalizedHttpConnectorSpring
 			.getOrCreate(Phantom.class);
-	private static PersonalizedHttpConnectorSpring<FileType> fileTypeConn = PersonalizedHttpConnectorSpring
-			.getOrCreate(FileType.class);
 
 	public static void initDatabase() {
 		initPerson();
@@ -53,7 +50,6 @@ public class DatabaseInitializer {
 		initFabricationtype();
 		initLiteratureBase();
 		initSpecial();
-		initFiles();
 		initPhantoms();
 		System.out.println("Database initialized succesful");
 
@@ -162,18 +158,6 @@ public class DatabaseInitializer {
 		special4.getIntegerProperties().add(int1);
 		specConn.create(special4);
 
-	}
-
-	private static void initFiles() {
-		FileType fileType1 = new FileType("phantom-specific-geometry-main-cad-model");
-		FileType fileType2 = new FileType("phantom-specific-geometry-fabrication-part");
-		FileType fileType3 = new FileType("thesis-master");
-		FileType fileType4 = new FileType("thesis-phd");
-
-		fileTypeConn.create(fileType1);
-		fileTypeConn.create(fileType2);
-		fileTypeConn.create(fileType3);
-		fileTypeConn.create(fileType4);
 	}
 
 	private static void initPhantoms() {

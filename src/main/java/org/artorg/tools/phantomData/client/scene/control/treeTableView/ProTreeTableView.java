@@ -9,11 +9,12 @@ import java.util.stream.Collectors;
 import javax.persistence.Entity;
 
 import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.beans.DbNode;
+import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
-import org.artorg.tools.phantomData.server.beans.DbNode;
-import org.artorg.tools.phantomData.server.beans.EntityBeanInfo;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
+import org.artorg.tools.phantomData.server.model.specification.NameGeneratable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -63,8 +64,8 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 		column.setCellValueFactory(param -> {
 			DbNode item = param.getValue().getValue();
 			Object value = ((DbNode) item).getValue();
-			if (value instanceof AbstractBaseEntity) return new ReadOnlyStringWrapper(
-				((AbstractBaseEntity<?>) value).toName());
+			if (value instanceof NameGeneratable) return new ReadOnlyStringWrapper(
+				((NameGeneratable) value).toName());
 			if (value instanceof List) {
 				List<?> list = (List<?>) value; 
 				if (list.isEmpty()) return new ReadOnlyStringWrapper("");

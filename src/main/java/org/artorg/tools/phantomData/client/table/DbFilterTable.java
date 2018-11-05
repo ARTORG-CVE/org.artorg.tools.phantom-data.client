@@ -3,7 +3,6 @@ package org.artorg.tools.phantomData.client.table;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 import java.util.function.Function;
@@ -48,16 +47,10 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 		ListChangeListener<ITEM> filteredListener = new ListChangeListener<ITEM>() {
 			@Override
 			public void onChanged(Change<? extends ITEM> c) {
-				System.out.println(
-						"" + new Date() + ", FILTER: list has changed!, " + reference.getClass().getSimpleName());
-				
 				unfilteredItems.removeListener(unfilteredListener);
-				
 				while (c.next()) {
 					if (c.wasAdded())
 						unfilteredItems.addAll(c.getAddedSubList());
-//					else if (c.wasRemoved())
-//						reference.getItems().removeAll(c.getRemoved());
 				}
 				unfilteredItems.addListener(unfilteredListener);
 				

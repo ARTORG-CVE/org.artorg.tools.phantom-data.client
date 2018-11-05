@@ -9,12 +9,11 @@ import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controllers.MainController;
-import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.BootApplication;
 import org.artorg.tools.phantomData.server.DesktopSwingResetBootServer;
 import org.artorg.tools.phantomData.server.boot.SwingConsoleFrame;
 import org.artorg.tools.phantomData.server.boot.SwingStartupProgressFrame;
-import org.artorg.tools.phantomData.server.model.DbFile;
+import org.artorg.tools.phantomData.server.model.base.DbFile;
 
 import huma.io.ConsoleDiverter;
 import javafx.application.Application;
@@ -24,8 +23,8 @@ public class DesktopSwingResetBootApplication extends SwingConsoleStartupClientB
 	private static final int nConsoleLinesFx;
 	
 	static {
-		nConsoleLinesServer = 191;
-		nConsoleLinesFx = 49;
+		nConsoleLinesServer = 221;
+		nConsoleLinesFx = 1;
 	}
 	
     public static void main(String[] args) {
@@ -76,7 +75,7 @@ public class DesktopSwingResetBootApplication extends SwingConsoleStartupClientB
 	    		MainController.setUrlShutdownActuator(getServerBooter().getUrlShutdownActuator());
 	    		if (!isInitialized())
 					initDatabase();
-	    		FxUtil.setMainFxClass(MainFx.class);
+	    		Main.setMainFxClass(MainFx.class);
 	    		new Thread(() -> Application.launch(args)).start();
 	    	} catch(Exception e) {
 	    		getServerBooter().setConsoleFrameVisible(true);

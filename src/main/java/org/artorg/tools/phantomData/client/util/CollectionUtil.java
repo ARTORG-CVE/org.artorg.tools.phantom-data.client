@@ -63,7 +63,7 @@ public class CollectionUtil {
 		List<E> removableList = new ArrayList<E>();
 		for (int col = 0; col < toList.size(); col++)
 			if (!fromList.contains(toList.get(col)))
-				removableList.add(fromList.get(col));
+				removableList.add(toList.get(col));
 		toList.removeAll(removableList);
 	}
 
