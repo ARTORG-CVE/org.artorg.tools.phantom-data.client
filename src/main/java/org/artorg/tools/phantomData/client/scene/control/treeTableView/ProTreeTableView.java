@@ -14,6 +14,7 @@ import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
+import org.artorg.tools.phantomData.server.model.specification.AbstractPersonifiedEntity;
 import org.artorg.tools.phantomData.server.model.specification.NameGeneratable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -36,7 +37,7 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 
 	{
 		treeTableColumns = new ArrayList<DbTreeTableColumn>();
-		root = new TreeItem<DbNode>(new DbNode("Root value", "Root name"));
+		root = new TreeItem<DbNode>(new DbNode("Root value", "Root name", "Root type"));
 	}
 
 	public ProTreeTableView(Class<?> itemClass) {
@@ -119,7 +120,7 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 		List<TreeItem<DbNode>> treeItems = new ArrayList<TreeItem<DbNode>>();
 		items.forEach(item -> {
 			TreeItem<DbNode> treeItem =
-				createTreeItem(item, item.getItemClass().getSimpleName());
+				createTreeItem(new DbNode(item, item.getItemClass().getSimpleName(), "Items"));
 			treeItems.add(treeItem);
 			addResizeColumnsExpandListener(treeItem);
 		});
@@ -127,21 +128,21 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 		root.getChildren().addAll(treeItems);
 	}
 	
-	private TreeItem<DbNode> createTreeItem(Object o, String name) {
-		DbNode dbNode = new DbNode(o,name);
+	private TreeItem<DbNode> createTreeItem(DbNode dbNode) {
 		TreeItem<DbNode> rootItem = new TreeItem<>(dbNode);
-		rootItem.getChildren().addAll(createTreeItems(o,name));
+		rootItem.getChildren().addAll(createTreeItems(dbNode));
 		return rootItem;
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<TreeItem<DbNode>> createTreeItems(Object o, String name) {
-		if (isEntity(o)) return createBeanTreeItems(o, 0);
-		if (o instanceof List) {
+	private List<TreeItem<DbNode>> createTreeItems(DbNode dbNode) {
+		Object value = dbNode.getValue();
+		if (isEntity(value)) return createBeanTreeItems(value, 0);
+		if (value instanceof List) {
 			List<TreeItem<DbNode>> treeItems = new ArrayList<>();
-			List<Object> list = (List<Object>)o;
+			List<Object> list = (List<Object>)value;
 			for (int i = 0; i < list.size(); i++)
-				treeItems.add(createTreeItem(list.get(i), "[" + i + "]"));
+				treeItems.add(createTreeItem(new DbNode(list.get(i), "[" + i + "]", "Collection")));
 			return treeItems;
 		}
 		return new ArrayList<>();
@@ -160,8 +161,8 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 
 		treeItems.addAll(createEntityTreeItem(bean, beanInfo, level+1));
 		treeItems.addAll(createCollectionTreeItem(bean, beanInfo, level+1));
-		if (bean instanceof AbstractBaseEntity)
-			treeItems.add(createTreeItem(((AbstractBaseEntity<?>) bean).getId(), "id"));
+		if (bean instanceof AbstractPersonifiedEntity)
+			treeItems.add(createTreeItem(new DbNode(((AbstractPersonifiedEntity<?>) bean).getId(), "id", "ID")));
 		treeItems.addAll(createPropertiesTreeItems(bean, beanInfo));
 
 		return treeItems;
@@ -179,7 +180,7 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 	private List<TreeItem<DbNode>> createCollectionTreeItem(Object bean,
 		EntityBeanInfo beanInfo, int level) {
 		return beanInfo.getNamedCollectionValuesAsStream(bean).map(dbNode -> {
-			return createTreeItem(dbNode.getValue(), dbNode.getName());
+			return createTreeItem(dbNode);
 		}).collect(Collectors.toList());
 	}
 

@@ -110,6 +110,7 @@ public class DatabaseInitializer {
 		academicTitleConn.create(master);
 		academicTitleConn.create(new AcademicTitle("B.Sc.", "Bachelor of Science"));
 		personConn.create(new Person(master, "Silje", "Ekroll Jahren", female));
+		personConn.create(new Person(master, "Joël", "Illi", male));
 	}
 
 	private static void initAnnulusDiameter() {

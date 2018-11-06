@@ -51,8 +51,8 @@ public class CollectionUtil {
 		removeIfAbsent(fromList, toList);
 	}
 
-	public static final <E> void addIfAbsent(List<E> fromList, List<E> toList) {
-		List<E> addableList = new ArrayList<E>();
+	public static final <E extends F, F> void addIfAbsent(List<E> fromList, List<F> toList) {
+		List<F> addableList = new ArrayList<F>();
 		for (int col = 0; col < fromList.size(); col++)
 			if (!toList.contains(fromList.get(col)))
 				addableList.add(fromList.get(col));

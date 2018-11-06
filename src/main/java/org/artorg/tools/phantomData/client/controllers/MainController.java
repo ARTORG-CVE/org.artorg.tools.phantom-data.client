@@ -271,7 +271,7 @@ public class MainController {
 	}
 
 	private void addSplitTabView() {
-		SplitTabView splitTabView = new SplitTabView();
+		SplitTabView splitTabView = new SplitTabView(splitTabViews.size(), i -> splitTabViews.get(i));
 		ContextMenu contextMenu = new ContextMenu();
 
 		Menu tableMenu = new Menu("Open Table");
@@ -303,6 +303,9 @@ public class MainController {
 		addMenuItem(menu, "Phantom", event -> {
 			tableFactoryCreator.accept(splitTabView, Phantom.class);
 		});
+		addMenuItem(menu, "Measurement", event -> {
+			tableFactoryCreator.accept(splitTabView, Measurement.class);
+		});
 		menu.getItems().add(new SeparatorMenuItem());
 		addMenuItem(menu, "Files", event -> {
 			tableFactoryCreator.accept(splitTabView, DbFile.class);
@@ -323,6 +326,7 @@ public class MainController {
 			addMenuItem(subMenu, "Phantominas", event -> {
 				tableFactoryCreator.accept(splitTabView, Phantomina.class);
 			});
+			subMenu.getItems().add(new SeparatorMenuItem());
 			addMenuItem(subMenu, "Annulus Diameters", event -> {
 				tableFactoryCreator.accept(splitTabView, AnnulusDiameter.class);
 			});
@@ -338,11 +342,28 @@ public class MainController {
 			menu.getItems().add(subMenu);
 		}
 		{
+			Menu subMenu = new Menu("Measurement");
+			addMenuItem(subMenu, "Measured Value", event -> {
+				tableFactoryCreator.accept(splitTabView, MeasuredValue.class);
+			});
+			
+			addMenuItem(subMenu, "Physical Quantity", event -> {
+				tableFactoryCreator.accept(splitTabView, PhysicalQuantity.class);
+			});
+			addMenuItem(subMenu, "Unit", event -> {
+				tableFactoryCreator.accept(splitTabView, Unit.class);
+			});
+			addMenuItem(subMenu, "Unit Prefix", event -> {
+				tableFactoryCreator.accept(splitTabView, UnitPrefix.class);
+			});
+			menu.getItems().add(subMenu);
+		}
+		{
 			Menu subMenu = new Menu("Properties");
 			addMenuItem(subMenu, "Property Fields", event -> {
 				tableFactoryCreator.accept(splitTabView, PropertyField.class);
 			});
-			menu.getItems().add(new SeparatorMenuItem());
+			subMenu.getItems().add(new SeparatorMenuItem());
 			addMenuItem(subMenu, "Boolean Properties", event -> {
 				tableFactoryCreator.accept(splitTabView, BooleanProperty.class);
 			});
@@ -437,7 +458,7 @@ public class MainController {
 	public SplitTabView getOrCreate(int row) {
 		if (splitTabViews.size() - 1 < row)
 			for (int i = splitTabViews.size() - 1; i < row; i++)
-			splitTabViews.add(new SplitTabView());
+			splitTabViews.add(new SplitTabView(splitTabViews.size(), j -> splitTabViews.get(j)));
 		return splitTabViews.get(row);
 	}
 
