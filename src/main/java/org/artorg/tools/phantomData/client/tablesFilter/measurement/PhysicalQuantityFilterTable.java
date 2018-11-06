@@ -14,7 +14,7 @@ public class PhysicalQuantityFilterTable extends DbUndoRedoFactoryEditFilterTabl
 
 	
 	{
-		setTableName("Unit Prefixes");
+		setTableName("Physical Quantities");
 
 		setColumnCreator(items -> {
 			List<AbstractColumn<PhysicalQuantity>> columns =

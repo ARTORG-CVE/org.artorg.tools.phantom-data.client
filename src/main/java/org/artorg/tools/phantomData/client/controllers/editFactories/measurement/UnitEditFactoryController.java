@@ -14,7 +14,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
-public class UnitFilterEditFactoryController
+public class UnitEditFactoryController
 	extends GroupedItemEditFactoryController<Unit> {
 	private TextField textFieldShortcut;
 	private TextField textFieldDescription;
@@ -30,8 +30,11 @@ public class UnitFilterEditFactoryController
 		List<TitledPane> panes = new ArrayList<TitledPane>();
 		createComboBoxes();
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
+		generalProperties.add(new PropertyEntry("PhysicalQuantity", comboBoxPhysicalQuantity));
+		generalProperties.add(new PropertyEntry("UnitPrefix", comboBoxUnitPrefix));
 		generalProperties.add(new PropertyEntry("Shortcut", textFieldShortcut));
 		generalProperties.add(new PropertyEntry("Description", textFieldDescription));
+		
 		TitledPropertyPane generalPane =
 			new TitledPropertyPane(generalProperties, "General");
 		panes.add(generalPane);
@@ -53,6 +56,8 @@ public class UnitFilterEditFactoryController
 	protected void setEditTemplate(Unit item) {
 		textFieldShortcut.setText(item.getShortcut());
 		textFieldDescription.setText(item.getDescription());
+		super.selectComboBoxItem(comboBoxPhysicalQuantity, item.getPhysicalQuantity());
+		super.selectComboBoxItem(comboBoxUnitPrefix, item.getUnitPrefix());
 	}
 
 	@Override

@@ -14,7 +14,7 @@ public class MeasuredValueFilterTable extends DbUndoRedoFactoryEditFilterTable<M
 
 	
 	{
-		setTableName("Measurements");
+		setTableName("Measured Values");
 
 		setColumnCreator(items -> {
 			List<AbstractColumn<MeasuredValue>> columns =

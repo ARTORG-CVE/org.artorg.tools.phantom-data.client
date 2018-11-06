@@ -28,7 +28,7 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM,?>> extends Abstra
 	{
 		splitPane = new SplitPane();
 		splitPane.setOrientation(Orientation.VERTICAL);
-		height = 200;
+		height = 500;
 		splitPane.setPrefHeight(height);
 	}
 	

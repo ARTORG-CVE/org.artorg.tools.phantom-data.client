@@ -61,6 +61,15 @@
                               <MenuItem mnemonicParsing="false" onAction="#openTableStringProperties" text="String Properties" />
                            </items>
                         </Menu>
+                        <Menu mnemonicParsing="false" text="Measurements">
+                          <items>
+                            <MenuItem mnemonicParsing="false" onAction="#openTableMeasuredValue" text="Measured Value" />
+                              <MenuItem mnemonicParsing="false" onAction="#openTableMeasurement" text="Measurement" />
+                              <MenuItem mnemonicParsing="false" onAction="#openTablePhysicalQuantity" text="Physical Quantity" />
+                              <MenuItem mnemonicParsing="false" onAction="#openTableUnit" text="Unit" />
+                              <MenuItem mnemonicParsing="false" onAction="#openTableUnitPrefix" text="Unit Prefix" />
+                          </items>
+                        </Menu>
 							</items>
 						</Menu>
                   <Menu mnemonicParsing="false" text="Window">

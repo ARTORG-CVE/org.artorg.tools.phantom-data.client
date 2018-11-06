@@ -30,6 +30,11 @@ import org.artorg.tools.phantomData.server.model.base.property.DoubleProperty;
 import org.artorg.tools.phantomData.server.model.base.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.model.base.property.PropertyField;
 import org.artorg.tools.phantomData.server.model.base.property.StringProperty;
+import org.artorg.tools.phantomData.server.model.measurement.MeasuredValue;
+import org.artorg.tools.phantomData.server.model.measurement.Measurement;
+import org.artorg.tools.phantomData.server.model.measurement.PhysicalQuantity;
+import org.artorg.tools.phantomData.server.model.measurement.Unit;
+import org.artorg.tools.phantomData.server.model.measurement.UnitPrefix;
 import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
@@ -519,6 +524,33 @@ public class MainController {
 	void openTableFileTags(ActionEvent event) {
 		openTable(FileTag.class);
 	}
+	
+	
+	@FXML
+	void openTableMeasuredValue(ActionEvent event) {
+		openTable(MeasuredValue.class);
+	}
+
+	@FXML
+	void openTableMeasurement(ActionEvent event) {
+		openTable(Measurement.class);
+	}
+	
+	@FXML
+	void openTablePhysicalQuantity(ActionEvent event) {
+		openTable(PhysicalQuantity.class);
+	}
+	
+	@FXML
+	void openTableUnit(ActionEvent event) {
+		openTable(Unit.class);
+	}
+	
+	@FXML
+	void openTableUnitPrefix(ActionEvent event) {
+		openTable(UnitPrefix.class);
+	}
+	
 
 	public static String getUrlLocalhost() {
 		return urlLocalhost;

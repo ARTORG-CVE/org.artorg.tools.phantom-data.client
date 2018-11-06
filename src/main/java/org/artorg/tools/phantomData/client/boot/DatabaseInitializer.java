@@ -12,6 +12,11 @@ import org.artorg.tools.phantomData.server.model.base.person.Person;
 import org.artorg.tools.phantomData.server.model.base.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.base.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.model.base.property.PropertyField;
+import org.artorg.tools.phantomData.server.model.measurement.MeasuredValue;
+import org.artorg.tools.phantomData.server.model.measurement.Measurement;
+import org.artorg.tools.phantomData.server.model.measurement.PhysicalQuantity;
+import org.artorg.tools.phantomData.server.model.measurement.Unit;
+import org.artorg.tools.phantomData.server.model.measurement.UnitPrefix;
 import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
@@ -20,29 +25,42 @@ import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.model.phantom.Special;
 
 public class DatabaseInitializer {
-	private static HttpConnectorSpring<Gender> genderConn = HttpConnectorSpring.getOrCreate(Gender.class);
-	private static PersonalizedHttpConnectorSpring<AcademicTitle> academicTitleConn = PersonalizedHttpConnectorSpring
-			.getOrCreate(AcademicTitle.class);
-	private static PersonalizedHttpConnectorSpring<Person> personConn = PersonalizedHttpConnectorSpring
-			.getOrCreate(Person.class);
-	private static PersonalizedHttpConnectorSpring<AnnulusDiameter> adConn = PersonalizedHttpConnectorSpring
-			.getOrCreate(AnnulusDiameter.class);
-	private static PersonalizedHttpConnectorSpring<FabricationType> fTypeConn = PersonalizedHttpConnectorSpring
-			.getOrCreate(FabricationType.class);
-	private static PersonalizedHttpConnectorSpring<LiteratureBase> litBaseConn = PersonalizedHttpConnectorSpring
-			.getOrCreate(LiteratureBase.class);
-	private static PersonalizedHttpConnectorSpring<PropertyField> fieldConn = PersonalizedHttpConnectorSpring
-			.getOrCreate(PropertyField.class);
-	private static PersonalizedHttpConnectorSpring<BooleanProperty> boolPropConn = PersonalizedHttpConnectorSpring
-			.getOrCreate(BooleanProperty.class);
-	private static PersonalizedHttpConnectorSpring<IntegerProperty> intPropConn = PersonalizedHttpConnectorSpring
-			.getOrCreate(IntegerProperty.class);
-	private static PersonalizedHttpConnectorSpring<Special> specConn = PersonalizedHttpConnectorSpring
-			.getOrCreate(Special.class);
-	private static PersonalizedHttpConnectorSpring<Phantomina> phantominaConn = PersonalizedHttpConnectorSpring
-			.getOrCreate(Phantomina.class);
-	private static PersonalizedHttpConnectorSpring<Phantom> phantomConn = PersonalizedHttpConnectorSpring
-			.getOrCreate(Phantom.class);
+	private static HttpConnectorSpring<Gender> genderConn =
+		HttpConnectorSpring.getOrCreate(Gender.class);
+	private static PersonalizedHttpConnectorSpring<AcademicTitle> academicTitleConn =
+		PersonalizedHttpConnectorSpring.getOrCreate(AcademicTitle.class);
+	private static PersonalizedHttpConnectorSpring<Person> personConn =
+		PersonalizedHttpConnectorSpring.getOrCreate(Person.class);
+	private static PersonalizedHttpConnectorSpring<AnnulusDiameter> adConn =
+		PersonalizedHttpConnectorSpring.getOrCreate(AnnulusDiameter.class);
+	private static PersonalizedHttpConnectorSpring<FabricationType> fTypeConn =
+		PersonalizedHttpConnectorSpring.getOrCreate(FabricationType.class);
+	private static PersonalizedHttpConnectorSpring<LiteratureBase> litBaseConn =
+		PersonalizedHttpConnectorSpring.getOrCreate(LiteratureBase.class);
+	private static PersonalizedHttpConnectorSpring<PropertyField> fieldConn =
+		PersonalizedHttpConnectorSpring.getOrCreate(PropertyField.class);
+	private static PersonalizedHttpConnectorSpring<BooleanProperty> boolPropConn =
+		PersonalizedHttpConnectorSpring.getOrCreate(BooleanProperty.class);
+	private static PersonalizedHttpConnectorSpring<IntegerProperty> intPropConn =
+		PersonalizedHttpConnectorSpring.getOrCreate(IntegerProperty.class);
+	private static PersonalizedHttpConnectorSpring<Special> specConn =
+		PersonalizedHttpConnectorSpring.getOrCreate(Special.class);
+	private static PersonalizedHttpConnectorSpring<Phantomina> phantominaConn =
+		PersonalizedHttpConnectorSpring.getOrCreate(Phantomina.class);
+	private static PersonalizedHttpConnectorSpring<Phantom> phantomConn =
+		PersonalizedHttpConnectorSpring.getOrCreate(Phantom.class);
+
+	private static PersonalizedHttpConnectorSpring<UnitPrefix> unitPrefixConn =
+		PersonalizedHttpConnectorSpring.getOrCreate(UnitPrefix.class);
+	private static PersonalizedHttpConnectorSpring<Unit> unitConn =
+		PersonalizedHttpConnectorSpring.getOrCreate(Unit.class);
+	private static PersonalizedHttpConnectorSpring<
+		PhysicalQuantity> physicalQuantityConn =
+			PersonalizedHttpConnectorSpring.getOrCreate(PhysicalQuantity.class);
+	private static PersonalizedHttpConnectorSpring<Measurement> measurementConn =
+		PersonalizedHttpConnectorSpring.getOrCreate(Measurement.class);
+	private static PersonalizedHttpConnectorSpring<MeasuredValue> measuredValueConn =
+		PersonalizedHttpConnectorSpring.getOrCreate(MeasuredValue.class);
 
 	public static void initDatabase() {
 		initPerson();
@@ -51,6 +69,9 @@ public class DatabaseInitializer {
 		initLiteratureBase();
 		initSpecial();
 		initPhantoms();
+
+		initUnits();
+
 		System.out.println("Database initialized succesful");
 
 		UserAdmin.logout();
@@ -60,14 +81,15 @@ public class DatabaseInitializer {
 	public static boolean isInitialized() {
 		try {
 			return (adConn.readAll().length > 0);
-		} catch (Exception e) {
-		}
+		} catch (Exception e) {}
 		return false;
 	}
 
 	private static void initPerson() {
-		HttpConnectorSpring<AcademicTitle> academicTitleConnInit = HttpConnectorSpring.getOrCreate(AcademicTitle.class);
-		HttpConnectorSpring<Person> personConnInit = HttpConnectorSpring.getOrCreate(Person.class);
+		HttpConnectorSpring<AcademicTitle> academicTitleConnInit =
+			HttpConnectorSpring.getOrCreate(AcademicTitle.class);
+		HttpConnectorSpring<Person> personConnInit =
+			HttpConnectorSpring.getOrCreate(Person.class);
 		Gender male = new Gender("Male");
 		Gender female = new Gender("Female");
 		genderConn.create(male, female);
@@ -81,8 +103,10 @@ public class DatabaseInitializer {
 		UserAdmin.login(hutzli);
 		AcademicTitle master = new AcademicTitle("M.Sc.", "Master of Science");
 		academicTitleConn.create(new AcademicTitle("Dr.", "General Doctor title"));
-		academicTitleConn.create(new AcademicTitle("Dr. med.", "Doctor title in medicine"));
-		academicTitleConn.create(new AcademicTitle("Dr. phil.", "Doctor title in philosophy"));
+		academicTitleConn
+			.create(new AcademicTitle("Dr. med.", "Doctor title in medicine"));
+		academicTitleConn
+			.create(new AcademicTitle("Dr. phil.", "Doctor title in philosophy"));
 		academicTitleConn.create(master);
 		academicTitleConn.create(new AcademicTitle("B.Sc.", "Bachelor of Science"));
 		personConn.create(new Person(master, "Silje", "Ekroll Jahren", female));
@@ -114,7 +138,8 @@ public class DatabaseInitializer {
 	private static void initSpecial() {
 		PropertyField field1 = new PropertyField("has leaflets?", "", Special.class);
 		PropertyField field2 = new PropertyField("has coronaries?", "", Special.class);
-		PropertyField field3 = new PropertyField("num. of simulations?", "", Special.class);
+		PropertyField field3 =
+			new PropertyField("num. of simulations?", "", Special.class);
 		fieldConn.create(field1);
 		fieldConn.create(field2);
 		fieldConn.create(field3);
@@ -180,26 +205,82 @@ public class DatabaseInitializer {
 		phantomConn.create(phantoms);
 	}
 
-	private static Phantom createPhantom(int annulusDiameter, String fType, String litBase, String special,
-			int number) {
-		AnnulusDiameter annulusDiameter2 = adConn.readByAttribute(annulusDiameter, "shortcut");
+	private static Phantom createPhantom(int annulusDiameter, String fType,
+		String litBase, String special, int number) {
+		AnnulusDiameter annulusDiameter2 =
+			adConn.readByAttribute(annulusDiameter, "shortcut");
 		FabricationType fType2 = fTypeConn.readByAttribute(fType, "shortcut");
 		LiteratureBase litBase2 = litBaseConn.readByAttribute(litBase, "shortcut");
 		Special special2 = specConn.readByAttribute(special, "shortcut");
-		Phantomina phantomina = new Phantomina(annulusDiameter2, fType2, litBase2, special2);
+		Phantomina phantomina =
+			new Phantomina(annulusDiameter2, fType2, litBase2, special2);
 		final Phantomina finalPhantomina = phantomina;
-		List<Phantomina> phantominas = phantominaConn.readAllAsStream().filter(p -> p.getProductId().equals(finalPhantomina.getProductId()))
-				.collect(Collectors.toList());
-		if (phantominas.size() == 0)
-			phantominaConn.create(phantomina);
-		else if (phantominas.size() == 1)
-			phantomina = phantominas.get(0);
+		List<Phantomina> phantominas = phantominaConn.readAllAsStream()
+			.filter(p -> p.getProductId().equals(finalPhantomina.getProductId()))
+			.collect(Collectors.toList());
+		if (phantominas.size() == 0) phantominaConn.create(phantomina);
+		else if (phantominas.size() == 1) phantomina = phantominas.get(0);
 		else {
 			phantomina = phantominas.get(0);
 			throw new UnsupportedOperationException();
 		}
 
 		return new Phantom(phantomina, number);
+	}
+
+	private static void initUnits() {
+		UnitPrefix yocto = new UnitPrefix("yocto", "y", -24);
+		UnitPrefix zepto = new UnitPrefix("zepto", "z", -21);
+		UnitPrefix atto = new UnitPrefix("atto", "a", -18);
+		UnitPrefix femto = new UnitPrefix("femto", "f", -15);
+		UnitPrefix pico = new UnitPrefix("pico", "p", -12);
+		UnitPrefix nano = new UnitPrefix("nano", "n", -9);
+		UnitPrefix micro = new UnitPrefix("micro", "μ", -6);
+		UnitPrefix milli = new UnitPrefix("milli", "m", -3);
+		UnitPrefix centi = new UnitPrefix("centi", "c", -2);
+		UnitPrefix deci = new UnitPrefix("deci", "d", -1);
+		UnitPrefix none = new UnitPrefix("-", "", 0);
+		UnitPrefix deca = new UnitPrefix("deca", "da", 1);
+		UnitPrefix hecto = new UnitPrefix("hecto", "h", 2);
+		UnitPrefix kilo = new UnitPrefix("kilo", "k", 3);
+		UnitPrefix mega = new UnitPrefix("mega", "M", 6);
+		UnitPrefix giga = new UnitPrefix("giga", "G", 9);
+		UnitPrefix tera = new UnitPrefix("tera", "T", 12);
+		UnitPrefix peta = new UnitPrefix("peta", "P", 15);
+		UnitPrefix exa = new UnitPrefix("exa", "E", 18);
+		UnitPrefix zetta = new UnitPrefix("zetta", "Z", 21);
+		UnitPrefix yotta = new UnitPrefix("yotta", "Y", 24);
+
+		unitPrefixConn.create(yocto, zepto, atto, femto, pico, nano, micro, milli, centi,
+			deci, none, deca, hecto, kilo, mega, giga, tera, peta, exa, zetta, yotta);
+		
+		PhysicalQuantity lenght = new PhysicalQuantity("Length", "l", "");
+		PhysicalQuantity time = new PhysicalQuantity("Time", "t", "");
+		PhysicalQuantity mass = new PhysicalQuantity("Mass", "m", "");
+		PhysicalQuantity temperature = new PhysicalQuantity("Temperature", "T", "");
+		PhysicalQuantity pressure = new PhysicalQuantity("Pressure", "p", "");
+		PhysicalQuantity velocity = new PhysicalQuantity("Velocity", "v", "");
+		PhysicalQuantity acceleration = new PhysicalQuantity("Acceleration", "a", "");
+		PhysicalQuantity force = new PhysicalQuantity("Force", "F", "");
+		PhysicalQuantity torque = new PhysicalQuantity("Torque", "M", "");
+		PhysicalQuantity momentum = new PhysicalQuantity("Momentum", "p", "");
+		PhysicalQuantity angularMomentum =
+			new PhysicalQuantity("Angular Momentum", "L", "");
+		PhysicalQuantity frequency = new PhysicalQuantity("Frequency", "f", "");
+
+		physicalQuantityConn.create(lenght, time, mass, temperature, pressure, velocity,
+			acceleration, force, torque, momentum, angularMomentum, frequency);
+		
+		unitConn.create(new Unit("N", "Newton", force, none));
+		unitConn.create(new Unit("Pa", "Pascal", pressure, none));
+		unitConn.create(new Unit("Pa", "Pascal", pressure, mega));
+		unitConn.create(new Unit("bar", "Bar", pressure, none));
+		unitConn.create(new Unit("Hz", "Hertz", frequency, none));
+		unitConn.create(new Unit("Hz", "Hertz", frequency, kilo));
+		unitConn.create(new Unit("Hz", "Hertz", frequency, mega));
+		unitConn.create(new Unit("Hz", "Hertz", frequency, giga));
+		unitConn.create(new Unit("m/s", "", velocity, none));
+		unitConn.create(new Unit("m/s^2", "", acceleration, none));
 	}
 
 }
