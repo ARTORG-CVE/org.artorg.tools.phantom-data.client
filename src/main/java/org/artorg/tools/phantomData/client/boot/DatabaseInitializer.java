@@ -12,8 +12,6 @@ import org.artorg.tools.phantomData.server.model.base.person.Person;
 import org.artorg.tools.phantomData.server.model.base.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.base.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.model.base.property.PropertyField;
-import org.artorg.tools.phantomData.server.model.measurement.MeasuredValue;
-import org.artorg.tools.phantomData.server.model.measurement.Measurement;
 import org.artorg.tools.phantomData.server.model.measurement.PhysicalQuantity;
 import org.artorg.tools.phantomData.server.model.measurement.Unit;
 import org.artorg.tools.phantomData.server.model.measurement.UnitPrefix;
@@ -57,10 +55,6 @@ public class DatabaseInitializer {
 	private static PersonalizedHttpConnectorSpring<
 		PhysicalQuantity> physicalQuantityConn =
 			PersonalizedHttpConnectorSpring.getOrCreate(PhysicalQuantity.class);
-	private static PersonalizedHttpConnectorSpring<Measurement> measurementConn =
-		PersonalizedHttpConnectorSpring.getOrCreate(Measurement.class);
-	private static PersonalizedHttpConnectorSpring<MeasuredValue> measuredValueConn =
-		PersonalizedHttpConnectorSpring.getOrCreate(MeasuredValue.class);
 
 	public static void initDatabase() {
 		initPerson();

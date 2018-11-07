@@ -2,43 +2,49 @@
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>org.artorg.tools</groupId>
 	<artifactId>phantom-data-client</artifactId>
-	<version>0.2.1-SNAPSHOT</version>
-
+	<version>0.2.1</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.1.0.RELEASE</version>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.1.0.RELEASE</version>
 	</parent>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-
 		<!-- Solves: [ERROR] Unable to determine if resource... -->
-		<dependency.locations.enabled>
-			false
-		</dependency.locations.enabled>
+		<dependency.locations.enabled>false</dependency.locations.enabled>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>ch.huma</groupId>
+			<artifactId>huma-library-io</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.artorg.tools</groupId>
+			<artifactId>phantom-data-server</artifactId>
+			<version>0.2.1</version>
+		</dependency>
 
 
+		<!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>2.0.12</version>
+		</dependency>
 
-
-<!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
-<dependency>
-    <groupId>org.apache.pdfbox</groupId>
-    <artifactId>pdfbox</artifactId>
-    <version>2.0.12</version>
-</dependency>
-
-
-
-
+		<!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.9.3</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.panemu</groupId>
@@ -46,36 +52,19 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			<version>2.0</version>
 		</dependency>
 
-		
-<dependency>
-			<groupId>org.artorg.tools</groupId>
-			<artifactId>phantom-data-server</artifactId>
-			<version>0.2.1-SNAPSHOT</version>
-		</dependency>
 
-
-
-		<dependency>
-		<groupId>ch.huma</groupId>
-		<artifactId>huma-library-io</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		
 		<!-- REQUIRED - Reflections f.e. getSubClass -->
 		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
 			<version>0.9.11</version>
 		</dependency>
-
 		<!-- REQUIRED - StringUtils -->
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.8</version>
 		</dependency>
-
 		<!-- REQUIRED -->
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
@@ -93,115 +82,10 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-rest</artifactId>
 		</dependency>
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		<dependency>
-			<groupId>ch.huma</groupId>
-			<artifactId>huma-library-io</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-	
-	
-	
-	
-	
-	
-	
-	<!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
-<dependency>
-    <groupId>commons-beanutils</groupId>
-    <artifactId>commons-beanutils</artifactId>
-    <version>1.9.3</version>
-</dependency>
-	
-	
-	
-	
-<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-install-plugin -->
-<dependency>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-install-plugin</artifactId>
-    <version>3.0.0-M1</version>
-</dependency>
-
-	
-
-	
-	
-		<!-- Optional - Testing -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-		
-		<!-- Optional - Reflections f.e. getSubClass -->
-		<dependency>
-			<groupId>org.reflections</groupId>
-			<artifactId>reflections</artifactId>
-			<version>0.9.11</version>
-		</dependency>
-
-		<!-- Optional - Deleting Directories -->
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.6</version>
-		</dependency>
-
-		<!-- Optional - Executing Curl commands. For shutdown Spring Boot App -->
-		<dependency>
-			<groupId>org.toile-libre.libe</groupId>
-			<artifactId>curl</artifactId>
-			<version>0.0.19</version>
-		</dependency>
-
-		<!-- Optional - Shuting down tomcat -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-
-		<!-- REQUIRED -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-		<!-- REQUIRED -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-rest</artifactId>
-		</dependency>
-		<!-- REQUIRED -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-		</dependency>
-		<!-- REQUIRED -->
-		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.2.11</version>
-		</dependency>
 	</dependencies>
 
 	<build> 
 		<plugins>
-
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
@@ -214,7 +98,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.6.0</version>
@@ -229,26 +112,23 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 					</dependency>
 				</dependencies>
 			</plugin>
-
-
-						<plugin>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-maven-plugin</artifactId>
-      <version>2.1.0.RELEASE</version>
-      <configuration>
-        <mainClass>org.artorg.tools.phantomData.client.Main</mainClass>
-        <layout>JAR</layout>
-      </configuration>
-      <executions>
-        <execution>
-          <goals>
-            <goal>repackage</goal>
-          </goals>
-        </execution>
-      </executions>
-    </plugin>
-			
-			
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>2.1.0.RELEASE</version>
+				<configuration>
+					<classifier>spring-boot</classifier>
+					<mainClass>org.artorg.tools.phantomData.client.Main</mainClass>
+					<layout>JAR</layout>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>

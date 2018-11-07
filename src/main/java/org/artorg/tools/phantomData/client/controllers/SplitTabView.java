@@ -37,7 +37,6 @@ import org.artorg.tools.phantomData.client.table.FxFactory;
 import org.artorg.tools.phantomData.client.table.IDbFactoryTableView;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.client.util.IOutil;
 import org.artorg.tools.phantomData.server.model.base.DbFile;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -226,7 +225,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings("unchecked")
 	private <ITEM extends DbPersistent<ITEM, ?>> TableRow<ITEM> createTableViewContext(
 		ProTableView<ITEM> tableViewSpring, TableView<ITEM> tableView) {
 		final TableRow<ITEM> row = new TableRow<ITEM>();

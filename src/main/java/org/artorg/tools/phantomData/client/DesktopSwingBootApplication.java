@@ -23,7 +23,7 @@ public class DesktopSwingBootApplication extends SwingConsoleStartupClientBooter
 	private static final int nConsoleLinesFx;
 	
 	static {
-		nConsoleLinesServer = 221;
+		nConsoleLinesServer = 39;
 		nConsoleLinesFx = 1;
 	}
 	

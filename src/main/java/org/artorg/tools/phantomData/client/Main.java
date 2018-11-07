@@ -2,9 +2,7 @@ package org.artorg.tools.phantomData.client;
 
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfos;
 import org.artorg.tools.phantomData.client.boot.ClientBooter;
-import org.artorg.tools.phantomData.client.controllers.editFactories.measurement.MeasurementEditFactoryController;
 import org.reflections.Reflections;
-import org.slf4j.Logger;
 
 public class Main extends DesktopSwingBootApplication {
 	private static ClientBooter clientBooter;
@@ -22,9 +20,6 @@ public class Main extends DesktopSwingBootApplication {
 	}
 
 	public static void main(String[] args) {
-		
-//		MeasurementEditFactoryController test = new MeasurementEditFactoryController();
-		
 		new Main().boot(args);
 	}
 	
