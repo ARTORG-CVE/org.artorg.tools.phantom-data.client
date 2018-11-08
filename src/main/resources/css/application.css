@@ -49,6 +49,12 @@
     -fx-min-height: 0;
 }
 
+.header .column-header-background {
+    -fx-max-height: -1;
+    -fx-pref-height: -1;
+    -fx-min-height: -1;
+}
+
 
 .titled-pane > .content > * {
 	-fx-border-color: transparent;

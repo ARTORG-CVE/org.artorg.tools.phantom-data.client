@@ -1,5 +1,7 @@
 package org.artorg.tools.phantomData.client.scene.control.tableView;
 
+import java.util.function.BiPredicate;
+
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.TableBase;
@@ -12,14 +14,24 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 
-public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> implements AddableToAnchorPane {
+public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM>
+	implements AddableToAnchorPane {
+	private BiPredicate<AbstractColumn<ITEM>, TableColumn<ITEM, ?>> addColumnPolicy;
+	private BiPredicate<AbstractColumn<ITEM>, TableColumn<ITEM, ?>> removeColumnPolicy;
 	private final Class<ITEM> itemClass;
 	private TableBase<ITEM> table;
-//	private ListChangeListener<ITEM> listenerChangedListenerRefresh;
+
+	{
+		addColumnPolicy =
+			(fromColumn, toColumn) -> toColumn.getText().equals(fromColumn.getName());
+		removeColumnPolicy =
+			(fromColumn, toColumn) -> toColumn.getText().equals(fromColumn.getName());
+	}
 
 	@SuppressWarnings("unchecked")
 	public ProTableView() {
-		itemClass = (Class<ITEM>) Reflect.findSubClassParameterType(this, ProTableView.class, 0);
+		itemClass =
+			(Class<ITEM>) Reflect.findSubClassParameterType(this, ProTableView.class, 0);
 	}
 
 	public ProTableView(Class<ITEM> itemClass) {
@@ -27,28 +39,13 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> imp
 	}
 
 	public void removeHeaderRow() {
-		try {
-			this.getStyleClass().add("noheader");
-		} catch (Exception e) {
-			this.setStyle("-fx-max-height: 0; -fx-pref-height: 0; -fx-min-height: 0;");
-		}
+		this.getStyleClass().remove("header");
+		this.getStyleClass().add("noheader");
 	}
 
-//	public ListChangeListener<ITEM> getListenerChangedListenerRefresh() {
-//		return listenerChangedListenerRefresh;
-//	}
-//
-//	public void setListenerChangedListenerRefresh(ListChangeListener<ITEM> listenerChangedListenerRefresh) {
-//		this.listenerChangedListenerRefresh = listenerChangedListenerRefresh;
-//	}
-
-	{
-//		listenerChangedListenerRefresh = new ListChangeListener<ITEM>() {
-//			@Override
-//			public void onChanged(Change<? extends ITEM> c) {
-//				refresh();
-//			}
-//		};
+	public void showHeaderRow() {
+		this.getStyleClass().remove("noheader");
+		this.getStyleClass().add("header");
 	}
 
 	public void initTable() {
@@ -60,15 +57,21 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> imp
 	}
 
 	private void refreshColumns() {
-		CollectionUtil.syncLists(super.getColumns(), table.getColumnCreator().apply(getItems()),
-				(toColumn, fromColumn) -> toColumn.getText().equals(fromColumn.getName()), this::createTableColumn);
+		CollectionUtil.addIfAbsent(table.getColumnCreator().apply(getItems()),
+			super.getColumns(), addColumnPolicy, this::createTableColumn);
+
+		CollectionUtil.removeIfAbsent(table.getColumnCreator().apply(getItems()),
+			super.getColumns(), removeColumnPolicy);
+
 	}
 
-	private TableColumn<ITEM, String> createTableColumn(AbstractColumn<ITEM> baseColumn, int index) {
-		TableColumn<ITEM, String> tableColumn = new TableColumn<ITEM, String>(baseColumn.getName());
+	private TableColumn<ITEM, String> createTableColumn(AbstractColumn<ITEM> baseColumn,
+		int index) {
+		TableColumn<ITEM, String> tableColumn =
+			new TableColumn<ITEM, String>(baseColumn.getName());
 		tableColumn.setSortable(false);
-		tableColumn.setCellValueFactory(
-				cellData -> new SimpleStringProperty(String.valueOf(table.getValue(cellData.getValue(), index))));
+		tableColumn.setCellValueFactory(cellData -> new SimpleStringProperty(
+			String.valueOf(table.getValue(cellData.getValue(), index))));
 		return tableColumn;
 	}
 
@@ -86,7 +89,6 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> imp
 	public void setTable(TableBase<ITEM> table) {
 		this.table = table;
 		initTable();
-//		table.getItems().addListener(listenerChangedListenerRefresh);
 	}
 
 	public TableBase<ITEM> getTable() {
@@ -95,21 +97,6 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> imp
 
 	public void autoResizeColumns() {
 		TableViewUtils.autoResizeColumns(this);
-//		
-//		super.setColumnResizePolicy(javafx.scene.control.TableView.UNCONSTRAINED_RESIZE_POLICY);
-//		super.getColumns().stream().forEach((column) -> {
-//			Text t = new Text(column.getText());
-//			double max = t.getLayoutBounds().getWidth() + 45.0;
-//			for (int i = 0; i < super.getItems().size(); i++) {
-//				if (column.getCellData(i) != null) {
-//					t = new Text(column.getCellData(i).toString());
-//					double calcwidth = t.getLayoutBounds().getWidth() + 10;
-//					if (calcwidth > max)
-//						max = calcwidth;
-//				}
-//			}
-//			column.setPrefWidth(max);
-//		});
 	}
 
 	public javafx.scene.control.TableView<ITEM> getGraphic() {
@@ -125,6 +112,25 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM> imp
 
 	public Class<ITEM> getItemClass() {
 		return itemClass;
+	}
+
+	public BiPredicate<AbstractColumn<ITEM>, TableColumn<ITEM, ?>> getAddColumnPolicy() {
+		return addColumnPolicy;
+	}
+
+	public void setAddColumnPolicy(
+		BiPredicate<AbstractColumn<ITEM>, TableColumn<ITEM, ?>> addColumnPolicy) {
+		this.addColumnPolicy = addColumnPolicy;
+	}
+
+	public BiPredicate<AbstractColumn<ITEM>, TableColumn<ITEM, ?>>
+		getRemoveColumnPolicy() {
+		return removeColumnPolicy;
+	}
+
+	public void setRemoveColumnPolicy(
+		BiPredicate<AbstractColumn<ITEM>, TableColumn<ITEM, ?>> removeColumnPolicy) {
+		this.removeColumnPolicy = removeColumnPolicy;
 	}
 
 }
