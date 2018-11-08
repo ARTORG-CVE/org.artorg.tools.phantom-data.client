@@ -16,21 +16,21 @@ public class UnitFilterTable extends DbUndoRedoFactoryEditFilterTable<Unit> impl
 		setTableName("Units");
 
 		setColumnCreator(items -> {
-			List<AbstractColumn<Unit>> columns =
-				new ArrayList<AbstractColumn<Unit>>();
-			columns.add(new FilterColumn<Unit>(
+			List<AbstractColumn<Unit,?>> columns =
+				new ArrayList<AbstractColumn<Unit,?>>();
+			columns.add(new FilterColumn<Unit,String>(
 				"Shortcut", item -> item,
 				path -> path.getShortcut(),
 				(path, value) -> path.setShortcut(value)));	
-			columns.add(new FilterColumn<Unit>(
+			columns.add(new FilterColumn<Unit,String>(
 				"Unit Prefix", item -> item.getUnitPrefix(),
 				path -> path.getPrefix(),
 				(path, value) -> path.setPrefix(value)));	
-			columns.add(new FilterColumn<Unit>(
+			columns.add(new FilterColumn<Unit,String>(
 				"Physical Quantity", item -> item.getPhysicalQuantity(),
 				path -> path.getName(),
 				(path, value) -> path.setName(value)));
-			columns.add(new FilterColumn<Unit>(
+			columns.add(new FilterColumn<Unit,String>(
 				"Description", item -> item,
 				path -> path.getDescription(),
 				(path, value) -> path.setDescription(value)));

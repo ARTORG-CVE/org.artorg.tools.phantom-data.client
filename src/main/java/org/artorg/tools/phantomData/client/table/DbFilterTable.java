@@ -121,8 +121,8 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 	}
 
 	@Override
-	public void setSortComparator(Comparator<String> sortComparator,
-		Function<ITEM, String> valueGetter) {
+	public void setSortComparator(Comparator<Object> sortComparator,
+		Function<ITEM, Object> valueGetter) {
 		this.sortComparator = (item1, item2) -> sortComparator
 			.compare(valueGetter.apply(item1), valueGetter.apply(item2));
 	}
@@ -156,9 +156,9 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 	}
 
 	@Override
-	public List<AbstractFilterColumn<ITEM>> getFilteredColumns() {
+	public List<AbstractFilterColumn<ITEM,?>> getFilteredColumns() {
 		return mappedColumnIndexes.stream()
-			.map(i -> (AbstractFilterColumn<ITEM>) getColumns().get(i))
+			.map(i -> (AbstractFilterColumn<ITEM,?>) getColumns().get(i))
 			.collect(Collectors.toList());
 	}
 
@@ -169,7 +169,7 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 	}
 
 	@Override
-	public String getFilteredValue(ITEM item, int col) {
+	public Object getFilteredValue(ITEM item, int col) {
 		return getValue(item, columnIndexMapper.apply(col));
 	}
 
@@ -179,7 +179,7 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 	}
 
 	@Override
-	public void setColumnItemFilterValues(int columnIndex, List<String> values) {
+	public void setColumnItemFilterValues(int columnIndex, List<Object> values) {
 		columnItemFilterPredicates.set(columnIndexMapper.apply(columnIndex), item -> {
 			return values.stream()
 				.filter(value -> getFilteredValue(item, columnIndex).equals(value))
@@ -193,7 +193,7 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 		if (searchText.isEmpty()) columnTextFilterPredicates
 			.set(columnIndexMapper.apply(columnIndex), item -> true);
 		else columnTextFilterPredicates.set(columnIndexMapper.apply(columnIndex),
-			item -> p.matcher(getFilteredValue(item, columnIndex)).find());
+			item -> p.matcher(getFilteredValue(item, columnIndex).toString()).find());
 	}
 
 	@Override
@@ -202,7 +202,7 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 			.filter(i -> i < columnItemFilterPredicates.size())
 			.map(i -> getColumns().get(i))
 			.filter(column -> column instanceof FilterColumn)
-			.map(column -> ((FilterColumn<ITEM>) column))
+			.map(column -> ((FilterColumn<ITEM,?>) column))
 			.map(filterColumn -> filterColumn.getFilterPredicate())
 			.reduce((f1, f2) -> f1.and(f2)).orElse(item -> true);
 
@@ -219,7 +219,7 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 		int nRows = this.getFilteredNrows();
 		int nCols = this.getFilteredNcols();
 		if (nRows == 0 || nCols == 0) return "";
-		String[][] content = new String[nRows + 1][nCols];
+		Object[][] content = new String[nRows + 1][nCols];
 
 		for (int col = 0; col < nCols; col++)
 			content[0][col] = getFilteredColumnNames().get(col);
@@ -232,8 +232,8 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 		for (int col = 0; col < nCols; col++) {
 			int maxLength = 0;
 			for (int row = 0; row < nRows; row++) {
-				if (content[row][col].length() > maxLength)
-					maxLength = content[row][col].length();
+				if (content[row][col].toString().length() > maxLength)
+					maxLength = content[row][col].toString().length();
 			}
 			columnWidth[col] = maxLength;
 		}
@@ -242,17 +242,17 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 
 		for (int col = 0; col < nCols; col++) {
 			content[0][col] = content[0][col]
-				+ StringUtils.repeat(" ", columnWidth[col] - content[0][col].length());
+				+ StringUtils.repeat(" ", columnWidth[col] - content[0][col].toString().length());
 		}
-		columnStrings.add(Arrays.stream(content[0]).collect(Collectors.joining("|")));
+		columnStrings.add(Arrays.stream(content[0]).map(o -> o.toString()).collect(Collectors.joining("|")));
 		columnStrings.add(StringUtils.repeat("-", columnStrings.get(0).length()));
 
 		for (int row = 0; row < nRows; row++) {
 			for (int j = 0; j < nCols; j++)
 				content[row + 1][j] = content[row + 1][j] + StringUtils.repeat(" ",
-					columnWidth[j] - content[row + 1][j].length());
+					columnWidth[j] - content[row + 1][j].toString().length());
 			columnStrings
-				.add(Arrays.stream(content[row + 1]).collect(Collectors.joining("|")));
+				.add(Arrays.stream(content[row + 1]).map(o -> o.toString()).collect(Collectors.joining("|")));
 		}
 
 		return columnStrings.stream().collect(Collectors.joining("\n"));

@@ -7,10 +7,10 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 public interface IDbUndoRedoEditFilterTable<ITEM extends DbPersistent<ITEM,?>> extends IUndoRedoTable<ITEM>, IDbEditFilterTable<ITEM> {
 	
-	default void setFilteredValue(int row, int col, String value, Consumer<String> redo, Consumer<String> undo) {
+	default void setFilteredValue(int row, int col, Object value, Consumer<Object> redo, Consumer<Object> undo) {
 		ITEM superItem = getItems().stream().filter(item -> item.getId().equals(getFilteredItems().get(row).getId())).findFirst().get();
 		ITEM filteredItem = getFilteredItems().get(row);
-		String currentValue = getFilteredValue(superItem, col);
+		Object currentValue = getFilteredValue(superItem, col);
 		if (value.equals(currentValue))  return;
 		
 		UndoRedoNode node = new UndoRedoNode(() -> {
@@ -23,14 +23,13 @@ public interface IDbUndoRedoEditFilterTable<ITEM extends DbPersistent<ITEM,?>> e
 				getFilteredColumns().get(col).update(filteredItem);
 		});
 		
-		
 		getUndoManager().addAndRun(node);
 		
 	}
 	
-	default void setFilteredValue(ITEM item, int filteredCol, String value, Consumer<String> redo, Consumer<String> undo) {
+	default void setFilteredValue(ITEM item, int filteredCol, Object value, Consumer<Object> redo, Consumer<Object> undo) {
 		ITEM superItem = getItems().stream().filter(i -> i.getId().equals(item.getId())).findFirst().get();
-		String currentValue = getFilteredValue(superItem, filteredCol);
+		Object currentValue = getFilteredValue(superItem, filteredCol);
 		if (value.equals(currentValue))  return;
 		
 		UndoRedoNode node = new UndoRedoNode(() -> {
@@ -47,7 +46,7 @@ public interface IDbUndoRedoEditFilterTable<ITEM extends DbPersistent<ITEM,?>> e
 		getUndoManager().addAndRun(node);
 	}
 	
-	default void setFilteredValue(ITEM item, int filteredCol, String value) {
+	default void setFilteredValue(ITEM item, int filteredCol, Object value) {
 		setFilteredValue(item, filteredCol, value, s -> {}, s -> {});
 	}
 	

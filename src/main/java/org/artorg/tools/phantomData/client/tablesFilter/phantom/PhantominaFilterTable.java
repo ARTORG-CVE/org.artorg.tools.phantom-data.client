@@ -16,28 +16,28 @@ public class PhantominaFilterTable extends DbUndoRedoFactoryEditFilterTable<Phan
 		setTableName("Phantominas");
 
 		setColumnCreator(items -> {
-			List<AbstractColumn<Phantomina>> columns =
-				new ArrayList<AbstractColumn<Phantomina>>();
-			FilterColumn<Phantomina> column;
-			column = new FilterColumn<Phantomina>(
+			List<AbstractColumn<Phantomina,?>> columns =
+				new ArrayList<AbstractColumn<Phantomina,?>>();
+			FilterColumn<Phantomina,?> column;
+			column = new FilterColumn<Phantomina,String>(
 				"PID", item -> item,
 				path -> path.getProductId(),
 				(path, value) -> path.setProductId(value));
 			column.setAscendingSortComparator((p1, p2) -> Phantomina.comparePid(p1.getProductId(), p2.getProductId()));
 			columns.add(column);
-			columns.add(new FilterColumn<Phantomina>(
+			columns.add(new FilterColumn<Phantomina,String>(
 				"Annulus [mm]", item -> item.getAnnulusDiameter(),
 				path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(Double.valueOf(value))));
-			columns.add(new FilterColumn<Phantomina>(
+			columns.add(new FilterColumn<Phantomina,String>(
 				"Type", item -> item.getFabricationType(),
 				path -> path.getValue(),
 				(path, value) -> path.setValue(value)));
-			columns.add(new FilterColumn<Phantomina>(
+			columns.add(new FilterColumn<Phantomina,String>(
 				"Literature", item -> item.getLiteratureBase(),
 				path -> path.getValue(),
 				(path, value) -> path.setValue(value)));
-			column = new FilterColumn<Phantomina>(
+			column = new FilterColumn<Phantomina,String>(
 				"Special", item -> item.getSpecial(),
 				path -> path.getShortcut(),
 				(path, value) -> path.setShortcut(value));

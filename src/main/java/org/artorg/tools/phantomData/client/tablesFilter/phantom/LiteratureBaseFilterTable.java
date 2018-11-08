@@ -16,13 +16,13 @@ public class LiteratureBaseFilterTable
 		setTableName("Literature Bases");
 
 		setColumnCreator(items -> {
-			List<AbstractColumn<LiteratureBase>> columns =
-				new ArrayList<AbstractColumn<LiteratureBase>>();
-			columns.add(new FilterColumn<LiteratureBase>(
+			List<AbstractColumn<LiteratureBase,?>> columns =
+				new ArrayList<AbstractColumn<LiteratureBase,?>>();
+			columns.add(new FilterColumn<LiteratureBase,String>(
 				"Shortcut", item -> item,
 				path -> path.getShortcut(),
 				(path, value) -> path.setShortcut((String) value)));
-			columns.add(new FilterColumn<LiteratureBase>(
+			columns.add(new FilterColumn<LiteratureBase,String>(
 				"Value", item -> item,
 				path -> path.getValue(),
 				(path, value) -> path.setValue((String) value)));

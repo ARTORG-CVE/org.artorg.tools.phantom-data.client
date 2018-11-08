@@ -14,23 +14,23 @@ public class PersonFilterTable extends DbUndoRedoFactoryEditFilterTable<Person> 
 		setTableName("Persons");
 
 		setColumnCreator(items -> {
-			List<AbstractColumn<Person>> columns =
-				new ArrayList<AbstractColumn<Person>>();
+			List<AbstractColumn<Person,?>> columns =
+				new ArrayList<AbstractColumn<Person,?>>();
 
-			columns.add(new FilterColumn<Person>(
+			columns.add(new FilterColumn<Person,String>(
 				"Title", item -> item.getAcademicTitle(),
 				path -> path.getPrefix(),
 				(path, value) -> {
 				}));
-			columns.add(new FilterColumn<Person>(
+			columns.add(new FilterColumn<Person,String>(
 				"Firstname", item -> item,
 				path -> path.getFirstname(),
 				(path, value) -> path.setFirstname((String) value)));
-			columns.add(new FilterColumn<Person>(
+			columns.add(new FilterColumn<Person,String>(
 				"Lastname", item -> item,
 				path -> path.getLastname(),
 				(path, value) -> path.setLastname((String) value)));
-			columns.add(new FilterColumn<Person>(
+			columns.add(new FilterColumn<Person,String>(
 				"Gender", item -> item.getGender(),
 				path -> path.getName(),
 				(path, value) -> path.setName((String) value)));

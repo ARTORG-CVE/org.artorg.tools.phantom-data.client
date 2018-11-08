@@ -23,7 +23,7 @@ import javafx.collections.ObservableList;
 public interface IPropertyColumns {
 	
 	default <ITEM extends AbstractBaseEntity<ITEM>> 
-		void createPropertyColumns(List<AbstractColumn<ITEM>> columns, 
+		void createPropertyColumns(List<AbstractColumn<ITEM,?>> columns, 
 				ObservableList<ITEM> items) {
 		createPropertyColumns(columns, items, 
 				container -> container.getBooleanProperties(), 
@@ -60,7 +60,7 @@ public interface IPropertyColumns {
 	default <ITEM extends DbPersistent<ITEM,?>, 
 			PROPERTY_TYPE extends AbstractProperty<PROPERTY_TYPE, PROPERTY_VALUE_TYPE>, 
 			PROPERTY_VALUE_TYPE extends Comparable<PROPERTY_VALUE_TYPE>> 
-			void createPropertyColumns(List<AbstractColumn<ITEM>> columns, ObservableList<ITEM> items, 
+			void createPropertyColumns(List<AbstractColumn<ITEM,?>> columns, ObservableList<ITEM> items, 
 					Function<ITEM,Collection<PROPERTY_TYPE>> propsGetter, 
 					Function<PROPERTY_VALUE_TYPE, String> toStringFun, Function<String, PROPERTY_VALUE_TYPE> fromStringFun) {
 		{
@@ -71,7 +71,7 @@ public interface IPropertyColumns {
 			set.stream().sorted((p1, p2) -> p1.getPropertyField().getId().compareTo(p2.getPropertyField().getId()))
 					.forEach(p -> map.put(p.getPropertyField().getId(), p.getPropertyField().getName()));
 			map.entrySet().stream()
-					.forEach(entry -> columns.add(new OptionalFilterColumn<ITEM>(entry.getValue(),
+					.forEach(entry -> columns.add(new OptionalFilterColumn<ITEM,Object>(entry.getValue(),
 							item -> propsGetter.apply(item).stream()
 									.filter(p -> p.getPropertyField().getId() == entry.getKey()).findFirst(),
 							path -> toStringFun.apply(path.getValue()),

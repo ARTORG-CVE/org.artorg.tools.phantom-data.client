@@ -18,11 +18,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 
 public class DbFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends DbTableView<ITEM> {
-	protected List<FilterMenuButton<ITEM>> filterMenuButtons;
+	protected List<FilterMenuButton<ITEM,?>> filterMenuButtons;
 	
 	{
 		super.setEditable(true);
-		filterMenuButtons = new ArrayList<FilterMenuButton<ITEM>>();	
+		filterMenuButtons = new ArrayList<FilterMenuButton<ITEM,?>>();	
 	}
 	
 	public DbFilterTableView() {
@@ -39,7 +39,7 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends DbTabl
             	Label label = (Label)n;
             	
             	String columnName = label.getText();
-            	Optional<FilterMenuButton<ITEM>> filterMenuButton = filterMenuButtons.stream()
+            	Optional<FilterMenuButton<ITEM,?>> filterMenuButton = filterMenuButtons.stream()
             			.filter(f -> f.getText().equals(columnName))
             			.findFirst();
             	if(filterMenuButton.isPresent()) {
@@ -77,10 +77,10 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM,?>> extends DbTabl
 			column.setSortable(false);
 			
 			final int localCol = col;
-			FilterMenuButton<ITEM> filterMenuButton = new FilterMenuButton<ITEM>();
+			FilterMenuButton<ITEM,?> filterMenuButton = new FilterMenuButton<ITEM,Object>();
 			filterMenuButton.setText(columnNames.get(col));
 			
-			AbstractFilterColumn<ITEM> filterColumn = table.getFilteredColumns().get(localCol);
+			AbstractFilterColumn<ITEM,?> filterColumn = table.getFilteredColumns().get(localCol);
 			filterColumn.setSortComparatorQueue(table.getSortComparatorQueue());
 			filterMenuButton.setColumn(filterColumn, () -> table.applyFilter()); 
 			filterMenuButtons.add(filterMenuButton);

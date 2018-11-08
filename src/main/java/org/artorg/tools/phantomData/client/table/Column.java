@@ -7,10 +7,10 @@ import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class Column<T> extends AbstractColumn<T> {
+public class Column<T,R> extends AbstractColumn<T,R> {
 	private final Function<T, Object> itemToPropertyGetter;
-	private final Function<Object, String> propertyToValueGetter;
-	private final BiConsumer<Object, String> propertyToValueSetter;
+	private final Function<Object, R> propertyToValueGetter;
+	private final BiConsumer<Object, R> propertyToValueSetter;
 	
 	@SuppressWarnings("unchecked")
 	public <SUB extends DbPersistent<SUB,?>> Column(String columnName, Function<T, SUB> itemToPropertyGetter, 
@@ -18,22 +18,23 @@ public class Column<T> extends AbstractColumn<T> {
 			BiConsumer<SUB, String> propertyToValueSetter) {
 		super(columnName);
 		this.itemToPropertyGetter = (Function<T, Object>) itemToPropertyGetter;
-		this.propertyToValueGetter = (Function<Object, String>) propertyToValueGetter;
-		this.propertyToValueSetter = (BiConsumer<Object, String>) propertyToValueSetter;
+		this.propertyToValueGetter = (Function<Object, R>) propertyToValueGetter;
+		this.propertyToValueSetter = (BiConsumer<Object, R>) propertyToValueSetter;
 	}
 	
 	@Override
-	public String get(T item) {
+	public R get(T item) {
 		Object o = itemToPropertyGetter.apply(item);
-		if (o == null) return "";
+		if (o == null) return null;
 		return propertyToValueGetter.apply(o);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public void set(T item, String value) {
+	public void set(T item, Object value) {
 		Object o = itemToPropertyGetter.apply(item);
 		if (o == null) return;
-		propertyToValueSetter.accept(o, value);
+		propertyToValueSetter.accept(o, (R)value);
 	}
 
 	@Override

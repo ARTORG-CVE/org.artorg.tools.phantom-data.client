@@ -20,17 +20,17 @@ public class MeasurementFilterTable extends DbUndoRedoFactoryEditFilterTable<Mea
 		setTableName("Measurements");
 
 		setColumnCreator(items -> {
-			List<AbstractColumn<Measurement>> columns =
-				new ArrayList<AbstractColumn<Measurement>>();
-			columns.add(new FilterColumn<Measurement>(
+			List<AbstractColumn<Measurement,?>> columns =
+				new ArrayList<AbstractColumn<Measurement,?>>();
+			columns.add(new FilterColumn<Measurement,String>(
 				"Name", item -> item,
 				path -> path.getName(),
 				(path, value) -> path.setName(value)));
-			columns.add(new FilterColumn<Measurement>(
+			columns.add(new FilterColumn<Measurement,String>(
 				"Date", item -> item,
 				path -> new SimpleDateFormat(path.getDateFormat()).format(path.getStartDate()),
 				(path, value) -> path.setStartDate(new Date(value))));
-			columns.add(new FilterColumn<Measurement>(
+			columns.add(new FilterColumn<Measurement,String>(
 				"Description", item -> item,
 				path -> path.getDescription(),
 				(path, value) -> path.setDescription(value)));

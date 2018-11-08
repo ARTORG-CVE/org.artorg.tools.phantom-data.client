@@ -9,8 +9,8 @@ public interface IUndoRedoTable<ITEM> extends IEditTable<ITEM> {
 	
 	UndoManager getUndoManager();
 	
-	default void setValue(ITEM item, int col, String value, Consumer<String> redo, Consumer<String> undo) {
-		String currentValue = getValue(item, col);
+	default void setValue(ITEM item, int col, Object value, Consumer<Object> redo, Consumer<Object> undo) {
+		Object currentValue = getValue(item, col);
 		if (value.equals(currentValue))  return;
 		
 		UndoRedoNode node = new UndoRedoNode(() -> {
@@ -25,7 +25,7 @@ public interface IUndoRedoTable<ITEM> extends IEditTable<ITEM> {
 		getUndoManager().addAndRun(node);
 	}
 	
-	default void setValue(int row, int col, String value, Consumer<String> redo, Consumer<String> undo) {
+	default void setValue(int row, int col, Object value, Consumer<Object> redo, Consumer<Object> undo) {
 		setValue(getItems().get(row), col, value, redo, undo);
 	}
 

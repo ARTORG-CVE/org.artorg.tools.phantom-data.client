@@ -16,8 +16,8 @@ import javafx.scene.control.TableColumn;
 
 public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM>
 	implements AddableToAnchorPane {
-	private BiPredicate<AbstractColumn<ITEM>, TableColumn<ITEM, ?>> addColumnPolicy;
-	private BiPredicate<AbstractColumn<ITEM>, TableColumn<ITEM, ?>> removeColumnPolicy;
+	private BiPredicate<AbstractColumn<ITEM,?>, TableColumn<ITEM, ?>> addColumnPolicy;
+	private BiPredicate<AbstractColumn<ITEM,?>, TableColumn<ITEM, ?>> removeColumnPolicy;
 	private final Class<ITEM> itemClass;
 	private TableBase<ITEM> table;
 
@@ -65,7 +65,7 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM>
 
 	}
 
-	private TableColumn<ITEM, String> createTableColumn(AbstractColumn<ITEM> baseColumn,
+	private TableColumn<ITEM, String> createTableColumn(AbstractColumn<ITEM,?> baseColumn,
 		int index) {
 		TableColumn<ITEM, String> tableColumn =
 			new TableColumn<ITEM, String>(baseColumn.getName());
@@ -114,22 +114,22 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM>
 		return itemClass;
 	}
 
-	public BiPredicate<AbstractColumn<ITEM>, TableColumn<ITEM, ?>> getAddColumnPolicy() {
+	public BiPredicate<AbstractColumn<ITEM,?>, TableColumn<ITEM, ?>> getAddColumnPolicy() {
 		return addColumnPolicy;
 	}
 
 	public void setAddColumnPolicy(
-		BiPredicate<AbstractColumn<ITEM>, TableColumn<ITEM, ?>> addColumnPolicy) {
+		BiPredicate<AbstractColumn<ITEM,?>, TableColumn<ITEM, ?>> addColumnPolicy) {
 		this.addColumnPolicy = addColumnPolicy;
 	}
 
-	public BiPredicate<AbstractColumn<ITEM>, TableColumn<ITEM, ?>>
+	public BiPredicate<AbstractColumn<ITEM,?>, TableColumn<ITEM, ?>>
 		getRemoveColumnPolicy() {
 		return removeColumnPolicy;
 	}
 
 	public void setRemoveColumnPolicy(
-		BiPredicate<AbstractColumn<ITEM>, TableColumn<ITEM, ?>> removeColumnPolicy) {
+		BiPredicate<AbstractColumn<ITEM,?>, TableColumn<ITEM, ?>> removeColumnPolicy) {
 		this.removeColumnPolicy = removeColumnPolicy;
 	}
 

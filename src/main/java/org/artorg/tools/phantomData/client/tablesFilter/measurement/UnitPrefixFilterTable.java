@@ -17,17 +17,17 @@ public class UnitPrefixFilterTable extends DbUndoRedoFactoryEditFilterTable<Unit
 		setTableName("Unit Prefixes");
 
 		setColumnCreator(items -> {
-			List<AbstractColumn<UnitPrefix>> columns =
-				new ArrayList<AbstractColumn<UnitPrefix>>();
-			columns.add(new FilterColumn<UnitPrefix>(
+			List<AbstractColumn<UnitPrefix,?>> columns =
+				new ArrayList<AbstractColumn<UnitPrefix,?>>();
+			columns.add(new FilterColumn<UnitPrefix,String>(
 				"Name", item -> item,
 				path -> path.getName(),
 				(path, value) -> path.setName(value)));
-			columns.add(new FilterColumn<UnitPrefix>(
+			columns.add(new FilterColumn<UnitPrefix,String>(
 				"Prefix", item -> item,
 				path -> path.getPrefix(),
 				(path, value) -> path.setPrefix(value)));
-			columns.add(new FilterColumn<UnitPrefix>(
+			columns.add(new FilterColumn<UnitPrefix,String>(
 				"Exponent", item -> item,
 				path -> path.getExponent().toString(),
 				(path, value) -> path.setExponent(Integer.valueOf(value))));

@@ -16,13 +16,13 @@ public class AnnulusDiameterFilterTable
 		setTableName("Annulus Diameters");
 
 		setColumnCreator(items -> {
-			List<AbstractColumn<AnnulusDiameter>> columns =
-				new ArrayList<AbstractColumn<AnnulusDiameter>>();
-			columns.add(new FilterColumn<AnnulusDiameter>(
+			List<AbstractColumn<AnnulusDiameter,?>> columns =
+				new ArrayList<AbstractColumn<AnnulusDiameter,?>>();
+			columns.add(new FilterColumn<AnnulusDiameter,String>(
 				"Sortcut", item -> item,
 				path -> String.valueOf(path.getShortcut()),
 				(path, value) -> path.setShortcut(Integer.valueOf(value))));
-			columns.add(new FilterColumn<AnnulusDiameter>(
+			columns.add(new FilterColumn<AnnulusDiameter,String>(
 				"Value", item -> item,
 				path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(Double.valueOf(value))));

@@ -9,15 +9,15 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.ObservableList;
 
-public abstract class AbstractColumn<ITEM> {
+public abstract class AbstractColumn<ITEM, E> {
 	private ObservableList<ITEM> items;
 	private boolean visible;
 	private boolean editable;
 	private boolean filterable;
 	private boolean idColumn;
 	private final String columnName;
-	private Function<ITEM,String> valueGetter;
-	private BiConsumer<ITEM,String> valueSetter;
+	private Function<ITEM,E> valueGetter;
+	private BiConsumer<ITEM,E> valueSetter;
 
 	{
 		visible = true;
@@ -32,11 +32,11 @@ public abstract class AbstractColumn<ITEM> {
 	
 	public abstract <U extends DbPersistent<U,SUB_ID>, SUB_ID extends Comparable<SUB_ID>> boolean update(ITEM item);
 	
-	public List<String> getValues() {
+	public List<E> getValues() {
 		return getItems().stream().map(item -> get(item)).collect(Collectors.toList());
 	}
 	
-	public String get(ITEM item) {
+	public E get(ITEM item) {
 		return valueGetter.apply(item);
 	}
 	
@@ -53,24 +53,25 @@ public abstract class AbstractColumn<ITEM> {
 				.findFirst().isPresent();
 	}
 	
-	public void set(ITEM item, String value) {
-		valueSetter.accept(item, value);
+	@SuppressWarnings("unchecked")
+	public void set(ITEM item, Object value) {
+		valueSetter.accept(item, (E)value);
 	}
 	
 	// Getters & Setters
-	public Function<ITEM, String> getValueGetter() {
+	public Function<ITEM, E> getValueGetter() {
 		return valueGetter;
 	}
 
-	public void setValueGetter(Function<ITEM, String> valueGetter) {
+	public void setValueGetter(Function<ITEM, E> valueGetter) {
 		this.valueGetter = valueGetter;
 	}
 
-	public BiConsumer<ITEM, String> getValueSetter() {
+	public BiConsumer<ITEM, E> getValueSetter() {
 		return valueSetter;
 	}
 
-	public void setValueSetter(BiConsumer<ITEM, String> valueSetter) {
+	public void setValueSetter(BiConsumer<ITEM, E> valueSetter) {
 		this.valueSetter = valueSetter;
 	}
 	

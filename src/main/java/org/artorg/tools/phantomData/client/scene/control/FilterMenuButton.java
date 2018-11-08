@@ -29,7 +29,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 
-public class FilterMenuButton<ITEM> extends MenuButton {
+public class FilterMenuButton<ITEM,R> extends MenuButton {
 	private static final Image imgNormal, imgFilter;
 	private final ButtonItemReset itemReset;
 	private final CheckBoxItemSortAscending itemAscending;
@@ -38,7 +38,7 @@ public class FilterMenuButton<ITEM> extends MenuButton {
 	private final CheckBoxItemFilterAll itemFilterAll;
 	private final List<CheckBoxItemFilter> itemsFilter;
 	private String regex;
-	private AbstractFilterColumn<ITEM> column;
+	private AbstractFilterColumn<ITEM,R> column;
 	private Runnable refresh;
 
 	static {
@@ -123,12 +123,13 @@ public class FilterMenuButton<ITEM> extends MenuButton {
 
 	}
 	
-	public AbstractColumn<?> getColumn() {
+	public AbstractColumn<ITEM,R> getColumn() {
 		return column;
 	}
 
-	public void setColumn(AbstractFilterColumn<ITEM> column, Runnable refresh) {
-		this.column = column;		
+	@SuppressWarnings("unchecked")
+	public void setColumn(AbstractFilterColumn<ITEM,?> column, Runnable refresh) {
+		this.column = (AbstractFilterColumn<ITEM, R>) column;		
 		this.refresh = refresh;
 		this.addEventHandler(ComboBox.ON_HIDDEN, event -> {
 			Predicate<ITEM> itemFilter = item -> getSelectedValues().stream()
@@ -138,7 +139,7 @@ public class FilterMenuButton<ITEM> extends MenuButton {
 				textFilter = item -> true;
 			else {
 				final Pattern p = Pattern.compile("(?i)" +this.getRegex());
-				textFilter = item -> p.matcher(column.get(item)).find();
+				textFilter = item -> p.matcher(column.get(item).toString()).find();
 			}
 			Predicate<ITEM> filter = itemFilter.and(textFilter);
 			column.setFilterPredicate(filter);
@@ -355,11 +356,11 @@ public class FilterMenuButton<ITEM> extends MenuButton {
 		this.getItems().removeAll(itemsFilter);
 		itemsFilter.clear();
 		
-		List<String> filteredValues = column.getFilteredValues();
+		List<R> filteredValues = column.getFilteredValues();
 		itemsFilter.addAll(
 				column.getValues().stream().distinct().map(g -> {
 					boolean isFiltered = filteredValues.contains(g);
-					return new CheckBoxItemFilter(g, isFiltered);
+					return new CheckBoxItemFilter(g.toString(), isFiltered);
 				}).collect(Collectors.toList()));
 		
 		if (!itemsFilter.isEmpty()) {

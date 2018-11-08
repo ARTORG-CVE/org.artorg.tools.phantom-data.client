@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public abstract class AbstractFilterColumn<ITEM> extends AbstractColumn<ITEM> {
+public abstract class AbstractFilterColumn<ITEM,R> extends AbstractColumn<ITEM, R> {
 	private Comparator<ITEM> sortComparator;
 	private Comparator<ITEM> ascendingSortComparator;
 	private Predicate<ITEM> filterPredicate;
@@ -26,12 +26,17 @@ public abstract class AbstractFilterColumn<ITEM> extends AbstractColumn<ITEM> {
 		super(columnName);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void resetFilter() {
-		ascendingSortComparator = (i1, i2) -> get(i1).compareTo(get(i2));
+		ascendingSortComparator = (i1, i2) -> {
+			if (i1 instanceof Comparable && i2 instanceof Comparable)
+			return ((Comparable<R>)get(i1)).compareTo(get(i2));
+			return 0;
+			};
 		filterPredicate = item -> true;
 	}
 	
-	public List<String> getFilteredValues() {
+	public List<R> getFilteredValues() {
 		return getFilteredItems().stream().map(item -> get(item))
 			.collect(Collectors.toList());
 	}

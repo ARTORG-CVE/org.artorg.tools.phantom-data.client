@@ -20,7 +20,7 @@ public class DbTable<ITEM extends DbPersistent<ITEM,?>> extends TableBase<ITEM> 
 	@Override
 	public void updateColumns() {
 		getColumns().forEach(column -> column.setIdColumn(false));
-		AbstractColumn<ITEM> idColumn = new Column<ITEM>(
+		AbstractColumn<ITEM,String> idColumn = new Column<ITEM,String>(
 			"ID", item -> item, 
 			path -> path.getId().toString(), 
 			(path,value) -> path.setId(value));

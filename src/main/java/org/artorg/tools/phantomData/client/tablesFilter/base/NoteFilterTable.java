@@ -15,9 +15,9 @@ public class NoteFilterTable extends DbUndoRedoFactoryEditFilterTable<Note> impl
 		setTableName("Notes");
 
 		setColumnCreator(items -> {
-			List<AbstractColumn<Note>> columns =
-				new ArrayList<AbstractColumn<Note>>();
-			columns.add(new FilterColumn<Note>(
+			List<AbstractColumn<Note,?>> columns =
+				new ArrayList<AbstractColumn<Note,?>>();
+			columns.add(new FilterColumn<Note,String>(
 				"Name", item -> item,
 				path -> path.getName(),
 				(path, value) -> path.setName(value)));

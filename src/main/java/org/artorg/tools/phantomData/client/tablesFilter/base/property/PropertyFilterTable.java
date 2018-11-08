@@ -18,9 +18,9 @@ public abstract class PropertyFilterTable<
 
 	{
 		setColumnCreator(items -> {
-			List<AbstractColumn<ITEM>> columns =
-				new ArrayList<AbstractColumn<ITEM>>();
-			columns.add(new FilterColumn<ITEM>(
+			List<AbstractColumn<ITEM,?>> columns =
+				new ArrayList<AbstractColumn<ITEM,?>>();
+			columns.add(new FilterColumn<ITEM,String>(
 					"Type", item -> item,
 					path -> {
 						try {
@@ -31,11 +31,11 @@ public abstract class PropertyFilterTable<
 						return path.getPropertyField().getType();
 					},
 					(path, value) -> {}));
-			columns.add(new FilterColumn<ITEM>(
+			columns.add(new FilterColumn<ITEM,String>(
 				"Field Name", item -> item.getPropertyField(),
 				path -> path.getName(),
 				(path, value) -> path.setName(value)));
-			columns.add(new FilterColumn<ITEM>(
+			columns.add(new FilterColumn<ITEM,String>(
 				"Value", item -> item,
 				path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(fromString(value))));

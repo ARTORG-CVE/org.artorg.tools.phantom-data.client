@@ -14,12 +14,12 @@ import javafx.collections.ObservableList;
 @SuppressWarnings("unchecked")
 public class TableBase<ITEM> implements ITable<ITEM> {
 	private ObservableList<ITEM> items;
-	private List<AbstractColumn<ITEM>> columns;
+	private List<AbstractColumn<ITEM,?>> columns;
 	private boolean isIdColumnVisible;
 	private String tableName;
 	private String itemName;
 	private final Class<ITEM> itemClass;
-	private Function<List<ITEM>,List<AbstractColumn<ITEM>>> columnCreator;
+	private Function<List<ITEM>,List<AbstractColumn<ITEM,?>>> columnCreator;
 	private final ListChangeListener<ITEM> itemListChangeListener;
 
 	public ListChangeListener<ITEM> getItemListChangeListener() {
@@ -28,9 +28,9 @@ public class TableBase<ITEM> implements ITable<ITEM> {
 
 	{
 		items = FXCollections.observableArrayList();
-		columns = new ArrayList<AbstractColumn<ITEM>>();
+		columns = new ArrayList<AbstractColumn<ITEM,?>>();
 		isIdColumnVisible = true;
-		columnCreator = items -> new ArrayList<AbstractColumn<ITEM>>();
+		columnCreator = items -> new ArrayList<AbstractColumn<ITEM,?>>();
 		
 		itemListChangeListener = new ListChangeListener<ITEM>() {
 			@Override
@@ -104,7 +104,7 @@ public class TableBase<ITEM> implements ITable<ITEM> {
 	}
 
 	@Override
-	public List<AbstractColumn<ITEM>> getColumns() {
+	public List<AbstractColumn<ITEM,?>> getColumns() {
 		return this.columns;
 	}
 
@@ -118,12 +118,12 @@ public class TableBase<ITEM> implements ITable<ITEM> {
 		return this.itemClass;
 	}
 	
-	public Function<List<ITEM>, List<AbstractColumn<ITEM>>> getColumnCreator() {
+	public Function<List<ITEM>, List<AbstractColumn<ITEM,?>>> getColumnCreator() {
 		return columnCreator;
 	}
 
 	public void
-		setColumnCreator(Function<List<ITEM>, List<AbstractColumn<ITEM>>> columnCreator) {
+		setColumnCreator(Function<List<ITEM>, List<AbstractColumn<ITEM,?>>> columnCreator) {
 		this.columnCreator = columnCreator;
 		updateColumns();
 	}

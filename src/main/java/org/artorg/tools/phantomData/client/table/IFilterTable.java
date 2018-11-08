@@ -12,13 +12,13 @@ public interface IFilterTable<ITEM> extends ITable<ITEM> {
 
 	int getFilteredNrows();
 
-	void setColumnItemFilterValues(int col, List<String> selectedValues);
+	void setColumnItemFilterValues(int col, List<Object> selectedValues);
 
-	void setSortComparator(Comparator<String> sortComparator, Function<ITEM, String> valueGetter);
+	void setSortComparator(Comparator<Object> sortComparator, Function<ITEM, Object> valueGetter);
 
 	void setColumnTextFilterValues(int col, String regex);
 
-	String getFilteredValue(ITEM item, int col);
+	Object getFilteredValue(ITEM item, int col);
 
 	List<String> getFilteredColumnNames();
 
@@ -28,7 +28,7 @@ public interface IFilterTable<ITEM> extends ITable<ITEM> {
 	
 	ObservableList<ITEM> getFilteredItems();
 
-	List<AbstractFilterColumn<ITEM>> getFilteredColumns();
+	List<AbstractFilterColumn<ITEM,?>> getFilteredColumns();
 
 	Predicate<ITEM> getFilterPredicate();
 	
@@ -36,13 +36,13 @@ public interface IFilterTable<ITEM> extends ITable<ITEM> {
 	
 	Queue<Comparator<ITEM>> getSortComparatorQueue();
 	
-	default String getFilteredValue(int row, int col) {
+	default Object getFilteredValue(int row, int col) {
 		return getFilteredColumns().get(col).get(getFilteredItems().get(row));
 	}
 	
-	default String getColumnFilteredValue(int row, int col) {
-		List<AbstractFilterColumn<ITEM>> columns = getFilteredColumns();
-		AbstractColumn<ITEM> column = columns.get(col);
+	default Object getColumnFilteredValue(int row, int col) {
+		List<AbstractFilterColumn<ITEM,?>> columns = getFilteredColumns();
+		AbstractColumn<ITEM,?> column = columns.get(col);
 		ObservableList<ITEM> items = getItems();
 		ITEM item = items.get(row);
 		column.get(item);

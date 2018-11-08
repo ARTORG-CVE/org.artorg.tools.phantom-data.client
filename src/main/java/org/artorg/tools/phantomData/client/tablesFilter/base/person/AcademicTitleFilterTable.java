@@ -15,13 +15,13 @@ public class AcademicTitleFilterTable
 		setTableName("Academic Titles");
 
 		setColumnCreator(items -> {
-			List<AbstractColumn<AcademicTitle>> columns =
-				new ArrayList<AbstractColumn<AcademicTitle>>();
-			columns.add(new FilterColumn<AcademicTitle>(
+			List<AbstractColumn<AcademicTitle,?>> columns =
+				new ArrayList<AbstractColumn<AcademicTitle,?>>();
+			columns.add(new FilterColumn<AcademicTitle,String>(
 				"Prefix", item -> item,
 				path -> path.getPrefix(),
 				(path, value) -> path.setPrefix((String) value)));
-			columns.add(new FilterColumn<AcademicTitle>(
+			columns.add(new FilterColumn<AcademicTitle,String>(
 				"Descirption", item -> item,
 				path -> path.getDescription(),
 				(path, value) -> path.setDescription((String) value)));

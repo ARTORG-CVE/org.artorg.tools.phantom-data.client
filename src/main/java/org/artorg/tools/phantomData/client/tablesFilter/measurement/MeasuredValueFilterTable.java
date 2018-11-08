@@ -17,17 +17,17 @@ public class MeasuredValueFilterTable extends DbUndoRedoFactoryEditFilterTable<M
 		setTableName("Measured Values");
 
 		setColumnCreator(items -> {
-			List<AbstractColumn<MeasuredValue>> columns =
-				new ArrayList<AbstractColumn<MeasuredValue>>();
-			columns.add(new FilterColumn<MeasuredValue>(
+			List<AbstractColumn<MeasuredValue,?>> columns =
+				new ArrayList<AbstractColumn<MeasuredValue,?>>();
+			columns.add(new FilterColumn<MeasuredValue,String>(
 				"Unit", item -> item.getUnit(),
 				path -> path.getShortcut(),
 				(path, value) -> path.setShortcut(value)));
-			columns.add(new FilterColumn<MeasuredValue>(
+			columns.add(new FilterColumn<MeasuredValue,String>(
 				"Value", item -> item,
 				path -> path.getValue().toString(),
 				(path, value) -> path.setValue(Double.valueOf(value))));
-			columns.add(new FilterColumn<MeasuredValue>(
+			columns.add(new FilterColumn<MeasuredValue,String>(
 				"Description", item -> item,
 				path -> path.getDescription(),
 				(path, value) -> path.setDescription(value)));

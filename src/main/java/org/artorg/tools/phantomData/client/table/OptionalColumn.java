@@ -8,18 +8,18 @@ import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class OptionalColumn<T extends DbPersistent<T,?>> extends AbstractColumn<T> {
+public class OptionalColumn<T extends DbPersistent<T,?>, R extends Comparable<R>> extends AbstractColumn<T,R> {
 	private final Function<T, Optional<? extends Object>> itemToPropertyGetter;
-	private final Function<Object, String> propertyToValueGetter;
-	private final BiConsumer<Object, String> propertyToValueSetter;
-	private final String emptyValue;
+	private final Function<Object, R> propertyToValueGetter;
+	private final BiConsumer<Object, R> propertyToValueSetter;
+	private final R emptyValue;
 	
 	@SuppressWarnings("unchecked")
 	public <SUB extends DbPersistent<SUB,?>> OptionalColumn( String columnName,
 			Function<T, Optional<SUB>> itemToPropertyGetter, 
-			Function<SUB, String> propertyToValueGetter, 
-			BiConsumer<SUB, String> propertyToValueSetter,
-			String emptyValue
+			Function<SUB, R> propertyToValueGetter, 
+			BiConsumer<SUB, R> propertyToValueSetter,
+			R emptyValue
 			) {
 		super(columnName);
 		this.itemToPropertyGetter = item -> itemToPropertyGetter.apply(item);
@@ -29,7 +29,7 @@ public class OptionalColumn<T extends DbPersistent<T,?>> extends AbstractColumn<
 	}
 	
 	@Override
-	public String get(T item) {
+	public R get(T item) {
 		Optional<? extends Object> path = itemToPropertyGetter.apply(item);
 		if (path.isPresent())  {
 			Object o = path.get();
@@ -39,13 +39,14 @@ public class OptionalColumn<T extends DbPersistent<T,?>> extends AbstractColumn<
 		return emptyValue;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public  void set(T item, String value) {
+	public  void set(T item, Object value) {
 		Optional<? extends Object> path = itemToPropertyGetter.apply(item);
 		if (path.isPresent()) {
 			Object o = path.get();
 			if (o == null) return;
-			propertyToValueSetter.accept(o, value);
+			propertyToValueSetter.accept(o, (R)value);
 		}
 	}
 

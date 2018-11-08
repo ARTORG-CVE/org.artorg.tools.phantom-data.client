@@ -13,7 +13,7 @@ import javafx.collections.ObservableList;
 
 public interface ITable<ITEM> {
 	
-	List<AbstractColumn<ITEM>> getColumns();
+	List<AbstractColumn<ITEM,?>> getColumns();
 	
 	void updateColumns();
 	
@@ -31,24 +31,24 @@ public interface ITable<ITEM> {
 	
 	void refresh();
 	
-	default AbstractColumn<ITEM> getIdColumn() {
+	default AbstractColumn<ITEM,?> getIdColumn() {
 		return getColumns().stream().filter(c -> c.isIdColumn()).collect(CollectorsHuma.toSingleton());
 	}
 	
-	default  void setIdColumn(AbstractColumn<ITEM> column) {
-		UnaryOperator<AbstractColumn<ITEM>> unaryOperator = c -> c.isIdColumn()? column: c;
+	default  void setIdColumn(AbstractColumn<ITEM,?> column) {
+		UnaryOperator<AbstractColumn<ITEM,?>> unaryOperator = c -> c.isIdColumn()? column: c;
 		getColumns().replaceAll(unaryOperator);
 	}
 	
-	default List<AbstractColumn<ITEM>> getVisibleColumns() {
+	default List<AbstractColumn<ITEM,?>> getVisibleColumns() {
 		return getColumns().stream().filter(c -> c.isVisible()).collect(Collectors.toList());
 	}
 	
-	default String getValue(int row, int col) {
+	default Object getValue(int row, int col) {
 		return getValue(getItems().get(row), col);
 	}
 	
-	default String getValue(ITEM item, int col) {
+	default Object getValue(ITEM item, int col) {
 		return getColumns().get(col).get(item);
 	}
 	
@@ -69,7 +69,7 @@ public interface ITable<ITEM> {
 		int nRows = this.getNrows();
 		int nCols = this.getNcols();
 		if (nRows == 0 || nCols == 0) return "";
-		String[][] content = new String[nRows+1][nCols];
+		Object[][] content = new Object[nRows+1][nCols];
 		
 		for (int col=0; col<nCols; col++)
 			content[0][col] = getColumnNames().get(col);
@@ -82,8 +82,8 @@ public interface ITable<ITEM> {
 		for(int col=0; col<nCols; col++) {
 			int maxLength = 0;
 			for(int row=0; row<nRows; row++) {
-				if (content[row+1][col].length() > maxLength)
-					maxLength = content[row+1][col].length();
+				if (content[row+1][col].toString().length() > maxLength)
+					maxLength = content[row+1][col].toString().length();
 			}
 			columnWidth[col] = maxLength;
 		}
@@ -92,17 +92,17 @@ public interface ITable<ITEM> {
 		
 		for(int col=0; col<nCols; col++) {
 			content[0][col] = content[0][col] +StringUtils
-					.repeat(" ", columnWidth[col] - content[0][col].length());	
+					.repeat(" ", columnWidth[col] - content[0][col].toString().length());	
 		}
-		columnStrings.add(Arrays.stream(content[0]).collect(Collectors.joining("|")));
+		columnStrings.add(Arrays.stream(content[0]).map(o -> o.toString()).collect(Collectors.joining("|")));
 		columnStrings.add(StringUtils.repeat("-", columnStrings.get(0).length()));
 		
 		
 		for(int row=1; row<nRows; row++) {
 			for(int j=0; j<nCols; j++)
 				content[row][j] = content[row+1][j] +StringUtils
-					.repeat(" ", columnWidth[j] - content[row+1][j].length());
-			columnStrings.add(Arrays.stream(content[row+1]).collect(Collectors.joining("|")));
+					.repeat(" ", columnWidth[j] - content[row+1][j].toString().length());
+			columnStrings.add(Arrays.stream(content[row+1]).map(o -> o.toString()).collect(Collectors.joining("|")));
 		}
 		
 		return columnStrings.stream().collect(Collectors.joining("\n"));

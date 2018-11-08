@@ -10,14 +10,14 @@ public interface IPersonifiedColumns {
 	SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
 	default <T extends AbstractPersonifiedEntity<T>> void
-		createBaseColumns(List<AbstractColumn<T>> columns) {
-		columns.add(new FilterColumn<T>("Last modified", item -> item,
+		createBaseColumns(List<AbstractColumn<T,?>> columns) {
+		columns.add(new FilterColumn<T,String>("Last modified", item -> item,
 			path -> format.format(path.getDateLastModified()), (path, value) -> {}));
-		columns.add(new FilterColumn<T>("Changed By", item -> item.getChanger(),
+		columns.add(new FilterColumn<T,String>("Changed By", item -> item.getChanger(),
 			path -> path.getSimpleAcademicName(), (path, value) -> {}));
-		columns.add(new FilterColumn<T>("Added", item -> item,
+		columns.add(new FilterColumn<T,String>("Added", item -> item,
 			path -> format.format(path.getDateAdded()), (path, value) -> {}));
-		columns.add(new FilterColumn<T>("Created By", item -> item.getCreator(),
+		columns.add(new FilterColumn<T,String>("Created By", item -> item.getCreator(),
 			path -> path.getSimpleAcademicName(), (path, value) -> {}));
 	}
 

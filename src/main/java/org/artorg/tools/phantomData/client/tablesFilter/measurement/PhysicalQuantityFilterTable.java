@@ -17,17 +17,17 @@ public class PhysicalQuantityFilterTable extends DbUndoRedoFactoryEditFilterTabl
 		setTableName("Physical Quantities");
 
 		setColumnCreator(items -> {
-			List<AbstractColumn<PhysicalQuantity>> columns =
-				new ArrayList<AbstractColumn<PhysicalQuantity>>();
-			columns.add(new FilterColumn<PhysicalQuantity>(
+			List<AbstractColumn<PhysicalQuantity,?>> columns =
+				new ArrayList<AbstractColumn<PhysicalQuantity,?>>();
+			columns.add(new FilterColumn<PhysicalQuantity,String>(
 				"Name", item -> item,
 				path -> path.getName(),
 				(path, value) -> path.setName(value)));
-			columns.add(new FilterColumn<PhysicalQuantity>(
+			columns.add(new FilterColumn<PhysicalQuantity,String>(
 				"Symbol", item -> item,
 				path -> path.getCommonSymbols(),
 				(path, value) -> path.setCommonSymbols(value)));
-			columns.add(new FilterColumn<PhysicalQuantity>(
+			columns.add(new FilterColumn<PhysicalQuantity,String>(
 				"Description", item -> item,
 				path -> path.getDescription(),
 				(path, value) -> path.setDescription(value)));
