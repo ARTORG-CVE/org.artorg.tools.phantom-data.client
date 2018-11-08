@@ -65,23 +65,30 @@ public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM>
 
 	}
 
-	private TableColumn<ITEM, String> createTableColumn(AbstractColumn<ITEM,?> baseColumn,
+	private TableColumn<ITEM, ?> createTableColumn(AbstractColumn<ITEM,?> baseColumn,
 		int index) {
-		TableColumn<ITEM, String> tableColumn =
-			new TableColumn<ITEM, String>(baseColumn.getName());
+		TableColumn<ITEM, ?> tableColumn =
+			new TableColumn<ITEM, Object>(baseColumn.getName());
 		tableColumn.setSortable(false);
-		tableColumn.setCellValueFactory(cellData -> new SimpleStringProperty(
-			String.valueOf(table.getValue(cellData.getValue(), index))));
+		
+//		tableColumn.setCellValueFactory(cellData -> new SimpleStringProperty(
+//			String.valueOf(table.getValue(cellData.getValue(), index))));
+		
+		
 		return tableColumn;
 	}
 
-	protected TableColumn<ITEM, String> createHeaderColumn() {
-		TableColumn<ITEM, String> headerColumn = new TableColumn<ITEM, String>();
-		headerColumn.setCellFactory(col -> {
-			TableCell<ITEM, String> cell = new TableCell<ITEM, String>();
-			cell.getStyleClass().add("row-header-cell");
-			return cell;
-		});
+	protected TableColumn<ITEM, ?> createHeaderColumn() {
+		TableColumn<ITEM, ?> headerColumn = new TableColumn<ITEM, Object>();
+		
+		
+//		headerColumn.setCellFactory(col -> {
+//			TableCell<ITEM, String> cell = new TableCell<ITEM, String>();
+//			cell.getStyleClass().add("row-header-cell");
+//			return cell;
+//		});
+		
+		
 		headerColumn.setSortable(false);
 		return headerColumn;
 	}

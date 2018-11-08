@@ -1,8 +1,8 @@
 package org.artorg.tools.phantomData.client.tablesFilter.measurement;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
@@ -12,7 +12,6 @@ import org.artorg.tools.phantomData.client.table.IPersonifiedColumns;
 import org.artorg.tools.phantomData.client.table.IPropertyColumns;
 import org.artorg.tools.phantomData.server.model.measurement.Measurement;
 
-@SuppressWarnings("deprecation")
 public class MeasurementFilterTable extends DbUndoRedoFactoryEditFilterTable<Measurement> implements IPropertyColumns, IPersonifiedColumns {
 
 	
@@ -29,7 +28,13 @@ public class MeasurementFilterTable extends DbUndoRedoFactoryEditFilterTable<Mea
 			columns.add(new FilterColumn<Measurement,String>(
 				"Date", item -> item,
 				path -> new SimpleDateFormat(path.getDateFormat()).format(path.getStartDate()),
-				(path, value) -> path.setStartDate(new Date(value))));
+				(path, value) -> {
+					try {
+						path.setStartDate(new SimpleDateFormat(path.getDateFormat()).parse(value));
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+				}));
 			columns.add(new FilterColumn<Measurement,String>(
 				"Description", item -> item,
 				path -> path.getDescription(),

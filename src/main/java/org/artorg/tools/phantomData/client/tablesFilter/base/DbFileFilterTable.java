@@ -28,6 +28,9 @@ public class DbFileFilterTable extends DbUndoRedoFactoryEditFilterTable<DbFile>
 		setColumnCreator(items -> {
 			List<AbstractColumn<DbFile,?>> columns =
 				new ArrayList<AbstractColumn<DbFile,?>>();
+			columns.add(new FilterColumn<DbFile,Image>("", item -> item,
+				path -> getFileIcon(path.getFile().getPath()), (path, value) -> {}));
+			
 			columns.add(new FilterColumn<DbFile,String>("Name", item -> item,
 				path -> path.getName(), (path, value) -> path.setName(value)));
 			columns.add(new FilterColumn<DbFile,String>("Extension", item -> item,

@@ -7,15 +7,15 @@ import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class FilterColumn<T,R extends Comparable<R>> extends AbstractFilterColumn<T,R> {
+public class FilterColumn<T,R> extends AbstractFilterColumn<T,R> {
 	private final Function<T, Object> itemToPropertyGetter;
 	private final Function<Object, R> propertyToValueGetter;
 	private final BiConsumer<Object, R> propertyToValueSetter;
 
 	@SuppressWarnings("unchecked")
 	public <SUB extends DbPersistent<SUB,?>> FilterColumn(String columnName, Function<T, SUB> itemToPropertyGetter, 
-			Function<SUB, String> propertyToValueGetter, 
-			BiConsumer<SUB, String> propertyToValueSetter) {
+			Function<SUB, R> propertyToValueGetter, 
+			BiConsumer<SUB, R> propertyToValueSetter) {
 		super(columnName);
 		this.itemToPropertyGetter = (Function<T, Object>) itemToPropertyGetter;
 		this.propertyToValueGetter = (Function<Object, R>) propertyToValueGetter;
