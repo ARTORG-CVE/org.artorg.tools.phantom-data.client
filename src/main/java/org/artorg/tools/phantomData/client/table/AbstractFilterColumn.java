@@ -46,8 +46,8 @@ public abstract class AbstractFilterColumn<ITEM,R> extends AbstractColumn<ITEM, 
 		sortComparatorQueue.add(sortComparator);
 	}
 
-	public void setSortComparator(Comparator<String> sortComparator,
-		Function<ITEM, String> valueGetter) {
+	public void setSortComparator(Comparator<R> sortComparator,
+		Function<ITEM, R> valueGetter) {
 		this.sortComparator = (item1, item2) -> sortComparator
 			.compare(valueGetter.apply(item1), valueGetter.apply(item2));
 	}

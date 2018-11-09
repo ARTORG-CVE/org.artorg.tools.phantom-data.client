@@ -14,8 +14,8 @@ public class Column<T,R> extends AbstractColumn<T,R> {
 	
 	@SuppressWarnings("unchecked")
 	public <SUB extends DbPersistent<SUB,?>> Column(String columnName, Function<T, SUB> itemToPropertyGetter, 
-			Function<SUB, String> propertyToValueGetter, 
-			BiConsumer<SUB, String> propertyToValueSetter) {
+			Function<SUB, R> propertyToValueGetter, 
+			BiConsumer<SUB, R> propertyToValueSetter) {
 		super(columnName);
 		this.itemToPropertyGetter = (Function<T, Object>) itemToPropertyGetter;
 		this.propertyToValueGetter = (Function<Object, R>) propertyToValueGetter;

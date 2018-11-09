@@ -122,24 +122,46 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 //		    return objectProperty;
 //		    });
 
-			column.setCellFactory(new Callback<TableColumn<ITEM,Object>, TableCell<ITEM,Object>>() {
+			column.setCellFactory(
+				new Callback<TableColumn<ITEM, Object>, TableCell<ITEM, Object>>() {
 
-				@Override
-				public TableCell<ITEM, Object> call(TableColumn<ITEM, Object> param) {
-					try {
-					return new AttachmentListCell();
-					} catch (Exception e) {
-						e.printStackTrace();
+					@Override
+					public TableCell<ITEM, Object> call(TableColumn<ITEM, Object> param) {
+						return new TableCell<ITEM,Object>() {
+
+							@Override
+							protected void updateItem(Object item, boolean empty) {
+								// TODO Auto-generated method stub
+								super.updateItem(item, empty);
+								
+								try {
+								System.out.println(item.getClass().getSimpleName());
+								} catch(NullPointerException e) {
+								}
+								
+							}
+						
+						};
 					}
-					return null;
-				}
-				
+
+
+					
+//					@Override
+//					public TableCell<ITEM, Object> call(TableColumn<ITEM, Object> param) {
+//						try {
+//							return new AttachmentListCell<ITEM>();
+//						} catch (Exception e) {
+//							e.printStackTrace();
+//						}
+//						return null;
+//					}
+
 //	            @Override
 //	            public ListCell<String> call(ListView<String> list) {
 //	                return new AttachmentListCell();
 //	            }
-	        });
-			
+				});
+
 			column.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<Object>(
 				table.getFilteredValue(cellData.getValue(), localCol).getClass()
 					.getSimpleName()));
@@ -158,40 +180,62 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 
 		Platform.runLater(() -> showFilterButtons());
 	}
-	
-	private static class AttachmentListCell<ITEM> extends TableCell<ITEM,Object> {
 
-		
-		
+	private static class AttachmentListCell<T> extends TableCell<T, Object> {
+
 		@Override
-		protected void updateItem(Object item, boolean empty) {			
-          super.updateItem(item, empty);
-          
-          if (item instanceof DbFile)  {
-          
-          if (empty) {
-              setGraphic(null);
-              setText(null);
-          } else {
-              Image fxImage = getFileIcon(((DbFile)item).getFile().getPath());
-              ImageView imageView = new ImageView(fxImage);
-              setGraphic(imageView);
-              setText("test");
-          }
-          } else {
-        	  try {
-        	  System.out.println("DbFilterTableView - AttachementListCell - updataItem - class " +item.getClass().getSimpleName() +", value = " +item);
-        	  } catch (NullPointerException e) {
-        	  }
-        	  
-          }
-          
-			
+		protected void updateItem(Object item, boolean empty) {
+			super.updateItem(item, empty);
+
+			if (item instanceof DbFile) {
+
+				if (empty) {
+					setGraphic(null);
+					setText(null);
+				} else {
+					Image fxImage = getFileIcon(((DbFile) item).getFile().getPath());
+					ImageView imageView = new ImageView(fxImage);
+					setGraphic(imageView);
+					setText("test");
+				}
+			}
+
+			try {
+				System.out.println(
+					"DbFilterTableView - AttachementListCell - updataItem - class "
+						+ item.getClass().getSimpleName() + ", value = "
+						+ item.toString());
+			} catch (NullPointerException e) {}
 		}
 		
 		
 		
-		
+//		@Override
+//		protected void updateItem(T item, boolean empty) {
+//			super.updateItem(item, empty);
+//
+//			if (item instanceof DbFile) {
+//
+//				if (empty) {
+//					setGraphic(null);
+//					setText(null);
+//				} else {
+//					Image fxImage = getFileIcon(((DbFile) item).getFile().getPath());
+//					ImageView imageView = new ImageView(fxImage);
+//					setGraphic(imageView);
+//					setText("test");
+//				}
+//			}
+//
+//			try {
+//				System.out.println(
+//					"DbFilterTableView - AttachementListCell - updataItem - class "
+//						+ item.getClass().getSimpleName() + ", value = "
+//						+ item.toString());
+//			} catch (NullPointerException e) {}
+//
+//		}
+
 //        @Override
 //        public void updateItem(String item, boolean empty) {
 //            super.updateItem(item, empty);
@@ -205,75 +249,72 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 //                setText(item);
 //            }
 //        }
-    }
-	
-static HashMap<String, Image> mapOfFileExtToSmallIcon = new HashMap<String, Image>();
-	
+	}
+
+	static HashMap<String, Image> mapOfFileExtToSmallIcon = new HashMap<String, Image>();
+
 	private static Image getFileIcon(String fname) {
-        final String ext = getFileExt(fname);
+		final String ext = getFileExt(fname);
 
-        Image fileIcon = mapOfFileExtToSmallIcon.get(ext);
-        if (fileIcon == null) {
+		Image fileIcon = mapOfFileExtToSmallIcon.get(ext);
+		if (fileIcon == null) {
 
-            javax.swing.Icon jswingIcon = null; 
+			javax.swing.Icon jswingIcon = null;
 
-            File file = new File(fname);
-            if (file.exists()) {
-                jswingIcon = getJSwingIconFromFileSystem(file);
-            }
-            else {
-                File tempFile = null;
-                try {
-                    tempFile = File.createTempFile("icon", ext);
-                    jswingIcon = getJSwingIconFromFileSystem(tempFile);
-                }
-                catch (IOException e) {
-                	e.printStackTrace();
-                }
-                finally {
-                    if (tempFile != null) tempFile.delete();
-                }
-            }
+			File file = new File(fname);
+			if (file.exists()) {
+				jswingIcon = getJSwingIconFromFileSystem(file);
+			} else {
+				File tempFile = null;
+				try {
+					tempFile = File.createTempFile("icon", ext);
+					jswingIcon = getJSwingIconFromFileSystem(tempFile);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					if (tempFile != null) tempFile.delete();
+				}
+			}
 
-            if (jswingIcon != null) {
-                fileIcon = jswingIconToImage(jswingIcon);
-                mapOfFileExtToSmallIcon.put(ext, fileIcon);
-            }
-        }
+			if (jswingIcon != null) {
+				fileIcon = jswingIconToImage(jswingIcon);
+				mapOfFileExtToSmallIcon.put(ext, fileIcon);
+			}
+		}
 
-        return fileIcon;
-    }
-	
+		return fileIcon;
+	}
+
 	private static javax.swing.Icon getJSwingIconFromFileSystem(File file) {
 
-        // Windows {
-        FileSystemView view = FileSystemView.getFileSystemView();
-        javax.swing.Icon icon = view.getSystemIcon(file);
-        // }
+		// Windows {
+		FileSystemView view = FileSystemView.getFileSystemView();
+		javax.swing.Icon icon = view.getSystemIcon(file);
+		// }
 
-        // OS X {
-        //final javax.swing.JFileChooser fc = new javax.swing.JFileChooser();
-        //javax.swing.Icon icon = fc.getUI().getFileView(fc).getIcon(file);
-        // }
+		// OS X {
+		// final javax.swing.JFileChooser fc = new javax.swing.JFileChooser();
+		// javax.swing.Icon icon = fc.getUI().getFileView(fc).getIcon(file);
+		// }
 
-        return icon;
-    }
-	
+		return icon;
+	}
+
 	private static Image jswingIconToImage(javax.swing.Icon jswingIcon) {
-        BufferedImage bufferedImage = new BufferedImage(jswingIcon.getIconWidth(), jswingIcon.getIconHeight(),
-                BufferedImage.TYPE_INT_ARGB);
-        jswingIcon.paintIcon(null, bufferedImage.getGraphics(), 0, 0);
-        return SwingFXUtils.toFXImage(bufferedImage, null);
-    }
-	
+		BufferedImage bufferedImage = new BufferedImage(jswingIcon.getIconWidth(),
+			jswingIcon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+		jswingIcon.paintIcon(null, bufferedImage.getGraphics(), 0, 0);
+		return SwingFXUtils.toFXImage(bufferedImage, null);
+	}
+
 	private static String getFileExt(String fname) {
-        String ext = ".";
-        int p = fname.lastIndexOf('.');
-        if (p >= 0) {
-            ext = fname.substring(p);
-        }
-        return ext.toLowerCase();
-    }
+		String ext = ".";
+		int p = fname.lastIndexOf('.');
+		if (p >= 0) {
+			ext = fname.substring(p);
+		}
+		return ext.toLowerCase();
+	}
 
 	@Override
 	@SuppressWarnings("unchecked")
