@@ -2,6 +2,8 @@ package org.artorg.tools.phantomData.client.util;
 
 import static huma.io.IOutil.readResource;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -15,6 +17,7 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -28,10 +31,49 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 
 public class FxUtil {
+	public static ImageView getFxFileIcon(File file) {
+		return new ImageView(getFileIcon(file));
+	}
+
+	public static Image getFileIcon(File file) {
+		final String ext = IOutil.getFileExt(file.getPath());
+		Image fileIcon = null;
+		javax.swing.Icon jswingIcon = null;
+
+		if (file.exists()) {
+			jswingIcon = SwingUtil.getJSwingIconFromFileSystem(file);
+		} else {
+			File tempFile = null;
+			try {
+				tempFile = File.createTempFile("icon", ext);
+				jswingIcon = SwingUtil.getJSwingIconFromFileSystem(tempFile);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if (tempFile != null)
+					tempFile.delete();
+			}
+		}
+
+		if (jswingIcon != null)
+			fileIcon = jswingIconToImage(jswingIcon);
+
+		return fileIcon;
+	}
+
+	public static Image jswingIconToImage(javax.swing.Icon jswingIcon) {
+		BufferedImage bufferedImage = new BufferedImage(jswingIcon.getIconWidth(), jswingIcon.getIconHeight(),
+				BufferedImage.TYPE_INT_ARGB);
+		jswingIcon.paintIcon(null, bufferedImage.getGraphics(), 0, 0);
+		return SwingFXUtils.toFXImage(bufferedImage, null);
+	}
+
 	public static TableColumn<Object, Void> createButtonCellColumn(String text, Consumer<Object> consumer) {
 		TableColumn<Object, Void> column = new TableColumn<Object, Void>();
 		column.setCellFactory(new Callback<TableColumn<Object, Void>, TableCell<Object, Void>>() {
@@ -48,7 +90,8 @@ public class FxUtil {
 							cell.setText("");
 							cell.setOnMouseClicked(null);
 						} else {
-							cell.setOnMouseClicked(event -> consumer.accept(getTableView().getItems().get(cell.getIndex())));
+							cell.setOnMouseClicked(
+									event -> consumer.accept(getTableView().getItems().get(cell.getIndex())));
 							cell.setAlignment(Pos.CENTER);
 							cell.setText(text);
 						}
@@ -61,25 +104,21 @@ public class FxUtil {
 		column.setPrefWidth(width);
 		column.setMaxWidth(width);
 		column.setSortable(false);
-		
+
 		return column;
 	}
 
-	public static <T extends DbPersistent<T, ID>, ID extends Comparable<ID>> void createDbComboBox(
-		ComboBox<T> comboBox,
-		ICrudConnector<T, ID> connector, Function<T, String> mapper) {
-		List<T> items =
-			connector.readAllAsStream().distinct().collect(Collectors.toList());
+	public static <T extends DbPersistent<T, ID>, ID extends Comparable<ID>> void createDbComboBox(ComboBox<T> comboBox,
+			ICrudConnector<T, ID> connector, Function<T, String> mapper) {
+		List<T> items = connector.readAllAsStream().distinct().collect(Collectors.toList());
 		comboBox.setItems(FXCollections.observableList(items));
 		comboBox.getSelectionModel().selectFirst();
-		Callback<ListView<T>, ListCell<T>> cellFactory =
-			FxUtil.createComboBoxCellFactory(mapper);
+		Callback<ListView<T>, ListCell<T>> cellFactory = FxUtil.createComboBoxCellFactory(mapper);
 		comboBox.setButtonCell(cellFactory.call(null));
 		comboBox.setCellFactory(cellFactory);
 	}
 
-	public static <T> Callback<ListView<T>, ListCell<T>>
-		createComboBoxCellFactory(Function<T, String> mapper) {
+	public static <T> Callback<ListView<T>, ListCell<T>> createComboBoxCellFactory(Function<T, String> mapper) {
 		return param -> {
 			return new ListCell<T>() {
 				@Override
@@ -95,25 +134,20 @@ public class FxUtil {
 		};
 	}
 
-	public static void addMenuItem(Menu menu,
-		String name,
-		EventHandler<ActionEvent> eventHandler) {
+	public static void addMenuItem(Menu menu, String name, EventHandler<ActionEvent> eventHandler) {
 		MenuItem menuItem = new MenuItem(name);
 		menuItem.setOnAction(eventHandler);
 		menu.getItems().add(menuItem);
 	}
-	
-	public static void addMenuItem(ContextMenu rowMenu,
-		String name,
-		EventHandler<ActionEvent> eventHandler) {
+
+	public static void addMenuItem(ContextMenu rowMenu, String name, EventHandler<ActionEvent> eventHandler) {
 		MenuItem menuItem = new MenuItem(name);
 		menuItem.setOnAction(eventHandler);
 		rowMenu.getItems().add(menuItem);
 	}
 
 	public static <T> T loadFXML(String path, Object controller, Class<?> mainFxClass) {
-		FXMLLoader loader =
-			new FXMLLoader(mainFxClass.getClassLoader().getResource(path));
+		FXMLLoader loader = new FXMLLoader(mainFxClass.getClassLoader().getResource(path));
 		loader.setController(controller);
 		try {
 			return loader.<T>load();

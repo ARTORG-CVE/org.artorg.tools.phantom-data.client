@@ -9,9 +9,7 @@ import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.client.util.TableViewUtils;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 
 public class ProTableView<ITEM> extends javafx.scene.control.TableView<ITEM>

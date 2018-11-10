@@ -28,7 +28,9 @@ public interface IFilterTable<ITEM> extends ITable<ITEM> {
 	
 	ObservableList<ITEM> getFilteredItems();
 
-	List<AbstractFilterColumn<ITEM,?>> getFilteredColumns();
+	List<AbstractColumn<ITEM,?>> getFilteredColumns();
+	
+	List<AbstractFilterColumn<ITEM,?>> getFilteredFilterColumns();
 
 	Predicate<ITEM> getFilterPredicate();
 	
@@ -41,7 +43,7 @@ public interface IFilterTable<ITEM> extends ITable<ITEM> {
 	}
 	
 	default Object getColumnFilteredValue(int row, int col) {
-		List<AbstractFilterColumn<ITEM,?>> columns = getFilteredColumns();
+		List<AbstractColumn<ITEM,?>> columns = getFilteredColumns();
 		AbstractColumn<ITEM,?> column = columns.get(col);
 		ObservableList<ITEM> items = getItems();
 		ITEM item = items.get(row);

@@ -15,6 +15,17 @@ import javafx.scene.image.Image;
 
 public class IOutil extends huma.io.IOutil {
 	
+	
+	public static String getFileExt(String filename) {
+        String ext = ".";
+        int p = filename.lastIndexOf('.');
+        if (p >= 0) {
+            ext = filename.substring(p);
+        }
+        return ext.toLowerCase();
+    }
+	
+	
 	public static BufferedImage readAsBufferedImage(String path) {
 		try {
 			return ImageIO.read(DesktopSwingBootApplication.class.getClassLoader().getResourceAsStream(path));
