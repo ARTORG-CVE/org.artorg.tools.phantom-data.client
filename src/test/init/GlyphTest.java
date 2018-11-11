@@ -1,8 +1,5 @@
 package init;
 
-import org.artorg.tools.phantomData.client.Main;
-import org.artorg.tools.phantomData.client.controllers.MainController;
-import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
 import org.controlsfx.glyphfont.GlyphFont;
@@ -14,10 +11,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+@SuppressWarnings("unused")
 public class GlyphTest extends Application {
 
 	public static void main(String[] args) {
@@ -37,6 +34,7 @@ public class GlyphTest extends Application {
 //	private static char FAW_STAR  = '\uf005';
 
 	private static char IM_BOLD = '\ue027';
+	
 	private static char IM_UNDERSCORED = '\ue02b';
 	private static char IM_ITALIC = '\ue13e';
 

@@ -42,14 +42,11 @@ import org.artorg.tools.phantomData.server.model.phantom.Phantom;
 import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.model.phantom.Special;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
-import org.controlsfx.glyphfont.GlyphFont;
-import org.controlsfx.glyphfont.GlyphFontRegistry;
-import org.controlsfx.samples.HelloGlyphFont;
 
 import huma.io.IOutil;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -60,10 +57,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBuilder;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -74,12 +69,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -92,22 +84,6 @@ public class MainController extends StackPane {
 	private SplitPane splitPane;
 	private ObservableList<SplitTabView> splitTabViews;
 	private static String urlLocalhost;
-	
-	static {
-		// Register a custom default font
-		GlyphFontRegistry.register("icomoon", HelloGlyphFont.class.getResourceAsStream("icomoon.ttf"), 16);
-	}
-	
-	private GlyphFont fontAwesome = GlyphFontRegistry.font("FontAwesome");
-	private GlyphFont icoMoon = GlyphFontRegistry.font("icomoon");
-	
-	// private static char FAW_TRASH = '\uf014';
-		private static char FAW_GEAR = '\uf013';
-//		private static char FAW_STAR  = '\uf005';
-
-		private static char IM_BOLD = '\ue027';
-		private static char IM_UNDERSCORED = '\ue02b';
-		private static char IM_ITALIC = '\ue13e';
 	
 	public MainController(Stage stage) {
 		this.stage = stage;
@@ -168,12 +144,19 @@ public class MainController extends StackPane {
 		MenuItem menuItem;
 		
 		menu = new Menu("File");
-//		menu.getItems().add(new MenuItem("New"));
-//		menu.getItems().add(new MenuItem("Refresh"));
-//		menu.getItems().add(new MenuItem("Export..."));
-		menuItem = new MenuItem("Login/Logout...");
+		menuItem = new MenuItem("New", getGlyph(FontAwesome.Glyph.FILE));
+		menu.getItems().add(menuItem);
+		
+		
+		
+		menuItem = new MenuItem("Export...", getGlyph(FontAwesome.Glyph.CARET_UP));
 		menuItem.setOnAction(event -> loginLogout(event));
 		menu.getItems().add(menuItem);
+		
+		menuItem = new MenuItem("Login/Logout...", getGlyph(FontAwesome.Glyph.SIGN_IN));
+		menuItem.setOnAction(event -> loginLogout(event));
+		menu.getItems().add(menuItem);
+		
 //		menu.getItems().add(new MenuItem("Preference"));
 		menuItem = new MenuItem("Close");
 		menuItem.setOnAction(event -> close(event));
@@ -181,33 +164,25 @@ public class MainController extends StackPane {
 		menuBar.getMenus().add(menu);
 		
 		menu = new Menu("Edit");
-		Glyph glyph = new Glyph("FontAwesome", "TRASH_ALT");
-		glyph.getStylesheets().add(FxUtil.readCSSstylesheet("css/application.css"));
-		glyph.getStyleClass().add("glyph-icon");
-		
-		
-//		glyph.setColor(Color.BLACK);
-		menuItem = new MenuItem("Undo", glyph);
-		
-//		menuItem.
-		
+		menuItem = new MenuItem("Undo", getGlyph(FontAwesome.Glyph.ROTATE_LEFT));
 		menuItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
-		menuItem.setOnAction(event -> {
-			System.out.println("undo action");
-		});
-		
-		
-//		Label label = new Label("Undo");
-//		label.setGraphic(glyph);
-//		label.setOnMouseEntered(event -> {System.out.println("mouses entered");
-//		glyph.setColor(Color.BLUE);
-//			});
-//		menuItem.setGraphic(label);
-
+		menuItem.setOnAction(event -> undo(event));
 		menu.getItems().add(menuItem);
 		
-		menu.getItems().add(new MenuItem("Redo"));
+		menuItem = new MenuItem("Redo", getGlyph(FontAwesome.Glyph.ROTATE_RIGHT));
+		menuItem.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
+		menuItem.setOnAction(event -> redo(event));
+		menu.getItems().add(menuItem);
+		
+		menuItem = new MenuItem("Refresh", getGlyph(FontAwesome.Glyph.REFRESH));
+		menuItem.setOnAction(event -> refresh(event));
+		menu.getItems().add(menuItem);
+		
+		menuItem = new MenuItem("Delete", getGlyph(FontAwesome.Glyph.REMOVE));
+		menu.getItems().add(menuItem);
+		
 		menuBar.getMenus().add(menu);
+		
 		
 		menu = new Menu("Table");
 		createTableMenu(menu, splitTabViews.get(0),
@@ -234,16 +209,12 @@ public class MainController extends StackPane {
 		
 	}
 	
-	private void focusState(boolean value) {
-	    if (value) {
-	        System.out.println("Focus Gained");
-	    }
-	    else {
-	        System.out.println("Focus Lost");
-	    }
+	private Glyph getGlyph(FontAwesome.Glyph awesomeGlyph) {
+		Glyph glyph = new Glyph("FontAwesome", awesomeGlyph);
+		glyph.getStylesheets().add(FxUtil.readCSSstylesheet("css/application.css"));
+		glyph.getStyleClass().add("glyph-icon");
+		return glyph;
 	}
-
-	private Menu menuTables;
 
 	MenuItem menuItemLoginLogout;
 
@@ -276,12 +247,6 @@ public class MainController extends StackPane {
 
 	void redo(ActionEvent event) {
 //    	table.getTable().getUndoManager().redo();
-	}
-
-
-	private void init() {
-		
-
 	}
 
 	public void addDevToolsMenu() {

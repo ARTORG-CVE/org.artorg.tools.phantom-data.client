@@ -21,20 +21,17 @@
 
 }
 
-
 .glyph-icon{
-    -fx-text-fill: black;
-    -fx-fill: black;
+    -fx-text-fill: -fx-text-base-color;
+    -fx-fill: -fx-text-base-color;
     -glyph-size: 48px;
 }
-
 
 .menu-item:focused .glyph-icon{
     -fx-text-fill: white;
     -fx-fill: white;
     -glyph-size: 48px;
 }
-
 
 .tree-table-view {
 	-fx-focus-color: transparent;

@@ -1,6 +1,5 @@
 package org.artorg.tools.phantomData.client.boot;
 
-import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.controllers.MainController;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 
@@ -26,7 +25,6 @@ public class MainFx extends Application {
 	public void start(Stage stage) throws Exception {
     	this.stage = stage;
     	mainController = new MainController(stage);
-//		StackPane pane = FxUtil.loadFXML("fxml/Table.fxml", mainController, Main.getMainFxClass());
     	StackPane pane = mainController;
 		
     	scene = new Scene(pane);
