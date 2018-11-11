@@ -2,14 +2,11 @@ package org.artorg.tools.phantomData.client.util;
 
 import java.util.function.Consumer;
 
-import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TableView.ResizeFeatures;
-import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
@@ -50,33 +47,12 @@ public class TableViewUtils {
 	}
 
 	public static <T> void autoResizeColumns(TableView<T> tableView) {
-		System.out.println("autoresizecolumns");
-
 		tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
-
-//		tableView.setColumnResizePolicy(new Callback<ResizeFeatures, Boolean>() {
-//	        @Override public String toString() {
-//	            return "unconstrained-resize";
-//	        }
-//
-//	        @Override public Boolean call(ResizeFeatures prop) {
-//	        	return false;
-//	        }
-//	    });
-
 		tableView.getColumns().stream().forEach((column) -> {
-//			Node node = column.getGraphic();
-//			
-//			if (node != null)
-//			System.out.println("node: " +node);
-//			else
-//				System.out.println("null");
-
 			Text t = new Text(column.getText());
 			double max = t.getLayoutBounds().getWidth() + 45.0;
 			for (int i = 0; i < tableView.getItems().size(); i++) {
 				if (column.getCellData(i) != null) {
-
 					Object cellData = column.getCellData(i);
 					if (cellData instanceof Node) {
 					} else if (cellData instanceof String) {
@@ -89,7 +65,6 @@ public class TableViewUtils {
 			}
 			column.setPrefWidth(max);
 		});
-//		tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 	}
 
 	public static void removeColumnHeaders(TableView<?> tableView) {

@@ -28,7 +28,7 @@ public class VGridBoxPane extends AnchorPaneAddableTo {
 		gridPane = new GridPane();
 		prefRowHeight = 30.0;
 		
-		FxUtil.addToAnchorPane(rootPane, vBox);
+		FxUtil.addToPane(rootPane, vBox);
 		vBox.getChildren().add(gridPane);
 	}
 	

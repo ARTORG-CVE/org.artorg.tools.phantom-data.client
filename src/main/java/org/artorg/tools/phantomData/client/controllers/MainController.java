@@ -1,11 +1,11 @@
 package org.artorg.tools.phantomData.client.controllers;
 
+import static org.artorg.tools.phantomData.client.util.FxUtil.addMenuItem;
+
 import java.io.File;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ResourceBundle;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -42,22 +42,28 @@ import org.artorg.tools.phantomData.server.model.phantom.Phantom;
 import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.model.phantom.Special;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.controlsfx.glyphfont.Glyph;
+import org.controlsfx.glyphfont.GlyphFont;
+import org.controlsfx.glyphfont.GlyphFontRegistry;
+import org.controlsfx.samples.HelloGlyphFont;
 
 import huma.io.IOutil;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBuilder;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -65,94 +71,60 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import static org.artorg.tools.phantomData.client.util.FxUtil.*;
-
-public class MainController {
-	private static String urlLocalhost;
+public class MainController extends StackPane {
+	private MenuBar menuBar;
 	private static String urlShutdownActuator;
 	private Stage stage;
-
+	private AnchorPane contentPane;
+	private StackPane rootPane;
 	private SplitPane splitPane;
 	private ObservableList<SplitTabView> splitTabViews;
+	private static String urlLocalhost;
+	
+	static {
+		// Register a custom default font
+		GlyphFontRegistry.register("icomoon", HelloGlyphFont.class.getResourceAsStream("icomoon.ttf"), 16);
+	}
+	
+	private GlyphFont fontAwesome = GlyphFontRegistry.font("FontAwesome");
+	private GlyphFont icoMoon = GlyphFontRegistry.font("icomoon");
+	
+	// private static char FAW_TRASH = '\uf014';
+		private static char FAW_GEAR = '\uf013';
+//		private static char FAW_STAR  = '\uf005';
 
+		private static char IM_BOLD = '\ue027';
+		private static char IM_UNDERSCORED = '\ue02b';
+		private static char IM_ITALIC = '\ue13e';
+	
 	public MainController(Stage stage) {
 		this.stage = stage;
-	}
-
-	@FXML
-	private ResourceBundle resources;
-
-	@FXML
-	private URL location;
-
-	@FXML
-	private StackPane rootPane;
-
-	@FXML
-	private AnchorPane contentPane;
-
-	@FXML
-	private MenuBar menuBar;
-
-	@FXML
-	private Menu menuTables;
-
-	@FXML
-	MenuItem menuItemLoginLogout;
-
-	@FXML
-	void about(ActionEvent event) {
-
-	}
-
-	@FXML
-	void close(ActionEvent event) {
-		close();
-	}
-
-	private void close() {
-		stage.hide();
-
-		if (Main.getClientBooter().getServerBooter().isServerStartedEmbedded())
-			Main.getClientBooter().getServerBooter().shutdownSpringServer();
-
-		Platform.exit();
-
-		System.exit(0);
-	}
-
-	@FXML
-	void refresh(ActionEvent event) {
-
-	}
-
-	@FXML
-	void undo(ActionEvent event) {
-//    	table.getTable().getUndoManager().undo();
-	}
-
-	@FXML
-	void redo(ActionEvent event) {
-//    	table.getTable().getUndoManager().redo();
-	}
-
-	
-
-	@FXML
-	void initialize() {
-		assert rootPane != null : "fx:id=\"rootPane\" was not injected: check your FXML file 'Table.fxml'.";
-		assert contentPane != null : "fx:id=\"contentPane\" was not injected: check your FXML file 'Table.fxml'.";
-		assert menuItemLoginLogout != null : "fx:id=\"menuItemLoginLogout\" was not injected: check your FXML file 'Table.fxml'.";
-		assert menuBar != null : "fx:id=\"menuBar\" was not injected: check your FXML file 'Table.fxml'.";
-	}
-
-	public void init() {
+		
+		VBox vBox = new VBox();
+		
+		menuBar = new MenuBar();
+		rootPane = this;
+		contentPane = new AnchorPane();
+		splitPane = new SplitPane();
+		
+		
+		vBox.getChildren().add(menuBar);
+		vBox.getChildren().add(contentPane);
+		
+		
+		
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override
 			public void handle(WindowEvent event) {
@@ -160,7 +132,7 @@ public class MainController {
 			}
 		});
 
-		this.splitPane = new SplitPane();
+		
 		splitPane.setOrientation(Orientation.VERTICAL);
 		splitTabViews = FXCollections.<SplitTabView>observableArrayList();
 		splitTabViews.addListener(new ListChangeListener<SplitTabView>() {
@@ -186,7 +158,129 @@ public class MainController {
 		getOrCreate(0).openViewerTab(createScene3dTab(file));
 		getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));
 
-		FxUtil.addToAnchorPane(contentPane, splitPane);
+		FxUtil.addToPane(contentPane, splitPane);
+		
+		
+		
+		
+		
+		Menu menu; 
+		MenuItem menuItem;
+		
+		menu = new Menu("File");
+//		menu.getItems().add(new MenuItem("New"));
+//		menu.getItems().add(new MenuItem("Refresh"));
+//		menu.getItems().add(new MenuItem("Export..."));
+		menuItem = new MenuItem("Login/Logout...");
+		menuItem.setOnAction(event -> loginLogout(event));
+		menu.getItems().add(menuItem);
+//		menu.getItems().add(new MenuItem("Preference"));
+		menuItem = new MenuItem("Close");
+		menuItem.setOnAction(event -> close(event));
+		menu.getItems().add(menuItem);
+		menuBar.getMenus().add(menu);
+		
+		menu = new Menu("Edit");
+		Glyph glyph = new Glyph("FontAwesome", "TRASH_ALT");
+		glyph.getStylesheets().add(FxUtil.readCSSstylesheet("css/application.css"));
+		glyph.getStyleClass().add("glyph-icon");
+		
+		
+//		glyph.setColor(Color.BLACK);
+		menuItem = new MenuItem("Undo", glyph);
+		
+//		menuItem.
+		
+		menuItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
+		menuItem.setOnAction(event -> {
+			System.out.println("undo action");
+		});
+		
+		
+//		Label label = new Label("Undo");
+//		label.setGraphic(glyph);
+//		label.setOnMouseEntered(event -> {System.out.println("mouses entered");
+//		glyph.setColor(Color.BLUE);
+//			});
+//		menuItem.setGraphic(label);
+
+		menu.getItems().add(menuItem);
+		
+		menu.getItems().add(new MenuItem("Redo"));
+		menuBar.getMenus().add(menu);
+		
+		menu = new Menu("Table");
+		createTableMenu(menu, splitTabViews.get(0),
+			(view, cls) -> view.openTableTab(createTableViewTab(castClass(cls))));
+		menuBar.getMenus().add(menu);
+		
+		menu = new Menu("TreeTable");
+		createTableMenu(menu, splitTabViews.get(0),
+			(view, cls) -> view.openTableTab(createTreeTableViewTab(castClass(cls))));
+		menuBar.getMenus().add(menu);
+		
+		menu = new Menu("Window");
+		menuItem = new MenuItem("Open SplitTabPane");
+		menuItem.setOnAction(event -> newSplitTabPane(event));
+		menu.getItems().add(menuItem);
+		menuBar.getMenus().add(menu);
+		
+//		menu = new Menu("Help");
+//		menuItem = new MenuItem("About");
+//		menu.getItems().add(menuItem);
+//		menuBar.getMenus().add(menu);
+		
+		FxUtil.addToPane(rootPane, vBox);
+		
+	}
+	
+	private void focusState(boolean value) {
+	    if (value) {
+	        System.out.println("Focus Gained");
+	    }
+	    else {
+	        System.out.println("Focus Lost");
+	    }
+	}
+
+	private Menu menuTables;
+
+	MenuItem menuItemLoginLogout;
+
+	void about(ActionEvent event) {
+
+	}
+
+	void close(ActionEvent event) {
+		close();
+	}
+
+	private void close() {
+		stage.hide();
+
+		if (Main.getClientBooter().getServerBooter().isServerStartedEmbedded())
+			Main.getClientBooter().getServerBooter().shutdownSpringServer();
+
+		Platform.exit();
+
+		System.exit(0);
+	}
+
+	void refresh(ActionEvent event) {
+
+	}
+	
+	void undo(ActionEvent event) {
+//    	table.getTable().getUndoManager().undo();
+	}
+
+	void redo(ActionEvent event) {
+//    	table.getTable().getUndoManager().redo();
+	}
+
+
+	private void init() {
+		
 
 	}
 
@@ -250,22 +344,19 @@ public class MainController {
 		});
 		vBox.getChildren().addAll(choiceBox, textField, button);
 
-		FxUtil.addToAnchorPane(root, vBox);
+		FxUtil.addToPane(root, vBox);
 
 		stage.show();
 	}
 
-	@FXML
 	void export(ActionEvent event) {
 
 	}
 
-	@FXML
 	void newEntity(ActionEvent event) {
 
 	}
-
-	@FXML
+	
 	void newSplitTabPane(ActionEvent event) {
 		addSplitTabView();
 	}
@@ -380,22 +471,18 @@ public class MainController {
 		}
 	}
 
-	@FXML
 	void openPerspectiveComparePhantoms(ActionEvent event) {
 
 	}
 
-	@FXML
 	void preferences(ActionEvent event) {
 
 	}
-
-	@FXML
+	
 	void resetPerspective(ActionEvent event) {
 
 	}
-
-	@FXML
+	
 	void loginLogout(ActionEvent event) {
 		openLoginLogoutFrame();
 	}
@@ -461,18 +548,15 @@ public class MainController {
 			splitTabViews.add(new SplitTabView(splitTabViews.size(), j -> splitTabViews.get(j)));
 		return splitTabViews.get(row);
 	}
-
-	@FXML
+	
 	void openTableFiles(ActionEvent event) {
 		openTable(DbFile.class);
 	}
-
-	@FXML
+	
 	void openTablePhantoms(ActionEvent event) {
 		openTable(Phantom.class);
 	}
-
-	@FXML
+	
 	void openTablePhantominas(ActionEvent event) {
 		openTable(Phantomina.class);
 	}
@@ -486,88 +570,87 @@ public class MainController {
 //        return button;
 //    }
 
-	@FXML
 	void openTableSpecials(ActionEvent event) {
 		openTable(Special.class);
 	}
 
-	@FXML
+	
 	void openTableAnnulusDiameter(ActionEvent event) {
 		openTable(AnnulusDiameter.class);
 	}
 
-	@FXML
+	
 	void openTableFabricationTypes(ActionEvent event) {
 		openTable(FabricationType.class);
 	}
 
-	@FXML
+	
 	void openTableLiteratureBases(ActionEvent event) {
 		openTable(LiteratureBase.class);
 	}
 
-	@FXML
+	
 	void openTablePropertyFields(ActionEvent event) {
 		openTable(PropertyField.class);
 	}
 
-	@FXML
+	
 	void openTableAcademicTitles(ActionEvent event) {
 		openTable(AcademicTitle.class);
 	}
 
-	@FXML
+	
 	void openTablePersons(ActionEvent event) {
 		openTable(Person.class);
 	}
 	
-	@FXML
+	
 	void openTableBooleanProperties(ActionEvent event) {
 		openTable(BooleanProperty.class);
 	}
 
-	@FXML
+	
 	void openTableDoubleProperties(ActionEvent event) {
 		openTable(DoubleProperty.class);
 	}
 
-	@FXML
+	
 	void openTableIntegerProperties(ActionEvent event) {
 		openTable(IntegerProperty.class);
 	}
 
-	@FXML
+	
 	void openTableStringProperties(ActionEvent event) {
 		openTable(StringProperty.class);
 	}
 	
-	@FXML
+	
 	void openTableFileTags(ActionEvent event) {
 		openTable(FileTag.class);
 	}
 	
 	
-	@FXML
+	
 	void openTableMeasuredValue(ActionEvent event) {
 		openTable(MeasuredValue.class);
 	}
 
-	@FXML
+	
 	void openTableMeasurement(ActionEvent event) {
 		openTable(Measurement.class);
 	}
 	
-	@FXML
+	
 	void openTablePhysicalQuantity(ActionEvent event) {
 		openTable(PhysicalQuantity.class);
 	}
 	
-	@FXML
+	
 	void openTableUnit(ActionEvent event) {
 		openTable(Unit.class);
 	}
 	
-	@FXML
+	
 	void openTableUnitPrefix(ActionEvent event) {
 		openTable(UnitPrefix.class);
 	}

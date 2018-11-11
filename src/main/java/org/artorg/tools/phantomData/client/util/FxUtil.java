@@ -23,6 +23,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListCell;
@@ -34,6 +35,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.util.Callback;
 
 public class FxUtil {
@@ -160,7 +163,7 @@ public class FxUtil {
 		return readResource(path).toExternalForm();
 	}
 
-	public static void addToAnchorPane(AnchorPane parentPane, Node child) {
+	public static void addToPane(Pane parentPane, Node child) {
 		parentPane.getChildren().add(child);
 		setAnchorZero(child);
 	}

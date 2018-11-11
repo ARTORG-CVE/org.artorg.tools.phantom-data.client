@@ -21,6 +21,21 @@
 
 }
 
+
+.glyph-icon{
+    -fx-text-fill: black;
+    -fx-fill: black;
+    -glyph-size: 48px;
+}
+
+
+.menu-item:focused .glyph-icon{
+    -fx-text-fill: white;
+    -fx-fill: white;
+    -glyph-size: 48px;
+}
+
+
 .tree-table-view {
 	-fx-focus-color: transparent;
 	-fx-border-color: red;

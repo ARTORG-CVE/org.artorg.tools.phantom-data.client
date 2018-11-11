@@ -26,8 +26,8 @@ public class MainFx extends Application {
 	public void start(Stage stage) throws Exception {
     	this.stage = stage;
     	mainController = new MainController(stage);
-		StackPane pane = FxUtil.loadFXML("fxml/Table.fxml", mainController, Main.getMainFxClass());
-		mainController.init();
+//		StackPane pane = FxUtil.loadFXML("fxml/Table.fxml", mainController, Main.getMainFxClass());
+    	StackPane pane = mainController;
 		
     	scene = new Scene(pane);
 		scene.getStylesheets().add(FxUtil.readCSSstylesheet("css/application.css"));
@@ -47,7 +47,7 @@ public class MainFx extends Application {
 		AnchorPane root = new AnchorPane();
 		Scene scene = new Scene(root);
 		
-		FxUtil.addToAnchorPane(root, node);
+		FxUtil.addToPane(root, node);
 		scene.setRoot(root);
 		
 		stage.setScene(scene);

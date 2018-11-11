@@ -37,7 +37,7 @@ public class TitledPaneTableViewSelector<ITEM extends DbPersistent<ITEM, ?>> ext
 		
 		super.init();
 		AnchorPane pane = new AnchorPane();
-		FxUtil.addToAnchorPane(pane, super.getGraphic());
+		FxUtil.addToPane(pane, super.getGraphic());
 		titledPane.setContent(pane);
 		titledPane.setExpanded(false);
 	}

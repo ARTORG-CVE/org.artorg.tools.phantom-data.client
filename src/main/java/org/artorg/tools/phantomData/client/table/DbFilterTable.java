@@ -128,8 +128,7 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 	public ObservableList<ITEM> getFilteredItems() {
 		return filteredItems;
 	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	
 	@Override
 	public void readAllData() {
 		super.readAllData();

@@ -8,7 +8,7 @@ import javafx.scene.layout.AnchorPane;
 public interface AddableToAnchorPane {
 	
 	default void addTo(AnchorPane pane) {
-		FxUtil.addToAnchorPane(pane, (Node) this);
+		FxUtil.addToPane(pane, (Node) this);
 	}
 
 }

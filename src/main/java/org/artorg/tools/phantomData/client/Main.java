@@ -1,12 +1,10 @@
 package org.artorg.tools.phantomData.client;
 
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfos;
-import org.artorg.tools.phantomData.client.boot.ClientBooter;
-import org.artorg.tools.phantomData.client.tablesFilter.base.DbFileFilterTable;
-import org.artorg.tools.phantomData.client.tablesFilter.phantom.PhantomFilterTable;
-import org.reflections.Reflections;
 
-import javafx.application.Platform;
+import fxsampler.FXSamplerProject;
+import org.artorg.tools.phantomData.client.boot.ClientBooter;
+import org.reflections.Reflections;
 
 public class Main extends DesktopSwingBootApplication {
 	private static ClientBooter clientBooter;
@@ -26,11 +24,6 @@ public class Main extends DesktopSwingBootApplication {
 	public static void main(String[] args) {
 		new Main().boot(args);
 		
-		Platform.runLater(() -> {
-		DbFileFilterTable table1 = new DbFileFilterTable();
-		System.out.println("//// TABLE");
-		System.out.println(table1.toString());
-		});
 		
 	}
 	
