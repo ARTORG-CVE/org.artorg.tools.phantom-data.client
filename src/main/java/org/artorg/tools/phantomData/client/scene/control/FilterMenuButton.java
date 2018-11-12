@@ -112,7 +112,7 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 		this.getItems().add(itemFilterAll);
 		this.getItems().add(new SeparatorMenuItem());
 	}
-	
+
 	private void unsortOther() {
 		List<FilterMenuButton<?, ?>> list = parentList.get();
 		if (parentList != null) {
@@ -193,8 +193,10 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 			@Override
 			public void run() {
 				StackPane sPane = (StackPane) lookup(".arrow-button");
-				sPane.getChildren().clear();
-				if (node != null) sPane.getChildren().add(node);
+				if (sPane != null) {
+					sPane.getChildren().clear();
+					if (node != null) sPane.getChildren().add(node);
+				}
 			}
 		});
 	}
@@ -412,7 +414,7 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 
 		this.getItems().addAll(itemsFilter);
 	}
-	
+
 	public Supplier<List<FilterMenuButton<?, ?>>> getParentList() {
 		return parentList;
 	}

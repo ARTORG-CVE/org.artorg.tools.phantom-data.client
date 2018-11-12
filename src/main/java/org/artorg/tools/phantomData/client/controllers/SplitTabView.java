@@ -39,6 +39,7 @@ import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.base.DbFile;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
+import org.artorg.tools.phantomData.server.model.specification.NameGeneratable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.application.Platform;
@@ -354,8 +355,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 		addMenuItem(rowMenu, "Open 3d Viewer", event -> {
 			Scene3D scene3d = new Scene3D();
 			scene3d.loadFile(get3dFile(row.getItem()));
-			addTab(viewerTabPane.getTabPane(), scene3d,
-				"3D Viewer");
+			addTab(viewerTabPane.getTabPane(), scene3d, "3D Viewer");
 		});
 
 		MenuItem treeMenuItem = new MenuItem("Show Tree View");
@@ -380,18 +380,21 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 	private <ITEM extends DbPersistent<ITEM, ?>> void show3dInViewer(ITEM item) {
 		if (viewerTabPane.getTabPane().getTabs().size() > 0) {
 			Tab tab = viewerTabPane.getTabPane().getSelectionModel().getSelectedItem();
-			show3dInViewer(item, tab);
+
+			if (show3dInViewer(item, tab) && item instanceof NameGeneratable)
+				tab.setText(((NameGeneratable) item).toName());
 		}
 	}
 
-	private <ITEM extends DbPersistent<ITEM, ?>> void show3dInViewer(ITEM item, Tab tab) {
+	private <ITEM extends DbPersistent<ITEM, ?>> boolean show3dInViewer(ITEM item,
+		Tab tab) {
 		if (tab != null) {
 			File file = get3dFile(item);
-			if (file != null)
-				show3dInViewer(file, tab);
+			if (file != null) return show3dInViewer(file, tab);
 		}
+		return false;
 	}
-	
+
 	private <ITEM extends DbPersistent<ITEM, ?>> File get3dFile(ITEM item) {
 		List<DbFile> files = getFiles(item);
 		if (files != null && !files.isEmpty()) {
@@ -401,10 +404,12 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 		return null;
 	}
 
-	private <ITEM extends DbPersistent<ITEM, ?>> void show3dInViewer(File file, Tab tab) {
+	private <ITEM extends DbPersistent<ITEM, ?>> boolean show3dInViewer(File file,
+		Tab tab) {
 		Scene3D newScene3d = new Scene3D();
 		newScene3d.loadFile(file);
 		tab.setContent(newScene3d);
+		return true;
 	}
 
 	private <ITEM extends DbPersistent<ITEM, ?>> List<DbFile> getFiles(ITEM item) {

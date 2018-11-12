@@ -85,7 +85,7 @@ public class MainController extends StackPane {
 	private SplitPane splitPane;
 	private ObservableList<SplitTabView> splitTabViews;
 	private static String urlLocalhost;
-	
+
 	public MainController(Stage stage) {
 		this.stage = stage;
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -94,13 +94,13 @@ public class MainController extends StackPane {
 				close();
 			}
 		});
-		
+
 		VBox vBox = new VBox();
 		menuBar = new MenuBar();
 		rootPane = this;
 		contentPane = new AnchorPane();
 		splitPane = new SplitPane();
-		
+
 		vBox.getChildren().add(menuBar);
 		vBox.getChildren().add(contentPane);
 		VBox.setVgrow(splitPane, Priority.ALWAYS);
@@ -108,99 +108,100 @@ public class MainController extends StackPane {
 
 		splitPane.setOrientation(Orientation.VERTICAL);
 		splitTabViews = FXCollections.<SplitTabView>observableArrayList();
-		splitTabViews.addListener(new ListChangeListener<SplitTabView>() {
-			@Override
-			public void onChanged(Change<? extends SplitTabView> c) {
-				System.out.println("split tab added");
-				
-				if (c.next()) do {
-					if (c.wasAdded()) splitPane.getItems()
-						.addAll(c.getAddedSubList().stream()
-							.map(splitTabView -> splitTabView.getSplitPane())
-							.collect(Collectors.toList()));
-					if (c.wasRemoved()) splitPane.getItems()
-						.removeAll(c.getRemoved().stream()
-							.map(splitTabView -> splitTabView.getSplitPane())
-							.collect(Collectors.toList()));
-				} while (c.next());
-			}
+		splitTabViews.addListener((ListChangeListener<SplitTabView>) c -> {
+			if (c.next()) do {
+				if (c.wasAdded()) splitPane.getItems()
+					.addAll(c.getAddedSubList().stream()
+						.map(splitTabView -> splitTabView.getSplitPane())
+						.collect(Collectors.toList()));
+				if (c.wasRemoved()) splitPane.getItems()
+					.removeAll(c.getRemoved().stream()
+						.map(splitTabView -> splitTabView.getSplitPane())
+						.collect(Collectors.toList()));
+			} while (c.next());
 		});
 
 		addSplitTabView();
 		addSplitTabView();
 		getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
-		File file = IOutil.readResourceAsFile("model.stl");
-		getOrCreate(0).openViewerTab(createScene3dTab(file));
+		getOrCreate(0).openViewerTab(createScene3dTab(null));
 		getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));
 
 		FxUtil.addToPane(contentPane, splitPane);
-		
-		
-		Menu menu; 
+
+		Menu menu;
 		MenuItem menuItem;
-		
+
 		menu = new Menu("File");
-		menuItem = new MenuItem("New", new CssGlyph("FontAwesome", FontAwesome.Glyph.FILE));
+		menuItem =
+			new MenuItem("New", new CssGlyph("FontAwesome", FontAwesome.Glyph.FILE));
 		menu.getItems().add(menuItem);
-		
-		menuItem = new MenuItem("Export...", new CssGlyph("FontAwesome", FontAwesome.Glyph.CARET_UP));
+
+		menuItem = new MenuItem("Export...",
+			new CssGlyph("FontAwesome", FontAwesome.Glyph.CARET_UP));
 		menuItem.setOnAction(event -> loginLogout(event));
 		menu.getItems().add(menuItem);
-		
-		menuItem = new MenuItem("Login/Logout...", new CssGlyph("FontAwesome", FontAwesome.Glyph.SIGN_IN));
+
+		menuItem = new MenuItem("Login/Logout...",
+			new CssGlyph("FontAwesome", FontAwesome.Glyph.SIGN_IN));
 		menuItem.setOnAction(event -> loginLogout(event));
 		menu.getItems().add(menuItem);
-		
+
 //		menu.getItems().add(new MenuItem("Preference"));
 		menuItem = new MenuItem("Close");
 		menuItem.setOnAction(event -> close(event));
 		menu.getItems().add(menuItem);
 		menuBar.getMenus().add(menu);
-		
+
 		menu = new Menu("Edit");
-		menuItem = new MenuItem("Undo", new CssGlyph("FontAwesome", FontAwesome.Glyph.ROTATE_LEFT));
-		menuItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
+		menuItem = new MenuItem("Undo",
+			new CssGlyph("FontAwesome", FontAwesome.Glyph.ROTATE_LEFT));
+		menuItem.setAccelerator(
+			new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
 		menuItem.setOnAction(event -> undo(event));
 		menu.getItems().add(menuItem);
-		
-		menuItem = new MenuItem("Redo", new CssGlyph("FontAwesome", FontAwesome.Glyph.ROTATE_RIGHT));
-		menuItem.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
+
+		menuItem = new MenuItem("Redo",
+			new CssGlyph("FontAwesome", FontAwesome.Glyph.ROTATE_RIGHT));
+		menuItem.setAccelerator(
+			new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
 		menuItem.setOnAction(event -> redo(event));
 		menu.getItems().add(menuItem);
-		
-		menuItem = new MenuItem("Refresh", new CssGlyph("FontAwesome", FontAwesome.Glyph.REFRESH));
+
+		menuItem = new MenuItem("Refresh",
+			new CssGlyph("FontAwesome", FontAwesome.Glyph.REFRESH));
 		menuItem.setOnAction(event -> refresh(event));
 		menu.getItems().add(menuItem);
-		
-		menuItem = new MenuItem("Delete", new CssGlyph("FontAwesome", FontAwesome.Glyph.REMOVE));
+
+		menuItem =
+			new MenuItem("Delete", new CssGlyph("FontAwesome", FontAwesome.Glyph.REMOVE));
 		menu.getItems().add(menuItem);
-		
+
 		menuBar.getMenus().add(menu);
-		
-		
+
 		menu = new Menu("Table");
 		createTableMenu(menu, splitTabViews.get(0),
 			(view, cls) -> view.openTableTab(createTableViewTab(castClass(cls))));
 		menuBar.getMenus().add(menu);
-		
+
 		menu = new Menu("TreeTable");
 		createTableMenu(menu, splitTabViews.get(0),
 			(view, cls) -> view.openTableTab(createTreeTableViewTab(castClass(cls))));
 		menuBar.getMenus().add(menu);
-		
+
 		menu = new Menu("Window");
 		menuItem = new MenuItem("Open SplitTabPane");
 		menuItem.setOnAction(event -> newSplitTabPane(event));
 		menu.getItems().add(menuItem);
 		menuBar.getMenus().add(menu);
-		
+
 //		menu = new Menu("Help");
 //		menuItem = new MenuItem("About");
 //		menu.getItems().add(menuItem);
 //		menuBar.getMenus().add(menu);
-		
+
 		FxUtil.addToPane(rootPane, vBox);
-		
+
 	}
 
 	MenuItem menuItemLoginLogout;
@@ -227,7 +228,7 @@ public class MainController extends StackPane {
 	void refresh(ActionEvent event) {
 
 	}
-	
+
 	void undo(ActionEvent event) {
 //    	table.getTable().getUndoManager().undo();
 	}
@@ -255,7 +256,7 @@ public class MainController extends StackPane {
 				.filter(menu -> menu.getText().equals("Dev. Tools"))
 				.collect(Collectors.toList()));
 	}
-	
+
 	private void executeQuery() {
 		AnchorPane root = new AnchorPane();
 		Scene scene = new Scene(root, 400, 400);
@@ -308,13 +309,14 @@ public class MainController extends StackPane {
 	void newEntity(ActionEvent event) {
 
 	}
-	
+
 	void newSplitTabPane(ActionEvent event) {
 		addSplitTabView();
 	}
 
 	private void addSplitTabView() {
-		SplitTabView splitTabView = new SplitTabView(splitTabViews.size(), i -> splitTabViews.get(i));
+		SplitTabView splitTabView =
+			new SplitTabView(splitTabViews.size(), i -> splitTabViews.get(i));
 		ContextMenu contextMenu = new ContextMenu();
 
 		Menu tableMenu = new Menu("Open Table");
@@ -389,7 +391,7 @@ public class MainController extends StackPane {
 			addMenuItem(subMenu, "Measured Value", event -> {
 				tableFactoryCreator.accept(splitTabView, MeasuredValue.class);
 			});
-			
+
 			addMenuItem(subMenu, "Physical Quantity", event -> {
 				tableFactoryCreator.accept(splitTabView, PhysicalQuantity.class);
 			});
@@ -430,11 +432,11 @@ public class MainController extends StackPane {
 	void preferences(ActionEvent event) {
 
 	}
-	
+
 	void resetPerspective(ActionEvent event) {
 
 	}
-	
+
 	void loginLogout(ActionEvent event) {
 		openLoginLogoutFrame();
 	}
@@ -455,7 +457,7 @@ public class MainController extends StackPane {
 	private Tab createScene3dTab(File file) {
 		Tab tab = new Tab("3D Viewer");
 		Scene3D scene3d = new Scene3D();
-		scene3d.loadFile(file);
+		if (file != null) scene3d.loadFile(file);
 		tab.setContent(scene3d);
 		return tab;
 	}
@@ -497,18 +499,19 @@ public class MainController extends StackPane {
 	public SplitTabView getOrCreate(int row) {
 		if (splitTabViews.size() - 1 < row)
 			for (int i = splitTabViews.size() - 1; i < row; i++)
-			splitTabViews.add(new SplitTabView(splitTabViews.size(), j -> splitTabViews.get(j)));
+			splitTabViews
+				.add(new SplitTabView(splitTabViews.size(), j -> splitTabViews.get(j)));
 		return splitTabViews.get(row);
 	}
-	
+
 	void openTableFiles(ActionEvent event) {
 		openTable(DbFile.class);
 	}
-	
+
 	void openTablePhantoms(ActionEvent event) {
 		openTable(Phantom.class);
 	}
-	
+
 	void openTablePhantominas(ActionEvent event) {
 		openTable(Phantomina.class);
 	}
@@ -526,94 +529,76 @@ public class MainController extends StackPane {
 		openTable(Special.class);
 	}
 
-	
 	void openTableAnnulusDiameter(ActionEvent event) {
 		openTable(AnnulusDiameter.class);
 	}
 
-	
 	void openTableFabricationTypes(ActionEvent event) {
 		openTable(FabricationType.class);
 	}
 
-	
 	void openTableLiteratureBases(ActionEvent event) {
 		openTable(LiteratureBase.class);
 	}
 
-	
 	void openTablePropertyFields(ActionEvent event) {
 		openTable(PropertyField.class);
 	}
 
-	
 	void openTableAcademicTitles(ActionEvent event) {
 		openTable(AcademicTitle.class);
 	}
 
-	
 	void openTablePersons(ActionEvent event) {
 		openTable(Person.class);
 	}
-	
-	
+
 	void openTableBooleanProperties(ActionEvent event) {
 		openTable(BooleanProperty.class);
 	}
 
-	
 	void openTableDoubleProperties(ActionEvent event) {
 		openTable(DoubleProperty.class);
 	}
 
-	
 	void openTableIntegerProperties(ActionEvent event) {
 		openTable(IntegerProperty.class);
 	}
 
-	
 	void openTableStringProperties(ActionEvent event) {
 		openTable(StringProperty.class);
 	}
-	
-	
+
 	void openTableFileTags(ActionEvent event) {
 		openTable(FileTag.class);
 	}
-	
-	
-	
+
 	void openTableMeasuredValue(ActionEvent event) {
 		openTable(MeasuredValue.class);
 	}
 
-	
 	void openTableMeasurement(ActionEvent event) {
 		openTable(Measurement.class);
 	}
-	
-	
+
 	void openTablePhysicalQuantity(ActionEvent event) {
 		openTable(PhysicalQuantity.class);
 	}
-	
-	
+
 	void openTableUnit(ActionEvent event) {
 		openTable(Unit.class);
 	}
-	
-	
+
 	void openTableUnitPrefix(ActionEvent event) {
 		openTable(UnitPrefix.class);
 	}
-	
 
 	public static String getUrlLocalhost() {
 		return urlLocalhost;
 	}
 
 	public static void setUrlLocalhost(String urlLocalhost) {
-		System.out.println("MainController: " +urlLocalhost);
+		System.out.println("MainController: " + urlLocalhost);
 		MainController.urlLocalhost = urlLocalhost;
 	}
 
