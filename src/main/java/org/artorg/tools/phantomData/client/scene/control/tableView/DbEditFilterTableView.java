@@ -22,13 +22,13 @@ public abstract class DbEditFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 	@Override
 	public void initTable() {
 		if (getTable() instanceof IEditFilterTable)
-			initEditFilterTable((IEditFilterTable<ITEM>) getTable());
+			initEditFilterTable((IEditFilterTable<ITEM,Object>) getTable());
 		else
 			super.initTable();
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected void initEditFilterTable(IEditFilterTable<ITEM> table) {
+	protected void initEditFilterTable(IEditFilterTable<ITEM,Object> table) {
 		super.initTable();
 
 		ObservableList<TableColumn<ITEM, ?>> columns = super.getColumns();

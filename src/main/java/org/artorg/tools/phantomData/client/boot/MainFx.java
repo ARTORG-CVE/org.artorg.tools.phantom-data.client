@@ -6,6 +6,7 @@ import org.artorg.tools.phantomData.client.util.FxUtil;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -30,6 +31,7 @@ public class MainFx extends Application {
     	scene = new Scene(pane);
 		scene.getStylesheets().add(FxUtil.readCSSstylesheet("css/application.css"));
 		
+		stage.getIcons().add(new Image("img/startup.png"));
 		stage.setScene(scene);
 		stage.setTitle("Phantom Database");
 		stage.setWidth(800);

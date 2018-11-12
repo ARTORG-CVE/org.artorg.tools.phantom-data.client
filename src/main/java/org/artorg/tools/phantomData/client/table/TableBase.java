@@ -12,36 +12,34 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 @SuppressWarnings("unchecked")
-public class TableBase<ITEM> implements ITable<ITEM> {
-	private ObservableList<ITEM> items;
-	private List<AbstractColumn<ITEM,?>> columns;
+public class TableBase<T> implements ITable<T,Object> {
+	private ObservableList<T> items;
+	private List<AbstractColumn<T,? extends Object>> columns;
 	private boolean isIdColumnVisible;
 	private String tableName;
 	private String itemName;
-	private final Class<ITEM> itemClass;
-	private Function<List<ITEM>,List<AbstractColumn<ITEM,?>>> columnCreator;
-	private final ListChangeListener<ITEM> itemListChangeListener;
+	private final Class<T> itemClass;
+	private Function<List<T>,List<AbstractColumn<T,? extends Object>>> columnCreator;
+	private final ListChangeListener<T> itemListChangeListener;
 
-	public ListChangeListener<ITEM> getItemListChangeListener() {
+	public ListChangeListener<T> getItemListChangeListener() {
 		return itemListChangeListener;
 	}
 
 	{
 		items = FXCollections.observableArrayList();
-		columns = new ArrayList<AbstractColumn<ITEM,?>>();
+		columns = new ArrayList<AbstractColumn<T,? extends Object>>();
 		isIdColumnVisible = true;
-		columnCreator = items -> new ArrayList<AbstractColumn<ITEM,?>>();
+		columnCreator = items -> new ArrayList<AbstractColumn<T,? extends Object>>();
 		
-		itemListChangeListener = new ListChangeListener<ITEM>() {
+		itemListChangeListener = new ListChangeListener<T>() {
 			@Override
-			public void onChanged(Change<? extends ITEM> c) {
+			public void onChanged(Change<? extends T> c) {
 				updateColumns();
 			}
 		}; 
 		items.addListener(itemListChangeListener);
 	}
-	
-	
 	
 	@Override
 	public void refresh() {
@@ -49,16 +47,16 @@ public class TableBase<ITEM> implements ITable<ITEM> {
 	}
 	
 	public TableBase() {
-		itemClass = (Class<ITEM>) Reflect.findGenericClasstype(this);
+		itemClass = (Class<T>) Reflect.findGenericClasstype(this);
 		this.itemName = itemClass.getSimpleName();
 	}
 	
-	public TableBase(Class<ITEM> itemClass) {
+	public TableBase(Class<T> itemClass) {
 		this.itemClass = itemClass;
 		this.itemName = itemClass.getSimpleName();
 	}
 	
-	public void setItems(ObservableList<ITEM> items) {
+	public void setItems(ObservableList<T> items) {
 		this.items = items;
 		updateColumns();
 	}
@@ -104,26 +102,26 @@ public class TableBase<ITEM> implements ITable<ITEM> {
 	}
 
 	@Override
-	public List<AbstractColumn<ITEM,?>> getColumns() {
+	public List<AbstractColumn<T,? extends Object>> getColumns() {
 		return this.columns;
 	}
 
 	@Override
-	public ObservableList<ITEM> getItems() {
+	public ObservableList<T> getItems() {
 		return this.items;
 	}
 
 	@Override
-	public final Class<ITEM> getItemClass() {
+	public final Class<T> getItemClass() {
 		return this.itemClass;
 	}
 	
-	public Function<List<ITEM>, List<AbstractColumn<ITEM,?>>> getColumnCreator() {
+	public Function<List<T>, List<AbstractColumn<T,? extends Object>>> getColumnCreator() {
 		return columnCreator;
 	}
 
 	public void
-		setColumnCreator(Function<List<ITEM>, List<AbstractColumn<ITEM,?>>> columnCreator) {
+		setColumnCreator(Function<List<T>, List<AbstractColumn<T,? extends Object>>> columnCreator) {
 		this.columnCreator = columnCreator;
 		updateColumns();
 	}

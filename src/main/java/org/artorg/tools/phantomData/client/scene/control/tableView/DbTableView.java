@@ -25,7 +25,7 @@ public class DbTableView<ITEM extends DbPersistent<ITEM,?>> extends ProTableView
 	@SuppressWarnings("unchecked")
 	public void reload() {
 //		getTable().getItems().removeListener(getListenerChangedListenerRefresh());
-		((IDbTable<ITEM>)getTable()).readAllData();
+		((IDbTable<ITEM,?>)getTable()).readAllData();
 		super.setItems(getTable().getItems());
 //		getTable().getItems().addListener(getListenerChangedListenerRefresh());
 		refresh();

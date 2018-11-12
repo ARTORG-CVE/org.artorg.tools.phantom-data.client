@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.boot.MainFx;
+import org.artorg.tools.phantomData.client.scene.CssGlyph;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
@@ -43,7 +44,6 @@ import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.model.phantom.Special;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import org.controlsfx.glyphfont.FontAwesome;
-import org.controlsfx.glyphfont.Glyph;
 
 import huma.io.IOutil;
 import javafx.application.Platform;
@@ -70,6 +70,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -87,33 +88,31 @@ public class MainController extends StackPane {
 	
 	public MainController(Stage stage) {
 		this.stage = stage;
-		
-		VBox vBox = new VBox();
-		
-		menuBar = new MenuBar();
-		rootPane = this;
-		contentPane = new AnchorPane();
-		splitPane = new SplitPane();
-		
-		
-		vBox.getChildren().add(menuBar);
-		vBox.getChildren().add(contentPane);
-		
-		
-		
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override
 			public void handle(WindowEvent event) {
 				close();
 			}
 		});
-
 		
+		VBox vBox = new VBox();
+		menuBar = new MenuBar();
+		rootPane = this;
+		contentPane = new AnchorPane();
+		splitPane = new SplitPane();
+		
+		vBox.getChildren().add(menuBar);
+		vBox.getChildren().add(contentPane);
+		VBox.setVgrow(splitPane, Priority.ALWAYS);
+		VBox.setVgrow(contentPane, Priority.ALWAYS);
+
 		splitPane.setOrientation(Orientation.VERTICAL);
 		splitTabViews = FXCollections.<SplitTabView>observableArrayList();
 		splitTabViews.addListener(new ListChangeListener<SplitTabView>() {
 			@Override
 			public void onChanged(Change<? extends SplitTabView> c) {
+				System.out.println("split tab added");
+				
 				if (c.next()) do {
 					if (c.wasAdded()) splitPane.getItems()
 						.addAll(c.getAddedSubList().stream()
@@ -137,23 +136,18 @@ public class MainController extends StackPane {
 		FxUtil.addToPane(contentPane, splitPane);
 		
 		
-		
-		
-		
 		Menu menu; 
 		MenuItem menuItem;
 		
 		menu = new Menu("File");
-		menuItem = new MenuItem("New", getGlyph(FontAwesome.Glyph.FILE));
+		menuItem = new MenuItem("New", new CssGlyph("FontAwesome", FontAwesome.Glyph.FILE));
 		menu.getItems().add(menuItem);
 		
-		
-		
-		menuItem = new MenuItem("Export...", getGlyph(FontAwesome.Glyph.CARET_UP));
+		menuItem = new MenuItem("Export...", new CssGlyph("FontAwesome", FontAwesome.Glyph.CARET_UP));
 		menuItem.setOnAction(event -> loginLogout(event));
 		menu.getItems().add(menuItem);
 		
-		menuItem = new MenuItem("Login/Logout...", getGlyph(FontAwesome.Glyph.SIGN_IN));
+		menuItem = new MenuItem("Login/Logout...", new CssGlyph("FontAwesome", FontAwesome.Glyph.SIGN_IN));
 		menuItem.setOnAction(event -> loginLogout(event));
 		menu.getItems().add(menuItem);
 		
@@ -164,21 +158,21 @@ public class MainController extends StackPane {
 		menuBar.getMenus().add(menu);
 		
 		menu = new Menu("Edit");
-		menuItem = new MenuItem("Undo", getGlyph(FontAwesome.Glyph.ROTATE_LEFT));
+		menuItem = new MenuItem("Undo", new CssGlyph("FontAwesome", FontAwesome.Glyph.ROTATE_LEFT));
 		menuItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
 		menuItem.setOnAction(event -> undo(event));
 		menu.getItems().add(menuItem);
 		
-		menuItem = new MenuItem("Redo", getGlyph(FontAwesome.Glyph.ROTATE_RIGHT));
+		menuItem = new MenuItem("Redo", new CssGlyph("FontAwesome", FontAwesome.Glyph.ROTATE_RIGHT));
 		menuItem.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
 		menuItem.setOnAction(event -> redo(event));
 		menu.getItems().add(menuItem);
 		
-		menuItem = new MenuItem("Refresh", getGlyph(FontAwesome.Glyph.REFRESH));
+		menuItem = new MenuItem("Refresh", new CssGlyph("FontAwesome", FontAwesome.Glyph.REFRESH));
 		menuItem.setOnAction(event -> refresh(event));
 		menu.getItems().add(menuItem);
 		
-		menuItem = new MenuItem("Delete", getGlyph(FontAwesome.Glyph.REMOVE));
+		menuItem = new MenuItem("Delete", new CssGlyph("FontAwesome", FontAwesome.Glyph.REMOVE));
 		menu.getItems().add(menuItem);
 		
 		menuBar.getMenus().add(menu);
@@ -207,13 +201,6 @@ public class MainController extends StackPane {
 		
 		FxUtil.addToPane(rootPane, vBox);
 		
-	}
-	
-	private Glyph getGlyph(FontAwesome.Glyph awesomeGlyph) {
-		Glyph glyph = new Glyph("FontAwesome", awesomeGlyph);
-		glyph.getStylesheets().add(FxUtil.readCSSstylesheet("css/application.css"));
-		glyph.getStyleClass().add("glyph-icon");
-		return glyph;
 	}
 
 	MenuItem menuItemLoginLogout;

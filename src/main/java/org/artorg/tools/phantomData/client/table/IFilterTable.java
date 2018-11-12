@@ -8,17 +8,17 @@ import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
 
-public interface IFilterTable<ITEM> extends ITable<ITEM> {
+public interface IFilterTable<ITEM,R> extends ITable<ITEM,R> {
 
 	int getFilteredNrows();
 
-	void setColumnItemFilterValues(int col, List<Object> selectedValues);
+	void setColumnItemFilterValues(int col, List<R> selectedValues);
 
-	void setSortComparator(Comparator<Object> sortComparator, Function<ITEM, Object> valueGetter);
+	void setSortComparator(Comparator<R> sortComparator, Function<ITEM, R> valueGetter);
 
 	void setColumnTextFilterValues(int col, String regex);
 
-	Object getFilteredValue(ITEM item, int col);
+	R getFilteredValue(ITEM item, int col);
 
 	List<String> getFilteredColumnNames();
 
@@ -28,9 +28,9 @@ public interface IFilterTable<ITEM> extends ITable<ITEM> {
 	
 	ObservableList<ITEM> getFilteredItems();
 
-	List<AbstractColumn<ITEM,?>> getFilteredColumns();
+	List<AbstractColumn<ITEM,? extends R>> getFilteredColumns();
 	
-	List<AbstractFilterColumn<ITEM,?>> getFilteredFilterColumns();
+	List<AbstractFilterColumn<ITEM,? extends R>> getFilteredFilterColumns();
 
 	Predicate<ITEM> getFilterPredicate();
 	
@@ -38,12 +38,12 @@ public interface IFilterTable<ITEM> extends ITable<ITEM> {
 	
 	Queue<Comparator<ITEM>> getSortComparatorQueue();
 	
-	default Object getFilteredValue(int row, int col) {
+	default R getFilteredValue(int row, int col) {
 		return getFilteredColumns().get(col).get(getFilteredItems().get(row));
 	}
 	
-	default Object getColumnFilteredValue(int row, int col) {
-		List<AbstractColumn<ITEM,?>> columns = getFilteredColumns();
+	default R getColumnFilteredValue(int row, int col) {
+		List<AbstractColumn<ITEM,? extends R>> columns = getFilteredColumns();
 		AbstractColumn<ITEM,?> column = columns.get(col);
 		ObservableList<ITEM> items = getItems();
 		ITEM item = items.get(row);

@@ -11,13 +11,13 @@ import org.artorg.tools.phantomData.client.util.CollectorsHuma;
 
 import javafx.collections.ObservableList;
 
-public interface ITable<ITEM> {
+public interface ITable<T,R> {
 	
-	List<AbstractColumn<ITEM,?>> getColumns();
+	List<AbstractColumn<T,? extends R>> getColumns();
 	
 	void updateColumns();
 	
-	Class<ITEM> getItemClass();
+	Class<T> getItemClass();
 	
 	String getTableName();
 	
@@ -25,30 +25,30 @@ public interface ITable<ITEM> {
 	
 	void setItemName(String name);
 	
-	ObservableList<ITEM> getItems();
+	ObservableList<T> getItems();
 	
 	String getItemName();
 	
 	void refresh();
 	
-	default AbstractColumn<ITEM,?> getIdColumn() {
+	default AbstractColumn<T,? extends R> getIdColumn() {
 		return getColumns().stream().filter(c -> c.isIdColumn()).collect(CollectorsHuma.toSingleton());
 	}
 	
-	default  void setIdColumn(AbstractColumn<ITEM,?> column) {
-		UnaryOperator<AbstractColumn<ITEM,?>> unaryOperator = c -> c.isIdColumn()? column: c;
+	default  void setIdColumn(AbstractColumn<T,? extends R> column) {
+		UnaryOperator<AbstractColumn<T,? extends R>> unaryOperator = c -> c.isIdColumn()? column: c;
 		getColumns().replaceAll(unaryOperator);
 	}
 	
-	default List<AbstractColumn<ITEM,?>> getVisibleColumns() {
+	default List<AbstractColumn<T,? extends R>> getVisibleColumns() {
 		return getColumns().stream().filter(c -> c.isVisible()).collect(Collectors.toList());
 	}
 	
-	default Object getValue(int row, int col) {
+	default R getValue(int row, int col) {
 		return getValue(getItems().get(row), col);
 	}
 	
-	default Object getValue(ITEM item, int col) {
+	default R getValue(T item, int col) {
 		return getColumns().get(col).get(item);
 	}
 	

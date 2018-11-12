@@ -21,7 +21,7 @@ public class DbTreeTableView<ITEM extends DbPersistent<ITEM,?>> extends ProTreeT
 	
 	@SuppressWarnings("unchecked")
 	public void reload() {
-		((IDbTable<Phantom>)getTable()).readAllData();
+		((IDbTable<Phantom,Object>)getTable()).readAllData();
 		super.setItems(getTable().getItems());
 		refresh();
 	}

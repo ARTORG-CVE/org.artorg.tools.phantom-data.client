@@ -5,12 +5,12 @@ import java.util.function.Consumer;
 import org.artorg.tools.phantomData.client.commandPattern.UndoManager;
 import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
 
-public interface IUndoRedoTable<ITEM> extends IEditTable<ITEM> {
+public interface IUndoRedoTable<T,R> extends IEditTable<T,R> {
 	
 	UndoManager getUndoManager();
 	
-	default void setValue(ITEM item, int col, Object value, Consumer<Object> redo, Consumer<Object> undo) {
-		Object currentValue = getValue(item, col);
+	default void setValue(T item, int col, R value, Consumer<R> redo, Consumer<R> undo) {
+		R currentValue = getValue(item, col);
 		if (value.equals(currentValue))  return;
 		
 		UndoRedoNode node = new UndoRedoNode(() -> {
@@ -25,7 +25,7 @@ public interface IUndoRedoTable<ITEM> extends IEditTable<ITEM> {
 		getUndoManager().addAndRun(node);
 	}
 	
-	default void setValue(int row, int col, Object value, Consumer<Object> redo, Consumer<Object> undo) {
+	default void setValue(int row, int col, R value, Consumer<R> redo, Consumer<R> undo) {
 		setValue(getItems().get(row), col, value, redo, undo);
 	}
 

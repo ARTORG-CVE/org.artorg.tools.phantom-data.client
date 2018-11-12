@@ -92,7 +92,7 @@ public class TableViewFactory {
 		tableView.setItems(items);
 		return tableView;
 	}
-
+	
 	public static <T, TABLE extends TableBase<T>,
 		TABLE_VIEW extends ProTableView<T>> ProTableView<T>
 		createTableView(Class<?> itemClass, Class<TABLE> tableClass,

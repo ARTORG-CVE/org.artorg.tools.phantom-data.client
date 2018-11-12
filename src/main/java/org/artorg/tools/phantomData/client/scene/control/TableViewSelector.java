@@ -75,7 +75,7 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM, ?>>
 
 		if (this.getTableView1() instanceof ProTableView) {
 			ProTableView<ITEM> proTableView = (ProTableView<ITEM>) this.getTableView1();
-			proTableView.setRemoveColumnPolicy((fromColumn, toColumn) -> {
+			proTableView.setColumnRemovePolicy((fromColumn, toColumn) -> {
 				if (toColumn == addButtonCellColumn) return true;
 				return toColumn.getText().equals(fromColumn.getName());
 			});
@@ -83,7 +83,7 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM, ?>>
 
 		if (this.getTableView2() instanceof ProTableView) {
 			ProTableView<ITEM> proTableView = (ProTableView<ITEM>) this.getTableView2();
-			proTableView.setRemoveColumnPolicy((fromColumn, toColumn) -> {
+			proTableView.setColumnRemovePolicy((fromColumn, toColumn) -> {
 				if (toColumn == removeButtonCellColumn) return true;
 				return toColumn.getText().equals(fromColumn.getName());
 			});

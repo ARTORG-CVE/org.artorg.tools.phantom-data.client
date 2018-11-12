@@ -148,7 +148,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 	@SuppressWarnings("unchecked")
 	public final ICrudConnector<ITEM, ?> getConnector() {
 		if (getTableView().getTable() instanceof IDbTable)
-			return ((IDbTable<ITEM>) getTableView().getTable()).getConnector();
+			return ((IDbTable<ITEM,?>) getTableView().getTable()).getConnector();
 		return null;
 	}
 

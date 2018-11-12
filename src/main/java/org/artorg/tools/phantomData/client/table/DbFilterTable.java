@@ -19,7 +19,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<ITEM> implements IFilterTable<ITEM> {
+public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<ITEM> implements IFilterTable<ITEM,Object> {
 	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
 	private List<Predicate<ITEM>> columnItemFilterPredicates;
@@ -153,14 +153,14 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 	}
 
 	@Override
-	public List<AbstractColumn<ITEM, ?>> getFilteredColumns() {
+	public List<AbstractColumn<ITEM, ? extends Object>> getFilteredColumns() {
 		return mappedColumnIndexes.stream().map(i -> getColumns().get(i)).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<AbstractFilterColumn<ITEM, ?>> getFilteredFilterColumns() {
+	public List<AbstractFilterColumn<ITEM, ? extends Object>> getFilteredFilterColumns() {
 		return getFilteredColumns().stream().filter(column -> column instanceof AbstractFilterColumn)
-				.map(column -> (AbstractFilterColumn<ITEM, ?>) column).collect(Collectors.toList());
+				.map(column -> (AbstractFilterColumn<ITEM,? extends Object>) column).collect(Collectors.toList());
 	}
 
 	@Override

@@ -5,12 +5,12 @@ import java.util.function.Consumer;
 import org.artorg.tools.phantomData.client.commandPattern.UndoRedoNode;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public interface IDbUndoRedoEditFilterTable<ITEM extends DbPersistent<ITEM,?>> extends IUndoRedoTable<ITEM>, IDbEditFilterTable<ITEM> {
+public interface IDbUndoRedoEditFilterTable<ITEM extends DbPersistent<ITEM,?>,R> extends IUndoRedoTable<ITEM,R>, IDbEditFilterTable<ITEM,R> {
 	
-	default void setFilteredValue(int row, int col, Object value, Consumer<Object> redo, Consumer<Object> undo) {
+	default void setFilteredValue(int row, int col, R value, Consumer<R> redo, Consumer<R> undo) {
 		ITEM superItem = getItems().stream().filter(item -> item.getId().equals(getFilteredItems().get(row).getId())).findFirst().get();
 		ITEM filteredItem = getFilteredItems().get(row);
-		Object currentValue = getFilteredValue(superItem, col);
+		R currentValue = getFilteredValue(superItem, col);
 		if (value.equals(currentValue))  return;
 		
 		UndoRedoNode node = new UndoRedoNode(() -> {
@@ -27,9 +27,9 @@ public interface IDbUndoRedoEditFilterTable<ITEM extends DbPersistent<ITEM,?>> e
 		
 	}
 	
-	default void setFilteredValue(ITEM item, int filteredCol, Object value, Consumer<Object> redo, Consumer<Object> undo) {
+	default void setFilteredValue(ITEM item, int filteredCol, R value, Consumer<R> redo, Consumer<R> undo) {
 		ITEM superItem = getItems().stream().filter(i -> i.getId().equals(item.getId())).findFirst().get();
-		Object currentValue = getFilteredValue(superItem, filteredCol);
+		R currentValue = getFilteredValue(superItem, filteredCol);
 		if (value.equals(currentValue))  return;
 		
 		UndoRedoNode node = new UndoRedoNode(() -> {
@@ -46,7 +46,7 @@ public interface IDbUndoRedoEditFilterTable<ITEM extends DbPersistent<ITEM,?>> e
 		getUndoManager().addAndRun(node);
 	}
 	
-	default void setFilteredValue(ITEM item, int filteredCol, Object value) {
+	default void setFilteredValue(ITEM item, int filteredCol, R value) {
 		setFilteredValue(item, filteredCol, value, s -> {}, s -> {});
 	}
 	

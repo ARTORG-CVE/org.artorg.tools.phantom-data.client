@@ -10,7 +10,7 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public interface IDbTable<ITEM extends DbPersistent<ITEM,?>> extends ITable<ITEM>, IDbConnectable<ITEM>{
+public interface IDbTable<ITEM extends DbPersistent<ITEM,?>,R> extends ITable<ITEM,R>, IDbConnectable<ITEM> {
 
 	default void readAllData() {
 		Set<ITEM> itemSet = new HashSet<ITEM>();
