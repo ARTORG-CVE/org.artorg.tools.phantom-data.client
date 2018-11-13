@@ -21,7 +21,7 @@ public class SpecialFilterTable extends DbUndoRedoFactoryEditFilterTable<Special
 			columns.add(new FilterColumn<Special,String>("Shortcut", item -> item, path -> path.getShortcut(),
 					(path, value) -> path.setShortcut(value)));
 			createPropertyColumns(columns, this.getItems());
-			createBaseColumns(columns);
+			createPersonifiedColumns(columns);
 			return columns;
 		});
 

@@ -153,6 +153,7 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 
 	@Override
 	public boolean create(T t) {
+		if (existById(t.getId())) return false;
 		try {
 			HttpHeaders headers = createHttpHeaders();
 			RestTemplate restTemplate = new RestTemplate();

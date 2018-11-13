@@ -43,7 +43,7 @@ public class PhantominaFilterTable extends DbUndoRedoFactoryEditFilterTable<Phan
 				(path, value) -> path.setShortcut(value));
 			columns.add(column);
 //			createPropertyColumns(columns, this.getItems());
-			createBaseColumns(columns);
+			createPersonifiedColumns(columns);
 			return columns;
 		});
 

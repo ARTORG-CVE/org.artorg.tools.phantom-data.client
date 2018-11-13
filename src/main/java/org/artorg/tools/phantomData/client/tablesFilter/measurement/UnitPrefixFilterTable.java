@@ -31,7 +31,7 @@ public class UnitPrefixFilterTable extends DbUndoRedoFactoryEditFilterTable<Unit
 				"Exponent", item -> item,
 				path -> path.getExponent().toString(),
 				(path, value) -> path.setExponent(Integer.valueOf(value))));
-			createBaseColumns(columns);
+			createPersonifiedColumns(columns);
 			return columns;
 		});
 

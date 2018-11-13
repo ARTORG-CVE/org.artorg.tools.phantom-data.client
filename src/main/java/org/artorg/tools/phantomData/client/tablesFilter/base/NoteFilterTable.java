@@ -21,7 +21,7 @@ public class NoteFilterTable extends DbUndoRedoFactoryEditFilterTable<Note> impl
 				"Name", item -> item,
 				path -> path.getName(),
 				(path, value) -> path.setName(value)));
-			createBaseColumns(columns);			
+			createPersonifiedColumns(columns);			
 			return columns;
 		});
 

@@ -21,7 +21,7 @@ public class FileTagFilterTable extends DbUndoRedoFactoryEditFilterTable<FileTag
 				"Name", item -> item,
 				path -> path.getName(),
 				(path, value) -> path.setName(value)));
-			createBaseColumns(columns);			
+			createPersonifiedColumns(columns);			
 			return columns;
 		});
 

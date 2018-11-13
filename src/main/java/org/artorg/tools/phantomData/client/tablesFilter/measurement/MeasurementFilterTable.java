@@ -39,7 +39,7 @@ public class MeasurementFilterTable extends DbUndoRedoFactoryEditFilterTable<Mea
 				"Description", item -> item,
 				path -> path.getDescription(),
 				(path, value) -> path.setDescription(value)));
-			createBaseColumns(columns);
+			createPersonifiedColumns(columns);
 			return columns;
 		});
 

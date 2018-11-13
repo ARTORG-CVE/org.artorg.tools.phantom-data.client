@@ -39,7 +39,7 @@ public abstract class PropertyFilterTable<
 				"Value", item -> item,
 				path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(fromString(value))));
-			createBaseColumns(columns);
+			createPersonifiedColumns(columns);
 			return columns;
 		});
 	}

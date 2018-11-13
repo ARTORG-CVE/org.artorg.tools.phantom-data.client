@@ -33,7 +33,7 @@ public class DbFileFilterTable extends DbUndoRedoFactoryEditFilterTable<DbFile>
 			columns.add(new FilterColumn<DbFile,String>("File Tags", item -> item,
 				path -> path.getFileTags().stream().map(fileTag -> fileTag.getName()).collect(Collectors.joining(", ")), 
 				(path, value) -> {}));
-			createBaseColumns(columns);
+			createPersonifiedColumns(columns);
 			return columns;
 		});
 

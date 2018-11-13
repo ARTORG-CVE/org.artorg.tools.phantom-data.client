@@ -26,7 +26,7 @@ public class LiteratureBaseFilterTable
 				"Value", item -> item,
 				path -> path.getValue(),
 				(path, value) -> path.setValue((String) value)));
-			createBaseColumns(columns);
+			createPersonifiedColumns(columns);
 			return columns;
 		});
 

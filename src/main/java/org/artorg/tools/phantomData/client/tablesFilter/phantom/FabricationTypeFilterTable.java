@@ -26,7 +26,7 @@ public class FabricationTypeFilterTable
 				"Value", item -> item,
 				path -> path.getValue(),
 				(path, value) -> path.setValue(value)));
-			createBaseColumns(columns);
+			createPersonifiedColumns(columns);
 			return columns;
 		});
 

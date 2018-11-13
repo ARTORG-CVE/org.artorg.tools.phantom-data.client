@@ -37,7 +37,7 @@ public class PropertyFieldFilterTable
 				"Description", item -> item,
 				path -> path.getDescription(),
 				(path, value) -> path.setDescription((String) value)));
-			createBaseColumns(columns);
+			createPersonifiedColumns(columns);
 			
 			return columns;
 		});

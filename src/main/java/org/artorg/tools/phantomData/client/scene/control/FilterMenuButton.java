@@ -61,7 +61,10 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 		refresh = () -> {};
 		parentList = () -> null;
 
-		itemSearch.setOnAction(event -> onHiding());
+		itemSearch.setOnAction(event -> {
+			setRegex(itemSearch.getTextField().getText());
+			onHiding();
+			});
 		Platform.runLater(() -> setImage(iconDefault));
 	}
 
@@ -82,6 +85,7 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 				itemDescending.getCheckBox().setSelected(false);
 			unsortOther();
 			refreshImage();
+			refresh.run();
 		});
 
 		itemDescending.getCheckBox().addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
@@ -89,19 +93,21 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 				itemAscending.getCheckBox().setSelected(false);
 			unsortOther();
 			refreshImage();
-
+			refresh.run();
 		});
 
 		itemSearch.getTextField().textProperty()
 			.addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
 				if (!newValue.isEmpty()) setRegex(newValue);
 				refreshImage();
+				refresh.run();
 			});
 
 		itemFilterAll.getCheckBox().addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			streamCheckBoxes()
 				.forEach(c -> c.setSelected(itemFilterAll.getCheckBox().isSelected()));
 			refreshImage();
+			refresh.run();
 		});
 
 		this.getItems().add(itemReset);

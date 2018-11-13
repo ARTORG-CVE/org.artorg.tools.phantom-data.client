@@ -10,7 +10,7 @@ public interface IPersonifiedColumns {
 	SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
 	default <T extends AbstractPersonifiedEntity<T>> void
-		createBaseColumns(List<AbstractColumn<T,?>> columns) {
+		createPersonifiedColumns(List<AbstractColumn<T,?>> columns) {
 		columns.add(new FilterColumn<T,String>("Last modified", item -> item,
 			path -> format.format(path.getDateLastModified()), (path, value) -> {}));
 		columns.add(new FilterColumn<T,String>("Changed By", item -> item.getChanger(),

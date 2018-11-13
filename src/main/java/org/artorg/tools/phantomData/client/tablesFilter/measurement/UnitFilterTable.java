@@ -34,7 +34,7 @@ public class UnitFilterTable extends DbUndoRedoFactoryEditFilterTable<Unit> impl
 				"Description", item -> item,
 				path -> path.getDescription(),
 				(path, value) -> path.setDescription(value)));
-			createBaseColumns(columns);
+			createPersonifiedColumns(columns);
 			return columns;
 		});
 

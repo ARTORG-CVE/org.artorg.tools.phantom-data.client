@@ -26,7 +26,7 @@ public class AnnulusDiameterFilterTable
 				"Value", item -> item,
 				path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(Double.valueOf(value))));
-			createBaseColumns(columns);
+			createPersonifiedColumns(columns);
 			return columns;
 		});
 

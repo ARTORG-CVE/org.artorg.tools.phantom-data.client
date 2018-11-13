@@ -31,7 +31,7 @@ public class PhysicalQuantityFilterTable extends DbUndoRedoFactoryEditFilterTabl
 				"Description", item -> item,
 				path -> path.getDescription(),
 				(path, value) -> path.setDescription(value)));
-			createBaseColumns(columns);
+			createPersonifiedColumns(columns);
 			return columns;
 		});
 

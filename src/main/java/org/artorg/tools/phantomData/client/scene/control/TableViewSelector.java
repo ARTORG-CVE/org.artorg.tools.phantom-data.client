@@ -141,6 +141,8 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM, ?>>
 		getTableView2().getItems().add(item);
 		if (getTableView1().getItems().size() == 0) {
 			splitPane.getItems().remove(getTableView1());
+			if (!splitPane.getItems().contains(getTableView2()))
+				splitPane.getItems().add(0, getTableView2());
 			if (getTableView2() instanceof ProTableView)
 				((ProTableView<?>) getTableView2()).showHeaderRow();
 		} else {
