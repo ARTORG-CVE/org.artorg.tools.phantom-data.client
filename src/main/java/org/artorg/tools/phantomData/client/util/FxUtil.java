@@ -37,7 +37,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Callback;
 
-public class FxUtil {
+public class FxUtil extends org.artorg.tools.phantomData.server.util.FxUtil {
 	public static ImageView getFxFileIcon(File file) {
 		return new ImageView(getFileIcon(file));
 	}
@@ -147,31 +147,9 @@ public class FxUtil {
 		rowMenu.getItems().add(menuItem);
 	}
 
-	public static <T> T loadFXML(String path, Object controller, Class<?> mainFxClass) {
-		FXMLLoader loader = new FXMLLoader(mainFxClass.getClassLoader().getResource(path));
-		loader.setController(controller);
-		try {
-			return loader.<T>load();
-		} catch (IOException e) {
-		}
-		throw new IllegalArgumentException("path: " + path);
-	}
+	
 
-	public static String readCSSstylesheet(String path) {
-		return readResource(path).toExternalForm();
-	}
-
-	public static void addToPane(Pane parentPane, Node child) {
-		parentPane.getChildren().add(child);
-		setAnchorZero(child);
-	}
-
-	public static void setAnchorZero(Node node) {
-		AnchorPane.setBottomAnchor(node, 0.0);
-		AnchorPane.setLeftAnchor(node, 0.0);
-		AnchorPane.setRightAnchor(node, 0.0);
-		AnchorPane.setTopAnchor(node, 0.0);
-	}
+	
 
 	public static void runNewSingleThreaded(Runnable rc) {
 		Task<Void> task = new Task<Void>() {
