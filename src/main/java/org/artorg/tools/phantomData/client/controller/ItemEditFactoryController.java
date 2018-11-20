@@ -11,8 +11,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
-import org.artorg.tools.phantomData.client.boot.MainFx;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
@@ -207,7 +207,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 			setAddTemplate(item);
 		applyButton.setOnAction(event -> {
 			if (!UserAdmin.isUserLoggedIn())
-				MainFx.getMainController().openLoginLogoutFrame();
+				Main.getMainController().openLoginLogoutFrame();
 			else {
 				FxUtil.runNewSingleThreaded(() -> {
 					try {
@@ -248,7 +248,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 			setEditTemplate(item);
 		applyButton.setOnAction(event -> {
 			if (!UserAdmin.isUserLoggedIn())
-				MainFx.getMainController().openLoginLogoutFrame();
+				Main.getMainController().openLoginLogoutFrame();
 			else {
 				try {
 					applyChanges(item);

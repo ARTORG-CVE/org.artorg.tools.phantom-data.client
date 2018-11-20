@@ -19,6 +19,8 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListCell;
@@ -29,9 +31,29 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class FxUtil extends org.artorg.tools.phantomData.server.util.FxUtil {
+	
+	
+	
+	public static void openFrame(String title, Node node) {
+    	Stage stage = new Stage();
+		AnchorPane root = new AnchorPane();
+		Scene scene = new Scene(root);
+		
+		FxUtil.addToPane(root, node);
+		scene.setRoot(root);
+		
+		stage.setScene(scene);
+		stage.sizeToScene();
+		stage.setTitle(title);
+		stage.show();
+    }
+	
+	
 	public static ImageView getFxFileIcon(File file) {
 		return new ImageView(getFileIcon(file));
 	}

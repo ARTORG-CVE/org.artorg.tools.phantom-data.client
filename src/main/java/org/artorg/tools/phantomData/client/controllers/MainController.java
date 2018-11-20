@@ -10,7 +10,6 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
-import org.artorg.tools.phantomData.client.boot.MainFx;
 import org.artorg.tools.phantomData.client.scene.CssGlyph;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbUndoRedoAddEditControlFilterTableView;
@@ -45,7 +44,6 @@ import org.artorg.tools.phantomData.server.model.phantom.Special;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import org.controlsfx.glyphfont.FontAwesome;
 
-import huma.io.IOutil;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -217,8 +215,8 @@ public class MainController extends StackPane {
 	private void close() {
 		stage.hide();
 
-		if (Main.getClientBooter().getServerBooter().isServerStartedEmbedded())
-			Main.getClientBooter().getServerBooter().shutdownSpringServer();
+		if (Main.getBooter().isServerStartedEmbedded())
+			Main.getBooter().shutdownSpringServer();
 
 		Platform.exit();
 
@@ -274,7 +272,7 @@ public class MainController extends StackPane {
 		choiceBox.setItems(choiceBoxItems);
 		Button button = new Button("Execute Query");
 		button.setOnAction(buttonEvent -> {
-			Connection conn = Main.getClientBooter().getServerBooter().getConnection();
+			Connection conn = Main.getBooter().getConnection();
 			String statementChoice = choiceBox.getSelectionModel().getSelectedItem();
 			Statement statement = null;
 
@@ -442,7 +440,7 @@ public class MainController extends StackPane {
 	}
 
 	public void openLoginLogoutFrame() {
-		MainFx.openFrame("Login/Logout", new LoginController());
+		FxUtil.openFrame("Login/Logout", new LoginController());
 	}
 
 	public void openTable(Class<?> itemClass) {

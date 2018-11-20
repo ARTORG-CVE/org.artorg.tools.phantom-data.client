@@ -20,7 +20,6 @@ import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.beans.DbNode;
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
-import org.artorg.tools.phantomData.client.boot.MainFx;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
@@ -89,22 +88,24 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 
 		splitPane.setOrientation(Orientation.HORIZONTAL);
 
-		Platform.runLater(() -> {
-			MainFx.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-				controlDown = event.isControlDown();
-				menuItemUpdater.stream().forEach(rc -> rc.run());
-			});
-			MainFx.getScene().addEventHandler(KeyEvent.KEY_RELEASED, event -> {
-				controlDown = event.isControlDown();
-				menuItemUpdater.stream().forEach(rc -> rc.run());
-			});
-		});
+		
 
 	}
 
 	public SplitTabView(int index, Function<Integer, SplitTabView> twinGetter) {
 		this.index = index;
 		this.twinGetter = twinGetter;
+		
+		Platform.runLater(() -> {
+			Main.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+				controlDown = event.isControlDown();
+				menuItemUpdater.stream().forEach(rc -> rc.run());
+			});
+			Main.getScene().addEventHandler(KeyEvent.KEY_RELEASED, event -> {
+				controlDown = event.isControlDown();
+				menuItemUpdater.stream().forEach(rc -> rc.run());
+			});
+		});
 	}
 
 	private SmartTabPane createSmartTabPane() {
@@ -275,7 +276,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 				File desktopDir =
 					new File(System.getProperty("user.home") + "\\Desktop\\");
 				chooser.setInitialDirectory(desktopDir);
-				File targetDir = chooser.showDialog(MainFx.getStage());
+				File targetDir = chooser.showDialog(Main.getStage());
 
 				FxUtil.runNewSingleThreaded(() -> {
 					selectedDbFiles.stream().forEach(dbFile -> {
@@ -343,7 +344,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 
 		addMenuItem(rowMenu, "Delete", event -> {
 			if (!UserAdmin.isUserLoggedIn())
-				MainFx.getMainController().openLoginLogoutFrame();
+				Main.getMainController().openLoginLogoutFrame();
 			else {
 				CrudConnector<ITEM, ?> connector = (CrudConnector<ITEM, ?>) Connectors
 					.getConnector(tableViewSpring.getItemClass());

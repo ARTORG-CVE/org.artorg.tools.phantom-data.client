@@ -8,7 +8,7 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
-import org.artorg.tools.phantomData.client.DesktopSwingBootApplication;
+import org.artorg.tools.phantomData.client.DesktopFxBootApplication;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.image.Image;
@@ -28,7 +28,7 @@ public class IOutil extends huma.io.IOutil {
 	
 	public static BufferedImage readAsBufferedImage(String path) {
 		try {
-			return ImageIO.read(DesktopSwingBootApplication.class.getClassLoader().getResourceAsStream(path));
+			return ImageIO.read(DesktopFxBootApplication.class.getClassLoader().getResourceAsStream(path));
 		} catch (IOException e) {}
 		throw new IllegalArgumentException();
 	}
@@ -36,7 +36,7 @@ public class IOutil extends huma.io.IOutil {
 	public static File readAsFile(String path) {
 		try {
 			File file = File.createTempFile("model", "stl");
-			InputStream inputStream = DesktopSwingBootApplication.class.getClassLoader().getResourceAsStream(path);
+			InputStream inputStream = DesktopFxBootApplication.class.getClassLoader().getResourceAsStream(path);
 			FileUtils.copyInputStreamToFile(inputStream, file);
 			return file;
 		} catch (IOException e1) {};
@@ -44,7 +44,7 @@ public class IOutil extends huma.io.IOutil {
 	}
 	
 	public static <T> T loadFXML(String path, Object controller) {
-		FXMLLoader loader = new FXMLLoader(DesktopSwingBootApplication.class.getClassLoader().getResource(path));
+		FXMLLoader loader = new FXMLLoader(DesktopFxBootApplication.class.getClassLoader().getResource(path));
 		loader.setController(controller);
 		try {
 			return loader.<T>load();
@@ -53,7 +53,7 @@ public class IOutil extends huma.io.IOutil {
 	}
 	
 	public static String readCSSstylesheet(String path) {
-		return DesktopSwingBootApplication.class.getClassLoader().getResource(path).toExternalForm();
+		return DesktopFxBootApplication.class.getClassLoader().getResource(path).toExternalForm();
 	}
 	
 	public static Image readResourceAsImage(String path) {

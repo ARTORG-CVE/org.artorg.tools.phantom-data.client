@@ -1,5 +1,9 @@
 /* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
 
+.console-pane > .viewport {
+   -fx-background-color: black;
+}
+
 
 .row-header-cell {
     -fx-background-color: -fx-box-border, -fx-inner-border, -fx-body-color;

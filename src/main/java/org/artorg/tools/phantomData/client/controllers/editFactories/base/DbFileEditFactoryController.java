@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.boot.MainFx;
+import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
@@ -38,7 +38,7 @@ public class DbFileEditFactoryController
 			File desktopDir = new File(
 				System.getProperty("user.home") + "\\Desktop\\");
 			fileChooser.setInitialDirectory(desktopDir);
-			File file = fileChooser.showOpenDialog(MainFx.getStage());
+			File file = fileChooser.showOpenDialog(Main.getStage());
 			textFieldPath.setText(file.getAbsolutePath());
 			String[] splits = splitOffFileExtension(file.getName());
 			textFieldName.setText(splits[0]);
