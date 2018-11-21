@@ -1,6 +1,6 @@
 package org.artorg.tools.phantomData.client.scene.control;
 
-import org.artorg.tools.phantomData.client.scene.layout.AnchorPaneAddableTo;
+import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 
 import javafx.geometry.Insets;
@@ -15,7 +15,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 
-public class VGridBoxPane extends AnchorPaneAddableTo {
+public class VGridBoxPane extends AnchorPane implements AddableToPane {
 	private final AnchorPane rootPane;
 	private final VBox vBox;
 	private final GridPane gridPane;

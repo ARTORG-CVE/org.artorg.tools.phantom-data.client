@@ -11,7 +11,7 @@ import javax.persistence.Entity;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.beans.DbNode;
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
-import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
+import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.server.model.specification.AbstractPersonifiedEntity;
 import org.artorg.tools.phantomData.server.model.specification.NameGeneratable;
@@ -28,7 +28,7 @@ import javafx.scene.control.TreeTableView;
 import javafx.util.Callback;
 
 public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
-	extends TreeTableView<DbNode> implements AddableToAnchorPane {
+	extends TreeTableView<DbNode> implements AddableToPane {
 	private List<DbTreeTableColumn> treeTableColumns;
 	private TableBase<ITEM> table;
 	private TreeItem<DbNode> root;

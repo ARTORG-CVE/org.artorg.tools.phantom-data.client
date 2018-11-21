@@ -42,6 +42,7 @@ public class PersonEditFactoryController extends GroupedItemEditFactoryControlle
 		setChangeApplier(this::applyChanges);
 	}
 	
+	
 	private void createComboBoxes() {
         createComboBox(comboBoxGender, Gender.class, g -> g.getName());
         createComboBox(comboBoxTitle, AcademicTitle.class, t -> t.getPrefix());

@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -22,6 +23,7 @@ import org.artorg.tools.phantomData.client.util.StreamUtils;
 import org.artorg.tools.phantomData.server.specification.ControllerSpec;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 import org.reflections.Reflections;
+import org.springframework.core.GenericTypeResolver;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -59,22 +61,27 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 	}
 
 	public HttpConnectorSpring(Class<?> itemClass) {
-		if (itemClass == null)
+		if (itemClass == null) {
 			itemClass = Reflect.findGenericClasstype(this);
+		}
 		this.itemClass = itemClass;
 		
 		arrayItemClass = Reflect.getArrayClass(itemClass);
 		Class<?> controllerClass;
 		List<Class<?>> controllerClasses = Reflect.getSubclasses(ControllerSpec.class, Main.getReflections());
-		controllerClass = controllerClasses.stream().filter(c -> {
+		Optional<Class<?>> optionalControllerClass = controllerClasses.stream().filter(c -> {
 			try {
 				return Reflect.findSubClassParameterType(c.newInstance(), ControllerSpec.class, 0) == this.itemClass;
 			} catch (Exception e2) {
 			}
 			return false;
-		}).findFirst().orElseThrow(() -> new IllegalArgumentException());
-		if (controllerClass == null)
-			throw new NullPointerException();
+		}).findFirst();
+		if (!optionalControllerClass.isPresent())
+			throw new IllegalArgumentException();
+		else 
+			controllerClass = optionalControllerClass.get();
+		
+		if (controllerClass == null) throw new NullPointerException();
 		this.controllerClass = controllerClass;
 
 		// class annotation

@@ -19,9 +19,7 @@ import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSp
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.client.scene.control.TitledPaneTableViewSelector;
 import org.artorg.tools.phantomData.client.scene.control.VGridBoxPane;
-import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.table.FxFactory;
-import org.artorg.tools.phantomData.client.table.IDbTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -37,18 +35,32 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
+@SuppressWarnings("unchecked")
 public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, ?>> extends VGridBoxPane
 		implements FxFactory<ITEM> {
 	protected Button applyButton;
 	private List<Node> rightNodes;
 	private List<AbstractTableViewSelector<ITEM>> selectors;
-	private ProTableView<ITEM> table;
 	private AnchorPane pane;
+	private final Class<ITEM> itemClass;
+	
+
+	private ICrudConnector<ITEM, ?> connector;
+
+	public ICrudConnector<ITEM, ?> getConnector() {
+		return this.connector;
+	}
 
 	{
 		super.addColumn(80.0);
 		super.addColumn(180.0);
 		applyButton = new Button("Apply");
+	}
+	
+	public ItemEditFactoryController() {
+		itemClass = (Class<ITEM>) Reflect.findGenericClasstype(this);
+		connector = (ICrudConnector<ITEM, ?>) PersonalizedHttpConnectorSpring
+			.getOrCreate(itemClass);
 	}
 
 	public abstract ITEM createItem();
@@ -61,17 +73,8 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 
 	protected abstract void applyChanges(ITEM item);
 
-	public ProTableView<ITEM> getTableView() {
-		return table;
-	}
-
 	public Node getGraphic() {
 		return pane;
-	}
-
-	@Override
-	public void setTableView(ProTableView<ITEM> table) {
-		this.table = table;
 	}
 
 	protected abstract AnchorPane createRootPane();
@@ -87,8 +90,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 	public List<AbstractTableViewSelector<ITEM>> getSelectors() {
 		return selectors;
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	private List<AbstractTableViewSelector<ITEM>> createSelectors(ITEM item, Class<?> itemClass) {
 		List<AbstractTableViewSelector<ITEM>> selectors = new ArrayList<AbstractTableViewSelector<ITEM>>();
 
@@ -145,12 +147,12 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 		return selectors;
 	}
 
-	@SuppressWarnings("unchecked")
-	public final ICrudConnector<ITEM, ?> getConnector() {
-		if (getTableView().getTable() instanceof IDbTable)
-			return ((IDbTable<ITEM,?>) getTableView().getTable()).getConnector();
-		return null;
-	}
+//	@SuppressWarnings("unchecked")
+//	public final ICrudConnector<ITEM, ?> getConnector() {
+//		if (getTableView().getTable() instanceof IDbTable)
+//			return ((IDbTable<ITEM,?>) getTableView().getTable()).getConnector();
+//		return null;
+//	}
 
 	protected void initDefaultValues() {
 		rightNodes.forEach(node -> {
@@ -176,8 +178,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 		createComboBox(comboBox, itemClass, mapper, item -> {
 		});
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	protected <T extends DbPersistent<T, ID>, ID extends Comparable<ID>> void createComboBox(ComboBox<T> comboBox,
 			Class<T> itemClass, Function<T, String> mapper, Consumer<T> selectedItemChangedConsumer) {
 		ICrudConnector<T, ID> connector = (ICrudConnector<T, ID>) PersonalizedHttpConnectorSpring
@@ -217,7 +218,6 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 								selectors.stream().filter(selector -> selector != null)
 										.forEach(selector -> selector.setSelectedChildItems(newItem));
 							if (getConnector().create(newItem)) {
-								getTableView().getItems().add(newItem);
 								Platform.runLater(() -> {
 									initDefaultValues();
 								});
@@ -255,8 +255,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 
 					selectors.forEach(selector -> selector.setSelectedChildItems(item));
 
-					if (getConnector().update(item))
-						table.refresh();
+					getConnector().update(item);
 
 				} catch (Exception e) {
 					handleException(e);
@@ -276,6 +275,10 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 
 	private void createRightNodes(List<PropertyEntry> entries) {
 		rightNodes = entries.stream().map(e -> e.getRightNode()).collect(Collectors.toList());
+	}
+	
+	public Class<ITEM> getItemClass() {
+		return itemClass;
 	}
 
 }

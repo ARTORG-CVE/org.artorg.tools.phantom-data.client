@@ -20,8 +20,6 @@ public abstract class GroupedItemEditFactoryController<ITEM extends DbPersistent
 	private Supplier<ITEM> itemFactory;
 	private Consumer<ITEM> templateSetter;
 	private Consumer<ITEM> changeApplier;
-	
-
 	private List<PropertyEntry> entries;
 
 	{

@@ -5,7 +5,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
-import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
+import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.table.ITable;
@@ -26,7 +26,7 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.util.Callback;
 
 public class ProTableView<T> extends javafx.scene.control.TableView<T>
-	implements AddableToAnchorPane {
+	implements AddableToPane {
 	private BiPredicate<AbstractColumn<T, ? extends Object>,
 		TableColumn<T, ?>> columnAddPolicy;
 	private BiPredicate<AbstractColumn<T, ? extends Object>,

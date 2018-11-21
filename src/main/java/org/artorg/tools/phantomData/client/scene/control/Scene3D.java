@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.scene.FileImporter;
 import org.artorg.tools.phantomData.client.scene.Xform;
-import org.artorg.tools.phantomData.client.scene.layout.AnchorPaneAddableTo;
+import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 
 import javafx.event.EventHandler;
 import javafx.scene.AmbientLight;
@@ -26,7 +26,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 
-public class Scene3D extends AnchorPaneAddableTo {
+public class Scene3D extends AnchorPane implements AddableToPane {
 	private static final Color lightColor = Color.rgb(244, 255, 250);
 	
 	private final Group root;

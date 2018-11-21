@@ -121,6 +121,7 @@ public class MainController extends StackPane {
 
 		addSplitTabView();
 		addSplitTabView();
+		
 		getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
 		getOrCreate(0).openViewerTab(createScene3dTab(null));
 		getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));

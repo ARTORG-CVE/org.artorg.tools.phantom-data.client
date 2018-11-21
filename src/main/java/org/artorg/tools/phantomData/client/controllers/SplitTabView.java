@@ -23,6 +23,7 @@ import org.artorg.tools.phantomData.client.beans.DbNode;
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
+import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.SmartSplitTabPane;
 import org.artorg.tools.phantomData.client.scene.control.SmartTabPane;
@@ -31,13 +32,13 @@ import org.artorg.tools.phantomData.client.scene.control.tableView.DbUndoRedoAdd
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
-import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
+import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.FxFactory;
-import org.artorg.tools.phantomData.client.table.IDbFactoryTableView;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.model.base.DbFile;
 import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
 import org.artorg.tools.phantomData.server.model.specification.NameGeneratable;
@@ -62,7 +63,7 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.DirectoryChooser;
 
-public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPane {
+public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 	private final SplitPane splitPane;
 	private final SmartTabPane tableTabPane;
 	private final SmartTabPane itemAddEditTabPane;
@@ -187,8 +188,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 		if (node instanceof ProTreeTableView)
 			setTreeTableTab(tab, (ProTreeTableView<ITEM>) node);
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	private <ITEM extends DbPersistent<ITEM, ?>> void setTableTab(Tab tab,
 		ProTableView<ITEM> tableViewSpring) {
 		tableViewSpring.setRowFactory(
@@ -206,8 +206,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 
 		menuItem = new MenuItem("Add item");
 		menuItem.setOnAction(event -> {
-			FxFactory<ITEM> controller =
-				((IDbFactoryTableView<ITEM>) tableViewSpring).createFxFactory();
+			FxFactory<ITEM> controller = createFxFactory(tableViewSpring.getItemClass());
 			Node node = controller.create(tableViewSpring.getItemClass());
 			addTab(itemAddEditTabPane.getTabPane(), node,
 				"Add " + tableViewSpring.getTable().getItemName());
@@ -224,6 +223,30 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T> FxFactory<T> createFxFactory(Class<T> itemClass) {
+		FxFactory<T> fxFactory = null;
+
+		Class<?> factoryClass = findFactoryClass(itemClass);
+		try {
+			fxFactory = (FxFactory<T>) factoryClass.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+
+		return fxFactory;
+	}
+
+	private static Class<?> findFactoryClass(Class<?> itemClass) {
+		try {
+			return Reflect.getClassByGenericAndSuperClass(ItemEditFactoryController.class,
+				itemClass, 0, Main.getReflections());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		throw new NullPointerException();
+	}
+
 	private <ITEM extends DbPersistent<ITEM, ?>> void setTreeTableTab(Tab tab,
 		ProTreeTableView<ITEM> proTreeTableView) {
 
@@ -232,16 +255,15 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 
 		ContextMenu contextMenu = new ContextMenu();
 		MenuItem menuItem;
-
-//		menuItem = new MenuItem("Add item");
-//		menuItem.setOnAction(event -> {
-//			FxFactory<ITEM> controller =
-//				((IDbFactoryTableView<ITEM>) proTreeTableView).createFxFactory();
-//			Node node = controller.create(tableViewSpring.getItemClass());
-//			addTab(itemAddEditTabPane.getTabPane(), node,
-//				"Add " + tableViewSpring.getTable().getItemName());
-//		});
-//		contextMenu.getItems().addAll(menuItem);
+		
+		menuItem = new MenuItem("Add item");
+		menuItem.setOnAction(event -> {
+			FxFactory<?> controller = createFxFactory(proTreeTableView.getItemClass());
+			Node node = controller.create(proTreeTableView.getItemClass());
+			addTab(itemAddEditTabPane.getTabPane(), node,
+				"Add " + proTreeTableView.getTable().getItemName());
+		});
+		contextMenu.getItems().addAll(menuItem);
 
 		menuItem = new MenuItem("Reload");
 		menuItem.setOnAction(event -> {
@@ -251,7 +273,6 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 		contextMenu.getItems().addAll(menuItem);
 
 		proTreeTableView.setContextMenu(contextMenu);
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -353,26 +374,20 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 				((DbTableView<?>) tableViewSpring).reload();
 		});
 
-		if (tableViewSpring instanceof IDbFactoryTableView) {
-			addMenuItem(rowMenu, "Edit item", event -> {
-				FxFactory<ITEM> controller =
-					((IDbFactoryTableView<ITEM>) tableViewSpring).createFxFactory();
-				Node node =
-					controller.edit(row.getItem(), tableViewSpring.getItemClass());
+		addMenuItem(rowMenu, "Edit item", event -> {
+			FxFactory<ITEM> controller = createFxFactory(tableViewSpring.getItemClass());
+			Node node = controller.edit(row.getItem(), tableViewSpring.getItemClass());
 
-				addTab(itemAddEditTabPane.getTabPane(), node,
-					"Edit " + tableViewSpring.getTable().getItemName());
-			});
+			addTab(itemAddEditTabPane.getTabPane(), node,
+				"Edit " + tableViewSpring.getTable().getItemName());
+		});
 
-			addMenuItem(rowMenu, "Add item", event -> {
-				FxFactory<ITEM> controller =
-					((IDbFactoryTableView<ITEM>) tableViewSpring).createFxFactory();
-				Node node =
-					controller.create(row.getItem(), tableViewSpring.getItemClass());
-				addTab(itemAddEditTabPane.getTabPane(), node,
-					"Add " + tableViewSpring.getTable().getItemName());
-			});
-		}
+		addMenuItem(rowMenu, "Add item", event -> {
+			FxFactory<ITEM> controller = createFxFactory(tableViewSpring.getItemClass());
+			Node node = controller.create(row.getItem(), tableViewSpring.getItemClass());
+			addTab(itemAddEditTabPane.getTabPane(), node,
+				"Add " + tableViewSpring.getTable().getItemName());
+		});
 
 		addMenuItem(rowMenu, "Delete", event -> {
 			if (!UserAdmin.isUserLoggedIn())

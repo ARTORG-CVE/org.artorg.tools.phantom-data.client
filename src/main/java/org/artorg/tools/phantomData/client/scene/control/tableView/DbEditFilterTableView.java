@@ -10,7 +10,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 
 public abstract class DbEditFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
-		extends DbFactoryFilterTableView<ITEM> {
+		extends DbFilterTableView<ITEM> {
 
 	public DbEditFilterTableView() {}
 	

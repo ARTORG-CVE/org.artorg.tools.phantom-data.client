@@ -9,6 +9,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,8 +26,10 @@ import org.reflections.util.ClasspathHelper;
 
 public class Reflect {
 	@SuppressWarnings("unchecked")
-	public static <T> T createInstanceByGenericAndSuperClass(Class<T> superClass, Class<?> genericClass, Reflections reflections) {
-		Class<?> subClass = getClassByGenericAndSuperClass(superClass, superClass, genericClass, 0, reflections);
+	public static <T> T createInstanceByGenericAndSuperClass(Class<T> superClass,
+		Class<?> genericClass, Reflections reflections) {
+		Class<?> subClass = getClassByGenericAndSuperClass(superClass, superClass,
+			genericClass, 0, reflections);
 		T t = null;
 		try {
 			t = (T) subClass.newInstance();
@@ -35,55 +38,80 @@ public class Reflect {
 		}
 		return t;
 	}
-	
-	public static <T> Class<?> getClassByGenericAndSuperClass(Class<T> superClass, Class<?> genericClass, Reflections reflections) {
-		return getClassByGenericAndSuperClass(superClass, superClass, genericClass, 0, reflections);
+
+	public static <T> Class<?> getClassByGenericAndSuperClass(Class<T> superClass,
+		Class<?> genericClass, Reflections reflections) {
+		return getClassByGenericAndSuperClass(superClass, superClass, genericClass, 0,
+			reflections);
 	}
-	
-	public static <T> Class<?> getClassByGenericAndSuperClass(Class<T> superClass, Class<?> genericClass, int parameterIndex, Reflections reflections) {
-		return getClassByGenericAndSuperClass(superClass, superClass, genericClass, parameterIndex, reflections);
+
+	public static <T> Class<?> getClassByGenericAndSuperClass(Class<T> superClass,
+		Class<?> genericClass, int parameterIndex, Reflections reflections) {
+		return getClassByGenericAndSuperClass(superClass, superClass, genericClass,
+			parameterIndex, reflections);
 	}
-	
-	public static <T> Class<?> getClassByGenericAndSuperClass(Class<T> superClass, Class<?> classOfInterest, Class<?> genericClass, int parameterIndex, Reflections reflections) {
+
+	public static <T> Class<?> getClassByGenericAndSuperClass(Class<T> superClass,
+		Class<?> classOfInterest, Class<?> genericClass, int parameterIndex,
+		Reflections reflections) {
 		List<Class<?>> superClasses = Reflect.getSubclasses(superClass, reflections);
-		 List<Class<?>> classes = superClasses.stream().filter(c -> !Modifier.isAbstract(c.getModifiers())).filter(c -> {
-			try {
-				Class<?> temp = Reflect.findSubClassParameterType(c.newInstance(), classOfInterest, parameterIndex); 
-				return temp == genericClass;
-			} catch (Exception e2) {
-//				e2.printStackTrace();						
+		final List<Exception> exceptions = new ArrayList<Exception>();
+		List<Class<?>> classes = superClasses.stream()
+			.filter(c -> !Modifier.isAbstract(c.getModifiers())).filter(c -> {
+				try {
+					Class<?> temp = Reflect.findSubClassParameterType(c.newInstance(),
+						classOfInterest, parameterIndex);
+					return temp == genericClass;
+				} catch (Exception e2) {
+					exceptions.add(e2);
+//					e2.printStackTrace();						
+				}
+				return false;
+
+			}).collect(Collectors.toList());
+		Class<?> cls = classes.stream().findFirst().orElseThrow(() -> {
+			if (classes.size() == 0) {
+				exceptions.forEach(e -> e.printStackTrace());
+				String superClassesString = superClasses.stream()
+					.map(cls2 -> cls2.getSimpleName()).collect(Collectors.joining(","));
+				return new IllegalArgumentException(String.format(
+					"superClasses: %s, superClass: %s, classOfInterest: %s, genericClass: %s, index: %d",
+					superClassesString, superClass.getSimpleName(),
+					classOfInterest.getSimpleName(), genericClass.getSimpleName(),
+					parameterIndex));
+			} else {
+				exceptions.forEach(e -> e.printStackTrace());
+				String classesString = classes.stream().map(cls2 -> cls2.getSimpleName())
+					.collect(Collectors.joining(",", "{", "}"));
+				return new IllegalArgumentException(
+					"size: " + classes.size() + ", " + classesString);
 			}
-			return false;
-			
-		}).collect(Collectors.toList());
-		 Class<?> cls = classes.stream().findFirst().orElseThrow(() -> new IllegalArgumentException());
-		if (cls == null)
-			throw new NullPointerException();
+		});
+		if (cls == null) throw new NullPointerException();
 		return cls;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static <T> Class<? extends T[]> getArrayClass(Class<T> clazz) {
-	    return (Class<? extends T[]>) Array.newInstance(clazz, 0).getClass();
+		return (Class<? extends T[]>) Array.newInstance(clazz, 0).getClass();
 	}
-	
-	
-	
+
 	public static Class<?> findGenericClasstype(Object instance) {
-		return findSubClassParameterType(instance, instance.getClass().getSuperclass(), 0);
+		return findSubClassParameterType(instance, instance.getClass().getSuperclass(),
+			0);
 	}
-	
-	
-	public static Class<?> findSubClassParameterType(Object instance, Class<?> classOfInterest, int parameterIndex) {
+
+	public static Class<?> findSubClassParameterType(Object instance,
+		Class<?> classOfInterest, int parameterIndex) {
 		Map<Type, Type> typeMap = new HashMap<Type, Type>();
 		Class<?> instanceClass = instance.getClass();
 		while (classOfInterest != instanceClass.getSuperclass()) {
 			extractTypeArguments(typeMap, instanceClass);
 			instanceClass = instanceClass.getSuperclass();
-			if (instanceClass == null)
-				throw new IllegalArgumentException();
+			if (instanceClass == null) throw new IllegalArgumentException();
 		}
-		ParameterizedType parameterizedType = (ParameterizedType) instanceClass.getGenericSuperclass();
+		ParameterizedType parameterizedType =
+			(ParameterizedType) instanceClass.getGenericSuperclass();
 		Type actualType = parameterizedType.getActualTypeArguments()[parameterIndex];
 		if (typeMap.containsKey(actualType)) {
 			actualType = typeMap.get(actualType);
@@ -97,11 +125,12 @@ public class Reflect {
 		}
 	}
 
-	private static Class<?> browseNestedTypes(Object instance, TypeVariable<?> actualType) {
+	private static Class<?> browseNestedTypes(Object instance,
+		TypeVariable<?> actualType) {
 		Class<?> instanceClass = instance.getClass();
 		List<Class<?>> nestedOuterTypes = new LinkedList<Class<?>>();
-		for (Class<?> enclosingClass = instanceClass
-				.getEnclosingClass(); enclosingClass != null; enclosingClass = enclosingClass.getEnclosingClass()) {
+		for (Class<?> enclosingClass = instanceClass.getEnclosingClass();
+			enclosingClass != null; enclosingClass = enclosingClass.getEnclosingClass()) {
 			try {
 				Field this$0 = instanceClass.getDeclaredField("this$0");
 				Object outerInstance = this$0.get(instance);
@@ -115,7 +144,8 @@ public class Reflect {
 					}
 					TypeVariable<?> foundType = (TypeVariable<?>) entry.getKey();
 					if (foundType.getName().equals(actualType.getName())
-							&& isInnerClass(foundType.getGenericDeclaration(), actualType.getGenericDeclaration())) {
+						&& isInnerClass(foundType.getGenericDeclaration(),
+							actualType.getGenericDeclaration())) {
 						if (entry.getValue() instanceof Class) {
 							return (Class<?>) entry.getValue();
 						}
@@ -135,7 +165,8 @@ public class Reflect {
 			return;
 		}
 		ParameterizedType parameterizedType = (ParameterizedType) genericSuperclass;
-		Type[] typeParameter = ((Class<?>) parameterizedType.getRawType()).getTypeParameters();
+		Type[] typeParameter =
+			((Class<?>) parameterizedType.getRawType()).getTypeParameters();
 		Type[] actualTypeArgument = parameterizedType.getActualTypeArguments();
 		for (int i = 0; i < typeParameter.length; i++) {
 			if (typeMap.containsKey(actualTypeArgument[i])) {
@@ -145,8 +176,10 @@ public class Reflect {
 		}
 	}
 
-	private static boolean isInnerClass(GenericDeclaration outerDeclaration, GenericDeclaration innerDeclaration) {
-		if (!(outerDeclaration instanceof Class) || !(innerDeclaration instanceof Class)) {
+	private static boolean isInnerClass(GenericDeclaration outerDeclaration,
+		GenericDeclaration innerDeclaration) {
+		if (!(outerDeclaration instanceof Class)
+			|| !(innerDeclaration instanceof Class)) {
 			throw new IllegalArgumentException();
 		}
 		Class<?> outerClass = (Class<?>) outerDeclaration;
@@ -158,99 +191,106 @@ public class Reflect {
 		}
 		return false;
 	}
-	
-	public static Method getFirstMethod(Class<?> cls, Function<Stream<Method>, Stream<Method>> filteringStream) {
-		return getFirstMethod(filteringStream.apply(Arrays.asList(cls.getMethods()).stream()));
+
+	public static Method getFirstMethod(Class<?> cls,
+		Function<Stream<Method>, Stream<Method>> filteringStream) {
+		return getFirstMethod(
+			filteringStream.apply(Arrays.asList(cls.getMethods()).stream()));
 	}
-	
+
 	public static Method getFirstMethod(Stream<Method> stream) {
 		return stream.findFirst().get();
 	}
-	
-	
+
 	public static Method getMethod(Stream<Method> stream) {
 		return stream.limit(2l).collect(CollectorsHuma.toSingleton());
 	}
-	
-	public static Method getMethod(Class<?> cls, Function<Stream<Method>, Stream<Method>> filteringStream) {
+
+	public static Method getMethod(Class<?> cls,
+		Function<Stream<Method>, Stream<Method>> filteringStream) {
 		return getMethod(filteringStream.apply(Arrays.asList(cls.getMethods()).stream()));
 	}
-	
-	
-	public static Stream<Method> getMethods(Class<?> cls, Function<Stream<Method>, Stream<Method>> filteringStream) {
+
+	public static Stream<Method> getMethods(Class<?> cls,
+		Function<Stream<Method>, Stream<Method>> filteringStream) {
 		return filteringStream.apply(Arrays.asList(cls.getMethods()).stream());
 	}
-	
+
 	public static Stream<Method> getCollectionSetterMethods(Class<?> itemClass) {
-		return getMethods(itemClass, stream -> stream
-				.filter(m -> m.getReturnType() == Void.TYPE)
+		return getMethods(itemClass,
+			stream -> stream.filter(m -> m.getReturnType() == Void.TYPE)
 				.filter(m -> Modifier.isPublic(m.getModifiers()))
 				.filter(m -> m.getParameterTypes().length == 1)
 				.filter(m -> Collection.class.isAssignableFrom(m.getParameterTypes()[0]))
 				.filter(m -> m.getGenericParameterTypes().length == 1));
 	}
-	
-	public static boolean containsCollectionSetter(Class<?> itemClass, Class<?> genericCollectionType) {
-		return getMethods(itemClass, stream -> stream
-				.filter(m -> m.getReturnType() == Void.TYPE)
+
+	public static boolean containsCollectionSetter(Class<?> itemClass,
+		Class<?> genericCollectionType) {
+		return getMethods(itemClass,
+			stream -> stream.filter(m -> m.getReturnType() == Void.TYPE)
 				.filter(m -> m.getParameterTypes().length == 1)
 				.filter(m -> Collection.class.isAssignableFrom(m.getParameterTypes()[0]))
-				.filter(m -> m.getGenericParameterTypes().length == 1)
-				.filter(m -> {
+				.filter(m -> m.getGenericParameterTypes().length == 1).filter(m -> {
 					Type type = m.getGenericParameterTypes()[0];
 					Class<?> clazz = Reflect.getGenericTypeClass(type);
 					return clazz == genericCollectionType;
 				})).count() == 1;
 	}
-	
+
 	public static <T> Function<T, Object> compileFunctional(Method m, Object... args) {
 		return o -> {
 			try {
 				return m.invoke(o, args);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			} catch (IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
 				e.printStackTrace();
 			}
 			return null;
 		};
 	}
-	
-	public static void invokeGenericSetter(Object reference, Class<?> paramTypeClass, Class<?> genericParamtype, Object arg) {
-		Method m = getSetterMethodBySingleGenericParamtype(reference, paramTypeClass, genericParamtype);
+
+	public static void invokeGenericSetter(Object reference, Class<?> paramTypeClass,
+		Class<?> genericParamtype, Object arg) {
+		Method m = getSetterMethodBySingleGenericParamtype(reference, paramTypeClass,
+			genericParamtype);
 		try {
 			m.invoke(reference, arg);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		} catch (IllegalAccessException | IllegalArgumentException
+			| InvocationTargetException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public static Method getSetterMethodBySingleGenericParamtype(Object item, Class<?> paramTypeClass, Class<?> genericParamtype) {		
-		return getMethod(item.getClass(), stream -> stream
-				.filter(m -> m.getReturnType() == Void.TYPE)
+
+	public static Method getSetterMethodBySingleGenericParamtype(Object item,
+		Class<?> paramTypeClass, Class<?> genericParamtype) {
+		return getMethod(item.getClass(),
+			stream -> stream.filter(m -> m.getReturnType() == Void.TYPE)
 				.filter(m -> m.getParameterTypes().length == 1)
 				.filter(m -> m.getParameterTypes()[0].isAssignableFrom(paramTypeClass))
-				.filter(m -> m.getGenericParameterTypes().length == 1)
-				.filter(m -> {
+				.filter(m -> m.getGenericParameterTypes().length == 1).filter(m -> {
 					Type type = m.getGenericParameterTypes()[0];
 					Class<?> clazz = Reflect.getGenericTypeClass(type);
 					return clazz == genericParamtype;
 				}));
 	}
 
-	public static Method getMethodByGenericReturnType(Class<?> itemClass, Class<?> genericReturnType) {
-		return getMethod(itemClass, stream -> stream
-				.filter(m -> m.getParameterTypes().length == 0)
+	public static Method getMethodByGenericReturnType(Class<?> itemClass,
+		Class<?> genericReturnType) {
+		return getMethod(itemClass,
+			stream -> stream.filter(m -> m.getParameterTypes().length == 0)
 				.filter(m -> Collection.class.isAssignableFrom(m.getReturnType()))
 				.filter(m -> Reflect.getGenericReturnTypeClass(m) == genericReturnType));
 	}
 
-	public static Method getMethodByGenericParamtype(Object item, Class<?> genericParamtype) {
+	public static Method getMethodByGenericParamtype(Object item,
+		Class<?> genericParamtype) {
 		return getMethod(item.getClass(), stream -> stream
-				.filter(m -> m.getGenericParameterTypes().length == 1)
-				.filter(m -> {
-					Type type = m.getGenericParameterTypes()[0];
-					Class<?> clazz = Reflect.getGenericTypeClass(type);
-					return clazz == genericParamtype;
-				}));
+			.filter(m -> m.getGenericParameterTypes().length == 1).filter(m -> {
+				Type type = m.getGenericParameterTypes()[0];
+				Class<?> clazz = Reflect.getGenericTypeClass(type);
+				return clazz == genericParamtype;
+			}));
 	}
 
 	public static boolean isStatic(Method m) {
@@ -266,21 +306,20 @@ public class Reflect {
 			ParameterizedType paramType = (ParameterizedType) type;
 			Type[] argTypes = paramType.getActualTypeArguments();
 			if (argTypes.length > 0)
-				if (argTypes[0] instanceof Class)
-					return ((Class<?>) argTypes[0]);
+				if (argTypes[0] instanceof Class) return ((Class<?>) argTypes[0]);
 		} catch (Exception e) {}
 		return null;
 	}
-	
-	
 
-	public static List<Class<?>> getSubclasses(Class<?> clazz, Reflections reflections) {		
+	public static List<Class<?>> getSubclasses(Class<?> clazz, Reflections reflections) {
 		List<ClassLoader> classLoadersList = new LinkedList<ClassLoader>();
 		classLoadersList.add(ClasspathHelper.contextClassLoader());
 		classLoadersList.add(ClasspathHelper.staticClassLoader());
 
 		Set<?> classes = reflections.getSubTypesOf(clazz);
-		List<Class<?>> classes2 = classes.stream().map(o -> (Class<?>)o).collect(Collectors.toList());
+		List<Class<?>> classes2 = classes.stream().map(o -> (Class<?>) o)
+			.filter(c -> !c.isInterface() && !c.isEnum() & !c.isAnnotation())
+			.collect(Collectors.toList());
 		return classes2;
 	}
 

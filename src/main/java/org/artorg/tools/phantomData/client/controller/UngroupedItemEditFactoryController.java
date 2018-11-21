@@ -12,6 +12,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 public abstract class UngroupedItemEditFactoryController<ITEM extends DbPersistent<ITEM,?>> extends ItemEditFactoryController<ITEM> {
+	
+	
+
 	private List<PropertyEntry> entries;
 	
 	{
