@@ -13,7 +13,6 @@ import org.artorg.tools.phantomData.client.beans.DbNode;
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToAnchorPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
-import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
 import org.artorg.tools.phantomData.server.model.specification.AbstractPersonifiedEntity;
 import org.artorg.tools.phantomData.server.model.specification.NameGeneratable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -79,10 +78,10 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 		treeTableColumns.add(column);
 
 		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-		addBaseColumn("Last modified", item -> format.format(item.getDateLastModified()));
-		addBaseColumn("Changed by", item -> item.getChanger().getSimpleAcademicName());
-		addBaseColumn("Added", item -> format.format(item.getDateAdded()));
-		addBaseColumn("Created by", item -> item.getCreator().getSimpleAcademicName());
+		addPersonifiedColumn("Last modified", item -> format.format(item.getDateLastModified()));
+		addPersonifiedColumn("Changed by", item -> item.getChanger().getSimpleAcademicName());
+		addPersonifiedColumn("Added", item -> format.format(item.getDateAdded()));
+		addPersonifiedColumn("Created by", item -> item.getCreator().getSimpleAcademicName());
 
 		getColumns().addAll(treeTableColumns);
 		root.setExpanded(true);
@@ -94,24 +93,24 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	}
 
-	private void addBaseColumn(String name,
-		Function<AbstractBaseEntity<?>, String> mapper) {
+	private void addPersonifiedColumn(String name,
+		Function<AbstractPersonifiedEntity<?>, String> mapper) {
 		treeTableColumns.add(createBaseColumn(name, mapper));
 	}
 
 	private DbTreeTableColumn createBaseColumn(String name,
-		Function<AbstractBaseEntity<?>, String> mapper) {
+		Function<AbstractPersonifiedEntity<?>, String> mapper) {
 		DbTreeTableColumn column = new DbTreeTableColumn(name);
 		column.setCellValueFactory(createCellValueFactory(mapper));
 		return column;
 	}
 
 	private Callback<CellDataFeatures<DbNode, String>, ObservableValue<String>>
-		createCellValueFactory(Function<AbstractBaseEntity<?>, String> mapper) {
+		createCellValueFactory(Function<AbstractPersonifiedEntity<?>, String> mapper) {
 		return param -> {
 			Object entity = ((DbNode) param.getValue().getValue()).getValue();
-			if (entity instanceof AbstractBaseEntity) return new ReadOnlyStringWrapper(
-				mapper.apply(((AbstractBaseEntity<?>) entity)));
+			if (entity instanceof AbstractPersonifiedEntity) return new ReadOnlyStringWrapper(
+				mapper.apply(((AbstractPersonifiedEntity<?>) entity)));
 			return new ReadOnlyStringWrapper("");
 		};
 	}

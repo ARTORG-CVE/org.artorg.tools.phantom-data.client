@@ -159,22 +159,22 @@ public class DatabaseInitializer {
 		intPropConn.create(int1);
 		int1 = intPropConn.read(int1);
 
-		Special special1 = new Special("L");
+		Special special1 = new Special("L", "just leaflets");
 		special1.getBooleanProperties().add(bool1);
 		special1.getBooleanProperties().add(bool4);
 		specConn.create(special1);
 
-		Special special2 = new Special("C");
+		Special special2 = new Special("C", "just coronairies");
 		special2.getBooleanProperties().add(bool2);
 		special2.getBooleanProperties().add(bool3);
 		specConn.create(special2);
 
-		Special special3 = new Special("N");
+		Special special3 = new Special("N", "nothing special");
 		special3.getBooleanProperties().add(bool2);
 		special3.getBooleanProperties().add(bool4);
 		specConn.create(special3);
 
-		Special special4 = new Special("ZZ");
+		Special special4 = new Special("ZZ", "test");
 		special4.getIntegerProperties().add(int1);
 		specConn.create(special4);
 

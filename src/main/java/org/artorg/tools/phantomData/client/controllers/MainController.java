@@ -191,6 +191,11 @@ public class MainController extends StackPane {
 		menuItem = new MenuItem("Open SplitTabPane");
 		menuItem.setOnAction(event -> newSplitTabPane(event));
 		menu.getItems().add(menuItem);
+		menuItem = new MenuItem("Show LoggingPane");
+		menuItem.setOnAction(event -> {
+			Main.getBooter().getConsoleFrame().setVisible(true);
+		});
+		menu.getItems().add(menuItem);
 		menuBar.getMenus().add(menu);
 
 //		menu = new Menu("Help");
@@ -326,7 +331,7 @@ public class MainController extends StackPane {
 		createTableMenu(treeTableMenu, splitTabView,
 			(view, cls) -> view.openTableTab(createTreeTableViewTab(castClass(cls))));
 		contextMenu.getItems().add(treeTableMenu);
-
+		
 		addMenuItem(contextMenu, "Close", event -> {
 			splitTabViews.remove(splitTabView);
 		});
@@ -373,11 +378,11 @@ public class MainController extends StackPane {
 			addMenuItem(subMenu, "Annulus Diameters", event -> {
 				tableFactoryCreator.accept(splitTabView, AnnulusDiameter.class);
 			});
-			addMenuItem(subMenu, "Literatur Bases", event -> {
-				tableFactoryCreator.accept(splitTabView, LiteratureBase.class);
-			});
 			addMenuItem(subMenu, "Fabrication Types", event -> {
 				tableFactoryCreator.accept(splitTabView, FabricationType.class);
+			});
+			addMenuItem(subMenu, "Literature Bases", event -> {
+				tableFactoryCreator.accept(splitTabView, LiteratureBase.class);
 			});
 			addMenuItem(subMenu, "Special", event -> {
 				tableFactoryCreator.accept(splitTabView, Special.class);

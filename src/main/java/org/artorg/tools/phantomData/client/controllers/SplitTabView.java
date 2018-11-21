@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -25,6 +26,7 @@ import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.SmartSplitTabPane;
 import org.artorg.tools.phantomData.client.scene.control.SmartTabPane;
+import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
@@ -88,14 +90,12 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 
 		splitPane.setOrientation(Orientation.HORIZONTAL);
 
-		
-
 	}
 
 	public SplitTabView(int index, Function<Integer, SplitTabView> twinGetter) {
 		this.index = index;
 		this.twinGetter = twinGetter;
-		
+
 		Platform.runLater(() -> {
 			Main.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
 				controlDown = event.isControlDown();
@@ -202,15 +202,23 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 			});
 
 		ContextMenu contextMenu = new ContextMenu();
-		MenuItem editItem = new MenuItem("Add item");
-		editItem.setOnAction(event -> {
+		MenuItem menuItem;
+
+		menuItem = new MenuItem("Add item");
+		menuItem.setOnAction(event -> {
 			FxFactory<ITEM> controller =
 				((IDbFactoryTableView<ITEM>) tableViewSpring).createFxFactory();
 			Node node = controller.create(tableViewSpring.getItemClass());
 			addTab(itemAddEditTabPane.getTabPane(), node,
 				"Add " + tableViewSpring.getTable().getItemName());
 		});
-		contextMenu.getItems().addAll(editItem);
+		contextMenu.getItems().addAll(menuItem);
+		menuItem = new MenuItem("Reload");
+		menuItem.setOnAction(event -> {
+			if (tableViewSpring instanceof DbTableView)
+				((DbTableView<?>) tableViewSpring).reload();
+		});
+		contextMenu.getItems().addAll(menuItem);
 
 		tableViewSpring.setContextMenu(contextMenu);
 
@@ -223,6 +231,25 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 			tableView -> createTreeTableViewContext(proTreeTableView, tableView));
 
 		ContextMenu contextMenu = new ContextMenu();
+		MenuItem menuItem;
+
+//		menuItem = new MenuItem("Add item");
+//		menuItem.setOnAction(event -> {
+//			FxFactory<ITEM> controller =
+//				((IDbFactoryTableView<ITEM>) proTreeTableView).createFxFactory();
+//			Node node = controller.create(tableViewSpring.getItemClass());
+//			addTab(itemAddEditTabPane.getTabPane(), node,
+//				"Add " + tableViewSpring.getTable().getItemName());
+//		});
+//		contextMenu.getItems().addAll(menuItem);
+
+		menuItem = new MenuItem("Reload");
+		menuItem.setOnAction(event -> {
+			if (proTreeTableView instanceof DbTreeTableView)
+				((DbTreeTableView<?>) proTreeTableView).reload();
+		});
+		contextMenu.getItems().addAll(menuItem);
+
 		proTreeTableView.setContextMenu(contextMenu);
 
 	}
@@ -321,6 +348,11 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 			tableViewSpring.refresh();
 		});
 
+		addMenuItem(rowMenu, "Reload", event -> {
+			if (tableViewSpring instanceof DbTableView)
+				((DbTableView<?>) tableViewSpring).reload();
+		});
+
 		if (tableViewSpring instanceof IDbFactoryTableView) {
 			addMenuItem(rowMenu, "Edit item", event -> {
 				FxFactory<ITEM> controller =
@@ -390,8 +422,12 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 	private <ITEM extends DbPersistent<ITEM, ?>> boolean show3dInViewer(ITEM item,
 		Tab tab) {
 		if (tab != null) {
-			File file = get3dFile(item);
-			if (file != null) return show3dInViewer(file, tab);
+			if (item instanceof DbFile)
+				return show3dInViewer(((DbFile) item).getFile(), tab);
+			else {
+				File file = get3dFile(item);
+				if (file != null) return show3dInViewer(file, tab);
+			}
 		}
 		return false;
 	}
@@ -399,8 +435,9 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 	private <ITEM extends DbPersistent<ITEM, ?>> File get3dFile(ITEM item) {
 		List<DbFile> files = getFiles(item);
 		if (files != null && !files.isEmpty()) {
-			DbFile dbFile = files.get(0);
-			return dbFile.getFile();
+			Optional<DbFile> optionalFile = files.stream()
+				.filter(dbFile -> dbFile.getExtension().equals("stl")).findFirst();
+			if (optionalFile.isPresent()) return optionalFile.get().getFile();
 		}
 		return null;
 	}
@@ -459,6 +496,11 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToAnchorPa
 
 		addMenuItem(rowMenu, "Show Table View", event -> {
 			changeToTableView(proTreeTableView);
+		});
+
+		addMenuItem(rowMenu, "Reload", event -> {
+			if (proTreeTableView instanceof DbTreeTableView)
+				((DbTreeTableView<?>) proTreeTableView).reload();
 		});
 
 		// only display context menu for non-null items:

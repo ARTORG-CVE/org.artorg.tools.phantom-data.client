@@ -5,6 +5,7 @@ import static org.artorg.tools.phantomData.client.boot.DatabaseInitializer.initD
 import java.util.concurrent.Executors;
 
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfos;
+import org.artorg.tools.phantomData.client.boot.DatabaseInitializer;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
@@ -79,7 +80,7 @@ public class Main extends DesktopFxBootApplication {
 		HttpConnectorSpring.setUrlLocalhost(booter.getUrlLocalhost());
 		MainController.setUrlLocalhost(booter.getUrlLocalhost());
 		MainController.setUrlShutdownActuator(booter.getUrlShutdownActuator());
-		if (!booter.isInitialized()) initDatabase();
+		if (!DatabaseInitializer.isInitialized()) initDatabase();
 
 		loadClientStage();
 		booter.finish();
