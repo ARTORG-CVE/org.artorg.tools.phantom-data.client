@@ -52,11 +52,11 @@ public class OptionalColumn<T extends DbPersistent<T,?>, R extends Comparable<R>
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <U extends DbPersistent<U,SUB_ID>, SUB_ID extends Comparable<SUB_ID>>  boolean update(T item) {
+	public <U extends DbPersistent<U,?>>  boolean update(T item) {
 		Optional<U> optional = (Optional<U>) itemToPropertyGetter.apply(item);
 		if (!optional.isPresent()) return false;
 		U sub = optional.get();
-		ICrudConnector<U,SUB_ID> connector = Connectors.getConnector(sub.getItemClass()); 
+		ICrudConnector<U,?> connector = Connectors.getConnector(sub.getItemClass()); 
 		return connector.update(sub);
 	}
 

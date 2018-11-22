@@ -125,8 +125,8 @@ public class FxUtil extends org.artorg.tools.phantomData.server.util.FxUtil {
 		return column;
 	}
 
-	public static <T extends DbPersistent<T, ID>, ID extends Comparable<ID>> void createDbComboBox(ComboBox<T> comboBox,
-			ICrudConnector<T, ID> connector, Function<T, String> mapper) {
+	public static <T extends DbPersistent<T, ?>> void createDbComboBox(ComboBox<T> comboBox,
+			ICrudConnector<T, ?> connector, Function<T, String> mapper) {
 		List<T> items = connector.readAllAsStream().distinct().collect(Collectors.toList());
 		comboBox.setItems(FXCollections.observableList(items));
 		comboBox.getSelectionModel().selectFirst();

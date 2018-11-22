@@ -1,7 +1,7 @@
 package org.artorg.tools.phantomData.client.controllers;
 
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
-import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
+import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.scene.control.VGridBoxPane;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.base.person.Person;
@@ -30,7 +30,7 @@ public class LoginController extends VGridBoxPane {
 		
 		personChoiceBox.setMaxWidth(Double.MAX_VALUE);
 		FxUtil.createDbComboBox(personChoiceBox,
-			PersonalizedHttpConnectorSpring.getOrCreate(Person.class),
+			Connectors.getConnector(Person.class),
 			p -> p.getAcademicName());
 		pwdField.setText("123456789");
 

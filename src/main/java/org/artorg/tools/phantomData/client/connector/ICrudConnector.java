@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.artorg.tools.phantomData.client.util.StreamUtils;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 
 public interface ICrudConnector<T extends Identifiable<ID>, ID extends Comparable<ID>> {
@@ -27,12 +27,12 @@ public interface ICrudConnector<T extends Identifiable<ID>, ID extends Comparabl
 	Boolean existById(ID id);
 	
 	default boolean create(List<T> t) {
-		return varArgHelper(this::create, t);
+		return StreamUtils.forEach(this::create, t);
 	}
 	
 	@SuppressWarnings("unchecked")
 	default boolean create(T... t) {
-		return varArgHelper(this::create, t);
+		return StreamUtils.forEach(this::create, t);
 	}
 	
 	default T read(T t) {
@@ -58,57 +58,29 @@ public interface ICrudConnector<T extends Identifiable<ID>, ID extends Comparabl
 	}
 	
 	default boolean delete(List<T> t) {
-		return varArgHelper(this::delete, t);
+		return StreamUtils.forEach(this::delete, t);
 	}
 	
 	@SuppressWarnings("unchecked")
 	default boolean delete(T... t) {
-		return varArgHelper(this::delete, t);
+		return StreamUtils.forEach(this::delete, t);
 	}
 	
 	default boolean update(List<T> t) {
-		return varArgHelper(this::update, t);
+		return StreamUtils.forEach(this::update, t);
 	}
 	
 	default boolean update(Set<T> t) {
-		return varArgHelper(this::update, t);
+		return StreamUtils.forEach(this::update, t);
 	}
 	
 	@SuppressWarnings("unchecked")
 	default boolean update(T... t) {
-		return varArgHelper(this::update, t);
+		return StreamUtils.forEach(this::update, t);
 	}
 	
 	default boolean existById(T t) {
 		return existById(t.getId());
-	}
-	
-	
-	
-	default boolean varArgHelper(Function<T,Boolean> func, List<T> list) {
-		boolean succesful = true;
-		for(int i=0; i<list.size(); i++) {
-			if (func.apply(list.get(i)) == false) {
-				succesful = false;
-			}
-		}
-		return succesful;
-	}
-	
-	default boolean varArgHelper(Function<T,Boolean> func, Set<T> set) {
-		return set.stream().map(e -> func.apply(e))
-				.filter(b -> b == false).findFirst().orElse(true);
-	}
-	
-	@SuppressWarnings("unchecked")
-	default boolean varArgHelper(Function<T,Boolean> func, T...t) {
-		boolean succesful = true;
-		for(int i=0; i<t.length; i++) {
-			if (func.apply(t[i]) == false) {
-				succesful = false;
-			}
-		}
-		return succesful;
 	}
 	
 }

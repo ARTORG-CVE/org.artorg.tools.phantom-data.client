@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
-import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
+import org.artorg.tools.phantomData.client.connector.Connectors;
+import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.model.base.person.AcademicTitle;
 import org.artorg.tools.phantomData.server.model.base.person.Gender;
 import org.artorg.tools.phantomData.server.model.base.person.Person;
@@ -23,38 +23,36 @@ import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.model.phantom.Special;
 
 public class DatabaseInitializer {
-	private static HttpConnectorSpring<Gender> genderConn =
-		HttpConnectorSpring.getOrCreate(Gender.class);
-	private static PersonalizedHttpConnectorSpring<AcademicTitle> academicTitleConn =
-		PersonalizedHttpConnectorSpring.getOrCreate(AcademicTitle.class);
-	private static PersonalizedHttpConnectorSpring<Person> personConn =
-		PersonalizedHttpConnectorSpring.getOrCreate(Person.class);
-	private static PersonalizedHttpConnectorSpring<AnnulusDiameter> adConn =
-		PersonalizedHttpConnectorSpring.getOrCreate(AnnulusDiameter.class);
-	private static PersonalizedHttpConnectorSpring<FabricationType> fTypeConn =
-		PersonalizedHttpConnectorSpring.getOrCreate(FabricationType.class);
-	private static PersonalizedHttpConnectorSpring<LiteratureBase> litBaseConn =
-		PersonalizedHttpConnectorSpring.getOrCreate(LiteratureBase.class);
-	private static PersonalizedHttpConnectorSpring<PropertyField> fieldConn =
-		PersonalizedHttpConnectorSpring.getOrCreate(PropertyField.class);
-	private static PersonalizedHttpConnectorSpring<BooleanProperty> boolPropConn =
-		PersonalizedHttpConnectorSpring.getOrCreate(BooleanProperty.class);
-	private static PersonalizedHttpConnectorSpring<IntegerProperty> intPropConn =
-		PersonalizedHttpConnectorSpring.getOrCreate(IntegerProperty.class);
-	private static PersonalizedHttpConnectorSpring<Special> specConn =
-		PersonalizedHttpConnectorSpring.getOrCreate(Special.class);
-	private static PersonalizedHttpConnectorSpring<Phantomina> phantominaConn =
-		PersonalizedHttpConnectorSpring.getOrCreate(Phantomina.class);
-	private static PersonalizedHttpConnectorSpring<Phantom> phantomConn =
-		PersonalizedHttpConnectorSpring.getOrCreate(Phantom.class);
+	private static ICrudConnector<Gender, ?> genderConn =
+		Connectors.getConnector(Gender.class);
+	private static ICrudConnector<AcademicTitle, ?> academicTitleConn =
+		Connectors.getConnector(AcademicTitle.class);
+	private static ICrudConnector<Person, ?> personConn =
+		Connectors.getConnector(Person.class);
+	private static ICrudConnector<AnnulusDiameter, ?> adConn =
+		Connectors.getConnector(AnnulusDiameter.class);
+	private static ICrudConnector<FabricationType, ?> fTypeConn =
+		Connectors.getConnector(FabricationType.class);
+	private static ICrudConnector<LiteratureBase, ?> litBaseConn =
+		Connectors.getConnector(LiteratureBase.class);
+	private static ICrudConnector<PropertyField, ?> fieldConn =
+		Connectors.getConnector(PropertyField.class);
+	private static ICrudConnector<BooleanProperty, ?> boolPropConn =
+		Connectors.getConnector(BooleanProperty.class);
+	private static ICrudConnector<IntegerProperty, ?> intPropConn =
+		Connectors.getConnector(IntegerProperty.class);
+	private static ICrudConnector<Special, ?> specConn =
+		Connectors.getConnector(Special.class);
+	private static ICrudConnector<Phantomina, ?> phantominaConn =
+		Connectors.getConnector(Phantomina.class);
+	private static ICrudConnector<Phantom, ?> phantomConn =
+		Connectors.getConnector(Phantom.class);
 
-	private static PersonalizedHttpConnectorSpring<UnitPrefix> unitPrefixConn =
-		PersonalizedHttpConnectorSpring.getOrCreate(UnitPrefix.class);
-	private static PersonalizedHttpConnectorSpring<Unit> unitConn =
-		PersonalizedHttpConnectorSpring.getOrCreate(Unit.class);
-	private static PersonalizedHttpConnectorSpring<
-		PhysicalQuantity> physicalQuantityConn =
-			PersonalizedHttpConnectorSpring.getOrCreate(PhysicalQuantity.class);
+	private static ICrudConnector<UnitPrefix, ?> unitPrefixConn =
+		Connectors.getConnector(UnitPrefix.class);
+	private static ICrudConnector<Unit, ?> unitConn = Connectors.getConnector(Unit.class);
+	private static ICrudConnector<PhysicalQuantity, ?> physicalQuantityConn =
+		Connectors.getConnector(PhysicalQuantity.class);
 
 	public static void initDatabase() {
 		initPerson();
@@ -80,10 +78,9 @@ public class DatabaseInitializer {
 	}
 
 	private static void initPerson() {
-		HttpConnectorSpring<AcademicTitle> academicTitleConnInit =
-			HttpConnectorSpring.getOrCreate(AcademicTitle.class);
-		HttpConnectorSpring<Person> personConnInit =
-			HttpConnectorSpring.getOrCreate(Person.class);
+		ICrudConnector<AcademicTitle, ?> academicTitleConnInit =
+			Connectors.getConnector(AcademicTitle.class);
+		ICrudConnector<Person, ?> personConnInit = Connectors.getConnector(Person.class);
 		Gender male = new Gender("Male");
 		Gender female = new Gender("Female");
 		genderConn.create(male, female);
@@ -248,7 +245,7 @@ public class DatabaseInitializer {
 
 		unitPrefixConn.create(yocto, zepto, atto, femto, pico, nano, micro, milli, centi,
 			deci, none, deca, hecto, kilo, mega, giga, tera, peta, exa, zetta, yotta);
-		
+
 		PhysicalQuantity lenght = new PhysicalQuantity("Length", "l", "");
 		PhysicalQuantity time = new PhysicalQuantity("Time", "t", "");
 		PhysicalQuantity mass = new PhysicalQuantity("Mass", "m", "");
@@ -265,7 +262,7 @@ public class DatabaseInitializer {
 
 		physicalQuantityConn.create(lenght, time, mass, temperature, pressure, velocity,
 			acceleration, force, torque, momentum, angularMomentum, frequency);
-		
+
 		unitConn.create(new Unit("N", "Newton", force, none));
 		unitConn.create(new Unit("Pa", "Pascal", pressure, none));
 		unitConn.create(new Unit("Pa", "Pascal", pressure, mega));

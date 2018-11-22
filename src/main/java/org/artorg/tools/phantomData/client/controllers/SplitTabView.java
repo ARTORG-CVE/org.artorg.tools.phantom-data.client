@@ -22,7 +22,7 @@ import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.beans.DbNode;
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
 import org.artorg.tools.phantomData.client.connector.Connectors;
-import org.artorg.tools.phantomData.client.connector.CrudConnector;
+import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.controller.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.SmartSplitTabPane;
@@ -274,8 +274,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 		proTreeTableView.setContextMenu(contextMenu);
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	private <ITEM extends DbPersistent<ITEM, ?>> TableRow<ITEM> createTableViewContext(
 		ProTableView<ITEM> tableViewSpring, TableView<ITEM> tableView) {
 		final TableRow<ITEM> row = new TableRow<ITEM>();
@@ -393,7 +392,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 			if (!UserAdmin.isUserLoggedIn())
 				Main.getMainController().openLoginLogoutFrame();
 			else {
-				CrudConnector<ITEM, ?> connector = (CrudConnector<ITEM, ?>) Connectors
+				ICrudConnector<ITEM, ?> connector = (ICrudConnector<ITEM, ?>) Connectors
 					.getConnector(tableViewSpring.getItemClass());
 				if (connector.delete(row.getItem()))
 					tableViewSpring.getItems().remove(row.getItem());

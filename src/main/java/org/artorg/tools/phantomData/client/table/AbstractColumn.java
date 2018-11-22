@@ -30,7 +30,7 @@ public abstract class AbstractColumn<ITEM, E> {
 		this.columnName = columnName;
 	}
 	
-	public abstract <U extends DbPersistent<U,SUB_ID>, SUB_ID extends Comparable<SUB_ID>> boolean update(ITEM item);
+	public abstract <U extends DbPersistent<U,?>> boolean update(ITEM item);
 	
 	public List<E> getValues() {
 		return getItems().stream().map(item -> get(item)).collect(Collectors.toList());

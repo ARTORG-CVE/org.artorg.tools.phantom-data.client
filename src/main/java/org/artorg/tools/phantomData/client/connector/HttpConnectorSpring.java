@@ -36,11 +36,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import org.artorg.tools.phantomData.server.BootApplication;
 import org.artorg.tools.phantomData.server.controller.*;
 
 @SuppressWarnings("unused")
-public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConnector<T, UUID> {
+public class HttpConnectorSpring<T extends Identifiable<ID>, ID extends Comparable<ID>>
+	implements ICrudConnector<T, ID> {
+	private static String urlLocalhost;
 	private final String annoStringControlClass;
 	private final String annoStringRead;
 	private final String annoStringReadAll;
@@ -48,39 +54,33 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 	private final String annoStringDelete;
 	private final String annoStringUpdate;
 	private final String annoStringExist;
-	
 	private final Class<?> itemClass;
 	private final Class<?> arrayItemClass;
 	private final Class<?> controllerClass;
-
-	private static String urlLocalhost;
-	private static final Map<Class<?>, HttpConnectorSpring<?>> connectorMap;
-
-	static {
-		connectorMap = new HashMap<Class<?>, HttpConnectorSpring<?>>();
-	}
+	private final ObservableList<T> items;
 
 	public HttpConnectorSpring(Class<?> itemClass) {
 		if (itemClass == null) {
 			itemClass = Reflect.findGenericClasstype(this);
 		}
 		this.itemClass = itemClass;
-		
+		items = FXCollections.observableArrayList();
+
 		arrayItemClass = Reflect.getArrayClass(itemClass);
 		Class<?> controllerClass;
-		List<Class<?>> controllerClasses = Reflect.getSubclasses(ControllerSpec.class, Main.getReflections());
-		Optional<Class<?>> optionalControllerClass = controllerClasses.stream().filter(c -> {
-			try {
-				return Reflect.findSubClassParameterType(c.newInstance(), ControllerSpec.class, 0) == this.itemClass;
-			} catch (Exception e2) {
-			}
-			return false;
-		}).findFirst();
-		if (!optionalControllerClass.isPresent())
-			throw new IllegalArgumentException();
-		else 
-			controllerClass = optionalControllerClass.get();
-		
+		List<Class<?>> controllerClasses =
+			Reflect.getSubclasses(ControllerSpec.class, Main.getReflections());
+		Optional<Class<?>> optionalControllerClass =
+			controllerClasses.stream().filter(c -> {
+				try {
+					return Reflect.findSubClassParameterType(c.newInstance(),
+						ControllerSpec.class, 0) == this.itemClass;
+				} catch (Exception e2) {}
+				return false;
+			}).findFirst();
+		if (!optionalControllerClass.isPresent()) throw new IllegalArgumentException();
+		else controllerClass = optionalControllerClass.get();
+
 		if (controllerClass == null) throw new NullPointerException();
 		this.controllerClass = controllerClass;
 
@@ -90,72 +90,17 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 		annoStringExceptionHandler(annoStringControlClass, RequestMapping.class);
 
 		annoStringCreate = getAnnotatedValue("create", PostMapping.class,
-				m -> m.getAnnotation(PostMapping.class).value()[0]);
+			m -> m.getAnnotation(PostMapping.class).value()[0]);
 		annoStringRead = getAnnotatedValue("getById", GetMapping.class,
-				m -> m.getAnnotation(GetMapping.class).value()[0]);
+			m -> m.getAnnotation(GetMapping.class).value()[0]);
 		annoStringReadAll = getAnnotatedValue("getAll", GetMapping.class,
-				m -> m.getAnnotation(GetMapping.class).value()[0]);
+			m -> m.getAnnotation(GetMapping.class).value()[0]);
 		annoStringUpdate = getAnnotatedValue("update", PutMapping.class,
-				m -> m.getAnnotation(PutMapping.class).value()[0]);
+			m -> m.getAnnotation(PutMapping.class).value()[0]);
 		annoStringDelete = getAnnotatedValue("delete", DeleteMapping.class,
-				m -> m.getAnnotation(DeleteMapping.class).value()[0]);
+			m -> m.getAnnotation(DeleteMapping.class).value()[0]);
 		annoStringExist = getAnnotatedValue("existById", GetMapping.class,
-				m -> m.getAnnotation(GetMapping.class).value()[0]);
-
-	}
-
-	private String getAnnotatedValue(String methodName, Class<? extends Annotation> annotationClass,
-			Function<Method, String> stringAnnosFunc) {
-		Predicate<Method> predicate1 = m -> m.getName().equals(methodName);
-		Predicate<Method> predicate2 = m -> m.isAnnotationPresent(annotationClass);
-//		Predicate<Method> predicate3 = m -> Modifier.isPublic(m.getModifiers());
-//		Predicate<Method> predicate4 = m -> !Modifier.isAbstract(m.getModifiers());
-		Predicate<Method> filterPredicate = predicate1.and(predicate2)
-//				.and(predicate3).and(predicate4)
-				;
-		return getAnnotatedValue(annotationClass, filterPredicate, stringAnnosFunc);
-	}
-
-	private String getAnnotatedValue(Class<? extends Annotation> annotationClass,
-			Function<Method, String> stringAnnosFunc) {
-		return getAnnotatedValue(getControllerClass(), annotationClass, m -> true, stringAnnosFunc);
-	}
-
-	private Predicate<Method> convertTextFilterPredicate(Predicate<String> textFilterPredicate,
-			Function<Method, String> stringAnnosFunc) {
-		return m -> textFilterPredicate.test(stringAnnosFunc.apply(m));
-	}
-
-	private String getAnnotatedValue(Class<? extends Annotation> annotationClass,
-			Predicate<Method> methodFilterPredicate, Function<Method, String> stringAnnosFunc) {
-		return stringAnnosFunc.apply(getAnnotatedMethod(getControllerClass(), annotationClass, methodFilterPredicate));
-	}
-
-	private static String getAnnotatedValue(Class<?> methodsClass, Class<? extends Annotation> annotationClass,
-			Predicate<Method> methodFilterPredicate, Function<Method, String> stringAnnosFunc) {
-		return stringAnnosFunc.apply(getAnnotatedMethod(methodsClass, annotationClass, methodFilterPredicate));
-	}
-
-	private static Method getAnnotatedMethod(Class<?> methodsClass, Class<? extends Annotation> annotationClass,
-			Predicate<Method> filterPredicate) {
-		List<Method> methods = Arrays.asList(methodsClass.getMethods());
-		
-		return Reflect.getFirstMethod(methodsClass,
-				stream -> stream.filter(m -> m.isAnnotationPresent(annotationClass)).filter(filterPredicate));
-	}
-
-	private String getAnnoString(Class<? extends Annotation> annotationClass) {
-
-		return "";
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <U extends Identifiable<UUID>> HttpConnectorSpring<U> getOrCreate(Class<?> cls) {
-		if (connectorMap.containsKey(cls))
-			return (HttpConnectorSpring<U>) connectorMap.get(cls);
-		HttpConnectorSpring<U> connector = new HttpConnectorSpring<U>(cls);
-		connectorMap.put(cls, connector);
-		return connector;
+			m -> m.getAnnotation(GetMapping.class).value()[0]);
 	}
 
 	@Override
@@ -176,7 +121,7 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T read(UUID id) {
+	public T read(ID id) {
 		HttpHeaders headers = createHttpHeaders();
 		RestTemplate restTemplate = new RestTemplate();
 		String url = createUrl(getAnnoStringRead());
@@ -201,7 +146,7 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 	}
 
 	@Override
-	public boolean delete(UUID id) {
+	public boolean delete(ID id) {
 		try {
 			HttpHeaders headers = createHttpHeaders();
 			RestTemplate restTemplate = new RestTemplate();
@@ -214,9 +159,9 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 		}
 		return false;
 	}
-	
+
 	@Override
-	public Boolean existById(UUID id) {
+	public Boolean existById(ID id) {
 		HttpHeaders headers = createHttpHeaders();
 		RestTemplate restTemplate = new RestTemplate();
 		String url = createUrl(getAnnoStringExist());
@@ -231,8 +176,8 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 		RestTemplate restTemplate = new RestTemplate();
 		String url = createUrl(getAnnoStringReadAll());
 		HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
-		ResponseEntity<?> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-				getArrayModelClass());
+		ResponseEntity<?> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
+			requestEntity, getArrayModelClass());
 		T[] results1 = (T[]) responseEntity.getBody();
 		return results1;
 	}
@@ -243,7 +188,7 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 		HttpHeaders headers = createHttpHeaders();
 		RestTemplate restTemplate = new RestTemplate();
 		String url = getUrlLocalhost() + "/" + getAnnoStringControlClass() + "/"
-				+ getAnnotationStringRead(attributeName);
+			+ getAnnotationStringRead(attributeName);
 		T result = (T) restTemplate.getForObject(url, getModelClass(), attribute);
 		return result;
 	}
@@ -261,7 +206,7 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 	private void handleException(Exception e) {
 		if (e instanceof org.springframework.web.client.HttpClientErrorException) {
 			System.err.println(
-					"Move SpringBootApplication class in correct package! ex. org.artorg.tools.phantomData.server.BootApplication");
+				"Move SpringBootApplication class in correct package! ex. org.artorg.tools.phantomData.server.BootApplication");
 			e.printStackTrace();
 			System.exit(0);
 		}
@@ -275,16 +220,66 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 		e.printStackTrace();
 	}
 
-	public String getAnnotationStringRead(String attributeName) {
-		return getAnnotationString(attributeName, GetMapping.class, m -> m.getAnnotation(GetMapping.class).value());
+	private String getAnnotatedValue(String methodName,
+		Class<? extends Annotation> annotationClass,
+		Function<Method, String> stringAnnosFunc) {
+		Predicate<Method> predicate1 = m -> m.getName().equals(methodName);
+		Predicate<Method> predicate2 = m -> m.isAnnotationPresent(annotationClass);
+//	Predicate<Method> predicate3 = m -> Modifier.isPublic(m.getModifiers());
+//	Predicate<Method> predicate4 = m -> !Modifier.isAbstract(m.getModifiers());
+		Predicate<Method> filterPredicate = predicate1.and(predicate2)
+//			.and(predicate3).and(predicate4)
+		;
+		return getAnnotatedValue(annotationClass, filterPredicate, stringAnnosFunc);
 	}
 
-	private final String getAnnotationString(String attributeName, Class<? extends Annotation> mappingClass,
-			Function<Method, String[]> stringAnnoFunc) {
+	private String getAnnotatedValue(Class<? extends Annotation> annotationClass,
+		Function<Method, String> stringAnnosFunc) {
+		return getAnnotatedValue(getControllerClass(), annotationClass, m -> true,
+			stringAnnosFunc);
+	}
+
+	private static Predicate<Method> convertTextFilterPredicate(
+		Predicate<String> textFilterPredicate, Function<Method, String> stringAnnosFunc) {
+		return m -> textFilterPredicate.test(stringAnnosFunc.apply(m));
+	}
+
+	private String getAnnotatedValue(Class<? extends Annotation> annotationClass,
+		Predicate<Method> methodFilterPredicate,
+		Function<Method, String> stringAnnosFunc) {
+		return stringAnnosFunc.apply(getAnnotatedMethod(getControllerClass(),
+			annotationClass, methodFilterPredicate));
+	}
+
+	private static String getAnnotatedValue(Class<?> methodsClass,
+		Class<? extends Annotation> annotationClass,
+		Predicate<Method> methodFilterPredicate,
+		Function<Method, String> stringAnnosFunc) {
+		return stringAnnosFunc.apply(
+			getAnnotatedMethod(methodsClass, annotationClass, methodFilterPredicate));
+	}
+
+	private static Method getAnnotatedMethod(Class<?> methodsClass,
+		Class<? extends Annotation> annotationClass, Predicate<Method> filterPredicate) {
+		List<Method> methods = Arrays.asList(methodsClass.getMethods());
+
+		return Reflect.getFirstMethod(methodsClass, stream -> stream
+			.filter(m -> m.isAnnotationPresent(annotationClass)).filter(filterPredicate));
+	}
+
+	public String getAnnotationStringRead(String attributeName) {
+		return getAnnotationString(attributeName, GetMapping.class,
+			m -> m.getAnnotation(GetMapping.class).value());
+	}
+
+	private final String getAnnotationString(String attributeName,
+		Class<? extends Annotation> mappingClass,
+		Function<Method, String[]> stringAnnoFunc) {
 		Method[] methods = getControllerClass().getMethods();
 		String tempValue = "";
 		outer: for (Method m : methods)
-			if (m.isAnnotationPresent(mappingClass) && !m.getName().matches("(?i).*All.*")) {
+			if (m.isAnnotationPresent(mappingClass)
+				&& !m.getName().matches("(?i).*All.*")) {
 				String[] stringAnnos = stringAnnoFunc.apply(m);
 				for (String stringAnno : stringAnnos)
 					if (stringAnno.contains(attributeName)) {
@@ -295,10 +290,11 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 		return annoStringExceptionHandler(tempValue, mappingClass);
 	}
 
-	private String annoStringExceptionHandler(String annoString, Class<? extends Annotation> mappingClass) {
-		if (annoString == "")
-			throw new IllegalArgumentException(String.format("Method annotation not found. Class: %s, Annotation: %s",
-					getControllerClass().toString(), GetMapping.class.toString()));
+	private String annoStringExceptionHandler(String annoString,
+		Class<? extends Annotation> mappingClass) {
+		if (annoString == "") throw new IllegalArgumentException(
+			String.format("Method annotation not found. Class: %s, Annotation: %s",
+				getControllerClass().toString(), GetMapping.class.toString()));
 		return annoString;
 	}
 
@@ -346,12 +342,9 @@ public class HttpConnectorSpring<T extends Identifiable<UUID>> extends CrudConne
 	public final String getAnnoStringDelete() {
 		return annoStringDelete;
 	}
-	
+
 	public String getAnnoStringExist() {
 		return annoStringExist;
 	}
-
-
-	
 
 }

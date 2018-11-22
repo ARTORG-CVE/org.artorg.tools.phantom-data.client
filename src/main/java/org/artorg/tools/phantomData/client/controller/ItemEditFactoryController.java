@@ -15,7 +15,6 @@ import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.client.scene.control.TitledPaneTableViewSelector;
 import org.artorg.tools.phantomData.client.scene.control.VGridBoxPane;
@@ -59,8 +58,8 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 	
 	public ItemEditFactoryController() {
 		itemClass = (Class<ITEM>) Reflect.findGenericClasstype(this);
-		connector = (ICrudConnector<ITEM, ?>) PersonalizedHttpConnectorSpring
-			.getOrCreate(itemClass);
+		connector = (ICrudConnector<ITEM, ?>) Connectors
+			.getConnector(itemClass);
 	}
 
 	public abstract ITEM createItem();
@@ -179,10 +178,10 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 		});
 	}
 	
-	protected <T extends DbPersistent<T, ID>, ID extends Comparable<ID>> void createComboBox(ComboBox<T> comboBox,
+	protected <T extends DbPersistent<T, ?>> void createComboBox(ComboBox<T> comboBox,
 			Class<T> itemClass, Function<T, String> mapper, Consumer<T> selectedItemChangedConsumer) {
-		ICrudConnector<T, ID> connector = (ICrudConnector<T, ID>) PersonalizedHttpConnectorSpring
-				.getOrCreate(itemClass);
+		ICrudConnector<T, ?> connector = (ICrudConnector<T, ?>) Connectors
+				.getConnector(itemClass);
 		FxUtil.createDbComboBox(comboBox, connector, mapper);
 
 		ChangeListener<T> listener = (observable, oldValue, newValue) -> {

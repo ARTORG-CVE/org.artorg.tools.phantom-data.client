@@ -1,5 +1,6 @@
 package org.artorg.tools.phantomData.client.util;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -7,7 +8,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class StreamUtils {
-	
 	
 	public static Predicate<String> getRegexTextFilterPredicate(List<String> regexes, boolean include, boolean findFirst) {
 		List<Pattern> includePatterns = regexes.stream().map(regex -> Pattern.compile(regex))
@@ -24,5 +24,25 @@ public class StreamUtils {
 		};
 
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> boolean forEach(Predicate<T> predicate, T...t) {
+		boolean succesful = true;
+		for(int i=0; i<t.length; i++) {
+			if (predicate.test(t[i]) == false) {
+				succesful = false;
+			}
+		}
+		return succesful;
+	}
+	
+	public static <T> boolean forEach(Predicate<T> predicate, Collection<T> coll) {
+		return forEach(predicate, coll.stream());
+	}
 
+	public static <T> boolean forEach(Predicate<T> predicate, Stream<T> stream) {
+		return stream.map(e -> predicate.test(e))
+				.filter(b -> b == false).findFirst().orElse(true);
+	}
+	
 }

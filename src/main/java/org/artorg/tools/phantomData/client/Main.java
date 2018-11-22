@@ -6,8 +6,6 @@ import java.util.concurrent.Executors;
 
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfos;
 import org.artorg.tools.phantomData.client.boot.DatabaseInitializer;
-import org.artorg.tools.phantomData.client.connector.Connectors;
-import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
 import org.artorg.tools.phantomData.client.controllers.MainController;
 import org.artorg.tools.phantomData.server.BootApplication;
@@ -76,7 +74,7 @@ public class Main extends DesktopFxBootApplication {
 	
 	public static void bootClient(ServerBooter booter) {
 		Main.setMainFxClass(DesktopFxBootApplication.class);
-		CrudConnector.connectorGetter = itemClass -> Connectors.getConnector(itemClass);
+//		ICrudConnector.connectorGetter = itemClass -> Connectors.getConnector(itemClass);
 		HttpConnectorSpring.setUrlLocalhost(booter.getUrlLocalhost());
 		MainController.setUrlLocalhost(booter.getUrlLocalhost());
 		MainController.setUrlShutdownActuator(booter.getUrlShutdownActuator());

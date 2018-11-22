@@ -1,17 +1,16 @@
 package org.artorg.tools.phantomData.client.table;
 
+import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-@SuppressWarnings("unchecked")
 public class DbTable<ITEM extends DbPersistent<ITEM, ?>>
 	extends TableBase<ITEM> implements IDbTable<ITEM,Object> {
 	private ICrudConnector<ITEM, ?> connector;
 
 	{
-		connector = (ICrudConnector<ITEM, ?>) PersonalizedHttpConnectorSpring
-			.getOrCreate(getItemClass());
+		connector = (ICrudConnector<ITEM, ?>) Connectors
+			.getConnector(getItemClass());
 	}
 
 	@Override

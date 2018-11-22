@@ -1,8 +1,5 @@
 package org.artorg.tools.phantomData.client.connector;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
@@ -11,32 +8,22 @@ import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntit
 import org.artorg.tools.phantomData.server.model.specification.AbstractPersonifiedEntity;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 
-public class PersonalizedHttpConnectorSpring<T extends Identifiable<UUID>> extends HttpConnectorSpring<T> {
+public class PersonalizedHttpConnectorSpring<T extends Identifiable<ID>, ID extends Comparable<ID>> extends HttpConnectorSpring<T,ID> {
 	private static Supplier<Person> userSupplier;
 	
 	static {
 		userSupplier = () -> null;
 	}
 	
-	protected static final Map<Class<?>, PersonalizedHttpConnectorSpring<?>> connectorMap;
+	
 
-	static {
-		connectorMap = new HashMap<Class<?>, PersonalizedHttpConnectorSpring<?>>();
-	}
+	
 
 	public PersonalizedHttpConnectorSpring(Class<?> itemClass) {
 		super(itemClass);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static <U extends Identifiable<UUID>> PersonalizedHttpConnectorSpring<U> getOrCreate(Class<?> cls) {
-		if (connectorMap.containsKey(cls))
-			return (PersonalizedHttpConnectorSpring<U>) connectorMap.get(cls);
-		
-		PersonalizedHttpConnectorSpring<U> connector = new PersonalizedHttpConnectorSpring<U>(cls);
-		connectorMap.put(cls, connector);
-		return connector;
-	}
+	
 	
 	@Override
 	public boolean create(T t) {
@@ -63,12 +50,12 @@ public class PersonalizedHttpConnectorSpring<T extends Identifiable<UUID>> exten
 	}
 	
 	@Override
-	public boolean delete(UUID id) {
+	public boolean delete(ID id) {
 		if (!isUserLoggedIn()) return false; 
 		return delete(id, getUser());
 	}
 	
-	public boolean delete(UUID id, Person p) {
+	public boolean delete(ID id, Person p) {
 		return super.delete(id);
 	}
 	

@@ -3,7 +3,8 @@ package org.artorg.tools.phantomData.client.admin;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.Main;
-import org.artorg.tools.phantomData.client.connector.HttpConnectorSpring;
+import org.artorg.tools.phantomData.client.connector.Connectors;
+import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
 import org.artorg.tools.phantomData.server.model.base.person.Person;
 
@@ -11,10 +12,10 @@ import javafx.application.Platform;
 
 public class UserAdmin {
 	private static Person user;
-	private static HttpConnectorSpring<Person> personConnector;
+	private static ICrudConnector<Person,?> personConnector;
 
 	static {
-		personConnector = HttpConnectorSpring.getOrCreate(Person.class);
+		personConnector = Connectors.getConnector(Person.class);
 		PersonalizedHttpConnectorSpring.setUserSupplier(() -> getUser());
 	}
 

@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
+import org.artorg.tools.phantomData.client.connector.Connectors;
+import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
@@ -113,8 +114,8 @@ public class PhantomEditFactoryController
 		String sNumber = textFieldModelNumber.getText();
 		int number = Integer.valueOf(sNumber);
 
-		PersonalizedHttpConnectorSpring<Phantomina> phantominaConn =
-			PersonalizedHttpConnectorSpring.getOrCreate(Phantomina.class);
+		ICrudConnector<Phantomina,?> phantominaConn =
+			Connectors.getConnector(Phantomina.class);
 		Phantomina phantomina =
 			new Phantomina(annulusDiameter, fabricationType, literatureBase, special);
 		final Phantomina finalPhantomina = phantomina;

@@ -3,7 +3,7 @@ package org.artorg.tools.phantomData.client.controllers.editFactories.base.prope
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
+import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.controller.PropertyEntry;
 import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
@@ -25,7 +25,7 @@ public class IntegerPropertyEditFactoryController extends GroupedItemEditFactory
 		
 		List<TitledPane> panes = new ArrayList<TitledPane>();
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-		FxUtil.createDbComboBox(comboBoxPropertyField, PersonalizedHttpConnectorSpring.getOrCreate(PropertyField.class), d -> String.valueOf(d.getName()));
+		FxUtil.createDbComboBox(comboBoxPropertyField, Connectors.getConnector(PropertyField.class), d -> String.valueOf(d.getName()));
 		generalProperties.add(new PropertyEntry("Property Field", comboBoxPropertyField));
 		generalProperties.add(new PropertyEntry("Value", textFieldValue));
 		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
