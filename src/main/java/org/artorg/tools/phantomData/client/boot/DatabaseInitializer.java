@@ -23,35 +23,35 @@ import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.model.phantom.Special;
 
 public class DatabaseInitializer {
-	private static ICrudConnector<Gender, ?> genderConn =
+	private static ICrudConnector<Gender> genderConn =
 		Connectors.getConnector(Gender.class);
-	private static ICrudConnector<AcademicTitle, ?> academicTitleConn =
+	private static ICrudConnector<AcademicTitle> academicTitleConn =
 		Connectors.getConnector(AcademicTitle.class);
-	private static ICrudConnector<Person, ?> personConn =
+	private static ICrudConnector<Person> personConn =
 		Connectors.getConnector(Person.class);
-	private static ICrudConnector<AnnulusDiameter, ?> adConn =
+	private static ICrudConnector<AnnulusDiameter> adConn =
 		Connectors.getConnector(AnnulusDiameter.class);
-	private static ICrudConnector<FabricationType, ?> fTypeConn =
+	private static ICrudConnector<FabricationType> fTypeConn =
 		Connectors.getConnector(FabricationType.class);
-	private static ICrudConnector<LiteratureBase, ?> litBaseConn =
+	private static ICrudConnector<LiteratureBase> litBaseConn =
 		Connectors.getConnector(LiteratureBase.class);
-	private static ICrudConnector<PropertyField, ?> fieldConn =
+	private static ICrudConnector<PropertyField> fieldConn =
 		Connectors.getConnector(PropertyField.class);
-	private static ICrudConnector<BooleanProperty, ?> boolPropConn =
+	private static ICrudConnector<BooleanProperty> boolPropConn =
 		Connectors.getConnector(BooleanProperty.class);
-	private static ICrudConnector<IntegerProperty, ?> intPropConn =
+	private static ICrudConnector<IntegerProperty> intPropConn =
 		Connectors.getConnector(IntegerProperty.class);
-	private static ICrudConnector<Special, ?> specConn =
+	private static ICrudConnector<Special> specConn =
 		Connectors.getConnector(Special.class);
-	private static ICrudConnector<Phantomina, ?> phantominaConn =
+	private static ICrudConnector<Phantomina> phantominaConn =
 		Connectors.getConnector(Phantomina.class);
-	private static ICrudConnector<Phantom, ?> phantomConn =
+	private static ICrudConnector<Phantom> phantomConn =
 		Connectors.getConnector(Phantom.class);
 
-	private static ICrudConnector<UnitPrefix, ?> unitPrefixConn =
+	private static ICrudConnector<UnitPrefix> unitPrefixConn =
 		Connectors.getConnector(UnitPrefix.class);
-	private static ICrudConnector<Unit, ?> unitConn = Connectors.getConnector(Unit.class);
-	private static ICrudConnector<PhysicalQuantity, ?> physicalQuantityConn =
+	private static ICrudConnector<Unit> unitConn = Connectors.getConnector(Unit.class);
+	private static ICrudConnector<PhysicalQuantity> physicalQuantityConn =
 		Connectors.getConnector(PhysicalQuantity.class);
 
 	public static void initDatabase() {
@@ -78,9 +78,9 @@ public class DatabaseInitializer {
 	}
 
 	private static void initPerson() {
-		ICrudConnector<AcademicTitle, ?> academicTitleConnInit =
+		ICrudConnector<AcademicTitle> academicTitleConnInit =
 			Connectors.getConnector(AcademicTitle.class);
-		ICrudConnector<Person, ?> personConnInit = Connectors.getConnector(Person.class);
+		ICrudConnector<Person> personConnInit = Connectors.getConnector(Person.class);
 		Gender male = new Gender("Male");
 		Gender female = new Gender("Female");
 		genderConn.create(male, female);

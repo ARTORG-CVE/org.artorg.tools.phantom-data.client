@@ -10,21 +10,21 @@ import java.util.stream.Stream;
 import org.artorg.tools.phantomData.client.util.StreamUtils;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 
-public interface ICrudConnector<T extends Identifiable<ID>, ID extends Comparable<ID>> {
+public interface ICrudConnector<T extends Identifiable<?>> {
 	
 	boolean create(T t);
 	
-	T read(ID id);
+	<U extends Identifiable<ID>, ID extends Comparable<ID>> U readById(ID id);
 	
 	boolean update(T t);
 	
-	boolean delete(ID id);
+	<U extends Identifiable<ID>, ID extends Comparable<ID>> boolean delete(ID id);
 	
 	T[] readAll();
 	
-	<V> T readByAttribute(V attribute, String annString);
+	<U extends Identifiable<ID>, ID extends Comparable<ID>, V> U readByAttribute(V attribute, String annString);
 	
-	Boolean existById(ID id);
+	<U extends Identifiable<ID>, ID extends Comparable<ID>> Boolean existById(ID id);
 	
 	default boolean create(List<T> t) {
 		return StreamUtils.forEach(this::create, t);
@@ -35,8 +35,8 @@ public interface ICrudConnector<T extends Identifiable<ID>, ID extends Comparabl
 		return StreamUtils.forEach(this::create, t);
 	}
 	
-	default T read(T t) {
-		return read(t.getId());
+	default <U extends Identifiable<ID>, ID extends Comparable<ID>> U read(U t) {
+		return readById(t.getId());
 	}
 	
 	default List<T> readAllAsList() {
@@ -53,11 +53,11 @@ public interface ICrudConnector<T extends Identifiable<ID>, ID extends Comparabl
 		return Arrays.stream(readAll());
 	}
 	
-	default boolean delete(T t) {
+	default <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean delete(U t) {
 		return delete((ID)t.getId());
 	}
 	
-	default boolean delete(List<T> t) {
+	default <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean delete(List<U> t) {
 		return StreamUtils.forEach(this::delete, t);
 	}
 	

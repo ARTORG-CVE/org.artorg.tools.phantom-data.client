@@ -41,7 +41,7 @@ public class FilterColumn<T,R> extends AbstractFilterColumn<T,R> {
 	@SuppressWarnings("unchecked")
 	public <U extends DbPersistent<U, ?>> boolean update(T item) {
 		U path = (U) itemToPropertyGetter.apply(item);
-		ICrudConnector<U, ?> connector = Connectors.getConnector(path.getItemClass());
+		ICrudConnector<U> connector = Connectors.getConnector(path.getItemClass());
 		return connector.update(path);
 	}
 	

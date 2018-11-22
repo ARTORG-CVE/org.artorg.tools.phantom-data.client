@@ -12,7 +12,7 @@ import javafx.application.Platform;
 
 public class UserAdmin {
 	private static Person user;
-	private static ICrudConnector<Person,?> personConnector;
+	private static ICrudConnector<Person> personConnector;
 
 	static {
 		personConnector = Connectors.getConnector(Person.class);

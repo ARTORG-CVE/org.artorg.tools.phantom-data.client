@@ -56,7 +56,7 @@ public class OptionalColumn<T extends DbPersistent<T,?>, R extends Comparable<R>
 		Optional<U> optional = (Optional<U>) itemToPropertyGetter.apply(item);
 		if (!optional.isPresent()) return false;
 		U sub = optional.get();
-		ICrudConnector<U,?> connector = Connectors.getConnector(sub.getItemClass()); 
+		ICrudConnector<U> connector = Connectors.getConnector(sub.getItemClass()); 
 		return connector.update(sub);
 	}
 

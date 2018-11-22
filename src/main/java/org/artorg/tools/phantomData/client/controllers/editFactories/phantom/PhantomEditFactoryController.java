@@ -114,7 +114,7 @@ public class PhantomEditFactoryController
 		String sNumber = textFieldModelNumber.getText();
 		int number = Integer.valueOf(sNumber);
 
-		ICrudConnector<Phantomina,?> phantominaConn =
+		ICrudConnector<Phantomina> phantominaConn =
 			Connectors.getConnector(Phantomina.class);
 		Phantomina phantomina =
 			new Phantomina(annulusDiameter, fabricationType, literatureBase, special);

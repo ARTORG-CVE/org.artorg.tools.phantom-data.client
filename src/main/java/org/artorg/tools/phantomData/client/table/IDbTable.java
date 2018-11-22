@@ -17,7 +17,7 @@ public interface IDbTable<ITEM extends DbPersistent<ITEM,?>,R> extends ITable<IT
 		Class<ITEM> itemClass = getItemClass();
 		if (itemClass == null)
 			throw new NullPointerException();
-		ICrudConnector<ITEM,?> connector = getConnector();
+		ICrudConnector<ITEM> connector = getConnector();
 		if (connector == null)
 			throw new NullPointerException();
 		itemSet.addAll(connector.readAllAsSet());

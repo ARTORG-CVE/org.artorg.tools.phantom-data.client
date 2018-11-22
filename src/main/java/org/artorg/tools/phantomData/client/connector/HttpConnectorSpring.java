@@ -2,28 +2,17 @@ package org.artorg.tools.phantomData.client.connector;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
-import org.artorg.tools.phantomData.client.util.StreamUtils;
 import org.artorg.tools.phantomData.server.specification.ControllerSpec;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
-import org.reflections.Reflections;
-import org.springframework.core.GenericTypeResolver;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -40,12 +29,8 @@ import org.springframework.web.client.RestTemplate;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import org.artorg.tools.phantomData.server.BootApplication;
-import org.artorg.tools.phantomData.server.controller.*;
-
-@SuppressWarnings("unused")
-public class HttpConnectorSpring<T extends Identifiable<ID>, ID extends Comparable<ID>>
-	implements ICrudConnector<T, ID> {
+public class HttpConnectorSpring<T extends Identifiable<?>>
+	implements ICrudConnector<T> {
 	private static String urlLocalhost;
 	private final String annoStringControlClass;
 	private final String annoStringRead;
@@ -54,19 +39,20 @@ public class HttpConnectorSpring<T extends Identifiable<ID>, ID extends Comparab
 	private final String annoStringDelete;
 	private final String annoStringUpdate;
 	private final String annoStringExist;
-	private final Class<?> itemClass;
-	private final Class<?> arrayItemClass;
-	private final Class<?> controllerClass;
+	private final Class<T> itemClass;
+	private final Class<T[]> arrayItemClass;
+	private final Class<? extends ControllerSpec<T,?>> controllerClass;
 	private final ObservableList<T> items;
 
-	public HttpConnectorSpring(Class<?> itemClass) {
+	@SuppressWarnings("unchecked")
+	public HttpConnectorSpring(Class<T> itemClass) {
 		if (itemClass == null) {
-			itemClass = Reflect.findGenericClasstype(this);
+			itemClass = (Class<T>) Reflect.findGenericClasstype(this);
 		}
 		this.itemClass = itemClass;
 		items = FXCollections.observableArrayList();
 
-		arrayItemClass = Reflect.getArrayClass(itemClass);
+		arrayItemClass = (Class<T[]>) Reflect.getArrayClass(itemClass);
 		Class<?> controllerClass;
 		List<Class<?>> controllerClasses =
 			Reflect.getSubclasses(ControllerSpec.class, Main.getReflections());
@@ -82,7 +68,7 @@ public class HttpConnectorSpring<T extends Identifiable<ID>, ID extends Comparab
 		else controllerClass = optionalControllerClass.get();
 
 		if (controllerClass == null) throw new NullPointerException();
-		this.controllerClass = controllerClass;
+		this.controllerClass = (Class<? extends ControllerSpec<T,?>>) controllerClass;
 
 		// class annotation
 		RequestMapping anno = getControllerClass().getAnnotation(RequestMapping.class);
@@ -121,11 +107,10 @@ public class HttpConnectorSpring<T extends Identifiable<ID>, ID extends Comparab
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T read(ID id) {
-		HttpHeaders headers = createHttpHeaders();
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>> U readById(ID id) {
 		RestTemplate restTemplate = new RestTemplate();
 		String url = createUrl(getAnnoStringRead());
-		T result = (T) restTemplate.getForObject(url, getModelClass(), id);
+		U result = (U) restTemplate.getForObject(url, getModelClass(), id);
 		result.setId(id);
 		return result;
 	}
@@ -146,12 +131,12 @@ public class HttpConnectorSpring<T extends Identifiable<ID>, ID extends Comparab
 	}
 
 	@Override
-	public boolean delete(ID id) {
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean delete(ID id) {
 		try {
 			HttpHeaders headers = createHttpHeaders();
 			RestTemplate restTemplate = new RestTemplate();
 			String url = createUrl(getAnnoStringDelete());
-			HttpEntity<T> requestEntity = new HttpEntity<T>(headers);
+			HttpEntity<U> requestEntity = new HttpEntity<U>(headers);
 			restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, Void.class, id);
 			return true;
 		} catch (Exception e) {
@@ -161,8 +146,7 @@ public class HttpConnectorSpring<T extends Identifiable<ID>, ID extends Comparab
 	}
 
 	@Override
-	public Boolean existById(ID id) {
-		HttpHeaders headers = createHttpHeaders();
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>> Boolean existById(ID id) {
 		RestTemplate restTemplate = new RestTemplate();
 		String url = createUrl(getAnnoStringExist());
 		Boolean result = (Boolean) restTemplate.getForObject(url, Boolean.class, id);
@@ -179,17 +163,22 @@ public class HttpConnectorSpring<T extends Identifiable<ID>, ID extends Comparab
 		ResponseEntity<?> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
 			requestEntity, getArrayModelClass());
 		T[] results1 = (T[]) responseEntity.getBody();
+		
+		List<T> resultList = Arrays.asList(results1);
+		
+		CollectionUtil.addIfAbsent(resultList, this.items);
+		CollectionUtil.removeIfAbsent(resultList, this.items);
+		
 		return results1;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <V> T readByAttribute(V attribute, String attributeName) {
-		HttpHeaders headers = createHttpHeaders();
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>, V> U readByAttribute(V attribute, String attributeName) {
 		RestTemplate restTemplate = new RestTemplate();
 		String url = getUrlLocalhost() + "/" + getAnnoStringControlClass() + "/"
 			+ getAnnotationStringRead(attributeName);
-		T result = (T) restTemplate.getForObject(url, getModelClass(), attribute);
+		U result = (U) restTemplate.getForObject(url, getModelClass(), attribute);
 		return result;
 	}
 
@@ -232,18 +221,7 @@ public class HttpConnectorSpring<T extends Identifiable<ID>, ID extends Comparab
 		;
 		return getAnnotatedValue(annotationClass, filterPredicate, stringAnnosFunc);
 	}
-
-	private String getAnnotatedValue(Class<? extends Annotation> annotationClass,
-		Function<Method, String> stringAnnosFunc) {
-		return getAnnotatedValue(getControllerClass(), annotationClass, m -> true,
-			stringAnnosFunc);
-	}
-
-	private static Predicate<Method> convertTextFilterPredicate(
-		Predicate<String> textFilterPredicate, Function<Method, String> stringAnnosFunc) {
-		return m -> textFilterPredicate.test(stringAnnosFunc.apply(m));
-	}
-
+	
 	private String getAnnotatedValue(Class<? extends Annotation> annotationClass,
 		Predicate<Method> methodFilterPredicate,
 		Function<Method, String> stringAnnosFunc) {
@@ -251,18 +229,8 @@ public class HttpConnectorSpring<T extends Identifiable<ID>, ID extends Comparab
 			annotationClass, methodFilterPredicate));
 	}
 
-	private static String getAnnotatedValue(Class<?> methodsClass,
-		Class<? extends Annotation> annotationClass,
-		Predicate<Method> methodFilterPredicate,
-		Function<Method, String> stringAnnosFunc) {
-		return stringAnnosFunc.apply(
-			getAnnotatedMethod(methodsClass, annotationClass, methodFilterPredicate));
-	}
-
 	private static Method getAnnotatedMethod(Class<?> methodsClass,
 		Class<? extends Annotation> annotationClass, Predicate<Method> filterPredicate) {
-		List<Method> methods = Arrays.asList(methodsClass.getMethods());
-
 		return Reflect.getFirstMethod(methodsClass, stream -> stream
 			.filter(m -> m.isAnnotationPresent(annotationClass)).filter(filterPredicate));
 	}
@@ -303,15 +271,16 @@ public class HttpConnectorSpring<T extends Identifiable<ID>, ID extends Comparab
 	}
 
 	// Getters
-	public Class<?> getModelClass() {
-		return itemClass;
+	@SuppressWarnings("unchecked")
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>> Class<U> getModelClass() {
+		return (Class<U>) itemClass;
 	}
 
-	public Class<?> getArrayModelClass() {
+	public Class<T[]> getArrayModelClass() {
 		return arrayItemClass;
 	}
 
-	public Class<?> getControllerClass() {
+	public Class<? extends ControllerSpec<T,?>> getControllerClass() {
 		return controllerClass;
 	}
 

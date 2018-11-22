@@ -44,9 +44,9 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 	private final Class<ITEM> itemClass;
 	
 
-	private ICrudConnector<ITEM, ?> connector;
+	private ICrudConnector<ITEM> connector;
 
-	public ICrudConnector<ITEM, ?> getConnector() {
+	public ICrudConnector<ITEM> getConnector() {
 		return this.connector;
 	}
 
@@ -58,7 +58,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 	
 	public ItemEditFactoryController() {
 		itemClass = (Class<ITEM>) Reflect.findGenericClasstype(this);
-		connector = (ICrudConnector<ITEM, ?>) Connectors
+		connector = (ICrudConnector<ITEM>) Connectors
 			.getConnector(itemClass);
 	}
 
@@ -104,7 +104,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 
 		subItemClasses.forEach(subItemClass -> {
 			if (Reflect.containsCollectionSetter(itemClass, subItemClass)) {
-				ICrudConnector<?, ?> connector = Connectors.getConnector(subItemClass);
+				ICrudConnector<?> connector = Connectors.getConnector(subItemClass);
 				Set<Object> selectableItemSet = (Set<Object>) connector.readAllAsSet();
 
 				if (selectableItemSet.size() > 0) {
@@ -180,7 +180,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 	
 	protected <T extends DbPersistent<T, ?>> void createComboBox(ComboBox<T> comboBox,
 			Class<T> itemClass, Function<T, String> mapper, Consumer<T> selectedItemChangedConsumer) {
-		ICrudConnector<T, ?> connector = (ICrudConnector<T, ?>) Connectors
+		ICrudConnector<T> connector = (ICrudConnector<T>) Connectors
 				.getConnector(itemClass);
 		FxUtil.createDbComboBox(comboBox, connector, mapper);
 

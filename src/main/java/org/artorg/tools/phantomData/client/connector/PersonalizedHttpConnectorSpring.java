@@ -8,22 +8,16 @@ import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntit
 import org.artorg.tools.phantomData.server.model.specification.AbstractPersonifiedEntity;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 
-public class PersonalizedHttpConnectorSpring<T extends Identifiable<ID>, ID extends Comparable<ID>> extends HttpConnectorSpring<T,ID> {
+public class PersonalizedHttpConnectorSpring<T extends Identifiable<?>> extends HttpConnectorSpring<T> {
 	private static Supplier<Person> userSupplier;
 	
 	static {
 		userSupplier = () -> null;
 	}
-	
-	
 
-	
-
-	public PersonalizedHttpConnectorSpring(Class<?> itemClass) {
+	public PersonalizedHttpConnectorSpring(Class<T> itemClass) {
 		super(itemClass);
 	}
-	
-	
 	
 	@Override
 	public boolean create(T t) {
@@ -50,12 +44,12 @@ public class PersonalizedHttpConnectorSpring<T extends Identifiable<ID>, ID exte
 	}
 	
 	@Override
-	public boolean delete(ID id) {
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean delete(ID id) {
 		if (!isUserLoggedIn()) return false; 
 		return delete(id, getUser());
 	}
 	
-	public boolean delete(ID id, Person p) {
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean delete(ID id, Person p) {
 		return super.delete(id);
 	}
 	

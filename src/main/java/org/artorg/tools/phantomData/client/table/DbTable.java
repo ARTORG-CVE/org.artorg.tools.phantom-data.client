@@ -6,15 +6,15 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 public class DbTable<ITEM extends DbPersistent<ITEM, ?>>
 	extends TableBase<ITEM> implements IDbTable<ITEM,Object> {
-	private ICrudConnector<ITEM, ?> connector;
+	private ICrudConnector<ITEM> connector;
 
 	{
-		connector = (ICrudConnector<ITEM, ?>) Connectors
+		connector = Connectors
 			.getConnector(getItemClass());
 	}
 
 	@Override
-	public ICrudConnector<ITEM, ?> getConnector() {
+	public ICrudConnector<ITEM> getConnector() {
 		return this.connector;
 	}
 
