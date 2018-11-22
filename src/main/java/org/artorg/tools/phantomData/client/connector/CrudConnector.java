@@ -2,16 +2,14 @@ package org.artorg.tools.phantomData.client.connector;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.artorg.tools.phantomData.client.Main;
-import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
-import org.artorg.tools.phantomData.server.specification.ControllerSpec;
+import org.artorg.tools.phantomData.server.specification.ControllerSpecDefault;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -26,10 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
-public class HttpConnectorSpring<T extends Identifiable<?>>
+public class CrudConnector<T extends Identifiable<?>>
 	implements ICrudConnector<T> {
 	private static String urlLocalhost;
 	private final String annoStringControlClass;
@@ -41,26 +36,24 @@ public class HttpConnectorSpring<T extends Identifiable<?>>
 	private final String annoStringExist;
 	private final Class<T> itemClass;
 	private final Class<T[]> arrayItemClass;
-	private final Class<? extends ControllerSpec<T,?>> controllerClass;
-	private final ObservableList<T> items;
+	private final Class<?> controllerClass;
 
 	@SuppressWarnings("unchecked")
-	public HttpConnectorSpring(Class<T> itemClass) {
+	public CrudConnector(Class<T> itemClass) {
 		if (itemClass == null) {
 			itemClass = (Class<T>) Reflect.findGenericClasstype(this);
 		}
 		this.itemClass = itemClass;
-		items = FXCollections.observableArrayList();
 
 		arrayItemClass = (Class<T[]>) Reflect.getArrayClass(itemClass);
 		Class<?> controllerClass;
 		List<Class<?>> controllerClasses =
-			Reflect.getSubclasses(ControllerSpec.class, Main.getReflections());
+			Reflect.getSubclasses(ControllerSpecDefault.class, Main.getReflections());
 		Optional<Class<?>> optionalControllerClass =
 			controllerClasses.stream().filter(c -> {
 				try {
 					return Reflect.findSubClassParameterType(c.newInstance(),
-						ControllerSpec.class, 0) == this.itemClass;
+						ControllerSpecDefault.class, 0) == this.itemClass;
 				} catch (Exception e2) {}
 				return false;
 			}).findFirst();
@@ -68,7 +61,7 @@ public class HttpConnectorSpring<T extends Identifiable<?>>
 		else controllerClass = optionalControllerClass.get();
 
 		if (controllerClass == null) throw new NullPointerException();
-		this.controllerClass = (Class<? extends ControllerSpec<T,?>>) controllerClass;
+		this.controllerClass = controllerClass;
 
 		// class annotation
 		RequestMapping anno = getControllerClass().getAnnotation(RequestMapping.class);
@@ -131,12 +124,12 @@ public class HttpConnectorSpring<T extends Identifiable<?>>
 	}
 
 	@Override
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean delete(ID id) {
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean deleteById(ID id) {
 		try {
 			HttpHeaders headers = createHttpHeaders();
 			RestTemplate restTemplate = new RestTemplate();
 			String url = createUrl(getAnnoStringDelete());
-			HttpEntity<U> requestEntity = new HttpEntity<U>(headers);
+			HttpEntity<T> requestEntity = new HttpEntity<T>(headers);
 			restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, Void.class, id);
 			return true;
 		} catch (Exception e) {
@@ -163,12 +156,6 @@ public class HttpConnectorSpring<T extends Identifiable<?>>
 		ResponseEntity<?> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
 			requestEntity, getArrayModelClass());
 		T[] results1 = (T[]) responseEntity.getBody();
-		
-		List<T> resultList = Arrays.asList(results1);
-		
-		CollectionUtil.addIfAbsent(resultList, this.items);
-		CollectionUtil.removeIfAbsent(resultList, this.items);
-		
 		return results1;
 	}
 	
@@ -177,7 +164,7 @@ public class HttpConnectorSpring<T extends Identifiable<?>>
 	public <U extends Identifiable<ID>, ID extends Comparable<ID>, V> U readByAttribute(V attribute, String attributeName) {
 		RestTemplate restTemplate = new RestTemplate();
 		String url = getUrlLocalhost() + "/" + getAnnoStringControlClass() + "/"
-			+ getAnnotationStringRead(attributeName);
+			+ getAnnoStringRead(attributeName);
 		U result = (U) restTemplate.getForObject(url, getModelClass(), attribute);
 		return result;
 	}
@@ -235,10 +222,7 @@ public class HttpConnectorSpring<T extends Identifiable<?>>
 			.filter(m -> m.isAnnotationPresent(annotationClass)).filter(filterPredicate));
 	}
 
-	public String getAnnotationStringRead(String attributeName) {
-		return getAnnotationString(attributeName, GetMapping.class,
-			m -> m.getAnnotation(GetMapping.class).value());
-	}
+	
 
 	private final String getAnnotationString(String attributeName,
 		Class<? extends Annotation> mappingClass,
@@ -267,20 +251,25 @@ public class HttpConnectorSpring<T extends Identifiable<?>>
 	}
 
 	public static void setUrlLocalhost(String urlLocalhost) {
-		HttpConnectorSpring.urlLocalhost = urlLocalhost;
+		CrudConnector.urlLocalhost = urlLocalhost;
+	}
+	
+	public final String getAnnoStringRead(String attributeName) {
+		return getAnnotationString(attributeName, GetMapping.class,
+			m -> m.getAnnotation(GetMapping.class).value());
 	}
 
 	// Getters
 	@SuppressWarnings("unchecked")
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>> Class<U> getModelClass() {
+	public final <U extends Identifiable<ID>, ID extends Comparable<ID>> Class<U> getModelClass() {
 		return (Class<U>) itemClass;
 	}
 
-	public Class<T[]> getArrayModelClass() {
+	public final Class<T[]> getArrayModelClass() {
 		return arrayItemClass;
 	}
 
-	public Class<? extends ControllerSpec<T,?>> getControllerClass() {
+	public final Class<?> getControllerClass() {
 		return controllerClass;
 	}
 
@@ -312,7 +301,7 @@ public class HttpConnectorSpring<T extends Identifiable<?>>
 		return annoStringDelete;
 	}
 
-	public String getAnnoStringExist() {
+	public final String getAnnoStringExist() {
 		return annoStringExist;
 	}
 

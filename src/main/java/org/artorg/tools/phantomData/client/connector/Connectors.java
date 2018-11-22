@@ -8,15 +8,15 @@ import org.artorg.tools.phantomData.server.model.base.person.Person;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 
 public class Connectors {
-	private static final Map<Class<?>, HttpConnectorSpring<?>> connectorMapUnpersonified;
-	protected static final Map<Class<?>, PersonalizedHttpConnectorSpring<?>> connectorMap;
+	private static final Map<Class<?>, CrudConnector<?>> connectorMapUnpersonified;
+	protected static final Map<Class<?>, PersonifiedCrudConnector<?>> connectorMap;
 
 	static {
-		connectorMapUnpersonified = new HashMap<Class<?>, HttpConnectorSpring<?>>();
+		connectorMapUnpersonified = new HashMap<Class<?>, CrudConnector<?>>();
 	}
 
 	static {
-		connectorMap = new HashMap<Class<?>, PersonalizedHttpConnectorSpring<?>>();
+		connectorMap = new HashMap<Class<?>, PersonifiedCrudConnector<?>>();
 	}
 	
 	public static <ITEM extends Identifiable<?>>
@@ -31,7 +31,7 @@ public class Connectors {
 		getOrCreateUnpersonified(Class<U> cls) {
 		if (connectorMapUnpersonified.containsKey(cls))
 			return (ICrudConnector<U>) connectorMapUnpersonified.get(cls);
-		HttpConnectorSpring<U> connector = new HttpConnectorSpring(cls);
+		CrudConnector<U> connector = new CrudConnector(cls);
 		connectorMapUnpersonified.put(cls, connector);
 		return connector;
 	}
@@ -41,8 +41,8 @@ public class Connectors {
 		getOrCreatePersonified(Class<U> cls) {
 		if (connectorMap.containsKey(cls))
 			return (ICrudConnector<U>) connectorMap.get(cls);
-		PersonalizedHttpConnectorSpring<U> connector =
-			new PersonalizedHttpConnectorSpring(cls);
+		PersonifiedCrudConnector<U> connector =
+			new PersonifiedCrudConnector(cls);
 		connectorMap.put(cls, connector);
 		return connector;
 	}

@@ -394,7 +394,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 			else {
 				ICrudConnector<ITEM> connector = (ICrudConnector<ITEM>) Connectors
 					.getConnector(tableViewSpring.getItemClass());
-				if (connector.delete(row.getItem()))
+				if (connector.deleteById(row.getItem().getId()))
 					tableViewSpring.getItems().remove(row.getItem());
 			}
 		});

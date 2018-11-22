@@ -18,7 +18,7 @@ public interface ICrudConnector<T extends Identifiable<?>> {
 	
 	boolean update(T t);
 	
-	<U extends Identifiable<ID>, ID extends Comparable<ID>> boolean delete(ID id);
+	<U extends Identifiable<ID>, ID extends Comparable<ID>> boolean deleteById(ID id);
 	
 	T[] readAll();
 	
@@ -30,9 +30,8 @@ public interface ICrudConnector<T extends Identifiable<?>> {
 		return StreamUtils.forEach(this::create, t);
 	}
 	
-	@SuppressWarnings("unchecked")
-	default boolean create(T... t) {
-		return StreamUtils.forEach(this::create, t);
+	default boolean create(T[] t) {
+		return StreamUtils.forEach(item -> create(item), t);
 	}
 	
 	default <U extends Identifiable<ID>, ID extends Comparable<ID>> U read(U t) {
@@ -54,16 +53,15 @@ public interface ICrudConnector<T extends Identifiable<?>> {
 	}
 	
 	default <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean delete(U t) {
-		return delete((ID)t.getId());
+		return deleteById((ID)t.getId());
 	}
 	
 	default <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean delete(List<U> t) {
 		return StreamUtils.forEach(this::delete, t);
 	}
 	
-	@SuppressWarnings("unchecked")
-	default boolean delete(T... t) {
-		return StreamUtils.forEach(this::delete, t);
+	default boolean delete(T[] t) {
+		return StreamUtils.forEach(item -> deleteById(item.getId()), t);
 	}
 	
 	default boolean update(List<T> t) {
@@ -74,12 +72,11 @@ public interface ICrudConnector<T extends Identifiable<?>> {
 		return StreamUtils.forEach(this::update, t);
 	}
 	
-	@SuppressWarnings("unchecked")
-	default boolean update(T... t) {
+	default boolean update(T[] t) {
 		return StreamUtils.forEach(this::update, t);
 	}
 	
-	default boolean existById(T t) {
+	default boolean exist(T t) {
 		return existById(t.getId());
 	}
 	

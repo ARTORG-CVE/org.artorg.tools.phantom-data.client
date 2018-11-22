@@ -5,7 +5,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.connector.PersonalizedHttpConnectorSpring;
+import org.artorg.tools.phantomData.client.connector.PersonifiedCrudConnector;
 import org.artorg.tools.phantomData.server.model.base.person.Person;
 
 import javafx.application.Platform;
@@ -16,7 +16,7 @@ public class UserAdmin {
 
 	static {
 		personConnector = Connectors.getConnector(Person.class);
-		PersonalizedHttpConnectorSpring.setUserSupplier(() -> getUser());
+		PersonifiedCrudConnector.setUserSupplier(() -> getUser());
 	}
 
 	public static List<Person> getAllPersons() {
@@ -41,7 +41,7 @@ public class UserAdmin {
 
 	public static void logout() {
 		UserAdmin.user = null;
-		PersonalizedHttpConnectorSpring.setUserSupplier(() -> getUser());
+		PersonifiedCrudConnector.setUserSupplier(() -> getUser());
 
 		if (Main.isStarted()) {
 			Platform.runLater(() -> {

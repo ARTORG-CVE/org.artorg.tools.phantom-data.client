@@ -8,14 +8,14 @@ import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntit
 import org.artorg.tools.phantomData.server.model.specification.AbstractPersonifiedEntity;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 
-public class PersonalizedHttpConnectorSpring<T extends Identifiable<?>> extends HttpConnectorSpring<T> {
+public class PersonifiedCrudConnector<T extends Identifiable<?>> extends CrudConnector<T> {
 	private static Supplier<Person> userSupplier;
 	
 	static {
 		userSupplier = () -> null;
 	}
 
-	public PersonalizedHttpConnectorSpring(Class<T> itemClass) {
+	public PersonifiedCrudConnector(Class<T> itemClass) {
 		super(itemClass);
 	}
 	
@@ -44,13 +44,13 @@ public class PersonalizedHttpConnectorSpring<T extends Identifiable<?>> extends 
 	}
 	
 	@Override
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean delete(ID id) {
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean deleteById(ID id) {
 		if (!isUserLoggedIn()) return false; 
-		return delete(id, getUser());
+		return deleteById(id, getUser());
 	}
 	
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean delete(ID id, Person p) {
-		return super.delete(id);
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean deleteById(ID id, Person p) {
+		return super.deleteById(id);
 	}
 	
 	public Person getUser() throws NoUserLoggedInException {
@@ -70,7 +70,7 @@ public class PersonalizedHttpConnectorSpring<T extends Identifiable<?>> extends 
 	}
 
 	public static void setUserSupplier(Supplier<Person> userSupplier) {
-		PersonalizedHttpConnectorSpring.userSupplier = userSupplier;
+		PersonifiedCrudConnector.userSupplier = userSupplier;
 	}
 
 }

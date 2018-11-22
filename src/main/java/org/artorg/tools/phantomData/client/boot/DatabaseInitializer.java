@@ -72,8 +72,14 @@ public class DatabaseInitializer {
 
 	public static boolean isInitialized() {
 		try {
+			System.out.println(adConn.readAll().length);
+			
 			return (adConn.readAll().length > 0);
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			System.out.println("-_-");
+			e.printStackTrace();
+			
+		}
 		return false;
 	}
 
@@ -83,7 +89,7 @@ public class DatabaseInitializer {
 		ICrudConnector<Person> personConnInit = Connectors.getConnector(Person.class);
 		Gender male = new Gender("Male");
 		Gender female = new Gender("Female");
-		genderConn.create(male, female);
+		genderConn.create(new Gender[] {male, female});
 		AcademicTitle noAcademicTitle = new AcademicTitle("", "No title");
 		academicTitleConnInit.create(noAcademicTitle);
 		Person hutzli = new Person(noAcademicTitle, "Marc", "Hutzli", male);
@@ -243,8 +249,8 @@ public class DatabaseInitializer {
 		UnitPrefix zetta = new UnitPrefix("zetta", "Z", 21);
 		UnitPrefix yotta = new UnitPrefix("yotta", "Y", 24);
 
-		unitPrefixConn.create(yocto, zepto, atto, femto, pico, nano, micro, milli, centi,
-			deci, none, deca, hecto, kilo, mega, giga, tera, peta, exa, zetta, yotta);
+		unitPrefixConn.create(new UnitPrefix[] {yocto, zepto, atto, femto, pico, nano, micro, milli, centi,
+			deci, none, deca, hecto, kilo, mega, giga, tera, peta, exa, zetta, yotta});
 
 		PhysicalQuantity lenght = new PhysicalQuantity("Length", "l", "");
 		PhysicalQuantity time = new PhysicalQuantity("Time", "t", "");
@@ -260,8 +266,8 @@ public class DatabaseInitializer {
 			new PhysicalQuantity("Angular Momentum", "L", "");
 		PhysicalQuantity frequency = new PhysicalQuantity("Frequency", "f", "");
 
-		physicalQuantityConn.create(lenght, time, mass, temperature, pressure, velocity,
-			acceleration, force, torque, momentum, angularMomentum, frequency);
+		physicalQuantityConn.create(new PhysicalQuantity[] {lenght, time, mass, temperature, pressure, velocity,
+			acceleration, force, torque, momentum, angularMomentum, frequency});
 
 		unitConn.create(new Unit("N", "Newton", force, none));
 		unitConn.create(new Unit("Pa", "Pascal", pressure, none));
