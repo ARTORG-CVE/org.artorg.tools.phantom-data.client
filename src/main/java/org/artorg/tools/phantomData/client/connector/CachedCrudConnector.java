@@ -4,12 +4,10 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 
 import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
@@ -20,15 +18,6 @@ public class CachedCrudConnector<T extends Identifiable<?>> extends CrudConnecto
 	{
 		items = FXCollections.observableArrayList();
 		map = FXCollections.observableHashMap();
-
-		map.addListener(new MapChangeListener<String, T>() {
-
-			@Override
-			public void onChanged(Change<? extends String, ? extends T> change) {
-
-			}
-
-		});
 	}
 
 	public CachedCrudConnector(Class<T> itemClass) {
