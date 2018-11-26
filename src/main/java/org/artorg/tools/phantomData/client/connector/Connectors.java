@@ -3,6 +3,7 @@ package org.artorg.tools.phantomData.client.connector;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.artorg.tools.phantomData.server.model.base.person.AcademicTitle;
 import org.artorg.tools.phantomData.server.model.base.person.Gender;
 import org.artorg.tools.phantomData.server.model.base.person.Person;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
@@ -21,7 +22,7 @@ public class Connectors {
 	
 	public static <ITEM extends Identifiable<?>>
 		ICrudConnector<ITEM> getConnector(Class<ITEM> itemClass) {
-		if (itemClass == Person.class || itemClass == Gender.class)
+		if (itemClass == Person.class || itemClass == Gender.class || itemClass == AcademicTitle.class)
 			return (ICrudConnector<ITEM>) getOrCreateUnpersonified(itemClass);
 		return (ICrudConnector<ITEM>) getOrCreatePersonified(itemClass);
 	}
