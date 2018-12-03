@@ -2,6 +2,7 @@ package org.artorg.tools.phantomData.client.controller;
 
 import java.util.Set;
 
+import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.util.Reflect;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -13,8 +14,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
 
 public abstract class AbstractTableViewSelector<ITEM> {
-	private TableView<?> tableView1;
-	private TableView<?> tableView2;
+	private TableView<ITEM> tableView1;
+	private TableView<ITEM> tableView2;
 	private String name;
 
 	public abstract Class<?> getSubItemClass();
@@ -39,13 +40,13 @@ public abstract class AbstractTableViewSelector<ITEM> {
 //		items.addAll(set);
 //		getTableView1().setItems(items);
 //	}
-
+	
 	public ObservableList<Object> getSelectableItems() {
-		return getTableView1().getItems();
+		return ((ProTableView<Object>)getTableView1()).getTable().getItems();
 	}
 
 	public ObservableList<Object> getSelectedItems() {
-		return getTableView2().getItems();
+		return ((ProTableView<Object>)getTableView2()).getTable().getItems();
 	}
 
 //	public void setSelectedItems(Set<Object> set) {
@@ -69,8 +70,9 @@ public abstract class AbstractTableViewSelector<ITEM> {
 		return (TableView<Object>) tableView1;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setTableView1(TableView<?> tableView1) {
-		this.tableView1 = tableView1;
+		this.tableView1 = (TableView<ITEM>) tableView1;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -78,8 +80,9 @@ public abstract class AbstractTableViewSelector<ITEM> {
 		return (TableView<Object>) tableView2;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setTableView2(TableView<?> tableView2) {
-		this.tableView2 = tableView2;
+		this.tableView2 = (TableView<ITEM>) tableView2;
 	}
 
 	public String getName() {

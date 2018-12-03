@@ -168,4 +168,10 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 		refresh();
 	}
 
+	public List<FilterMenuButton<ITEM, ?>> getFilterMenuButtons() {
+		return filterMenuButtons;
+	}
+	
+	
+
 }
