@@ -56,10 +56,10 @@ public class TableBase<T> implements ITable<T,Object> {
 		this.itemName = itemClass.getSimpleName();
 	}
 	
-	public void setItems(ObservableList<T> items) {
-		this.items = items;
-		updateColumns();
-	}
+//	public void setItems(ObservableList<T> items) {
+//		this.items = items;
+//		updateColumns();
+//	}
 	
 	public boolean isIdColumnVisible() {
 		return isIdColumnVisible;
@@ -73,7 +73,11 @@ public class TableBase<T> implements ITable<T,Object> {
 	public void updateColumns() {
 		CollectionUtil.syncLists(this.columns, columnCreator.apply(getItems()),
 				(column, newColumn) -> column.getName().equals(newColumn.getName()));
-		getColumns().stream().forEach(column ->column.setItems(getItems()));
+		getColumns().stream().forEach(column -> {
+			column.setItems(getItems());
+//			column.getItems().clear();
+//			column.getItems().addAll(getItems());
+			});
 	}	
 	
     @Override

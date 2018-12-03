@@ -38,6 +38,16 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 		super(itemClass);
 	}
 
+	
+	
+	
+	@Override
+	public void showHeaderRow() {
+		// TODO Auto-generated method stub
+		super.showHeaderRow();
+		showFilterButtons();
+	}
+
 	public void showFilterButtons() {
 		for (Node n : super.lookupAll(".column-header > .label"))
 			if (n instanceof Label) {
@@ -55,6 +65,8 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 				}
 			}
 	}
+	
+	
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -68,6 +80,9 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 		refreshColumns();
 
 		super.setItems(table.getFilteredItems());
+//		super.getItems().clear();
+//		super.getItems().addAll(table.getFilteredItems());
+		
 		autoResizeColumns();
 		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
@@ -78,7 +93,7 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void refreshColumns() {
+	public void refreshColumns() {
 		if (!(getTable() instanceof IFilterTable)) {
 			super.initTable();
 			return;
@@ -142,7 +157,14 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 	private <TABLE extends IDbTable<ITEM, R> & IFilterTable<ITEM, R>, R> void
 		reloadFilterTable(TABLE table) {
 		table.readAllData();
-		super.setItems(table.getFilteredItems());
+		
+		
+//		super.setItems(table.getFilteredItems());
+		super.getItems().clear();
+		super.getItems().addAll(table.getFilteredItems());
+		
+		
+		
 		refresh();
 	}
 

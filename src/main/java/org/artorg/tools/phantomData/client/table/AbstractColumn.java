@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public abstract class AbstractColumn<ITEM, E> {
@@ -24,6 +25,7 @@ public abstract class AbstractColumn<ITEM, E> {
 		editable = true;
 		filterable = true;
 		idColumn = false;
+		items = FXCollections.observableArrayList();
 	}
 	
 	public AbstractColumn(String columnName) {

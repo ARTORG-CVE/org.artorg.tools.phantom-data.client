@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.controller.AbstractTableViewSelector;
+import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
@@ -100,16 +102,33 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM, ?>>
 				public TableRow<Object> call(TableView<Object> tableView) {
 					final TableRow<Object> row = new TableRow<Object>();
 
-					ContextMenu rowMenu = new ContextMenu();
-					MenuItem addMenu = new MenuItem("Add");
-					addMenu.setOnAction(event -> {
+					ContextMenu contextMenu = new ContextMenu();
+					MenuItem menuItem = new MenuItem("Add");
+					menuItem.setOnAction(event -> {
 						moveToSelected(row.getItem());
 					});
-					rowMenu.getItems().addAll(addMenu);
+					contextMenu.getItems().addAll(menuItem);
+
+					menuItem = new MenuItem("Reload");
+					menuItem.setOnAction(event -> {
+//						
+//						if (tableView instanceof DbFilterTableView) {
+//							((DbFilterTableView)tableView).fi.refreshColumns();
+//							
+//						}
+
+						if (tableView instanceof DbTableView) {
+							DbTableView<?> dbTableView = ((DbTableView<?>) tableView);
+							dbTableView.refresh();
+
+							((DbTableView<?>) tableView).reload();
+						}
+					});
+					contextMenu.getItems().addAll(menuItem);
 
 					row.contextMenuProperty()
 						.bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
-							.then(rowMenu).otherwise((ContextMenu) null));
+							.then(contextMenu).otherwise((ContextMenu) null));
 					return row;
 				};
 			});
@@ -141,15 +160,22 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM, ?>>
 		getTableView2().getItems().add(item);
 		if (getTableView1().getItems().size() == 0) {
 			splitPane.getItems().remove(getTableView1());
-			if (!splitPane.getItems().contains(getTableView2()))
+			if (!splitPane.getItems().contains(getTableView2())) {
 				splitPane.getItems().add(0, getTableView2());
-			if (getTableView2() instanceof ProTableView)
-				((ProTableView<?>) getTableView2()).showHeaderRow();
+				
+			}
+			((ProTableView<?>) getTableView2()).showHeaderRow();
+//			if (getTableView2() instanceof ProTableView) {
+//				((ProTableView<?>) getTableView2()).showHeaderRow();
+//				
+//			}
 		} else {
 			if (!splitPane.getItems().contains(getTableView2()))
 				splitPane.getItems().add(1, getTableView2());
 			splitPane.setDividerPositions(0.5f);
 
+			((ProTableView<?>) getTableView2()).showHeaderRow();
+			
 			if (getTableView2().getItems().size() < 10)
 				if (getTableView2() instanceof ProTableView)
 					((ProTableView<?>) getTableView2()).removeHeaderRow();
@@ -166,8 +192,15 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM, ?>>
 		if (getTableView2().getItems().size() == 0) {
 			splitPane.getItems().remove(getTableView2());
 		} else {
-			if (!splitPane.getItems().contains(getTableView1()))
+			if (!splitPane.getItems().contains(getTableView1())) {
 				splitPane.getItems().add(0, getTableView1());
+				((ProTableView<?>) getTableView1()).showHeaderRow();
+//					((DbFilterTableView<?>)getTableView1()).show
+				
+			}
+			
+			((ProTableView<?>) getTableView1()).showHeaderRow();
+			
 			splitPane.setDividerPositions(0.5f);
 			if (getTableView2().getItems().size() < 10)
 				if (getTableView2() instanceof ProTableView)

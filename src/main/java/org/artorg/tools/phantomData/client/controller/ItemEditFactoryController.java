@@ -18,6 +18,7 @@ import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.client.scene.control.TitledPaneTableViewSelector;
 import org.artorg.tools.phantomData.client.scene.control.VGridBoxPane;
+import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.table.FxFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
@@ -26,6 +27,7 @@ import org.artorg.tools.phantomData.server.specification.Identifiable;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -111,7 +113,11 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 					try {
 						AbstractTableViewSelector<ITEM> titledSelector = new TitledPaneTableViewSelector<ITEM>(
 								subItemClass);
-						titledSelector.setSelectableItems(selectableItemSet);
+						titledSelector.getSelectableItems().clear();
+						titledSelector.getSelectableItems().addAll(selectableItemSet);
+						((ProTableView<?>)titledSelector.getTableView1()).getTable().getItems().clear();
+						ObservableList<Object> temp = (ObservableList<Object>) ((ProTableView<?>)titledSelector.getTableView1()).getTable().getItems(); 
+						temp.addAll(selectableItemSet);
 
 						if (item != null) {
 							Method selectedMethod = Reflect.getMethodByGenericReturnType(itemClass, subItemClass);
@@ -129,8 +135,15 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 									}
 									return null;
 								};
-								titledSelector.setSelectedItems(subItemGetter2.apply(item).stream()
-										.filter(e -> e != null).collect(Collectors.toSet()));
+								titledSelector.getSelectedItems().clear();
+								titledSelector.getSelectedItems().addAll(subItemGetter2.apply(item).stream()
+									.filter(e -> e != null).collect(Collectors.toSet()));
+								
+								((ProTableView<?>)titledSelector.getTableView2()).getTable().getItems().clear();
+								ObservableList<Object> temp2 = (ObservableList<Object>) ((ProTableView<?>)titledSelector.getTableView2()).getTable().getItems(); 
+								temp2.addAll(subItemGetter2.apply(item).stream()
+									.filter(e -> e != null).collect(Collectors.toSet()));
+								
 							}
 						}
 

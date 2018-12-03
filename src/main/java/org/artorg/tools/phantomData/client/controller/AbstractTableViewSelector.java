@@ -34,11 +34,11 @@ public abstract class AbstractTableViewSelector<ITEM> {
 			Reflect.invokeGenericSetter(item, paramTypeClass, getSubItemClass(), arg);
 	}
 
-	public void setSelectableItems(Set<Object> set) {
-		ObservableList<Object> items = FXCollections.observableArrayList();
-		items.addAll(set);
-		getTableView1().setItems(items);
-	}
+//	public void setSelectableItems(Set<Object> set) {
+//		ObservableList<Object> items = FXCollections.observableArrayList();
+//		items.addAll(set);
+//		getTableView1().setItems(items);
+//	}
 
 	public ObservableList<Object> getSelectableItems() {
 		return getTableView1().getItems();
@@ -48,11 +48,11 @@ public abstract class AbstractTableViewSelector<ITEM> {
 		return getTableView2().getItems();
 	}
 
-	public void setSelectedItems(Set<Object> set) {
-		ObservableList<Object> items = FXCollections.observableArrayList();
-		items.addAll(set);
-		getTableView2().setItems(items);
-	}
+//	public void setSelectedItems(Set<Object> set) {
+//		ObservableList<Object> items = FXCollections.observableArrayList();
+//		items.addAll(set);
+//		getTableView2().setItems(items);
+//	}
 
 	protected TableColumn<Object, String> createValueColumn(String columnName) {
 		TableColumn<Object, String> column = new TableColumn<Object, String>(columnName);

@@ -26,7 +26,12 @@ public class DbTableView<ITEM extends DbPersistent<ITEM,?>> extends ProTableView
 	public void reload() {
 //		getTable().getItems().removeListener(getListenerChangedListenerRefresh());
 		((IDbTable<ITEM,?>)getTable()).readAllData();
+		
+		
 		super.setItems(getTable().getItems());
+//		super.getItems().clear();
+//		super.getItems().addAll(getTable().getItems());
+		
 //		getTable().getItems().addListener(getListenerChangedListenerRefresh());
 		refresh();
 	}

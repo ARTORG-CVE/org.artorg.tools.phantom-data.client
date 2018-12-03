@@ -27,7 +27,12 @@ public interface IDbTable<ITEM extends DbPersistent<ITEM,?>,R> extends ITable<IT
 		
 		CollectionUtil.syncLists(items, getItems());
 		
-		getColumns().stream().forEach(column -> column.setItems(getItems()));
+		getColumns().stream().forEach(column -> {
+			column.setItems(getItems());
+//			column.getItems().clear();
+//			column.getItems().addAll(getItems());
+			
+			});
 	}
 	
 	@Override

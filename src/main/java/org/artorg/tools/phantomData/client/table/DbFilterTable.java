@@ -87,7 +87,12 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 
 		getFilteredColumns().stream().filter(column -> column instanceof AbstractFilterColumn).forEach(column -> {
 			((AbstractFilterColumn<ITEM, ?>) column).setFilteredItems(getFilteredItems());
+//			((AbstractFilterColumn<ITEM, ?>) column).getFilteredItems().clear();
+//			((AbstractFilterColumn<ITEM, ?>) column).getFilteredItems().addAll(getFilteredItems());
+			
 		});
+		
+		
 
 		applyFilter();
 
@@ -112,6 +117,8 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 
 		getFilteredColumns().stream().filter(column -> column instanceof AbstractFilterColumn).forEach(column -> {
 			((AbstractFilterColumn<ITEM, ?>) column).setFilteredItems(getFilteredItems());
+//			((AbstractFilterColumn<ITEM, ?>) column).getFilteredItems().clear();
+//			((AbstractFilterColumn<ITEM, ?>) column).getFilteredItems().addAll(getFilteredItems());
 		});
 
 		applyFilter();
@@ -137,6 +144,8 @@ public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<I
 
 		getFilteredColumns().stream().filter(column -> column instanceof AbstractFilterColumn).forEach(column -> {
 			((AbstractFilterColumn<ITEM, ?>) column).setFilteredItems(getFilteredItems());
+//			((AbstractFilterColumn<ITEM, ?>) column).getFilteredItems().clear();
+//			((AbstractFilterColumn<ITEM, ?>) column).getFilteredItems().addAll(getFilteredItems());
 		});
 
 		applyFilter();

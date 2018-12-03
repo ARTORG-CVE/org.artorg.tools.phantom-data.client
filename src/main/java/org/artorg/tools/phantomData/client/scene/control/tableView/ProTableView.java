@@ -65,12 +65,16 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T>
 		refreshColumns();
 
 		super.setItems(table.getItems());
+//		super.getItems().clear();
+//		super.getItems().addAll(table.getItems());
+		
+		
 		autoResizeColumns();
 		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		super.getSelectionModel().selectFirst();
 	}
 
-	protected void refreshColumns() {
+	public void refreshColumns() {
 		CollectionUtil.addIfAbsent(table.getColumnCreator().apply(getItems()),
 			super.getColumns(), columnAddPolicy,
 			(baseColumn, index) -> createTableColumn(table, index));
