@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 import javax.persistence.Entity;
 
-import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
+import org.artorg.tools.phantomData.server.model.specification.AbstractPropertifiedEntity;
 import org.artorg.tools.phantomData.server.model.specification.AbstractPersonifiedEntity;
 
 public class EntityBeanInfo {
@@ -43,7 +43,7 @@ public class EntityBeanInfo {
 	@SuppressWarnings("unchecked")
 	public EntityBeanInfo(Class<?> entityClass) {
 		if (!entityClass.isAnnotationPresent(Entity.class))
-			if (entityClass != AbstractBaseEntity.class && entityClass != AbstractPersonifiedEntity.class)
+			if (entityClass != AbstractPropertifiedEntity.class && entityClass != AbstractPersonifiedEntity.class)
 				throw new IllegalArgumentException();
 		this.entityClass = entityClass;
 

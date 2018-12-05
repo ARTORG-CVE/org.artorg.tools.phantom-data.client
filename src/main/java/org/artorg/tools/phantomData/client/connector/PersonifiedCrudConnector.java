@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.server.model.base.person.Person;
-import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
+import org.artorg.tools.phantomData.server.model.specification.AbstractPropertifiedEntity;
 import org.artorg.tools.phantomData.server.model.specification.AbstractPersonifiedEntity;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 
@@ -38,8 +38,8 @@ public class PersonifiedCrudConnector<T extends Identifiable<?>> extends CrudCon
 	}
 	
 	private boolean update(T t, Person p) {
-		if (t instanceof AbstractBaseEntity)
-			((AbstractBaseEntity<?>)t).changed(p);
+		if (t instanceof AbstractPropertifiedEntity)
+			((AbstractPropertifiedEntity<?>)t).changed(p);
 		return super.update(t);
 	}
 	

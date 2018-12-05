@@ -40,7 +40,7 @@ import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.model.base.DbFile;
-import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
+import org.artorg.tools.phantomData.server.model.specification.AbstractPropertifiedEntity;
 import org.artorg.tools.phantomData.server.model.specification.NameGeneratable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -466,9 +466,6 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 	private <ITEM extends DbPersistent<ITEM, ?>> List<DbFile> getFiles(ITEM item) {
 		if (item == null) return new ArrayList<DbFile>();
-
-		if (item instanceof AbstractBaseEntity)
-			return ((AbstractBaseEntity<?>) item).getFiles();
 
 		List<DbFile> files = null;
 		try {

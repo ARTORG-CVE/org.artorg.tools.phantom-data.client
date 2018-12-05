@@ -6,13 +6,12 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.FilterColumn;
-import org.artorg.tools.phantomData.client.table.IBaseColumns;
 import org.artorg.tools.phantomData.client.table.IPersonifiedColumns;
 import org.artorg.tools.phantomData.client.table.IPropertyColumns;
 import org.artorg.tools.phantomData.server.model.phantom.Phantom;
 import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
 
-public class PhantomFilterTable extends DbUndoRedoFactoryEditFilterTable<Phantom> implements IPropertyColumns, IBaseColumns {
+public class PhantomFilterTable extends DbUndoRedoFactoryEditFilterTable<Phantom> implements IPropertyColumns, IPersonifiedColumns {
 
 	{
 		setTableName("Phantoms");
@@ -53,7 +52,6 @@ public class PhantomFilterTable extends DbUndoRedoFactoryEditFilterTable<Phantom
 				.compareTo((Integer) p2.getNumber()));
 //			createPropertyColumns(columns, this.getItems());
 			createPersonifiedColumns(columns);
-			createFilesColumns(columns);
 			return columns;
 		});
 

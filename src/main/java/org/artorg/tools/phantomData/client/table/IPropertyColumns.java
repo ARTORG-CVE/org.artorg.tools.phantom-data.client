@@ -14,7 +14,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.server.model.specification.AbstractBaseEntity;
+import org.artorg.tools.phantomData.server.model.specification.AbstractPropertifiedEntity;
 import org.artorg.tools.phantomData.server.model.specification.AbstractProperty;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -22,7 +22,7 @@ import javafx.collections.ObservableList;
 
 public interface IPropertyColumns {
 	
-	default <ITEM extends AbstractBaseEntity<ITEM>> 
+	default <ITEM extends AbstractPropertifiedEntity<ITEM>> 
 		void createPropertyColumns(List<AbstractColumn<ITEM,?>> columns, 
 				ObservableList<ITEM> items) {
 		createPropertyColumns(columns, items, 
