@@ -2,7 +2,6 @@ package org.artorg.tools.phantomData.client.scene.control;
 
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbUndoRedoAddEditControlFilterTableView;
-import org.artorg.tools.phantomData.client.table.DbFilterTable;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;

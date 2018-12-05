@@ -1,12 +1,9 @@
 package org.artorg.tools.phantomData.client.controller;
 
-import java.util.Set;
-
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.util.Reflect;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TableColumn;

@@ -12,9 +12,6 @@ import org.artorg.tools.phantomData.server.model.base.person.Person;
 import org.artorg.tools.phantomData.server.model.base.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.model.base.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.model.base.property.PropertyField;
-import org.artorg.tools.phantomData.server.model.measurement.PhysicalQuantity;
-import org.artorg.tools.phantomData.server.model.measurement.Unit;
-import org.artorg.tools.phantomData.server.model.measurement.UnitPrefix;
 import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
@@ -48,12 +45,6 @@ public class DatabaseInitializer {
 	private static ICrudConnector<Phantom> phantomConn =
 		Connectors.getConnector(Phantom.class);
 
-	private static ICrudConnector<UnitPrefix> unitPrefixConn =
-		Connectors.getConnector(UnitPrefix.class);
-	private static ICrudConnector<Unit> unitConn = Connectors.getConnector(Unit.class);
-	private static ICrudConnector<PhysicalQuantity> physicalQuantityConn =
-		Connectors.getConnector(PhysicalQuantity.class);
-
 	public static void initDatabase() {
 		initPerson();
 		initAnnulusDiameter();
@@ -61,8 +52,6 @@ public class DatabaseInitializer {
 		initLiteratureBase();
 		initSpecial();
 		initPhantoms();
-
-		initUnits();
 
 		System.out.println("Database initialized succesful");
 
@@ -224,61 +213,6 @@ public class DatabaseInitializer {
 		}
 
 		return new Phantom(phantomina, number);
-	}
-
-	private static void initUnits() {
-		UnitPrefix yocto = new UnitPrefix("yocto", "y", -24);
-		UnitPrefix zepto = new UnitPrefix("zepto", "z", -21);
-		UnitPrefix atto = new UnitPrefix("atto", "a", -18);
-		UnitPrefix femto = new UnitPrefix("femto", "f", -15);
-		UnitPrefix pico = new UnitPrefix("pico", "p", -12);
-		UnitPrefix nano = new UnitPrefix("nano", "n", -9);
-		UnitPrefix micro = new UnitPrefix("micro", "μ", -6);
-		UnitPrefix milli = new UnitPrefix("milli", "m", -3);
-		UnitPrefix centi = new UnitPrefix("centi", "c", -2);
-		UnitPrefix deci = new UnitPrefix("deci", "d", -1);
-		UnitPrefix none = new UnitPrefix("-", "", 0);
-		UnitPrefix deca = new UnitPrefix("deca", "da", 1);
-		UnitPrefix hecto = new UnitPrefix("hecto", "h", 2);
-		UnitPrefix kilo = new UnitPrefix("kilo", "k", 3);
-		UnitPrefix mega = new UnitPrefix("mega", "M", 6);
-		UnitPrefix giga = new UnitPrefix("giga", "G", 9);
-		UnitPrefix tera = new UnitPrefix("tera", "T", 12);
-		UnitPrefix peta = new UnitPrefix("peta", "P", 15);
-		UnitPrefix exa = new UnitPrefix("exa", "E", 18);
-		UnitPrefix zetta = new UnitPrefix("zetta", "Z", 21);
-		UnitPrefix yotta = new UnitPrefix("yotta", "Y", 24);
-
-		unitPrefixConn.create(new UnitPrefix[] {yocto, zepto, atto, femto, pico, nano, micro, milli, centi,
-			deci, none, deca, hecto, kilo, mega, giga, tera, peta, exa, zetta, yotta});
-
-		PhysicalQuantity lenght = new PhysicalQuantity("Length", "l", "");
-		PhysicalQuantity time = new PhysicalQuantity("Time", "t", "");
-		PhysicalQuantity mass = new PhysicalQuantity("Mass", "m", "");
-		PhysicalQuantity temperature = new PhysicalQuantity("Temperature", "T", "");
-		PhysicalQuantity pressure = new PhysicalQuantity("Pressure", "p", "");
-		PhysicalQuantity velocity = new PhysicalQuantity("Velocity", "v", "");
-		PhysicalQuantity acceleration = new PhysicalQuantity("Acceleration", "a", "");
-		PhysicalQuantity force = new PhysicalQuantity("Force", "F", "");
-		PhysicalQuantity torque = new PhysicalQuantity("Torque", "M", "");
-		PhysicalQuantity momentum = new PhysicalQuantity("Momentum", "p", "");
-		PhysicalQuantity angularMomentum =
-			new PhysicalQuantity("Angular Momentum", "L", "");
-		PhysicalQuantity frequency = new PhysicalQuantity("Frequency", "f", "");
-
-		physicalQuantityConn.create(new PhysicalQuantity[] {lenght, time, mass, temperature, pressure, velocity,
-			acceleration, force, torque, momentum, angularMomentum, frequency});
-
-		unitConn.create(new Unit("N", "Newton", force, none));
-		unitConn.create(new Unit("Pa", "Pascal", pressure, none));
-		unitConn.create(new Unit("Pa", "Pascal", pressure, mega));
-		unitConn.create(new Unit("bar", "Bar", pressure, none));
-		unitConn.create(new Unit("Hz", "Hertz", frequency, none));
-		unitConn.create(new Unit("Hz", "Hertz", frequency, kilo));
-		unitConn.create(new Unit("Hz", "Hertz", frequency, mega));
-		unitConn.create(new Unit("Hz", "Hertz", frequency, giga));
-		unitConn.create(new Unit("m/s", "", velocity, none));
-		unitConn.create(new Unit("m/s^2", "", acceleration, none));
 	}
 
 }

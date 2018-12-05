@@ -2,12 +2,9 @@ package org.artorg.tools.phantomData.client.scene.control.tableView;
 
 import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.table.AbstractColumn;
-import org.artorg.tools.phantomData.client.table.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.table.ITable;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
@@ -17,7 +14,6 @@ import org.artorg.tools.phantomData.client.util.TableViewUtils;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;

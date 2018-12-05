@@ -30,11 +30,7 @@ import org.artorg.tools.phantomData.server.model.base.property.DoubleProperty;
 import org.artorg.tools.phantomData.server.model.base.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.model.base.property.PropertyField;
 import org.artorg.tools.phantomData.server.model.base.property.StringProperty;
-import org.artorg.tools.phantomData.server.model.measurement.MeasuredValue;
 import org.artorg.tools.phantomData.server.model.measurement.Measurement;
-import org.artorg.tools.phantomData.server.model.measurement.PhysicalQuantity;
-import org.artorg.tools.phantomData.server.model.measurement.Unit;
-import org.artorg.tools.phantomData.server.model.measurement.UnitPrefix;
 import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
@@ -391,23 +387,6 @@ public class MainController extends StackPane {
 			menu.getItems().add(subMenu);
 		}
 		{
-			Menu subMenu = new Menu("Measurement");
-			addMenuItem(subMenu, "Measured Value", event -> {
-				tableFactoryCreator.accept(splitTabView, MeasuredValue.class);
-			});
-
-			addMenuItem(subMenu, "Physical Quantity", event -> {
-				tableFactoryCreator.accept(splitTabView, PhysicalQuantity.class);
-			});
-			addMenuItem(subMenu, "Unit", event -> {
-				tableFactoryCreator.accept(splitTabView, Unit.class);
-			});
-			addMenuItem(subMenu, "Unit Prefix", event -> {
-				tableFactoryCreator.accept(splitTabView, UnitPrefix.class);
-			});
-			menu.getItems().add(subMenu);
-		}
-		{
 			Menu subMenu = new Menu("Properties");
 			addMenuItem(subMenu, "Property Fields", event -> {
 				tableFactoryCreator.accept(splitTabView, PropertyField.class);
@@ -577,24 +556,8 @@ public class MainController extends StackPane {
 		openTable(FileTag.class);
 	}
 
-	void openTableMeasuredValue(ActionEvent event) {
-		openTable(MeasuredValue.class);
-	}
-
 	void openTableMeasurement(ActionEvent event) {
 		openTable(Measurement.class);
-	}
-
-	void openTablePhysicalQuantity(ActionEvent event) {
-		openTable(PhysicalQuantity.class);
-	}
-
-	void openTableUnit(ActionEvent event) {
-		openTable(Unit.class);
-	}
-
-	void openTableUnitPrefix(ActionEvent event) {
-		openTable(UnitPrefix.class);
 	}
 
 	public static String getUrlLocalhost() {
