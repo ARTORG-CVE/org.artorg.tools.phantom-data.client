@@ -175,8 +175,8 @@ public class FxUtil extends org.artorg.tools.phantomData.server.util.FxUtil {
 				return null;
 			}
 		};
-		task.setOnSucceeded(taskEvent -> {
-		});
+//		task.setOnSucceeded(taskEvent -> {
+//		});
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		executor.submit(task);
 		executor.shutdown();

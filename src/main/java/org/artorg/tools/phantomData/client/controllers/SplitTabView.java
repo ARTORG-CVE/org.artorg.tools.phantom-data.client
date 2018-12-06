@@ -40,7 +40,6 @@ import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.model.base.DbFile;
-import org.artorg.tools.phantomData.server.model.specification.AbstractPropertifiedEntity;
 import org.artorg.tools.phantomData.server.model.specification.NameGeneratable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -436,32 +435,40 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 	private <ITEM extends DbPersistent<ITEM, ?>> boolean show3dInViewer(ITEM item,
 		Tab tab) {
 		if (tab != null) {
-			if (item instanceof DbFile)
-				return show3dInViewer(((DbFile) item).getFile(), tab);
-			else {
-				File file = get3dFile(item);
-				if (file != null) return show3dInViewer(file, tab);
+			File file = get3dFile(item);
+			if (file != null) {
+				show3dInViewer(file, tab);
+				return true;
 			}
 		}
 		return false;
 	}
 
 	private <ITEM extends DbPersistent<ITEM, ?>> File get3dFile(ITEM item) {
+		if (item instanceof DbFile) {
+			if (((DbFile)item).getExtension().equalsIgnoreCase("stl"))
+				return ((DbFile) item).getFile();
+			else 
+				return null;
+		}
+		
 		List<DbFile> files = getFiles(item);
 		if (files != null && !files.isEmpty()) {
 			Optional<DbFile> optionalFile = files.stream()
-				.filter(dbFile -> dbFile.getExtension().equals("stl")).findFirst();
+				.filter(dbFile -> dbFile.getExtension().equalsIgnoreCase("stl")).findFirst();
 			if (optionalFile.isPresent()) return optionalFile.get().getFile();
 		}
 		return null;
 	}
 
-	private <ITEM extends DbPersistent<ITEM, ?>> boolean show3dInViewer(File file,
+	private <ITEM extends DbPersistent<ITEM, ?>> void show3dInViewer(File file,
 		Tab tab) {
-		Scene3D newScene3d = new Scene3D();
-		newScene3d.loadFile(file);
-		tab.setContent(newScene3d);
-		return true;
+		Platform.runLater(() -> {
+			Scene3D newScene3d = new Scene3D();
+			newScene3d.loadFile(file);
+			tab.setContent(newScene3d);
+		});
+		
 	}
 
 	private <ITEM extends DbPersistent<ITEM, ?>> List<DbFile> getFiles(ITEM item) {

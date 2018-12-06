@@ -114,8 +114,11 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 						AbstractTableViewSelector<ITEM> titledSelector = new TitledPaneTableViewSelector<ITEM>(
 								subItemClass);
 						titledSelector.getSelectableItems().clear();
-						titledSelector.getSelectableItems().addAll(selectableItemSet);
 						((ProTableView<?>)titledSelector.getTableView1()).getTable().getItems().clear();
+						titledSelector.getSelectableItems().addAll(selectableItemSet);
+						titledSelector.getSelectedItems().clear();
+						((ProTableView<?>)titledSelector.getTableView2()).getTable().getItems().clear();
+						
 						ObservableList<Object> temp = (ObservableList<Object>) ((ProTableView<?>)titledSelector.getTableView1()).getTable().getItems(); 
 						temp.addAll(selectableItemSet);
 
@@ -145,7 +148,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 									.filter(e -> e != null).collect(Collectors.toSet()));
 								
 							}
-						}
+						} 
 
 						titledSelector.init();
 						selectors.add(titledSelector);
@@ -223,26 +226,32 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 				Main.getMainController().openLoginLogoutFrame();
 			else {
 				FxUtil.runNewSingleThreaded(() -> {
-					try {
-						ITEM newItem = createItem();
-						if (newItem != null) {
-							if (selectors != null)
-								selectors.stream().filter(selector -> selector != null)
-										.forEach(selector -> selector.setSelectedChildItems(newItem));
-							if (getConnector().create(newItem)) {
-								Platform.runLater(() -> {
-									initDefaultValues();
-								});
-							}
-						}
-					} catch (Exception e) {
-						handleException(e);
-					}
+					createAndPersistItem();
 				});
 			}
 		});
 		applyButton.setText("Create");
 		return pane;
+	}
+	
+	public ITEM createAndPersistItem() {
+		try {
+			ITEM newItem = createItem();
+			if (newItem != null) {
+				if (selectors != null)
+					selectors.stream().filter(selector -> selector != null)
+							.forEach(selector -> selector.setSelectedChildItems(newItem));
+				if (getConnector().create(newItem)) {
+					Platform.runLater(() -> {
+						initDefaultValues();
+					});
+				}
+			}
+			return newItem;
+		} catch (Exception e) {
+			handleException(e);
+		}
+		throw new NullPointerException();
 	}
 
 	public AnchorPane edit(ITEM item, Class<?> itemClass) {

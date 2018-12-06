@@ -30,7 +30,9 @@ import org.artorg.tools.phantomData.server.model.base.property.DoubleProperty;
 import org.artorg.tools.phantomData.server.model.base.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.model.base.property.PropertyField;
 import org.artorg.tools.phantomData.server.model.base.property.StringProperty;
+import org.artorg.tools.phantomData.server.model.measurement.ExperimentalSetup;
 import org.artorg.tools.phantomData.server.model.measurement.Measurement;
+import org.artorg.tools.phantomData.server.model.measurement.Project;
 import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
@@ -350,6 +352,12 @@ public class MainController extends StackPane {
 		});
 		addMenuItem(menu, "Measurement", event -> {
 			tableFactoryCreator.accept(splitTabView, Measurement.class);
+		});
+		addMenuItem(menu, "Experimental Setups", event -> {
+			tableFactoryCreator.accept(splitTabView, ExperimentalSetup.class);
+		});
+		addMenuItem(menu, "Project", event -> {
+			tableFactoryCreator.accept(splitTabView, Project.class);
 		});
 		menu.getItems().add(new SeparatorMenuItem());
 		addMenuItem(menu, "Files", event -> {

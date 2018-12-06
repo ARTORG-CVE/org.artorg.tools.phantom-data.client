@@ -13,7 +13,7 @@ import org.artorg.tools.phantomData.client.table.IPropertyColumns;
 import org.artorg.tools.phantomData.server.model.measurement.Measurement;
 
 public class MeasurementFilterTable extends DbUndoRedoFactoryEditFilterTable<Measurement> implements IPropertyColumns, IPersonifiedColumns {
-
+	private static final SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
 	
 	{
 		setTableName("Measurements");
@@ -22,23 +22,38 @@ public class MeasurementFilterTable extends DbUndoRedoFactoryEditFilterTable<Mea
 			List<AbstractColumn<Measurement,?>> columns =
 				new ArrayList<AbstractColumn<Measurement,?>>();
 			columns.add(new FilterColumn<Measurement,String>(
-				"Name", item -> item,
-				path -> path.getName(),
-				(path, value) -> path.setName(value)));
-			columns.add(new FilterColumn<Measurement,String>(
 				"Date", item -> item,
-				path -> new SimpleDateFormat(path.getDateFormat()).format(path.getStartDate()),
+				path -> format.format(path.getStartDate()),
 				(path, value) -> {
 					try {
-						path.setStartDate(new SimpleDateFormat(path.getDateFormat()).parse(value));
+						path.setStartDate(format.parse(value));
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}
 				}));
 			columns.add(new FilterColumn<Measurement,String>(
-				"Description", item -> item,
-				path -> path.getDescription(),
-				(path, value) -> path.setDescription(value)));
+				"Person", item -> item.getPerson(),
+				path -> path.toName(),
+				(path, value) -> {}
+				));
+			columns.add(new FilterColumn<Measurement,String>(
+				"Project", item -> item.getProject(),
+				path -> path.toName(),
+				(path, value) -> {}
+				));
+			columns.add(new FilterColumn<Measurement,String>(
+				"Experimental Setup", item -> item.getExperimentalSetup(),
+				path -> path.getShortName(),
+				(path, value) -> {}
+				));
+			columns.add(new FilterColumn<Measurement,String>(
+				"Files", item -> item,
+				path -> String.valueOf(path.getFiles().size()),
+				(path, value) -> {}));
+			columns.add(new FilterColumn<Measurement,String>(
+				"Notes", item -> item,
+				path -> String.valueOf(path.getNotes().size()),
+				(path, value) -> {}));
 			createPersonifiedColumns(columns);
 			return columns;
 		});
