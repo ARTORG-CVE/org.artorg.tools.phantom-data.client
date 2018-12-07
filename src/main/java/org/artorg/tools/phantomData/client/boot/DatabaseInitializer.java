@@ -6,18 +6,9 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.server.model.base.person.AcademicTitle;
-import org.artorg.tools.phantomData.server.model.base.person.Gender;
-import org.artorg.tools.phantomData.server.model.base.person.Person;
-import org.artorg.tools.phantomData.server.model.base.property.BooleanProperty;
-import org.artorg.tools.phantomData.server.model.base.property.IntegerProperty;
-import org.artorg.tools.phantomData.server.model.base.property.PropertyField;
-import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
-import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
-import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
-import org.artorg.tools.phantomData.server.model.phantom.Phantom;
-import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
-import org.artorg.tools.phantomData.server.model.phantom.Special;
+import org.artorg.tools.phantomData.server.model.base.person.*;
+import org.artorg.tools.phantomData.server.model.base.property.*;
+import org.artorg.tools.phantomData.server.model.phantom.*;
 
 public class DatabaseInitializer {
 	private static ICrudConnector<Gender> genderConn =
@@ -44,6 +35,8 @@ public class DatabaseInitializer {
 		Connectors.getConnector(Phantomina.class);
 	private static ICrudConnector<Phantom> phantomConn =
 		Connectors.getConnector(Phantom.class);
+	private static ICrudConnector<Manufacturing> manufactConn =
+			Connectors.getConnector(Manufacturing.class);
 
 	public static void initDatabase() {
 		initPerson();
@@ -173,27 +166,32 @@ public class DatabaseInitializer {
 	}
 
 	private static void initPhantoms() {
+		
+		Manufacturing manufactPrintCast = new Manufacturing("3d print cast", "description");
+		manufactConn.create(manufactPrintCast);
+		
+		
 		Phantom[] phantoms = new Phantom[15];
-		phantoms[0] = createPhantom(21, "A", "C", "N", 3);
-		phantoms[1] = createPhantom(21, "A", "C", "N", 5);
-		phantoms[2] = createPhantom(21, "A", "C", "N", 7);
-		phantoms[3] = createPhantom(21, "A", "C", "N", 8);
-		phantoms[4] = createPhantom(21, "A", "C", "N", 9);
-		phantoms[5] = createPhantom(21, "A", "C", "N", 12);
-		phantoms[6] = createPhantom(21, "A", "J", "L", 1);
-		phantoms[7] = createPhantom(25, "A", "J", "L", 1);
-		phantoms[8] = createPhantom(25, "A", "J", "L", 2);
-		phantoms[9] = createPhantom(25, "A", "J", "L", 3);
-		phantoms[10] = createPhantom(25, "A", "J", "L", 5);
-		phantoms[11] = createPhantom(25, "A", "J", "L", 6);
-		phantoms[12] = createPhantom(25, "A", "J", "N", 1);
-		phantoms[13] = createPhantom(25, "A", "J", "N", 2);
-		phantoms[14] = createPhantom(21, "A", "P", "N", 1);
+		phantoms[0] = createPhantom(21, "A", "C", "N", 3, manufactPrintCast, 3.0f);
+		phantoms[1] = createPhantom(21, "A", "C", "N", 5, manufactPrintCast, 3.0f);
+		phantoms[2] = createPhantom(21, "A", "C", "N", 7, manufactPrintCast, 3.0f);
+		phantoms[3] = createPhantom(21, "A", "C", "N", 8, manufactPrintCast, 3.0f);
+		phantoms[4] = createPhantom(21, "A", "C", "N", 9, manufactPrintCast, 3.0f);
+		phantoms[5] = createPhantom(21, "A", "C", "N", 12, manufactPrintCast, 3.0f);
+		phantoms[6] = createPhantom(21, "A", "J", "L", 1, manufactPrintCast, 3.0f);
+		phantoms[7] = createPhantom(25, "A", "J", "L", 1, manufactPrintCast, 3.0f);
+		phantoms[8] = createPhantom(25, "A", "J", "L", 2, manufactPrintCast, 3.0f);
+		phantoms[9] = createPhantom(25, "A", "J", "L", 3, manufactPrintCast, 3.0f);
+		phantoms[10] = createPhantom(25, "A", "J", "L", 5, manufactPrintCast, 3.0f);
+		phantoms[11] = createPhantom(25, "A", "J", "L", 6, manufactPrintCast, 3.0f);
+		phantoms[12] = createPhantom(25, "A", "J", "N", 1, manufactPrintCast, 3.0f);
+		phantoms[13] = createPhantom(25, "A", "J", "N", 2, manufactPrintCast, 3.0f);
+		phantoms[14] = createPhantom(21, "A", "P", "N", 1, manufactPrintCast, 3.0f);
 		phantomConn.create(phantoms);
 	}
 
 	private static Phantom createPhantom(int annulusDiameter, String fType,
-		String litBase, String special, int number) {
+		String litBase, String special, int number, Manufacturing manufacturing, float thickness) {
 		AnnulusDiameter annulusDiameter2 =
 			adConn.readByAttribute(annulusDiameter, "shortcut");
 		FabricationType fType2 = fTypeConn.readByAttribute(fType, "shortcut");
@@ -212,7 +210,7 @@ public class DatabaseInitializer {
 			throw new UnsupportedOperationException();
 		}
 
-		return new Phantom(phantomina, number);
+		return new Phantom(phantomina, number, manufacturing, thickness);
 	}
 
 }

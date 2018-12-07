@@ -20,25 +20,11 @@ import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.model.base.DbFile;
-import org.artorg.tools.phantomData.server.model.base.FileTag;
-import org.artorg.tools.phantomData.server.model.base.Note;
-import org.artorg.tools.phantomData.server.model.base.person.AcademicTitle;
-import org.artorg.tools.phantomData.server.model.base.person.Person;
-import org.artorg.tools.phantomData.server.model.base.property.BooleanProperty;
-import org.artorg.tools.phantomData.server.model.base.property.DoubleProperty;
-import org.artorg.tools.phantomData.server.model.base.property.IntegerProperty;
-import org.artorg.tools.phantomData.server.model.base.property.PropertyField;
-import org.artorg.tools.phantomData.server.model.base.property.StringProperty;
-import org.artorg.tools.phantomData.server.model.measurement.ExperimentalSetup;
-import org.artorg.tools.phantomData.server.model.measurement.Measurement;
-import org.artorg.tools.phantomData.server.model.measurement.Project;
-import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
-import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
-import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
-import org.artorg.tools.phantomData.server.model.phantom.Phantom;
-import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
-import org.artorg.tools.phantomData.server.model.phantom.Special;
+import org.artorg.tools.phantomData.server.model.base.*;
+import org.artorg.tools.phantomData.server.model.base.person.*;
+import org.artorg.tools.phantomData.server.model.base.property.*;
+import org.artorg.tools.phantomData.server.model.measurement.*;
+import org.artorg.tools.phantomData.server.model.phantom.*;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import org.controlsfx.glyphfont.FontAwesome;
 
@@ -376,6 +362,9 @@ public class MainController extends StackPane {
 		menu.getItems().add(new SeparatorMenuItem());
 		{
 			Menu subMenu = new Menu("Phantominas");
+			addMenuItem(subMenu, "Manufacturings", event -> {
+				tableFactoryCreator.accept(splitTabView, Manufacturing.class);
+			});
 			addMenuItem(subMenu, "Phantominas", event -> {
 				tableFactoryCreator.accept(splitTabView, Phantomina.class);
 			});

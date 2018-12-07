@@ -12,6 +12,7 @@ import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
 import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
+import org.artorg.tools.phantomData.server.model.phantom.Manufacturing;
 import org.artorg.tools.phantomData.server.model.phantom.Phantom;
 import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.model.phantom.Special;
@@ -29,6 +30,8 @@ public class PhantomEditFactoryController
 	private ComboBox<LiteratureBase> comboBoxLiterature;
 	private ComboBox<Special> comboBoxSpecials;
 	private TextField textFieldModelNumber;
+	private ComboBox<Manufacturing> comboBoxManufacturing;
+	private TextField textFieldThickness;
 
 	{
 		labelIdValue = new Label("id");
@@ -37,6 +40,8 @@ public class PhantomEditFactoryController
 		comboBoxLiterature = new ComboBox<LiteratureBase>();
 		comboBoxSpecials = new ComboBox<Special>();
 		textFieldModelNumber = new TextField();
+		comboBoxManufacturing = new ComboBox<>();
+		textFieldThickness = new TextField();
 
 		labelIdValue.setDisable(true);
 
@@ -52,6 +57,8 @@ public class PhantomEditFactoryController
 		generalProperties.add(new PropertyEntry("Special", comboBoxSpecials));
 		generalProperties.add(new PropertyEntry("Phantom specific Number",
 			textFieldModelNumber, () -> updateId()));
+		generalProperties.add(new PropertyEntry("Manufacturing", comboBoxManufacturing));
+		generalProperties.add(new PropertyEntry("Nominal thickness", textFieldThickness));
 		TitledPropertyPane generalPane =
 			new TitledPropertyPane(generalProperties, "General");
 		panes.add(generalPane);
@@ -94,6 +101,7 @@ public class PhantomEditFactoryController
 			item -> updateId());
 		createComboBox(comboBoxSpecials, Special.class, s -> s.getShortcut(),
 			item -> updateId());
+		createComboBox(comboBoxManufacturing, Manufacturing.class, s -> s.getName());
 	}
 
 	@Override
@@ -113,6 +121,8 @@ public class PhantomEditFactoryController
 		Special special = comboBoxSpecials.getSelectionModel().getSelectedItem();
 		String sNumber = textFieldModelNumber.getText();
 		int number = Integer.valueOf(sNumber);
+		Manufacturing manufacturing = comboBoxManufacturing.getSelectionModel().getSelectedItem();
+		float thickness = Float.valueOf(textFieldThickness.getText());
 
 		ICrudConnector<Phantomina> phantominaConn =
 			Connectors.getConnector(Phantomina.class);
@@ -133,7 +143,7 @@ public class PhantomEditFactoryController
 		phantomina.setLiteratureBase(literatureBase);
 		phantomina.setSpecial(special);
 
-		return new Phantom(phantomina, number);
+		return new Phantom(phantomina, number, manufacturing, thickness);
 	}
 
 	@Override
@@ -145,6 +155,7 @@ public class PhantomEditFactoryController
 		super.selectComboBoxItem(comboBoxLiterature,
 			item.getPhantomina().getLiteratureBase());
 		super.selectComboBoxItem(comboBoxSpecials, item.getPhantomina().getSpecial());
+		super.selectComboBoxItem(comboBoxManufacturing, item.getManufacturing());
 		textFieldModelNumber.setText(Integer.toString(item.getNumber()));
 	}
 
@@ -159,12 +170,16 @@ public class PhantomEditFactoryController
 		Special special = comboBoxSpecials.getSelectionModel().getSelectedItem();
 		String sNumber = textFieldModelNumber.getText();
 		int number = Integer.valueOf(sNumber);
+		Manufacturing manufacturing = comboBoxManufacturing.getSelectionModel().getSelectedItem();
+		float thickness = Float.valueOf(textFieldThickness.getText());
 
 		item.getPhantomina().setAnnulusDiameter(annulusDiameter);
 		item.getPhantomina().setFabricationType(fabricationType);
 		item.getPhantomina().setLiteratureBase(literatureBase);
 		item.getPhantomina().setSpecial(special);
 		item.setNumber(number);
+		item.setManufacturing(manufacturing);
+		item.setThickness(thickness);
 	}
 
 }
