@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
-import org.artorg.tools.phantomData.client.table.columns.AbstractColumn;
-import org.artorg.tools.phantomData.client.table.columns.FilterColumn;
+import org.artorg.tools.phantomData.client.table.column.AbstractColumn;
+import org.artorg.tools.phantomData.client.table.column.FilterColumn;
 import org.artorg.tools.phantomData.server.model.base.person.Person;
 
 public class PersonFilterTable extends DbUndoRedoFactoryEditFilterTable<Person> {

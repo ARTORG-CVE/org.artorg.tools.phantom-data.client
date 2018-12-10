@@ -4,15 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import org.artorg.tools.phantomData.client.commandPattern.UndoManager;
-import org.artorg.tools.phantomData.client.connector.Connectors;
-import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.table.columns.AbstractColumn;
-import org.artorg.tools.phantomData.client.table.columns.Column;
+import org.artorg.tools.phantomData.client.table.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
-import org.artorg.tools.phantomData.server.specification.Identifiable;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -28,16 +22,6 @@ public class TableBase<T> implements ITable<T,Object> {
 	private final Class<T> itemClass;
 	private Function<List<T>,List<AbstractColumn<T,? extends Object>>> columnCreator;
 	private final ListChangeListener<T> itemListChangeListener;
-	private boolean editable;
-	private boolean filterable;
-	private boolean reloadable;
-//	private final UndoManager undoManager;
-	private ICrudConnector<DbPersistent<T, ?>> connector;
-	
-	{
-		connector = Connectors
-			.getConnector((Class<DbPersistent<T, ?>>)getItemClass());
-	}
 
 	public ListChangeListener<T> getItemListChangeListener() {
 		return itemListChangeListener;
@@ -56,7 +40,6 @@ public class TableBase<T> implements ITable<T,Object> {
 			}
 		}; 
 		items.addListener(itemListChangeListener);
-//		undoManager = new UndoManager();
 	}
 	
 	@Override
@@ -89,18 +72,6 @@ public class TableBase<T> implements ITable<T,Object> {
 	
 	@Override
 	public void updateColumns() {
-		if (isReloadable()) {
-			getColumns().forEach(column -> column.setIdColumn(false));
-			AbstractColumn<DbPersistent<T, ?>, ? extends Object> idColumn =
-			(AbstractColumn<DbPersistent<T, ?>, ? extends Object>) new Column("ID",
-					item -> item, path -> ((DbPersistent<T, ?>)path).getId().toString(),
-					(path, value) -> ((DbPersistent<T, ?>)path).setId((String)value));
-			idColumn.setIdColumn(true);
-			idColumn.setVisibility(false);
-			getColumns().add(0, (AbstractColumn<T, ? extends Object>) idColumn);
-		}
-			
-			
 		CollectionUtil.syncLists(this.columns, columnCreator.apply(getItems()),
 				(column, newColumn) -> column.getName().equals(newColumn.getName()));
 		getColumns().stream().forEach(column -> {
@@ -108,8 +79,6 @@ public class TableBase<T> implements ITable<T,Object> {
 //			column.getItems().clear();
 //			column.getItems().addAll(getItems());
 			});
-	
-		
 	}	
 	
     @Override
@@ -162,42 +131,6 @@ public class TableBase<T> implements ITable<T,Object> {
 		updateColumns();
 	}
 
-	@Override
-	public boolean isEditable() {
-		return editable;
-	}
-	
-	public void setEditable(boolean b) {
-		this.editable = b;
-	}
-
-	public boolean isFilterable() {
-		return filterable;
-	}
-
-	public void setFilterable(boolean filterable) {
-		this.filterable = filterable;
-	}
-
-	public boolean isReloadable() {
-		return reloadable;
-	}
-
-	public void setReloadable(boolean reloadable) {
-		this.reloadable = reloadable;
-	}
-
-	@Override
-	public ICrudConnector<DbPersistent<T, ?>> getConnector() {
-		return this.connector;
-	}
-	
-//	@Override
-//	public UndoManager getUndoManager() {
-//		return this.undoManager;
-//	}
-
-	
 	
 
 }

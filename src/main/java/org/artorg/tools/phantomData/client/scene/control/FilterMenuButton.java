@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.artorg.tools.phantomData.client.scene.CssGlyph;
-import org.artorg.tools.phantomData.client.table.columns.AbstractColumn;
-import org.artorg.tools.phantomData.client.table.columns.AbstractFilterColumn;
+import org.artorg.tools.phantomData.client.table.column.AbstractColumn;
+import org.artorg.tools.phantomData.client.table.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.controlsfx.glyphfont.FontAwesome;
 

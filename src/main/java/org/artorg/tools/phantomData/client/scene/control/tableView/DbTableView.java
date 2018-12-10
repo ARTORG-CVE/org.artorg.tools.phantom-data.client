@@ -4,37 +4,38 @@ import org.artorg.tools.phantomData.client.table.IDbTable;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class DbTableView<ITEM extends DbPersistent<ITEM, ?>> extends ProTableView<ITEM> {
-	private boolean reloadable;
-
+public class DbTableView<ITEM extends DbPersistent<ITEM,?>> extends ProTableView<ITEM> {
+	
 	public DbTableView() {
 		super();
 	}
-
+	
 	public DbTableView(Class<ITEM> itemClass) {
 		super(itemClass);
 	}
-
+	
+	
 	@Override
 	public void setTable(TableBase<ITEM> table) {
 		super.setTable(table);
 //		reload();
 //		initTable();
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public void reload() {
-		if (reloadable) {
 //		getTable().getItems().removeListener(getListenerChangedListenerRefresh());
-			((IDbTable<ITEM, ?>) getTable()).readAllData();
-
-//		super.setItems(getTable().getItems());
-			super.getItems().clear();
-			super.getItems().addAll(getTable().getItems());
-
+		((IDbTable<ITEM,?>)getTable()).readAllData();
+		
+		
+		super.setItems(getTable().getItems());
+//		super.getItems().clear();
+//		super.getItems().addAll(getTable().getItems());
+		
 //		getTable().getItems().addListener(getListenerChangedListenerRefresh());
-			refresh();
-		}
+		refresh();
 	}
+	
+	
 
 }

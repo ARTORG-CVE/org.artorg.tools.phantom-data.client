@@ -18,7 +18,7 @@ import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTab
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
 import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
-import org.artorg.tools.phantomData.client.tables.TableViewFactory;
+import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.base.*;
 import org.artorg.tools.phantomData.server.model.base.person.*;
