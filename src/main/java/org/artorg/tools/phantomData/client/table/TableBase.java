@@ -22,6 +22,17 @@ public class TableBase<T> implements ITable<T,Object> {
 	private final Class<T> itemClass;
 	private Function<List<T>,List<AbstractColumn<T,? extends Object>>> columnCreator;
 	private final ListChangeListener<T> itemListChangeListener;
+	private boolean editable = true;
+	
+	
+	@Override
+	public boolean isEditable() {
+		return editable;
+	}
+
+	public void setEditable(boolean editable) {
+		this.editable = editable;
+	}
 
 	public ListChangeListener<T> getItemListChangeListener() {
 		return itemListChangeListener;

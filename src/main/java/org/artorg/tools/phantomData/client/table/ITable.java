@@ -32,6 +32,16 @@ public interface ITable<T,R> {
 	
 	void refresh();
 	
+	boolean isEditable();
+	
+	default void setValue(T item, int col, R value) {
+		getColumns().get(col).set(item, value);
+	}
+	
+	default void setValue(int row, int col, R value) {
+		setValue(getItems().get(row), col, value);
+	}
+	
 	default AbstractColumn<T,? extends R> getIdColumn() {
 		return getColumns().stream().filter(c -> c.isIdColumn()).collect(CollectorsHuma.toSingleton());
 	}

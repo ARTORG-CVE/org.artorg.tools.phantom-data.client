@@ -1,6 +1,6 @@
 package org.artorg.tools.phantomData.client.table;
 
-public interface IEditFilterTable<T,R> extends IEditTable<T,R>, IFilterTable<T,R> {
+public interface IEditFilterTable<T,R> extends ITable<T,R>, IFilterTable<T,R> {
 
 	default void setFilteredValue(T filteredItem, int filteredCol, R value) {
 		getFilteredColumns().get(filteredCol).set(filteredItem, value);
