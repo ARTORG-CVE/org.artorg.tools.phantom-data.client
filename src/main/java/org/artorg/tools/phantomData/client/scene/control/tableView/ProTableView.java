@@ -4,9 +4,9 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
-import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.ITable;
 import org.artorg.tools.phantomData.client.table.TableBase;
+import org.artorg.tools.phantomData.client.table.columns.AbstractColumn;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.client.util.TableViewUtils;
@@ -60,9 +60,9 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T>
 	public void initTable() {
 		refreshColumns();
 
-		super.setItems(table.getItems());
-//		super.getItems().clear();
-//		super.getItems().addAll(table.getItems());
+//		super.setItems(table.getItems());
+		super.getItems().clear();
+		super.getItems().addAll(table.getItems());
 		
 		
 		autoResizeColumns();

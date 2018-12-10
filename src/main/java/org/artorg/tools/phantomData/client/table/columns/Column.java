@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.table;
+package org.artorg.tools.phantomData.client.table.columns;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -7,13 +7,13 @@ import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class FilterColumn<T,R> extends AbstractFilterColumn<T,R> {
+public class Column<T,R> extends AbstractColumn<T,R> {
 	private final Function<T, Object> itemToPropertyGetter;
 	private final Function<Object, R> propertyToValueGetter;
 	private final BiConsumer<Object, R> propertyToValueSetter;
-
+	
 	@SuppressWarnings("unchecked")
-	public <SUB extends DbPersistent<SUB,?>> FilterColumn(String columnName, Function<T, SUB> itemToPropertyGetter, 
+	public <SUB extends DbPersistent<SUB,?>> Column(String columnName, Function<T, SUB> itemToPropertyGetter, 
 			Function<SUB, R> propertyToValueGetter, 
 			BiConsumer<SUB, R> propertyToValueSetter) {
 		super(columnName);
@@ -28,7 +28,7 @@ public class FilterColumn<T,R> extends AbstractFilterColumn<T,R> {
 		if (o == null) return null;
 		return propertyToValueGetter.apply(o);
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void set(T item, Object value) {
@@ -39,9 +39,9 @@ public class FilterColumn<T,R> extends AbstractFilterColumn<T,R> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <U extends DbPersistent<U, ?>> boolean update(T item) {
+	public <U extends DbPersistent<U,?>> boolean update(T item) {
 		U path = (U) itemToPropertyGetter.apply(item);
-		ICrudConnector<U> connector = Connectors.getConnector(path.getItemClass());
+		ICrudConnector<U> connector = (ICrudConnector<U>) Connectors.getConnector(path.getItemClass());
 		return connector.update(path);
 	}
 	

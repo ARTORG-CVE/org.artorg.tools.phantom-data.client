@@ -11,6 +11,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.artorg.tools.phantomData.client.table.columns.AbstractColumn;
+import org.artorg.tools.phantomData.client.table.columns.AbstractFilterColumn;
+import org.artorg.tools.phantomData.client.table.columns.FilterColumn;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.LimitedQueue;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -19,7 +22,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends DbTable<ITEM> implements IFilterTable<ITEM,Object> {
+public class DbFilterTable<ITEM extends DbPersistent<ITEM, ?>> extends TableBase<ITEM> implements IFilterTable<ITEM,Object> {
 	private ObservableList<ITEM> filteredItems;
 	private Predicate<ITEM> filterPredicate;
 	private List<Predicate<ITEM>> columnItemFilterPredicates;

@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.Main;
-import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
-import org.artorg.tools.phantomData.client.controller.PropertyEntry;
-import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.itemEdit.GroupedItemEditFactoryController;
+import org.artorg.tools.phantomData.client.itemEdit.PropertyEntry;
+import org.artorg.tools.phantomData.client.itemEdit.TitledPropertyPane;
 import org.artorg.tools.phantomData.server.model.base.DbFile;
 
 import javafx.scene.control.Button;

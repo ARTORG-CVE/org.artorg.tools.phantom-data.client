@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.client.table.AbstractColumn;
-import org.artorg.tools.phantomData.client.table.Column;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
-import org.artorg.tools.phantomData.client.table.FilterColumn;
-import org.artorg.tools.phantomData.client.table.IPersonifiedColumns;
+import org.artorg.tools.phantomData.client.table.columns.AbstractColumn;
+import org.artorg.tools.phantomData.client.table.columns.Column;
+import org.artorg.tools.phantomData.client.table.columns.FilterColumn;
+import org.artorg.tools.phantomData.client.tables.IPersonifiedColumns;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.base.DbFile;
 

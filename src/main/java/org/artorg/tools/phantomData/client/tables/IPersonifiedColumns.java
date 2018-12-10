@@ -1,8 +1,10 @@
-package org.artorg.tools.phantomData.client.table;
+package org.artorg.tools.phantomData.client.tables;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import org.artorg.tools.phantomData.client.table.columns.AbstractColumn;
+import org.artorg.tools.phantomData.client.table.columns.FilterColumn;
 import org.artorg.tools.phantomData.server.model.specification.AbstractPersonifiedEntity;
 
 public interface IPersonifiedColumns {

@@ -1,13 +1,12 @@
-package org.artorg.tools.phantomData.client.scene.control;
+package org.artorg.tools.phantomData.client.itemEdit.selector;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.client.controller.AbstractTableViewSelector;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
-import org.artorg.tools.phantomData.client.table.AbstractFilterColumn;
+import org.artorg.tools.phantomData.client.table.columns.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;

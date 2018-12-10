@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.table;
+package org.artorg.tools.phantomData.client.table.columns;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -10,15 +10,15 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public abstract class AbstractColumn<ITEM, E> {
-	private ObservableList<ITEM> items;
+public abstract class AbstractColumn<T, E> {
+	private ObservableList<T> items;
 	private boolean visible;
 	private boolean editable;
 	private boolean filterable;
 	private boolean idColumn;
 	private final String columnName;
-	private Function<ITEM,E> valueGetter;
-	private BiConsumer<ITEM,E> valueSetter;
+	private Function<T,E> valueGetter;
+	private BiConsumer<T,E> valueSetter;
 
 	{
 		visible = true;
@@ -32,17 +32,17 @@ public abstract class AbstractColumn<ITEM, E> {
 		this.columnName = columnName;
 	}
 	
-	public abstract <U extends DbPersistent<U,?>> boolean update(ITEM item);
+	public abstract <U extends DbPersistent<U,?>> boolean update(T item);
 	
 	public List<E> getValues() {
 		return getItems().stream().map(item -> get(item)).collect(Collectors.toList());
 	}
 	
-	public E get(ITEM item) {
+	public E get(T item) {
 		return valueGetter.apply(item);
 	}
 	
-	public boolean contains(ITEM item) {
+	public boolean contains(T item) {
 		try {
 			valueGetter.apply(item);
 			return true;
@@ -56,32 +56,32 @@ public abstract class AbstractColumn<ITEM, E> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void set(ITEM item, Object value) {
+	public void set(T item, Object value) {
 		valueSetter.accept(item, (E)value);
 	}
 	
 	// Getters & Setters
-	public Function<ITEM, E> getValueGetter() {
+	public Function<T, E> getValueGetter() {
 		return valueGetter;
 	}
 
-	public void setValueGetter(Function<ITEM, E> valueGetter) {
+	public void setValueGetter(Function<T, E> valueGetter) {
 		this.valueGetter = valueGetter;
 	}
 
-	public BiConsumer<ITEM, E> getValueSetter() {
+	public BiConsumer<T, E> getValueSetter() {
 		return valueSetter;
 	}
 
-	public void setValueSetter(BiConsumer<ITEM, E> valueSetter) {
+	public void setValueSetter(BiConsumer<T, E> valueSetter) {
 		this.valueSetter = valueSetter;
 	}
 	
-	public ObservableList<ITEM> getItems() {
+	public ObservableList<T> getItems() {
 		return items;
 	}
 	
-	public void setItems(ObservableList<ITEM> items) {
+	public void setItems(ObservableList<T> items) {
 		this.items = items;
 	}
 	

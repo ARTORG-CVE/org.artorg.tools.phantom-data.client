@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.table;
+package org.artorg.tools.phantomData.client.tables;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -14,6 +14,8 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.table.columns.AbstractColumn;
+import org.artorg.tools.phantomData.client.table.columns.OptionalFilterColumn;
 import org.artorg.tools.phantomData.server.model.specification.AbstractPropertifiedEntity;
 import org.artorg.tools.phantomData.server.model.specification.AbstractProperty;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;

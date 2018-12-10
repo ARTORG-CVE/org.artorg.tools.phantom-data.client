@@ -3,11 +3,11 @@ package org.artorg.tools.phantomData.client.tablesFilter.phantom;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.table.AbstractColumn;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
-import org.artorg.tools.phantomData.client.table.FilterColumn;
-import org.artorg.tools.phantomData.client.table.IPersonifiedColumns;
-import org.artorg.tools.phantomData.client.table.IPropertyColumns;
+import org.artorg.tools.phantomData.client.table.columns.AbstractColumn;
+import org.artorg.tools.phantomData.client.table.columns.FilterColumn;
+import org.artorg.tools.phantomData.client.tables.IPersonifiedColumns;
+import org.artorg.tools.phantomData.client.tables.IPropertyColumns;
 import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
 
 public class PhantominaFilterTable extends DbUndoRedoFactoryEditFilterTable<Phantomina> implements IPropertyColumns, IPersonifiedColumns {

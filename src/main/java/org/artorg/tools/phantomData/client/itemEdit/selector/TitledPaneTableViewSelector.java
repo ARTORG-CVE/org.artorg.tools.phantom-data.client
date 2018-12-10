@@ -1,9 +1,9 @@
-package org.artorg.tools.phantomData.client.scene.control;
+package org.artorg.tools.phantomData.client.itemEdit.selector;
 
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
-import org.artorg.tools.phantomData.client.table.TableViewFactory;
+import org.artorg.tools.phantomData.client.tables.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -31,9 +31,9 @@ public class TitledPaneTableViewSelector<ITEM extends DbPersistent<ITEM, ?>> ext
 		this.setTableView1(tableView1);
 		this.setTableView2(tableView2);
 		
-		((DbFilterTableView<?>)this.getTableView1()).refresh();
+//		((DbFilterTableView<?>)this.getTableView1()).refresh();
 //		((DbFilterTableView<?>)this.getTableView1()).reload();
-		((DbFilterTableView<?>)this.getTableView2()).refresh();
+//		((DbFilterTableView<?>)this.getTableView2()).refresh();
 //		((DbFilterTableView<?>)this.getTableView2()).reload();
 		
 		getTableView2().getItems().addListener(new ListChangeListener<Object>() {

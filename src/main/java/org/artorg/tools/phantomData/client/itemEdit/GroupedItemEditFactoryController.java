@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.controller;
+package org.artorg.tools.phantomData.client.itemEdit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.itemEdit.selector.AbstractTableViewSelector;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 

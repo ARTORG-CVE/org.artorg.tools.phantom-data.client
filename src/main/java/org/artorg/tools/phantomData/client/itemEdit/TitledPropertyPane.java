@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.controller;
+package org.artorg.tools.phantomData.client.itemEdit;
 
 import java.util.List;
 

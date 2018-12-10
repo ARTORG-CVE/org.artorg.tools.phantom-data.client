@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.controller;
+package org.artorg.tools.phantomData.client.itemEdit.selector;
 
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.util.Reflect;

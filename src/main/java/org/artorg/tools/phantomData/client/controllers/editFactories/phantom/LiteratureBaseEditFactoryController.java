@@ -3,9 +3,9 @@ package org.artorg.tools.phantomData.client.controllers.editFactories.phantom;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
-import org.artorg.tools.phantomData.client.controller.PropertyEntry;
-import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.itemEdit.GroupedItemEditFactoryController;
+import org.artorg.tools.phantomData.client.itemEdit.PropertyEntry;
+import org.artorg.tools.phantomData.client.itemEdit.TitledPropertyPane;
 import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
 
 import javafx.scene.control.TextField;

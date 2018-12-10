@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.controller;
+package org.artorg.tools.phantomData.client.itemEdit;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -16,10 +16,10 @@ import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
-import org.artorg.tools.phantomData.client.scene.control.TitledPaneTableViewSelector;
+import org.artorg.tools.phantomData.client.itemEdit.selector.AbstractTableViewSelector;
+import org.artorg.tools.phantomData.client.itemEdit.selector.TitledPaneTableViewSelector;
 import org.artorg.tools.phantomData.client.scene.control.VGridBoxPane;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
-import org.artorg.tools.phantomData.client.table.FxFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -107,7 +107,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 		subItemClasses.forEach(subItemClass -> {
 			if (Reflect.containsCollectionSetter(itemClass, subItemClass)) {
 				ICrudConnector<?> connector = Connectors.getConnector(subItemClass);
-				Set<Object> selectableItemSet = (Set<Object>) connector.readAllAsSet();
+				List<Object> selectableItemSet = (List<Object>) connector.readAllAsList().stream().distinct().collect(Collectors.toList());
 
 				if (selectableItemSet.size() > 0) {
 					try {
@@ -139,7 +139,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 									return null;
 								};
 								titledSelector.getSelectedItems().clear();
-								titledSelector.getSelectedItems().addAll(subItemGetter2.apply(item).stream()
+								titledSelector.getSelectedItems().addAll(subItemGetter2.apply(item).stream().distinct()
 									.filter(e -> e != null).collect(Collectors.toSet()));
 								
 								((ProTableView<?>)titledSelector.getTableView2()).getTable().getItems().clear();

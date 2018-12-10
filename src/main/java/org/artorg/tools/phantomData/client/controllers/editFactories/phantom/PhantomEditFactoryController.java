@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.controller.GroupedItemEditFactoryController;
-import org.artorg.tools.phantomData.client.controller.PropertyEntry;
-import org.artorg.tools.phantomData.client.controller.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.itemEdit.GroupedItemEditFactoryController;
+import org.artorg.tools.phantomData.client.itemEdit.PropertyEntry;
+import org.artorg.tools.phantomData.client.itemEdit.TitledPropertyPane;
 import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
