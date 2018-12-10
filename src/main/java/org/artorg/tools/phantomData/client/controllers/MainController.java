@@ -16,8 +16,8 @@ import org.artorg.tools.phantomData.client.scene.control.tableView.DbUndoRedoAdd
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
+import org.artorg.tools.phantomData.client.table.DbFilterTable;
 import org.artorg.tools.phantomData.client.table.DbTable;
-import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.base.*;
@@ -459,7 +459,7 @@ public class MainController extends StackPane {
 	@SuppressWarnings("unchecked")
 	private ProTableView<?> createTable(Class<?> itemClass) {
 		return TableViewFactory.createInitializedTableView(itemClass,
-			DbUndoRedoFactoryEditFilterTable.class,
+			DbFilterTable.class,
 			DbUndoRedoAddEditControlFilterTableView.class);
 	}
 

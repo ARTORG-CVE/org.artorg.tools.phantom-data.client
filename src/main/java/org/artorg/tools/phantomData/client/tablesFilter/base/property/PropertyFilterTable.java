@@ -7,14 +7,14 @@ import java.util.UUID;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.columns.IPersonifiedColumns;
-import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
+import org.artorg.tools.phantomData.client.table.DbFilterTable;
 import org.artorg.tools.phantomData.server.model.specification.AbstractProperty;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 public abstract class PropertyFilterTable<
 	ITEM extends AbstractProperty<ITEM, VALUE> & DbPersistent<ITEM, UUID>,
 	VALUE extends Comparable<VALUE>>
-	extends DbUndoRedoFactoryEditFilterTable<ITEM> implements IPersonifiedColumns {
+	extends DbFilterTable<ITEM> implements IPersonifiedColumns {
 
 	{
 		setColumnCreator(items -> {

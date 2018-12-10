@@ -2,7 +2,7 @@ package org.artorg.tools.phantomData.client.select;
 
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbUndoRedoAddEditControlFilterTableView;
-import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
+import org.artorg.tools.phantomData.client.table.DbFilterTable;
 import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -24,9 +24,9 @@ public class TitledPaneTableViewSelector<ITEM extends DbPersistent<ITEM, ?>> ext
 		super(subItemClass);
 		
 		DbFilterTableView<?> tableView1 = (DbFilterTableView<?>) TableViewFactory.createInitializedTableView(subItemClass,
-			DbUndoRedoFactoryEditFilterTable.class, DbUndoRedoAddEditControlFilterTableView.class);
+			DbFilterTable.class, DbUndoRedoAddEditControlFilterTableView.class);
 		DbFilterTableView<?> tableView2 = (DbFilterTableView<?>) TableViewFactory.createInitializedTableView(subItemClass,
-			DbUndoRedoFactoryEditFilterTable.class, DbUndoRedoAddEditControlFilterTableView.class);
+			DbFilterTable.class, DbUndoRedoAddEditControlFilterTableView.class);
 
 		this.setTableView1(tableView1);
 		this.setTableView2(tableView2);

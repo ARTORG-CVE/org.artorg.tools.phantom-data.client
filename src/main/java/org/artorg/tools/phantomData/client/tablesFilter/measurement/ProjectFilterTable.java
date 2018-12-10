@@ -7,10 +7,10 @@ import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.columns.IPersonifiedColumns;
 import org.artorg.tools.phantomData.client.columns.IPropertyColumns;
-import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
+import org.artorg.tools.phantomData.client.table.DbFilterTable;
 import org.artorg.tools.phantomData.server.model.measurement.Project;
 
-public class ProjectFilterTable extends DbUndoRedoFactoryEditFilterTable<Project> implements IPropertyColumns, IPersonifiedColumns {
+public class ProjectFilterTable extends DbFilterTable<Project> implements IPropertyColumns, IPersonifiedColumns {
 	
 	{
 		setTableName("Projects");

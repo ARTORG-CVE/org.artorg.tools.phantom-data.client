@@ -8,9 +8,8 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
-import org.artorg.tools.phantomData.client.table.IDbTable;
-import org.artorg.tools.phantomData.client.table.IFilterTable;
-import org.artorg.tools.phantomData.client.table.ITable;
+import org.artorg.tools.phantomData.client.table.DbFilterTable;
+import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -66,17 +65,14 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 			}
 	}
 	
-	
-
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initTable() {
-		if (!(getTable() instanceof IFilterTable)) {
+		if (!(getTable() instanceof DbFilterTable)) {
 			super.initTable();
 			return;
 		}
 
-		IFilterTable<ITEM, ?> table = (IFilterTable<ITEM, ?>) getTable();
+		DbFilterTable<ITEM> table = (DbFilterTable<ITEM>) getTable();
 		refreshColumns();
 
 		super.setItems(table.getFilteredItems());
@@ -90,15 +86,14 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 
 		Platform.runLater(() -> showFilterButtons());
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public void refreshColumns() {
-		if (!(getTable() instanceof IFilterTable)) {
+		if (!(getTable() instanceof DbFilterTable)) {
 			super.initTable();
 			return;
 		}
-		IFilterTable<ITEM, ?> table = (IFilterTable<ITEM, ?>) getTable();
+		DbFilterTable<ITEM> table = (DbFilterTable<ITEM>) getTable();
 		CollectionUtil.addIfAbsent(
 			getTable().getColumnCreator().apply(table.getFilteredItems()),
 			super.getColumns(), getColumnAddPolicy(),
@@ -109,10 +104,10 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 	}
 
 	@Override
-	protected TableColumn<ITEM, ?> createTableColumn(ITable<ITEM, ?> table, int index) {
-		if (!(table instanceof IFilterTable))
+	protected TableColumn<ITEM, ?> createTableColumn(TableBase<ITEM> table, int index) {
+		if (!(table instanceof DbFilterTable))
 			return super.createTableColumn(table, index);
-		IFilterTable<ITEM, ?> filterTable = (IFilterTable<ITEM, ?>) table;
+		DbFilterTable<ITEM> filterTable = (DbFilterTable<ITEM>) table;
 		AbstractColumn<ITEM, ?> baseColumn = filterTable.getFilteredColumns().get(index);
 		TableColumn<ITEM, Object> tableColumn =
 			new TableColumn<ITEM, Object>(baseColumn.getName());
@@ -133,7 +128,7 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 		return tableColumn;
 	}
 
-	public FilterMenuButton<ITEM, ?> createFilterMenuButton(IFilterTable<ITEM, ?> table,
+	public FilterMenuButton<ITEM, ?> createFilterMenuButton(DbFilterTable<ITEM> table,
 		AbstractFilterColumn<ITEM, ?> filterColumn, int index) {
 
 		FilterMenuButton<ITEM, ?> filterMenuButton = new FilterMenuButton<ITEM, Object>();
@@ -147,14 +142,13 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void reload() {
-		if (getTable() instanceof IDbTable && getTable() instanceof IFilterTable)
+		if (getTable() instanceof DbFilterTable)
 			reloadFilterTable(
-				(IDbTable<ITEM, Object> & IFilterTable<ITEM, Object>) getTable());
+				(DbFilterTable<ITEM>) getTable());
 	}
 
-	private <TABLE extends IDbTable<ITEM, R> & IFilterTable<ITEM, R>, R> void
+	private <TABLE extends DbFilterTable<ITEM>> void
 		reloadFilterTable(TABLE table) {
 		table.readAllData();
 		

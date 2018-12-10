@@ -8,13 +8,13 @@ import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.Column;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.columns.IPersonifiedColumns;
-import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
+import org.artorg.tools.phantomData.client.table.DbFilterTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.base.DbFile;
 
 import javafx.scene.image.ImageView;
 
-public class DbFileFilterTable extends DbUndoRedoFactoryEditFilterTable<DbFile>
+public class DbFileFilterTable extends DbFilterTable<DbFile>
 	implements IPersonifiedColumns {
 
 	{

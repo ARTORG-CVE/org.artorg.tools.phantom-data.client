@@ -5,7 +5,6 @@ import java.util.function.Function;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
-import org.artorg.tools.phantomData.client.table.ITable;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
@@ -80,7 +79,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T>
 
 	}
 
-	protected TableColumn<T, ?> createTableColumn(ITable<T, ?> table, int index) {
+	protected TableColumn<T, ?> createTableColumn(TableBase<T> table, int index) {
 		TableColumn<T, Object> tableColumn =
 			new TableColumn<T, Object>(table.getColumns().get(index).getName());
 

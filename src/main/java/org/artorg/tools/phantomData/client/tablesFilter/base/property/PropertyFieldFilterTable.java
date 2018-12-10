@@ -6,11 +6,11 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.columns.IPersonifiedColumns;
-import org.artorg.tools.phantomData.client.table.DbUndoRedoFactoryEditFilterTable;
+import org.artorg.tools.phantomData.client.table.DbFilterTable;
 import org.artorg.tools.phantomData.server.model.base.property.PropertyField;
 
 public class PropertyFieldFilterTable
-	extends DbUndoRedoFactoryEditFilterTable<PropertyField> implements IPersonifiedColumns {
+	extends DbFilterTable<PropertyField> implements IPersonifiedColumns {
 
 	{
 		setTableName("Property Field");
