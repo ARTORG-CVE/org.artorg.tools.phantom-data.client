@@ -16,7 +16,7 @@ import org.artorg.tools.phantomData.client.scene.control.tableView.DbEditFilterT
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
-import org.artorg.tools.phantomData.client.table.DbFilterTable;
+import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.TableViewFactory;
@@ -459,7 +459,7 @@ public class MainController extends StackPane {
 	@SuppressWarnings("unchecked")
 	private ProTableView<?> createTable(Class<?> itemClass) {
 		return TableViewFactory.createInitializedTableView(itemClass,
-			DbFilterTable.class,
+			DbTable.class,
 			DbEditFilterTableView.class);
 	}
 

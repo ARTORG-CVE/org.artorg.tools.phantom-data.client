@@ -2,7 +2,7 @@ package org.artorg.tools.phantomData.client.select;
 
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbEditFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTableView;
-import org.artorg.tools.phantomData.client.table.DbFilterTable;
+import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.TableViewFactory;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -24,9 +24,9 @@ public class TitledPaneTableViewSelector<ITEM extends DbPersistent<ITEM, ?>> ext
 		super(subItemClass);
 		
 		DbFilterTableView<?> tableView1 = (DbFilterTableView<?>) TableViewFactory.createInitializedTableView(subItemClass,
-			DbFilterTable.class, DbEditFilterTableView.class);
+			DbTable.class, DbEditFilterTableView.class);
 		DbFilterTableView<?> tableView2 = (DbFilterTableView<?>) TableViewFactory.createInitializedTableView(subItemClass,
-			DbFilterTable.class, DbEditFilterTableView.class);
+			DbTable.class, DbEditFilterTableView.class);
 
 		this.setTableView1(tableView1);
 		this.setTableView2(tableView2);

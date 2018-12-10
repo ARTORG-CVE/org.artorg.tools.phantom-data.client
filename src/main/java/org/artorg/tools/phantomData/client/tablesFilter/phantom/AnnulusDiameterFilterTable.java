@@ -6,11 +6,11 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.columns.IPersonifiedColumns;
-import org.artorg.tools.phantomData.client.table.DbFilterTable;
+import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
 
 public class AnnulusDiameterFilterTable
-	extends DbFilterTable<AnnulusDiameter> implements IPersonifiedColumns {
+	extends DbTable<AnnulusDiameter> implements IPersonifiedColumns {
 
 	{
 		setTableName("Annulus Diameters");

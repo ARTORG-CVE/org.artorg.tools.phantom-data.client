@@ -7,11 +7,11 @@ import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.columns.IPersonifiedColumns;
 import org.artorg.tools.phantomData.client.columns.IPropertyColumns;
-import org.artorg.tools.phantomData.client.table.DbFilterTable;
+import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.server.model.measurement.ExperimentalSetup;
 
 public class ExperimentalSetupFilterTable
-	extends DbFilterTable<ExperimentalSetup>
+	extends DbTable<ExperimentalSetup>
 	implements IPropertyColumns, IPersonifiedColumns {
 
 	{

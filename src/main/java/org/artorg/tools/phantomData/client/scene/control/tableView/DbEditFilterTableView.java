@@ -1,6 +1,6 @@
 package org.artorg.tools.phantomData.client.scene.control.tableView;
 
-import org.artorg.tools.phantomData.client.table.DbFilterTable;
+import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.ObservableList;
@@ -20,14 +20,14 @@ public class DbEditFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 			
 	@Override
 	public void initTable() {
-		if (getTable() instanceof DbFilterTable)
-			initEditFilterTable( (DbFilterTable<ITEM>) getTable());
+		if (getTable() instanceof DbTable)
+			initEditFilterTable( (DbTable<ITEM>) getTable());
 		else
 			super.initTable();
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected void initEditFilterTable(DbFilterTable<ITEM> table) {
+	protected void initEditFilterTable(DbTable<ITEM> table) {
 		super.initTable();
 
 		ObservableList<TableColumn<ITEM, ?>> columns = super.getColumns();

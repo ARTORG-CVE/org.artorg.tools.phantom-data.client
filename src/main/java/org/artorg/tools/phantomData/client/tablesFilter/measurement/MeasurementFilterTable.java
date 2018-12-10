@@ -9,10 +9,10 @@ import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.columns.IPersonifiedColumns;
 import org.artorg.tools.phantomData.client.columns.IPropertyColumns;
-import org.artorg.tools.phantomData.client.table.DbFilterTable;
+import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.server.model.measurement.Measurement;
 
-public class MeasurementFilterTable extends DbFilterTable<Measurement> implements IPropertyColumns, IPersonifiedColumns {
+public class MeasurementFilterTable extends DbTable<Measurement> implements IPropertyColumns, IPersonifiedColumns {
 	private static final SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
 	
 	{

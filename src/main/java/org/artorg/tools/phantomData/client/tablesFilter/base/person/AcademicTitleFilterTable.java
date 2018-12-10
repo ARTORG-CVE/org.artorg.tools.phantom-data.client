@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
-import org.artorg.tools.phantomData.client.table.DbFilterTable;
+import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.server.model.base.person.AcademicTitle;
 
 public class AcademicTitleFilterTable
-	extends DbFilterTable<AcademicTitle> {
+	extends DbTable<AcademicTitle> {
 
 	{
 		setTableName("Academic Titles");

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
+import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.column.Column;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
@@ -60,6 +61,18 @@ public class DbTable<ITEM extends DbPersistent<ITEM, ?>>
 //			column.getItems().addAll(getItems());
 			
 			});
+		
+		if (isFilterable()) {
+			CollectionUtil.syncLists(super.getItems(), getFilteredItems());
+
+			getFilteredColumns().stream().filter(column -> column instanceof AbstractFilterColumn).forEach(column -> {
+				((AbstractFilterColumn<ITEM, ?>) column).setFilteredItems(getFilteredItems());
+//				((AbstractFilterColumn<ITEM, ?>) column).getFilteredItems().clear();
+//				((AbstractFilterColumn<ITEM, ?>) column).getFilteredItems().addAll(getFilteredItems());
+			});
+
+			applyFilter();
+		}
 	}
 	
 	@Override
