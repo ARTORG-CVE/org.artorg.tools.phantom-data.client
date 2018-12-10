@@ -7,7 +7,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.artorg.tools.phantomData.client.table.column.AbstractColumn;
+import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.util.CollectorsHuma;
 
 import javafx.collections.ObservableList;

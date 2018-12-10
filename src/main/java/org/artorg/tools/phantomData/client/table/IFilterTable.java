@@ -6,8 +6,8 @@ import java.util.Queue;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.artorg.tools.phantomData.client.table.column.AbstractColumn;
-import org.artorg.tools.phantomData.client.table.column.AbstractFilterColumn;
+import org.artorg.tools.phantomData.client.column.AbstractColumn;
+import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 
 import javafx.collections.ObservableList;
 

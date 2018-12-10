@@ -3,10 +3,10 @@ package org.artorg.tools.phantomData.client.select;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
-import org.artorg.tools.phantomData.client.table.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;

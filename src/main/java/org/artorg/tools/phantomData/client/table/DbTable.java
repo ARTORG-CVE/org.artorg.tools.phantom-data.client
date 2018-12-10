@@ -1,9 +1,9 @@
 package org.artorg.tools.phantomData.client.table;
 
+import org.artorg.tools.phantomData.client.column.AbstractColumn;
+import org.artorg.tools.phantomData.client.column.Column;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.table.column.AbstractColumn;
-import org.artorg.tools.phantomData.client.table.column.Column;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 public class DbTable<ITEM extends DbPersistent<ITEM, ?>>

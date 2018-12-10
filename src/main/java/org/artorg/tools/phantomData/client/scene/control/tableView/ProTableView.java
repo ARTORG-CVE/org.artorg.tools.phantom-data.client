@@ -3,10 +3,10 @@ package org.artorg.tools.phantomData.client.scene.control.tableView;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
+import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.table.ITable;
 import org.artorg.tools.phantomData.client.table.TableBase;
-import org.artorg.tools.phantomData.client.table.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.client.util.TableViewUtils;

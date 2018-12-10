@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import org.artorg.tools.phantomData.client.table.column.AbstractColumn;
+import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 

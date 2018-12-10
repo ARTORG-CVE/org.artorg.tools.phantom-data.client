@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.column.AbstractColumn;
+import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
 import org.artorg.tools.phantomData.client.table.IDbTable;
 import org.artorg.tools.phantomData.client.table.IFilterTable;
 import org.artorg.tools.phantomData.client.table.ITable;
-import org.artorg.tools.phantomData.client.table.column.AbstractColumn;
-import org.artorg.tools.phantomData.client.table.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 

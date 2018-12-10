@@ -23,7 +23,7 @@ import org.artorg.tools.phantomData.client.beans.DbNode;
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.edit.ItemEditFactoryController;
+import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.SmartSplitTabPane;
 import org.artorg.tools.phantomData.client.scene.control.SmartTabPane;
