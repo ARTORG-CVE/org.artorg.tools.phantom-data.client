@@ -155,8 +155,10 @@ public class PhantomEditFactoryController
 		super.selectComboBoxItem(comboBoxLiterature,
 			item.getPhantomina().getLiteratureBase());
 		super.selectComboBoxItem(comboBoxSpecials, item.getPhantomina().getSpecial());
+		
 		super.selectComboBoxItem(comboBoxManufacturing, item.getManufacturing());
 		textFieldModelNumber.setText(Integer.toString(item.getNumber()));
+		textFieldThickness.setText(Float.toString(item.getThickness()));
 	}
 
 	@Override

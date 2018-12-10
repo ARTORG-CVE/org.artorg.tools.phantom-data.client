@@ -181,6 +181,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 	}
 
 	protected <T extends Comparable<T> & Identifiable<ID>,ID extends Comparable<ID>> void selectComboBoxItem(ComboBox<T> comboBox, T item) {
+		if (item == null) return;
 		for (int i = 0; i < comboBox.getItems().size(); i++)
 			if (comboBox.getItems().get(i).equalsId(item)) {
 				comboBox.getSelectionModel().select(i);
