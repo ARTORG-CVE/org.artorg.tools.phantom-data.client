@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.table;
+package org.artorg.tools.phantomData.client.editor;
 
 import javafx.scene.Node;
 

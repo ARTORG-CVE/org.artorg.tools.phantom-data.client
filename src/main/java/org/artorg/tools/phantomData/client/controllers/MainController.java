@@ -12,14 +12,14 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.CssGlyph;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
-import org.artorg.tools.phantomData.client.scene.control.tableView.DbUndoRedoAddEditControlFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.tableView.DbEditFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
 import org.artorg.tools.phantomData.client.table.DbFilterTable;
 import org.artorg.tools.phantomData.client.table.DbTable;
-import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.client.util.TableViewFactory;
 import org.artorg.tools.phantomData.server.model.base.*;
 import org.artorg.tools.phantomData.server.model.base.person.*;
 import org.artorg.tools.phantomData.server.model.base.property.*;
@@ -460,7 +460,7 @@ public class MainController extends StackPane {
 	private ProTableView<?> createTable(Class<?> itemClass) {
 		return TableViewFactory.createInitializedTableView(itemClass,
 			DbFilterTable.class,
-			DbUndoRedoAddEditControlFilterTableView.class);
+			DbEditFilterTableView.class);
 	}
 
 	@SuppressWarnings("unchecked")

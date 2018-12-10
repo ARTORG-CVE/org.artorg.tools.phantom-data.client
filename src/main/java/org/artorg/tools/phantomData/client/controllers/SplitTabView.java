@@ -23,22 +23,22 @@ import org.artorg.tools.phantomData.client.beans.DbNode;
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.editor.FxFactory;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.SmartSplitTabPane;
 import org.artorg.tools.phantomData.client.scene.control.SmartTabPane;
+import org.artorg.tools.phantomData.client.scene.control.tableView.DbEditFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
-import org.artorg.tools.phantomData.client.scene.control.tableView.DbUndoRedoAddEditControlFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.table.DbFilterTable;
 import org.artorg.tools.phantomData.client.table.DbTable;
-import org.artorg.tools.phantomData.client.table.FxFactory;
-import org.artorg.tools.phantomData.client.table.TableViewFactory;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
+import org.artorg.tools.phantomData.client.util.TableViewFactory;
 import org.artorg.tools.phantomData.server.model.base.DbFile;
 import org.artorg.tools.phantomData.server.model.specification.NameGeneratable;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
@@ -59,7 +59,6 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.DirectoryChooser;
 
 public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
@@ -96,16 +95,16 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		this.index = index;
 		this.twinGetter = twinGetter;
 
-		Platform.runLater(() -> {
-			Main.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-				controlDown = event.isControlDown();
-				menuItemUpdater.stream().forEach(rc -> rc.run());
-			});
-			Main.getScene().addEventHandler(KeyEvent.KEY_RELEASED, event -> {
-				controlDown = event.isControlDown();
-				menuItemUpdater.stream().forEach(rc -> rc.run());
-			});
-		});
+//		Platform.runLater(() -> {
+//			Main.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+//				controlDown = event.isControlDown();
+//				menuItemUpdater.stream().forEach(rc -> rc.run());
+//			});
+//			Main.getScene().addEventHandler(KeyEvent.KEY_RELEASED, event -> {
+//				controlDown = event.isControlDown();
+//				menuItemUpdater.stream().forEach(rc -> rc.run());
+//			});
+//		});
 	}
 
 	private SmartTabPane createSmartTabPane() {
@@ -157,7 +156,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		changeToTableView(ProTreeTableView<ITEM> tableView) {
 		ProTableView<ITEM> treeTableView = TableViewFactory.createTableView(
 			tableView.getItemClass(), DbFilterTable.class,
-			DbUndoRedoAddEditControlFilterTableView.class,
+			DbEditFilterTableView.class,
 			tableView.getSelectionModel().getSelectedItems());
 		Tab tab;
 		tab = findTabByContent(tableTabPane.getTabPane(), tableView);
