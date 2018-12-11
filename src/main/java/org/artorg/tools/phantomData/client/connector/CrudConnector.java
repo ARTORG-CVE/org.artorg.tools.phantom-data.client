@@ -2,12 +2,19 @@ package org.artorg.tools.phantomData.client.connector;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.specification.ControllerSpecDefault;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
@@ -24,8 +31,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-public class CrudConnector<T extends Identifiable<?>>
-	implements ICrudConnector<T> {
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
+
+public class CrudConnector<T extends Identifiable<?>> implements ICrudConnector<T> {
 	private static String urlLocalhost;
 	private final String annoStringControlClass;
 	private final String annoStringRead;
@@ -38,12 +47,16 @@ public class CrudConnector<T extends Identifiable<?>>
 	private final Class<T[]> arrayItemClass;
 	private final Class<?> controllerClass;
 
+	private final ObservableMap<String, T> map;
+
 	@SuppressWarnings("unchecked")
 	public CrudConnector(Class<T> itemClass) {
 		if (itemClass == null) {
 			itemClass = (Class<T>) Reflect.findGenericClasstype(this);
 		}
 		this.itemClass = itemClass;
+
+		map = FXCollections.observableHashMap();
 
 		arrayItemClass = (Class<T[]>) Reflect.getArrayClass(itemClass);
 		Class<?> controllerClass;
@@ -80,10 +93,57 @@ public class CrudConnector<T extends Identifiable<?>>
 			m -> m.getAnnotation(DeleteMapping.class).value()[0]);
 		annoStringExist = getAnnotatedValue("existById", GetMapping.class,
 			m -> m.getAnnotation(GetMapping.class).value()[0]);
+		reload();
+	}
+
+	public static void setUrlLocalhost(String urlLocalhost) {
+		CrudConnector.urlLocalhost = urlLocalhost;
+	}
+
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>> void reload() {
+		List<T> itemList = Arrays.asList(readAllDb());
+		itemList.stream().forEach(item -> map.put(item.getId().toString(), item));
+		List<String> dbKeys = itemList.stream().map(item -> item.getId().toString())
+			.collect(Collectors.toList());
+		List<String> removableKeys = map.keySet().stream()
+			.filter(key -> !dbKeys.contains(key)).collect(Collectors.toList());
+		removableKeys.stream().forEach(key -> map.remove(key));
+	}
+
+	@Override
+	public List<T> readAllAsList() {
+		return map.values().stream().sorted().collect(Collectors.toList());
+	}
+
+	@Override
+	public T[] readAll() {
+		Collection<T> list = map.values();
+		T[] array = CollectionUtil.createGenericArray(itemClass, list.size());
+		return readAllAsList().toArray(array);
+	}
+
+	@SuppressWarnings("unchecked")
+	public T[] readAllDb() {
+		HttpHeaders headers = createHttpHeaders();
+		RestTemplate restTemplate = new RestTemplate();
+		String url = createUrl(getAnnoStringReadAll());
+		HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+		ResponseEntity<?> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
+			requestEntity, getArrayModelClass());
+		T[] results1 = (T[]) responseEntity.getBody();
+		return results1;
 	}
 
 	@Override
 	public boolean create(T t) {
+		if (createDb(t)) {
+			map.put(t.getId().toString(), t);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean createDb(T t) {
 		if (existById(t.getId())) return false;
 		try {
 			HttpHeaders headers = createHttpHeaders();
@@ -101,6 +161,14 @@ public class CrudConnector<T extends Identifiable<?>>
 	@SuppressWarnings("unchecked")
 	@Override
 	public <U extends Identifiable<ID>, ID extends Comparable<ID>> U readById(ID id) {
+		if (map.containsKey(id.toString())) return (U) map.get(id.toString());
+		U u = readByIdDb(id);
+		map.put(u.getId().toString(), (T) u);
+		return u;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>> U readByIdDb(ID id) {
 		RestTemplate restTemplate = new RestTemplate();
 		String url = createUrl(getAnnoStringRead());
 		U result = (U) restTemplate.getForObject(url, getModelClass(), id);
@@ -110,6 +178,12 @@ public class CrudConnector<T extends Identifiable<?>>
 
 	@Override
 	public boolean update(T t) {
+		boolean result = updateDb(t);
+		if (result) map.put(t.getId().toString(), t);
+		return result;
+	}
+
+	public boolean updateDb(T t) {
 		try {
 			HttpHeaders headers = createHttpHeaders();
 			RestTemplate restTemplate = new RestTemplate();
@@ -124,7 +198,15 @@ public class CrudConnector<T extends Identifiable<?>>
 	}
 
 	@Override
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean deleteById(ID id) {
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean
+		deleteById(ID id) {
+		boolean result = deleteByIdDb(id);
+		if (result) map.remove(id.toString());
+		return result;
+	}
+
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean
+		deleteByIdDb(ID id) {
 		try {
 			HttpHeaders headers = createHttpHeaders();
 			RestTemplate restTemplate = new RestTemplate();
@@ -139,7 +221,13 @@ public class CrudConnector<T extends Identifiable<?>>
 	}
 
 	@Override
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>> Boolean existById(ID id) {
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>> Boolean
+		existById(ID id) {
+		return map.containsKey(id.toString());
+	}
+
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>> Boolean
+		existByIdDb(ID id) {
 		RestTemplate restTemplate = new RestTemplate();
 		String url = createUrl(getAnnoStringExist());
 		Boolean result = (Boolean) restTemplate.getForObject(url, Boolean.class, id);
@@ -148,20 +236,16 @@ public class CrudConnector<T extends Identifiable<?>>
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T[] readAll() {
-		HttpHeaders headers = createHttpHeaders();
-		RestTemplate restTemplate = new RestTemplate();
-		String url = createUrl(getAnnoStringReadAll());
-		HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
-		ResponseEntity<?> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
-			requestEntity, getArrayModelClass());
-		T[] results1 = (T[]) responseEntity.getBody();
-		return results1;
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>, V> U
+		readByAttribute(V attribute, String attributeName) {
+		U u = readByAttributeDb(attribute, attributeName);
+		map.put(u.getId().toString(), (T) u);
+		return u;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	@Override
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>, V> U readByAttribute(V attribute, String attributeName) {
+	public <U extends Identifiable<ID>, ID extends Comparable<ID>, V> U
+		readByAttributeDb(V attribute, String attributeName) {
 		RestTemplate restTemplate = new RestTemplate();
 		String url = getUrlLocalhost() + "/" + getAnnoStringControlClass() + "/"
 			+ getAnnoStringRead(attributeName);
@@ -201,14 +285,10 @@ public class CrudConnector<T extends Identifiable<?>>
 		Function<Method, String> stringAnnosFunc) {
 		Predicate<Method> predicate1 = m -> m.getName().equals(methodName);
 		Predicate<Method> predicate2 = m -> m.isAnnotationPresent(annotationClass);
-//	Predicate<Method> predicate3 = m -> Modifier.isPublic(m.getModifiers());
-//	Predicate<Method> predicate4 = m -> !Modifier.isAbstract(m.getModifiers());
-		Predicate<Method> filterPredicate = predicate1.and(predicate2)
-//			.and(predicate3).and(predicate4)
-		;
+		Predicate<Method> filterPredicate = predicate1.and(predicate2);
 		return getAnnotatedValue(annotationClass, filterPredicate, stringAnnosFunc);
 	}
-	
+
 	private String getAnnotatedValue(Class<? extends Annotation> annotationClass,
 		Predicate<Method> methodFilterPredicate,
 		Function<Method, String> stringAnnosFunc) {
@@ -221,8 +301,6 @@ public class CrudConnector<T extends Identifiable<?>>
 		return Reflect.getFirstMethod(methodsClass, stream -> stream
 			.filter(m -> m.isAnnotationPresent(annotationClass)).filter(filterPredicate));
 	}
-
-	
 
 	private final String getAnnotationString(String attributeName,
 		Class<? extends Annotation> mappingClass,
@@ -250,21 +328,18 @@ public class CrudConnector<T extends Identifiable<?>>
 		return annoString;
 	}
 
-	public static void setUrlLocalhost(String urlLocalhost) {
-		CrudConnector.urlLocalhost = urlLocalhost;
-	}
-	
-	public final String getAnnoStringRead(String attributeName) {
+	private final String getAnnoStringRead(String attributeName) {
 		return getAnnotationString(attributeName, GetMapping.class,
 			m -> m.getAnnotation(GetMapping.class).value());
 	}
 
-	// Getters
 	@SuppressWarnings("unchecked")
-	public final <U extends Identifiable<ID>, ID extends Comparable<ID>> Class<U> getModelClass() {
+	public final <U extends Identifiable<ID>, ID extends Comparable<ID>> Class<U>
+		getModelClass() {
 		return (Class<U>) itemClass;
 	}
 
+	// Getters
 	public final Class<T[]> getArrayModelClass() {
 		return arrayItemClass;
 	}

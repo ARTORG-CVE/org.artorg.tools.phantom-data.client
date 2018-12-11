@@ -8,6 +8,8 @@ import org.artorg.tools.phantomData.client.beans.EntityBeanInfos;
 import org.artorg.tools.phantomData.client.boot.DatabaseInitializer;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.controllers.MainController;
+import org.artorg.tools.phantomData.client.table.DbTable;
+import org.artorg.tools.phantomData.client.tablesFilter.phantom.PhantomFilterTable;
 import org.artorg.tools.phantomData.server.BootApplication;
 import org.artorg.tools.phantomData.server.boot.ConsoleFrame;
 import org.artorg.tools.phantomData.server.boot.ServerBooter;
@@ -37,6 +39,7 @@ public class Main extends DesktopFxBootApplication {
 	}
 
 	public static void main(String[] args) {
+
 		Application.launch(args);
 	}
 
@@ -71,7 +74,7 @@ public class Main extends DesktopFxBootApplication {
 			}
 		};
 	}
-	
+
 	public static void bootClient(ServerBooter booter) {
 		Main.setMainFxClass(DesktopFxBootApplication.class);
 //		ICrudConnector.connectorGetter = itemClass -> Connectors.getConnector(itemClass);
@@ -98,6 +101,12 @@ public class Main extends DesktopFxBootApplication {
 		stage.requestFocus();
 		stage.toFront();
 		started = true;
+
+		DbTable<?> table = new PhantomFilterTable();
+
+		table.readAllData();
+
+		System.out.println(table.toString());
 	}
 
 	public static Reflections getReflections() {

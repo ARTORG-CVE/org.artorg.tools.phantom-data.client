@@ -1,5 +1,6 @@
 package org.artorg.tools.phantomData.client.util;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -28,6 +29,11 @@ public class CollectionUtil {
 //		toList.addAll(addableColumns);
 //	}
 
+	@SuppressWarnings("unchecked")
+	public static <T> T[] createGenericArray(Class<T> itemClass, int length) {
+		return (T[]) Array.newInstance(itemClass, length);
+	}
+	
 	public static final <E> void syncLists(List<E> toList, List<E> fromList,
 		BiPredicate<E, E> predicate) {
 		List<E> removableColumns = new ArrayList<E>();

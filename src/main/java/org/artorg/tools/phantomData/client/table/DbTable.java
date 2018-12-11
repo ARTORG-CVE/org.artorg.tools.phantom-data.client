@@ -14,19 +14,43 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class DbTable<ITEM extends DbPersistent<ITEM, ?>>
-	extends TableBase<ITEM> {
+public class DbTable<ITEM extends DbPersistent<ITEM, ?>> extends TableBase<ITEM> {
 	private ICrudConnector<ITEM> connector;
 
 	{
-		connector = Connectors
-			.getConnector(getItemClass());
+		connector = Connectors.getConnector(getItemClass());
 	}
-	
+
 	public ICrudConnector<ITEM> getConnector() {
 		return this.connector;
 	}
 
+	
+
+	public void readAllData() {
+		Class<ITEM> itemClass = getItemClass();
+		if (itemClass == null) throw new NullPointerException();
+		ICrudConnector<ITEM> connector = getConnector();
+		if (connector == null) throw new NullPointerException();
+
+		ObservableList<ITEM> items = FXCollections.observableArrayList();
+		items.addAll(connector.readAllAsList());
+
+		CollectionUtil.syncLists(items, getItems());
+
+		getColumns().stream().forEach(column -> {
+			column.setItems(getItems());
+//			column.getItems().clear();
+//			column.getItems().addAll(getItems());
+
+		});
+
+		if (isFilterable()) {
+			CollectionUtil.syncLists(super.getItems(), getFilteredItems());
+			applyFilter();
+		}
+	}
+	
 	@Override
 	public void updateColumns() {
 		getColumns().forEach(column -> column.setIdColumn(false));
@@ -39,47 +63,12 @@ public class DbTable<ITEM extends DbPersistent<ITEM, ?>>
 		getColumns().add(0, idColumn);
 		super.updateColumns();
 	}
-	
-	public void readAllData() {
-		Set<ITEM> itemSet = new HashSet<ITEM>();
-		Class<ITEM> itemClass = getItemClass();
-		if (itemClass == null)
-			throw new NullPointerException();
-		ICrudConnector<ITEM> connector = getConnector();
-		if (connector == null)
-			throw new NullPointerException();
-		itemSet.addAll(connector.readAllAsSet());
-		
-		ObservableList<ITEM> items = FXCollections.observableArrayList();
-		items.addAll(itemSet);
-		
-		CollectionUtil.syncLists(items, getItems());
-		
-		getColumns().stream().forEach(column -> {
-			column.setItems(getItems());
-//			column.getItems().clear();
-//			column.getItems().addAll(getItems());
-			
-			});
-		
-		if (isFilterable()) {
-			CollectionUtil.syncLists(super.getItems(), getFilteredItems());
 
-			getFilteredColumns().stream().filter(column -> column instanceof AbstractFilterColumn).forEach(column -> {
-				((AbstractFilterColumn<ITEM, ?>) column).setFilteredItems(getFilteredItems());
-//				((AbstractFilterColumn<ITEM, ?>) column).getFilteredItems().clear();
-//				((AbstractFilterColumn<ITEM, ?>) column).getFilteredItems().addAll(getFilteredItems());
-			});
-
-			applyFilter();
-		}
-	}
-	
 	@Override
 	public String getItemName() {
 		return getItemClass().getSimpleName();
 	}
-	
+
 	public void createItem(ITEM item) {
 		getConnector().create(item);
 		getItems().add(item);
