@@ -54,6 +54,10 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T>
 	public void showHeaderRow() {
 		this.getStyleClass().remove("noheader");
 		this.getStyleClass().add("header");
+		
+		((DbFilterTableView<?>)this).getFilterMenuButtons().forEach(filterMenuButton -> {
+		filterMenuButton.refreshImage();
+	});
 	}
 
 	public void initTable() {

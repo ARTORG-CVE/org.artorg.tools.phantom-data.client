@@ -17,7 +17,6 @@ import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.client.scene.control.VGridBoxPane;
-import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.select.AbstractTableViewSelector;
 import org.artorg.tools.phantomData.client.select.TitledPaneTableViewSelector;
 import org.artorg.tools.phantomData.client.util.FxUtil;
@@ -27,7 +26,6 @@ import org.artorg.tools.phantomData.server.specification.Identifiable;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -41,7 +39,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 		implements FxFactory<ITEM> {
 	protected Button applyButton;
 	private List<Node> rightNodes;
-	private List<AbstractTableViewSelector<ITEM>> selectors;
+	private List<AbstractTableViewSelector<?>> selectors;
 	private AnchorPane pane;
 	private final Class<ITEM> itemClass;
 	
@@ -88,12 +86,13 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 		selector.setSelectedChildItems(item);
 	}
 
-	public List<AbstractTableViewSelector<ITEM>> getSelectors() {
+	public List<AbstractTableViewSelector<?>> getSelectors() {
 		return selectors;
 	}
 	
-	private List<AbstractTableViewSelector<ITEM>> createSelectors(ITEM item, Class<?> itemClass) {
-		List<AbstractTableViewSelector<ITEM>> selectors = new ArrayList<AbstractTableViewSelector<ITEM>>();
+	@SuppressWarnings("rawtypes")
+	private List<AbstractTableViewSelector<?>> createSelectors(ITEM item, Class<?> itemClass) {
+		List<AbstractTableViewSelector<?>> selectors = new ArrayList<>();
 
 		List<Class<? extends DbPersistent<?, ?>>> subItemClasses = Reflect.getCollectionSetterMethods(itemClass)
 				.map(m -> {
@@ -107,21 +106,15 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 		subItemClasses.forEach(subItemClass -> {
 			if (Reflect.containsCollectionSetter(itemClass, subItemClass)) {
 				ICrudConnector<?> connector = Connectors.getConnector(subItemClass);
-				Set<Object> selectableItemSet = (Set<Object>) connector.readAllAsSet();
+				Set<?> selectableItemSet = connector.readAllAsSet();
 
 				if (selectableItemSet.size() > 0) {
 					try {
-						AbstractTableViewSelector<ITEM> titledSelector = new TitledPaneTableViewSelector<ITEM>(
+						AbstractTableViewSelector<Object> titledSelector = new TitledPaneTableViewSelector(
 								subItemClass);
 						titledSelector.getSelectableItems().clear();
-						((ProTableView<?>)titledSelector.getTableView1()).getTable().getItems().clear();
-						titledSelector.getSelectableItems().addAll(selectableItemSet);
 						titledSelector.getSelectedItems().clear();
-						((ProTableView<?>)titledSelector.getTableView2()).getTable().getItems().clear();
-						
-						ObservableList<Object> temp = (ObservableList<Object>) ((ProTableView<?>)titledSelector.getTableView1()).getTable().getItems(); 
-						temp.addAll(selectableItemSet);
-
+						titledSelector.getSelectableItems().addAll(selectableItemSet);
 						if (item != null) {
 							Method selectedMethod = Reflect.getMethodByGenericReturnType(itemClass, subItemClass);
 
@@ -138,15 +131,9 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 									}
 									return null;
 								};
-								titledSelector.getSelectedItems().clear();
-								titledSelector.getSelectedItems().addAll(subItemGetter2.apply(item).stream()
-									.filter(e -> e != null).collect(Collectors.toSet()));
-								
-								((ProTableView<?>)titledSelector.getTableView2()).getTable().getItems().clear();
-								ObservableList<Object> temp2 = (ObservableList<Object>) ((ProTableView<?>)titledSelector.getTableView2()).getTable().getItems(); 
-								temp2.addAll(subItemGetter2.apply(item).stream()
-									.filter(e -> e != null).collect(Collectors.toSet()));
-								
+								Set<Object> selectedItems = subItemGetter2.apply(item).stream()
+									.filter(e -> e != null).collect(Collectors.toSet());
+								titledSelector.getSelectedItems().addAll(selectedItems);
 							}
 						} 
 

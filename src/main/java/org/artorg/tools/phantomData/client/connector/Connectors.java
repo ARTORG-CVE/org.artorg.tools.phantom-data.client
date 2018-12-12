@@ -1,11 +1,13 @@
 package org.artorg.tools.phantomData.client.connector;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.artorg.tools.phantomData.server.model.base.person.AcademicTitle;
 import org.artorg.tools.phantomData.server.model.base.person.Gender;
 import org.artorg.tools.phantomData.server.model.base.person.Person;
+import org.artorg.tools.phantomData.server.specification.DbPersistent;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 
 public class Connectors {
@@ -25,6 +27,11 @@ public class Connectors {
 		if (itemClass == Person.class || itemClass == Gender.class || itemClass == AcademicTitle.class)
 			return (ICrudConnector<ITEM>) getOrCreateUnpersonified(itemClass);
 		return (ICrudConnector<ITEM>) getOrCreatePersonified(itemClass);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static void createConnectors(Collection<Class<?>> itemClasses) {
+		itemClasses.forEach(itemClass -> Connectors.getConnector((Class<DbPersistent<?,?>>)itemClass));
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

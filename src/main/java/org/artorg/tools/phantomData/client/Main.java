@@ -6,8 +6,10 @@ import java.util.concurrent.Executors;
 
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfos;
 import org.artorg.tools.phantomData.client.boot.DatabaseInitializer;
+import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.controllers.MainController;
+import org.artorg.tools.phantomData.client.controllers.SplitTabView;
 import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.tablesFilter.phantom.PhantomFilterTable;
 import org.artorg.tools.phantomData.server.BootApplication;
@@ -97,6 +99,13 @@ public class Main extends DesktopFxBootApplication {
 		stage.setWidth(800);
 		stage.setHeight(500);
 		FxUtil.addIcon(stage);
+		
+		
+		// speed optimization
+		Connectors.createConnectors(beanInfos.getEntityClasses());
+		SplitTabView.searchFactoryClasses(beanInfos.getEntityClasses());
+		
+		
 		stage.show();
 		stage.requestFocus();
 		stage.toFront();

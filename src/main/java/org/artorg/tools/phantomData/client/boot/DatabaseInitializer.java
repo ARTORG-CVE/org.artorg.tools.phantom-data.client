@@ -54,13 +54,9 @@ public class DatabaseInitializer {
 
 	public static boolean isInitialized() {
 		try {
-			System.out.println(adConn.readAll().length);
-			
 			return (adConn.readAll().length > 0);
 		} catch (Exception e) {
-			System.out.println("-_-");
 			e.printStackTrace();
-			
 		}
 		return false;
 	}

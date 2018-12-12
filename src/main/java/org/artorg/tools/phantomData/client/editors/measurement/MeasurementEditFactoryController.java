@@ -74,7 +74,7 @@ public class MeasurementEditFactoryController
 
 		super.getTitledPanes().add(protocolTitledPane);
 		
-		List<AbstractTableViewSelector<Measurement>> selectors = this.getSelectors();
+		List<AbstractTableViewSelector<?>> selectors = this.getSelectors();
 		super.getTitledPanes().addAll(selectors.stream().map(selector -> {
 			if (selector.getGraphic() instanceof TitledPane)
 				return (TitledPane) selector.getGraphic();

@@ -1,5 +1,8 @@
 package org.artorg.tools.phantomData.client.select;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.util.Reflect;
 
@@ -17,19 +20,24 @@ public abstract class AbstractTableViewSelector<ITEM> {
 
 	public abstract Class<?> getSubItemClass();
 
-	public abstract void moveToSelected(Object item);
+	public abstract void moveToSelected(ITEM item);
 
-	public abstract void moveToSelectable(Object item);
+	public abstract void moveToSelectable(ITEM item);
 
 	public abstract Node getGraphic();
 
 	public abstract void init();
 
-	public void setSelectedChildItems(ITEM item) {
-		Class<?> paramTypeClass = getSelectedItems().getClass();
-		Object arg = getSelectedItems();
-		if (arg != null)
-			Reflect.invokeGenericSetter(item, paramTypeClass, getSubItemClass(), arg);
+	public void setSelectedChildItems(Object item) {
+		List<Object> items = new ArrayList<>();
+
+		if (items != null) {
+			items.addAll(getSelectedItems());
+
+			Class<?> paramTypeClass = items.getClass();
+
+			Reflect.invokeGenericSetter(item, paramTypeClass, getSubItemClass(), items);
+		}
 	}
 
 //	public void setSelectableItems(Set<Object> set) {
@@ -37,13 +45,13 @@ public abstract class AbstractTableViewSelector<ITEM> {
 //		items.addAll(set);
 //		getTableView1().setItems(items);
 //	}
-	
-	public ObservableList<Object> getSelectableItems() {
-		return ((ProTableView<Object>)getTableView1()).getTable().getItems();
+
+	public ObservableList<ITEM> getSelectableItems() {
+		return ((ProTableView<ITEM>) getTableView1()).getTable().getItems();
 	}
 
-	public ObservableList<Object> getSelectedItems() {
-		return ((ProTableView<Object>)getTableView2()).getTable().getItems();
+	public ObservableList<ITEM> getSelectedItems() {
+		return ((ProTableView<ITEM>) getTableView2()).getTable().getItems();
 	}
 
 //	public void setSelectedItems(Set<Object> set) {
@@ -57,28 +65,25 @@ public abstract class AbstractTableViewSelector<ITEM> {
 		column.setSortable(false);
 
 		column.setCellFactory(TextFieldTableCell.forTableColumn());
-		column.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().toString()));
+		column.setCellValueFactory(
+			cellData -> new SimpleStringProperty(cellData.getValue().toString()));
 
 		return column;
 	}
 
-	@SuppressWarnings("unchecked")
-	public TableView<Object> getTableView1() {
-		return (TableView<Object>) tableView1;
+	public TableView<ITEM> getTableView1() {
+		return tableView1;
 	}
-
-	@SuppressWarnings("unchecked")
-	public void setTableView1(TableView<?> tableView1) {
+	
+	public void setTableView1(TableView<ITEM> tableView1) {
 		this.tableView1 = (TableView<ITEM>) tableView1;
 	}
 
-	@SuppressWarnings("unchecked")
-	public TableView<Object> getTableView2() {
-		return (TableView<Object>) tableView2;
+	public TableView<ITEM> getTableView2() {
+		return tableView2;
 	}
 
-	@SuppressWarnings("unchecked")
-	public void setTableView2(TableView<?> tableView2) {
+	public void setTableView2(TableView<ITEM> tableView2) {
 		this.tableView2 = (TableView<ITEM>) tableView2;
 	}
 

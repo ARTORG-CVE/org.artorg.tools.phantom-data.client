@@ -91,13 +91,13 @@ public class FxUtil extends org.artorg.tools.phantomData.server.util.FxUtil {
 		return SwingFXUtils.toFXImage(bufferedImage, null);
 	}
 
-	public static TableColumn<Object, Void> createButtonCellColumn(String text, Consumer<Object> consumer) {
-		TableColumn<Object, Void> column = new TableColumn<Object, Void>();
-		column.setCellFactory(new Callback<TableColumn<Object, Void>, TableCell<Object, Void>>() {
+	public static <T> TableColumn<T, Void> createButtonCellColumn(String text, Consumer<T> consumer) {
+		TableColumn<T, Void> column = new TableColumn<T, Void>();
+		column.setCellFactory(new Callback<TableColumn<T, Void>, TableCell<T, Void>>() {
 			@Override
-			public TableCell<Object, Void> call(final TableColumn<Object, Void> param) {
-				return new TableCell<Object, Void>() {
-					TableCell<Object, Void> cell = this;
+			public TableCell<T, Void> call(final TableColumn<T, Void> param) {
+				return new TableCell<T, Void>() {
+					TableCell<T, Void> cell = this;
 
 					@Override
 					public void updateItem(Void item, boolean empty) {

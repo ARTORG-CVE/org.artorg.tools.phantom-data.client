@@ -33,7 +33,7 @@ public abstract class GroupedItemEditFactoryController<ITEM extends DbPersistent
 		titledPanes.stream().filter(p -> p instanceof TitledPropertyPane)
 				.forEach(p -> entries.addAll(((TitledPropertyPane) p).getEntries()));
 
-		List<AbstractTableViewSelector<ITEM>> selectors = this.getSelectors();
+		List<AbstractTableViewSelector<?>> selectors = this.getSelectors();
 		titledPanes.addAll(selectors.stream().map(selector -> {
 			if (selector.getGraphic() instanceof TitledPane)
 				return (TitledPane) selector.getGraphic();

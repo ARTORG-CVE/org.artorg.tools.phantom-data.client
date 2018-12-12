@@ -1,5 +1,9 @@
 package org.artorg.tools.phantomData.client.select;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,24 +22,26 @@ import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
 public class TableViewSelector<ITEM extends DbPersistent<ITEM, ?>>
 	extends AbstractTableViewSelector<ITEM> {
 	private SplitPane splitPane;
-//	private int height;
+	private int height;
 	private final Class<?> subItemClass;
 
 	{
 		splitPane = new SplitPane();
 		splitPane.setOrientation(Orientation.VERTICAL);
-//		height = 500;
-//		splitPane.setPrefHeight(height);
+		height = 2000;
+		splitPane.setPrefHeight(height);
 
 	}
 
@@ -49,15 +55,14 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM, ?>>
 		super.setName(subItemClass.getSimpleName());
 	}
 
-	@SuppressWarnings("unchecked")
 	public void init() {
-		getTableView2().getItems().stream().forEach(item2 -> {
-			List<?> doublettes = (List<?>) getTableView1().getItems().stream()
-				.filter(item1 -> ((DbPersistent<?, ?>) item2).getId()
-					.equals(((DbPersistent<?, ?>) item1).getId()))
-				.collect(Collectors.toList());
-			getTableView1().getItems().removeAll(doublettes);
-		});
+//		getTableView2().getItems().stream().forEach(item2 -> {
+//			List<?> doublettes = (List<?>) getTableView1().getItems().stream()
+//				.filter(item1 -> ((DbPersistent<?, ?>) item2).getId()
+//					.equals(((DbPersistent<?, ?>) item1).getId()))
+//				.collect(Collectors.toList());
+//			getTableView1().getItems().removeAll(doublettes);
+//		});
 
 		if (getTableView1().getItems().size() != 0
 			&& !splitPane.getItems().contains(getTableView1())) {
@@ -70,9 +75,9 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM, ?>>
 			autoResizeColumns(getTableView2());
 		}
 
-		TableColumn<Object, Void> addButtonCellColumn =
+		TableColumn<ITEM, Void> addButtonCellColumn =
 			FxUtil.createButtonCellColumn("+", this::moveToSelected);
-		TableColumn<Object, Void> removeButtonCellColumn =
+		TableColumn<ITEM, Void> removeButtonCellColumn =
 			FxUtil.createButtonCellColumn("-", this::moveToSelectable);
 
 		if (this.getTableView1() instanceof ProTableView) {
@@ -96,98 +101,97 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM, ?>>
 		((ProTableView<ITEM>) this.getTableView2()).removeHeaderRow();
 		((ProTableView<ITEM>) this.getTableView2()).showHeaderRow();
 
-		getTableView1()
-			.setRowFactory(new Callback<TableView<Object>, TableRow<Object>>() {
-				@Override
-				public TableRow<Object> call(TableView<Object> tableView) {
-					final TableRow<Object> row = new TableRow<Object>();
+		getTableView1().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		getTableView2().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-					ContextMenu contextMenu = new ContextMenu();
-					MenuItem menuItem = new MenuItem("Add");
-					menuItem.setOnAction(event -> {
-						moveToSelected(row.getItem());
-					});
-					contextMenu.getItems().addAll(menuItem);
+		getTableView1().setRowFactory(new Callback<TableView<ITEM>, TableRow<ITEM>>() {
+			@Override
+			public TableRow<ITEM> call(TableView<ITEM> tableView) {
+				final TableRow<ITEM> row = new TableRow<>();
 
-					row.contextMenuProperty()
-						.bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
-							.then(contextMenu).otherwise((ContextMenu) null));
-					return row;
-				};
-			});
+				ContextMenu contextMenu = new ContextMenu();
+				MenuItem menuItem = new MenuItem("Add");
+				menuItem.setOnAction(event -> moveToSelected());
+				contextMenu.getItems().addAll(menuItem);
 
-		getTableView2()
-			.setRowFactory(new Callback<TableView<Object>, TableRow<Object>>() {
-				@Override
-				public TableRow<Object> call(TableView<Object> tableView) {
-					final TableRow<Object> row = new TableRow<Object>();
+				row.contextMenuProperty()
+					.bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
+						.then(contextMenu).otherwise((ContextMenu) null));
+				return row;
+			};
+		});
 
-					ContextMenu rowMenu = new ContextMenu();
-					MenuItem addMenu = new MenuItem("Remove");
-					addMenu.setOnAction(event -> {
-						moveToSelectable(row.getItem());
-					});
-					rowMenu.getItems().addAll(addMenu);
+		getTableView2().setRowFactory(new Callback<TableView<ITEM>, TableRow<ITEM>>() {
+			@Override
+			public TableRow<ITEM> call(TableView<ITEM> tableView) {
+				final TableRow<ITEM> row = new TableRow<>();
 
-					row.contextMenuProperty()
-						.bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
-							.then(rowMenu).otherwise((ContextMenu) null));
-					return row;
-				};
-			});
+				ContextMenu rowMenu = new ContextMenu();
+				MenuItem addMenu = new MenuItem("Remove");
+				addMenu.setOnAction(event -> moveToSelectable());
+				rowMenu.getItems().addAll(addMenu);
+
+				row.contextMenuProperty()
+					.bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
+						.then(rowMenu).otherwise((ContextMenu) null));
+				return row;
+			};
+		});
 
 	}
 
-	public void moveToSelected(Object item) {
-		getTableView1().getItems().remove(item);
-		getTableView2().getItems().add(item);
+	private void moveToSelected() {
+		List<ITEM> items = new ArrayList<>();
+		items.addAll(getTableView1().getSelectionModel().getSelectedItems());
+		moveToSelected(items);
+	}
+
+	private void moveToSelectable() {
+		List<ITEM> items = new ArrayList<>();
+		items.addAll(getTableView2().getSelectionModel().getSelectedItems());
+		moveToSelectable(items);
+	}
+
+	public void moveToSelected(ITEM item) {
+		List<ITEM> list = new ArrayList<>();
+		list.add(item);
+		moveToSelected(list);
+	}
+
+	public void moveToSelected(Collection<ITEM> items) {
+		getSelectableItems().removeAll(items);
+		getSelectedItems().addAll(items);
 		if (getTableView1().getItems().size() == 0) {
 			splitPane.getItems().remove(getTableView1());
-			if (!splitPane.getItems().contains(getTableView2())) {
+			if (!splitPane.getItems().contains(getTableView2()))
 				splitPane.getItems().add(0, getTableView2());
-				
-			}
-//			((ProTableView<?>) getTableView2()).showHeaderRow();
-//			if (getTableView2() instanceof ProTableView) {
-//				((ProTableView<?>) getTableView2()).showHeaderRow();
-//				
-//			}
 		} else {
 			if (!splitPane.getItems().contains(getTableView2()))
 				splitPane.getItems().add(1, getTableView2());
 			splitPane.setDividerPositions(0.5f);
-
-//			((ProTableView<?>) getTableView2()).showHeaderRow();
-			
-//			if (getTableView2().getItems().size() < 10)
-//				if (getTableView2() instanceof ProTableView)
-//					((ProTableView<?>) getTableView2()).removeHeaderRow();
-
 		}
 		((ProTableView<?>) getTableView2()).showHeaderRow();
-		((DbFilterTableView<?>) getTableView2()).getFilterMenuButtons().forEach(filterMenuButton -> {
-			filterMenuButton.refreshImage();
-		});
-
 		autoResizeColumns(getTableView1());
 		autoResizeColumns(getTableView2());
 	}
 
-	public void moveToSelectable(Object item) {
-		getTableView1().getItems().add(item);
-		getTableView2().getItems().remove(item);
+	public void moveToSelectable(ITEM item) {
+		List<ITEM> list = new ArrayList<>();
+		list.add(item);
+		moveToSelectable(list);
+	}
+
+	public void moveToSelectable(Collection<ITEM> items) {
+		getSelectedItems().removeAll(items);
+		getSelectableItems().addAll(items);
 		if (getTableView2().getItems().size() == 0) {
 			splitPane.getItems().remove(getTableView2());
 		} else {
 			if (!splitPane.getItems().contains(getTableView1())) {
 				splitPane.getItems().add(0, getTableView1());
 				((ProTableView<?>) getTableView1()).showHeaderRow();
-//					((DbFilterTableView<?>)getTableView1()).show
-				
 			}
-			
 			((ProTableView<?>) getTableView1()).showHeaderRow();
-			
 			splitPane.setDividerPositions(0.5f);
 			if (getTableView2().getItems().size() < 10)
 				if (getTableView2() instanceof ProTableView)
@@ -195,9 +199,6 @@ public class TableViewSelector<ITEM extends DbPersistent<ITEM, ?>>
 		}
 		autoResizeColumns(getTableView1());
 		autoResizeColumns(getTableView2());
-
-//		getTableView1().refresh();
-//		getTableView2().refresh();
 	}
 
 	public void autoResizeColumns(TableView<?> tableView) {

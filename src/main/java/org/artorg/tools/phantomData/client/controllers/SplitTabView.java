@@ -8,7 +8,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -155,8 +158,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 	private <ITEM extends DbPersistent<ITEM, ?>> void
 		changeToTableView(ProTreeTableView<ITEM> tableView) {
 		ProTableView<ITEM> treeTableView = TableViewFactory.createTableView(
-			tableView.getItemClass(), DbTable.class,
-			DbEditFilterTableView.class,
+			tableView.getItemClass(), DbTable.class, DbEditFilterTableView.class,
 			tableView.getSelectionModel().getSelectedItems());
 		Tab tab;
 		tab = findTabByContent(tableTabPane.getTabPane(), tableView);
@@ -186,7 +188,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		if (node instanceof ProTreeTableView)
 			setTreeTableTab(tab, (ProTreeTableView<ITEM>) node);
 	}
-	
+
 	private <ITEM extends DbPersistent<ITEM, ?>> void setTableTab(Tab tab,
 		ProTableView<ITEM> tableViewSpring) {
 		tableViewSpring.setRowFactory(
@@ -221,11 +223,33 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 	}
 
+	private static Map<Class<?>, Class<?>> factoryClassMap = new HashMap<>();
+	
+	public static void searchFactoryClasses(Collection<Class<?>> itemClasses) {
+		itemClasses.forEach(itemClass -> {
+			try {
+				findFactoryClass(itemClass);
+			} catch (Exception e) {}
+		});
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <T> FxFactory<T> createFxFactory(Class<T> itemClass) {
 		FxFactory<T> fxFactory = null;
 
-		Class<?> factoryClass = findFactoryClass(itemClass);
+		Class<?> factoryClass = null;
+
+		if (factoryClassMap.containsKey(itemClass)) {
+			factoryClass = factoryClassMap.get(itemClass);
+		}
+		else {
+			try {
+				factoryClass = findFactoryClass(itemClass);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 		try {
 			fxFactory = (FxFactory<T>) factoryClass.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
@@ -235,14 +259,11 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		return fxFactory;
 	}
 
-	private static Class<?> findFactoryClass(Class<?> itemClass) {
-		try {
-			return Reflect.getClassByGenericAndSuperClass(ItemEditFactoryController.class,
+	private static Class<?> findFactoryClass(Class<?> itemClass) throws Exception {
+			Class<?> factoryClass = Reflect.getClassByGenericAndSuperClass(ItemEditFactoryController.class,
 				itemClass, 0, Main.getReflections());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		throw new NullPointerException();
+			factoryClassMap.put(itemClass, factoryClass);
+			return factoryClass;
 	}
 
 	private <ITEM extends DbPersistent<ITEM, ?>> void setTreeTableTab(Tab tab,
@@ -253,7 +274,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 		ContextMenu contextMenu = new ContextMenu();
 		MenuItem menuItem;
-		
+
 		menuItem = new MenuItem("Add item");
 		menuItem.setOnAction(event -> {
 			FxFactory<?> controller = createFxFactory(proTreeTableView.getItemClass());
@@ -272,7 +293,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 		proTreeTableView.setContextMenu(contextMenu);
 	}
-	
+
 	private <ITEM extends DbPersistent<ITEM, ?>> TableRow<ITEM> createTableViewContext(
 		ProTableView<ITEM> tableViewSpring, TableView<ITEM> tableView) {
 		final TableRow<ITEM> row = new TableRow<ITEM>();
@@ -445,29 +466,28 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 	private <ITEM extends DbPersistent<ITEM, ?>> File get3dFile(ITEM item) {
 		if (item instanceof DbFile) {
-			if (((DbFile)item).getExtension().equalsIgnoreCase("stl"))
+			if (((DbFile) item).getExtension().equalsIgnoreCase("stl"))
 				return ((DbFile) item).getFile();
-			else 
-				return null;
+			else return null;
 		}
-		
+
 		List<DbFile> files = getFiles(item);
 		if (files != null && !files.isEmpty()) {
 			Optional<DbFile> optionalFile = files.stream()
-				.filter(dbFile -> dbFile.getExtension().equalsIgnoreCase("stl")).findFirst();
+				.filter(dbFile -> dbFile.getExtension().equalsIgnoreCase("stl"))
+				.findFirst();
 			if (optionalFile.isPresent()) return optionalFile.get().getFile();
 		}
 		return null;
 	}
 
-	private <ITEM extends DbPersistent<ITEM, ?>> void show3dInViewer(File file,
-		Tab tab) {
+	private <ITEM extends DbPersistent<ITEM, ?>> void show3dInViewer(File file, Tab tab) {
 		Platform.runLater(() -> {
 			Scene3D newScene3d = new Scene3D();
 			newScene3d.loadFile(file);
 			tab.setContent(newScene3d);
 		});
-		
+
 	}
 
 	private <ITEM extends DbPersistent<ITEM, ?>> List<DbFile> getFiles(ITEM item) {
