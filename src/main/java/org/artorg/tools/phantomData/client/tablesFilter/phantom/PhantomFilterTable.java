@@ -49,6 +49,8 @@ public class PhantomFilterTable extends DbTable<Phantom>
 					(path, value) -> path.setThickness(Float.valueOf(value))));
 			columns.add(new FilterColumn<Phantom, String>("Files", item -> item,
 					path -> String.valueOf(path.getFiles().size()), (path, value) -> {}));
+			columns.add(new FilterColumn<Phantom, String>("Measurements", item -> item,
+				path -> String.valueOf(path.getMeasurements().size()), (path, value) -> {}));
 			columns.add(new FilterColumn<Phantom, String>("Notes", item -> item,
 					path -> String.valueOf(path.getNotes().size()), (path, value) -> {}));
 			createPersonifiedColumns(columns);

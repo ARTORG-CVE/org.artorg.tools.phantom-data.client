@@ -1,16 +1,15 @@
 package org.artorg.tools.phantomData.client.editors.base.property;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
+import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.base.property.PropertyField;
-import org.artorg.tools.phantomData.server.model.phantom.Phantom;
-import org.artorg.tools.phantomData.server.model.phantom.Special;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,19 +18,27 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 
 public class PropertyFieldEditFactoryController extends GroupedItemEditFactoryController<PropertyField>{
 	private TextField textFielName;
 	private TextField textFieldDescription;
 	private ComboBox<Class<?>> comboBoxParentItemClass;
+	private AnchorPane parentItemPane;
+	private TextField textFieldParentItemClass;
 
 	{
 		textFielName = new TextField();
 		textFieldDescription = new TextField();
 		comboBoxParentItemClass = new ComboBox<Class<?>>();
+		parentItemPane = new AnchorPane();
+		textFieldParentItemClass = new TextField();
+		textFieldParentItemClass.setDisable(true);
+		textFieldParentItemClass.setEditable(false);
 		
-		List<Class<?>> parentItemClasses = Arrays.asList(Phantom.class, Special.class);
+		Collection<Class<?>> parentItemClasses = Main.getBeaninfos().getEntityClasses();
+		
 		ObservableList<Class<?>> observableParentItemClasses = FXCollections.observableArrayList();
 		observableParentItemClasses.addAll(parentItemClasses);
 		comboBoxParentItemClass.setItems(observableParentItemClasses);
@@ -41,11 +48,13 @@ public class PropertyFieldEditFactoryController extends GroupedItemEditFactoryCo
 		comboBoxParentItemClass.setCellFactory(cellFactory);
 		
 		
+		
 		List<TitledPane> panes = new ArrayList<TitledPane>();
 		List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
 		generalProperties.add(new PropertyEntry("Name", textFielName));
 		generalProperties.add(new PropertyEntry("Description", textFieldDescription));
-		generalProperties.add(new PropertyEntry("Parent item class", comboBoxParentItemClass));
+		FxUtil.addToPane(parentItemPane, comboBoxParentItemClass);
+		generalProperties.add(new PropertyEntry("Parent item class", parentItemPane));
 		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 		panes.add(generalPane);
 		setTitledPanes(panes);
@@ -59,6 +68,15 @@ public class PropertyFieldEditFactoryController extends GroupedItemEditFactoryCo
 	protected void setEditTemplate(PropertyField item) {
 		textFielName.setText(item.getName());
 		textFieldDescription.setText(item.getDescription());
+		parentItemPane.getChildren().clear();
+		FxUtil.addToPane(parentItemPane, textFieldParentItemClass);
+		Class<?> type = null;
+		try {
+			type = Class.forName(item.getType());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		textFieldParentItemClass.setText(type.getSimpleName());
 	}
 
 	@Override

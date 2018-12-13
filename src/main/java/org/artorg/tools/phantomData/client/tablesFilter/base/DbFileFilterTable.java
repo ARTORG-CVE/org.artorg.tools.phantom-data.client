@@ -33,6 +33,11 @@ public class DbFileFilterTable extends DbTable<DbFile>
 			columns.add(new FilterColumn<DbFile,String>("File Tags", item -> item,
 				path -> path.getFileTags().stream().map(fileTag -> fileTag.getName()).collect(Collectors.joining(", ")), 
 				(path, value) -> {}));
+			columns.add(new FilterColumn<DbFile, String>("Phantoms", item -> item,
+				path -> String.valueOf(path.getPhantoms().size()), (path, value) -> {}));
+			columns.add(new FilterColumn<DbFile, String>("Notes", item -> item,
+				path -> String.valueOf(path.getNotes().size()), (path, value) -> {}));
+			
 			createPersonifiedColumns(columns);
 			return columns;
 		});

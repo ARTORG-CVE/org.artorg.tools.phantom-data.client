@@ -7,7 +7,7 @@ import javafx.scene.control.TextField;
 
 public class PropertyEntry {
 	private Node leftNode;
-	private Control rightNode;
+	private Node rightNode;
 
 	public PropertyEntry(String labelText, TextField textField, Runnable rc) {
 		this(labelText, textField);
@@ -16,11 +16,11 @@ public class PropertyEntry {
     	});
 	}
 	
-	public PropertyEntry(String labelText, Control nodeRight) {
+	public PropertyEntry(String labelText, Node nodeRight) {
 		this(new Label(labelText), nodeRight);
 	}
 	
-	public PropertyEntry(Node leftNode, Control rightNode) {
+	public PropertyEntry(Node leftNode, Node rightNode) {
 		this.setLeftNode(leftNode);
 		this.rightNode = rightNode;
 	}
@@ -33,7 +33,7 @@ public class PropertyEntry {
 		this.leftNode = leftNode;
 	}
 	
-	public Control getRightNode() {
+	public Node getRightNode() {
 		return rightNode;
 	}
 

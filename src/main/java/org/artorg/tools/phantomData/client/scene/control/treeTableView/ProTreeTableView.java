@@ -33,6 +33,7 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 	private TableBase<ITEM> table;
 	private TreeItem<DbNode> root;
 	private Class<?> itemClass;
+	private static final int dephtLevelMax = 8;
 
 	{
 		treeTableColumns = new ArrayList<DbTreeTableColumn>();
@@ -64,24 +65,27 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 		column.setCellValueFactory(param -> {
 			DbNode item = param.getValue().getValue();
 			Object value = ((DbNode) item).getValue();
-			if (value instanceof NameGeneratable) return new ReadOnlyStringWrapper(
-				((NameGeneratable) value).toName());
+			if (value instanceof NameGeneratable)
+				return new ReadOnlyStringWrapper(((NameGeneratable) value).toName());
 			if (value instanceof List) {
-				List<?> list = (List<?>) value; 
+				List<?> list = (List<?>) value;
 				if (list.isEmpty()) return new ReadOnlyStringWrapper("");
 				if (list.get(0) == null) return new ReadOnlyStringWrapper("null");
-				return new ReadOnlyStringWrapper("size: " +list.size());
+				return new ReadOnlyStringWrapper("size: " + list.size());
 			}
-			
+
 			return new ReadOnlyStringWrapper(value.toString());
 		});
 		treeTableColumns.add(column);
 
 		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-		addPersonifiedColumn("Last modified", item -> format.format(item.getDateLastModified()));
-		addPersonifiedColumn("Changed by", item -> item.getChanger().getSimpleAcademicName());
+		addPersonifiedColumn("Last modified",
+			item -> format.format(item.getDateLastModified()));
+		addPersonifiedColumn("Changed by",
+			item -> item.getChanger().getSimpleAcademicName());
 		addPersonifiedColumn("Added", item -> format.format(item.getDateAdded()));
-		addPersonifiedColumn("Created by", item -> item.getCreator().getSimpleAcademicName());
+		addPersonifiedColumn("Created by",
+			item -> item.getCreator().getSimpleAcademicName());
 
 		getColumns().addAll(treeTableColumns);
 		root.setExpanded(true);
@@ -109,8 +113,9 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 		createCellValueFactory(Function<AbstractPersonifiedEntity<?>, String> mapper) {
 		return param -> {
 			Object entity = ((DbNode) param.getValue().getValue()).getValue();
-			if (entity instanceof AbstractPersonifiedEntity) return new ReadOnlyStringWrapper(
-				mapper.apply(((AbstractPersonifiedEntity<?>) entity)));
+			if (entity instanceof AbstractPersonifiedEntity)
+				return new ReadOnlyStringWrapper(
+					mapper.apply(((AbstractPersonifiedEntity<?>) entity)));
 			return new ReadOnlyStringWrapper("");
 		};
 	}
@@ -118,30 +123,38 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 	public void setItems(List<ITEM> items) {
 		List<TreeItem<DbNode>> treeItems = new ArrayList<TreeItem<DbNode>>();
 		items.forEach(item -> {
-			TreeItem<DbNode> treeItem =
-				createTreeItem(new DbNode(item, item.getItemClass().getSimpleName(), "Items"));
-			treeItems.add(treeItem);
-			addResizeColumnsExpandListener(treeItem);
+			TreeItem<DbNode> treeItem = createTreeItem(
+				new DbNode(item, item.getItemClass().getSimpleName(), "Items"), 0);
+			if (treeItem != null) {
+				treeItems.add(treeItem);
+				addResizeColumnsExpandListener(treeItem);
+			}
 		});
 		root.getChildren().clear();
 		root.getChildren().addAll(treeItems);
 	}
-	
-	private TreeItem<DbNode> createTreeItem(DbNode dbNode) {
+
+	private TreeItem<DbNode> createTreeItem(DbNode dbNode, int level) {
+		if (level > dephtLevelMax) return null;
 		TreeItem<DbNode> rootItem = new TreeItem<>(dbNode);
-		rootItem.getChildren().addAll(createTreeItems(dbNode));
+		rootItem.getChildren().addAll(createTreeItems(dbNode, level));
 		return rootItem;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private List<TreeItem<DbNode>> createTreeItems(DbNode dbNode) {
+	private List<TreeItem<DbNode>> createTreeItems(DbNode dbNode, int level) {
+		if (level > dephtLevelMax) return new ArrayList<>();
+
 		Object value = dbNode.getValue();
-		if (isEntity(value)) return createBeanTreeItems(value, 0);
+		if (isEntity(value)) return createBeanTreeItems(value, level);
 		if (value instanceof List) {
 			List<TreeItem<DbNode>> treeItems = new ArrayList<>();
-			List<Object> list = (List<Object>)value;
-			for (int i = 0; i < list.size(); i++)
-				treeItems.add(createTreeItem(new DbNode(list.get(i), "[" + i + "]", "Collection")));
+			List<Object> list = (List<Object>) value;
+			for (int i = 0; i < list.size(); i++) {
+				TreeItem<DbNode> treeItem = createTreeItem(
+					new DbNode(list.get(i), "[" + i + "]", "Collection"), level + 1);
+				if (treeItem != null) treeItems.add(treeItem);
+			}
 			return treeItems;
 		}
 		return new ArrayList<>();
@@ -152,23 +165,29 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 	}
 
 	private List<TreeItem<DbNode>> createBeanTreeItems(Object bean, int level) {
-		if (level > 20) return new ArrayList<>();
+		if (level > dephtLevelMax) return new ArrayList<>();
+
 		if (bean == null) throw new NullPointerException();
 
 		List<TreeItem<DbNode>> treeItems = new ArrayList<>();
 		EntityBeanInfo beanInfo = Main.getBeaninfos().getEntityBeanInfo(bean.getClass());
 
-		treeItems.addAll(createEntityTreeItem(bean, beanInfo, level+1));
-		treeItems.addAll(createCollectionTreeItem(bean, beanInfo, level+1));
-		if (bean instanceof AbstractPersonifiedEntity)
-			treeItems.add(createTreeItem(new DbNode(((AbstractPersonifiedEntity<?>) bean).getId(), "id", "ID")));
-		treeItems.addAll(createPropertiesTreeItems(bean, beanInfo));
+		treeItems.addAll(createEntityTreeItem(bean, beanInfo, level));
+		treeItems.addAll(createCollectionTreeItem(bean, beanInfo, level));
+		if (bean instanceof AbstractPersonifiedEntity) {
+			DbNode dbNode =
+				new DbNode(((AbstractPersonifiedEntity<?>) bean).getId(), "id", "ID");
+			TreeItem<DbNode> treeItem = createTreeItem(dbNode, level + 1);
+			if (treeItem != null) treeItems.add(treeItem);
+		}
+		treeItems.addAll(createPropertiesTreeItems(bean, beanInfo, level));
 
 		return treeItems;
 	}
 
 	private List<TreeItem<DbNode>> createEntityTreeItem(Object bean,
 		EntityBeanInfo beanInfo, int level) {
+		if (level > dephtLevelMax) return new ArrayList<>();
 		return beanInfo.getNamedEntityValuesAsStream(bean).map(dbNode -> {
 			TreeItem<DbNode> node = new TreeItem<>(dbNode);
 			node.getChildren().addAll(createBeanTreeItems(dbNode.getValue(), level + 1));
@@ -178,13 +197,15 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 
 	private List<TreeItem<DbNode>> createCollectionTreeItem(Object bean,
 		EntityBeanInfo beanInfo, int level) {
+		if (level > dephtLevelMax) return new ArrayList<>();
 		return beanInfo.getNamedCollectionValuesAsStream(bean).map(dbNode -> {
-			return createTreeItem(dbNode);
-		}).collect(Collectors.toList());
+			return createTreeItem(dbNode, level + 1);
+		}).filter(treeItem -> treeItem != null).collect(Collectors.toList());
 	}
 
 	private List<TreeItem<DbNode>> createPropertiesTreeItems(Object bean,
-		EntityBeanInfo beanInfo) {
+		EntityBeanInfo beanInfo, int level) {
+		if (level > dephtLevelMax) return new ArrayList<>();
 		return beanInfo.getNamedPropertiesValueAsStream(bean)
 			.filter(namedValue -> namedValue.getValue().getClass() != Class.class)
 			.map(o -> new TreeItem<>((DbNode) o)).collect(Collectors.toList());
