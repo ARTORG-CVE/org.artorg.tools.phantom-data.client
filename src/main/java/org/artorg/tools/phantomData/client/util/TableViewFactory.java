@@ -74,7 +74,7 @@ public class TableViewFactory {
 
 		if (tableView instanceof DbTableView) ((DbTableView<?>) tableView).reload();
 
-		tableView.initTable();
+//		tableView.initTable();
 
 		return tableView;
 	}
@@ -113,8 +113,8 @@ public class TableViewFactory {
 			tableView = new DbTableView<T>(itemClass);
 		else if (tableViewClass == DbFilterTableView.class)
 			tableView = new DbFilterTableView<T>(itemClass);
-		else if (tableViewClass == DbEditFilterTableView.class)
-			tableView = new DbEditFilterTableView<T>(itemClass);
+//		else if (tableViewClass == DbEditFilterTableView.class)
+//			tableView = new DbEditFilterTableView<T>(itemClass);
 		else 
 			throw new IllegalArgumentException();
 		
@@ -125,7 +125,7 @@ public class TableViewFactory {
 //			| SecurityException e) {
 //			e.printStackTrace();
 //		}
-		tableView.setTable(table);
+//		tableView.setTable(table);
 
 		return tableView;
 	}

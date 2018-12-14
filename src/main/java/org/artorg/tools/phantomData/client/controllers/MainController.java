@@ -13,6 +13,7 @@ import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.CssGlyph;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbEditFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
@@ -122,7 +123,7 @@ public class MainController extends StackPane {
 		
 		getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
 		getOrCreate(0).openViewerTab(createScene3dTab(null));
-		getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));
+//		getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));
 
 		FxUtil.addToPane(contentPane, splitPane);
 
@@ -474,7 +475,7 @@ public class MainController extends StackPane {
 	private ProTableView<?> createTable(Class<?> itemClass) {
 		return TableViewFactory.createInitializedTableView(itemClass,
 			DbTable.class,
-			DbEditFilterTableView.class);
+			DbFilterTableView.class);
 	}
 
 	@SuppressWarnings("unchecked")

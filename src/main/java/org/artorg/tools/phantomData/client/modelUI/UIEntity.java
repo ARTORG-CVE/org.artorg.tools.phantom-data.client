@@ -30,11 +30,7 @@ public interface UIEntity<T> {
 		return new DbTable<T>(getItemClass()) {
 			{
 				setTableName(getTableName());
-				setColumnCreator(items -> {
-					List<AbstractColumn<T,?>> columns = createColumns(); 
-					
-					return columns;
-				});
+				setColumnCreator(items -> createColumns());
 			}
 		};
 	}

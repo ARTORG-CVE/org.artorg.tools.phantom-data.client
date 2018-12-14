@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
@@ -28,13 +29,25 @@ public class DbFilterTableView<ITEM>
 		filterMenuButtons = new ArrayList<FilterMenuButton<ITEM, ?>>();
 	}
 
+	
+	
 	public DbFilterTableView(Class<ITEM> itemClass) {
-		super(itemClass);
+		this(itemClass, Main.getUIEntity(itemClass).createDbTableBase());
+		super.setItems(getTable().getItems());
+		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		reload();
+		refreshColumns();
+		autoResizeColumns();
+		getTable().applyFilter();
+		Platform.runLater(() -> showFilterButtons());
+	}
+	
+	
+	
+	protected DbFilterTableView(Class<ITEM> itemClass, DbTable<ITEM> table) {
+		super(itemClass, table);
 	}
 
-	
-	
-	
 	@Override
 	public void showHeaderRow() {
 		// TODO Auto-generated method stub
@@ -60,28 +73,16 @@ public class DbFilterTableView<ITEM>
 			}
 	}
 	
-	@Override
-	public void initTable() {
-		if (!(getTable() instanceof DbTable)) {
-			super.initTable();
-			return;
-		}
-
-		DbTable<ITEM> table = (DbTable<ITEM>) getTable();
-		refreshColumns();
-
-		super.setItems(table.getFilteredItems());
-//		super.getItems().clear();
-//		super.getItems().addAll(table.getFilteredItems());
-		
-		autoResizeColumns();
-		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
-		table.applyFilter();
-
-		Platform.runLater(() -> showFilterButtons());
-	}
-	
+//	@Override
+//	public void initTable() {
+//		if (!(getTable() instanceof DbTable)) {
+//			super.initTable();
+//			return;
+//		}
+//
+//		
+//	}
+//	
 	@Override
 	public void refreshColumns() {
 		System.out.println("DbFilterTableView - refreshColumns");

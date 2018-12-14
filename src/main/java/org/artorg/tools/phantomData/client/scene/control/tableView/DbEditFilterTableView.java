@@ -1,5 +1,6 @@
 package org.artorg.tools.phantomData.client.scene.control.tableView;
 
+import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.table.DbTable;
 
 import javafx.collections.ObservableList;
@@ -11,25 +12,13 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 public class DbEditFilterTableView<ITEM>
 		extends DbFilterTableView<ITEM> {
 	
-	public DbEditFilterTableView(Class<ITEM> itemClass) {
-		super(itemClass);
-	}
-			
-	@Override
-	public void initTable() {
-		if (getTable() instanceof DbTable)
-			initEditFilterTable( (DbTable<ITEM>) getTable());
-		else
-			super.initTable();
-	}
 	
-	@SuppressWarnings("unchecked")
-	protected void initEditFilterTable(DbTable<ITEM> table) {
-		super.initTable();
-
+	public DbEditFilterTableView(Class<ITEM> itemClass) {
+		this(itemClass, Main.getUIEntity(itemClass).createDbTableBase());
+		
 		ObservableList<TableColumn<ITEM, ?>> columns = super.getColumns();
 
-		int nCols = table.getFilteredNcols();
+		int nCols = getTable().getFilteredNcols();
 		for (int col = 0; col < nCols; col++) {
 			TableColumn<ITEM, String> column = (TableColumn<ITEM, String>) columns.get(col);
 
@@ -38,12 +27,34 @@ public class DbEditFilterTableView<ITEM>
 				@Override
 				public void handle(CellEditEvent<ITEM, String> t) {
 					ITEM item = ((ITEM) t.getTableView().getItems().get(t.getTablePosition().getRow()));
-					table.setFilteredValue(item, localCol, t.getNewValue());
+					getTable().setFilteredValue(item, localCol, t.getNewValue());
 				}
 			});
 		}
 		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+	}
+	
+	
+	protected DbEditFilterTableView(Class<ITEM> itemClass, DbTable<ITEM> table) {
+		super(itemClass, table);
+		
 		
 	}
+			
+//	@Override
+//	public void initTable() {
+//		if (getTable() instanceof DbTable)
+//			initEditFilterTable( (DbTable<ITEM>) getTable());
+//		else
+//			super.initTable();
+//	}
+//	
+//	@SuppressWarnings("unchecked")
+//	protected void initEditFilterTable(DbTable<ITEM> table) {
+//		super.initTable();
+//
+//		
+//		
+//	}
 
 }

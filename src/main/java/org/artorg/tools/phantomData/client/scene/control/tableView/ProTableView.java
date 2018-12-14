@@ -3,6 +3,7 @@ package org.artorg.tools.phantomData.client.scene.control.tableView;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
+import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
@@ -36,7 +37,19 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T>
 	}
 
 	public ProTableView(Class<T> itemClass) {
+		this(itemClass, Main.getUIEntity(itemClass).createTableBase());
+		super.setItems(table.getItems());
+		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		refreshColumns();
+		autoResizeColumns();
+		super.getSelectionModel().selectFirst();
+	}
+	
+	protected ProTableView(Class<T> itemClass, TableBase<T> table) {
 		this.itemClass = itemClass;
+		this.table = table;
+		super.setItems(table.getItems());
+		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	}
 
 	public void removeHeaderRow() {
@@ -53,18 +66,9 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T>
 	});
 	}
 
-	public void initTable() {
-		refreshColumns();
-
-		super.setItems(table.getItems());
-//		super.getItems().clear();
-//		super.getItems().addAll(table.getItems());
-		
-		
-		autoResizeColumns();
-		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		super.getSelectionModel().selectFirst();
-	}
+//	public void initTable() {
+//		
+//	}
 
 	public void refreshColumns() {
 		CollectionUtil.addIfAbsent(table.getColumnCreator().apply(getItems()),
@@ -129,10 +133,10 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T>
 //		return headerColumn;
 //	}
 
-	public void setTable(TableBase<T> table) {
-		this.table = table;
-		initTable();
-	}
+//	public void setTable(TableBase<T> table) {
+//		this.table = table;
+//		initTable();
+//	}
 
 	public TableBase<T> getTable() {
 		return table;

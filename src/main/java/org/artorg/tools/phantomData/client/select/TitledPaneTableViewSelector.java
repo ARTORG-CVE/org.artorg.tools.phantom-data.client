@@ -24,9 +24,9 @@ public class TitledPaneTableViewSelector<ITEM extends DbPersistent<ITEM, ?>> ext
 		super(subItemClass);
 		
 		DbFilterTableView<ITEM> tableView1 = (DbFilterTableView<ITEM>) TableViewFactory.createInitializedTableView(subItemClass,
-			TableBase.class, DbEditFilterTableView.class);
+			TableBase.class, DbFilterTableView.class);
 		DbFilterTableView<ITEM> tableView2 = (DbFilterTableView<ITEM>) TableViewFactory.createInitializedTableView(subItemClass,
-			TableBase.class, DbEditFilterTableView.class);
+			TableBase.class, DbFilterTableView.class);
 
 		this.setTableView1(tableView1);
 		this.setTableView2(tableView2);
