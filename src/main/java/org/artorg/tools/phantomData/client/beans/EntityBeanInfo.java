@@ -73,10 +73,15 @@ public class EntityBeanInfo {
 		collectionDescriptors = bean -> notBasePropertyDescriptors.stream()
 			.filter(d -> !d.getPropertyType().isAnnotationPresent(Entity.class))
 			.filter(d -> Collection.class.isAssignableFrom(d.getPropertyType()))
-			.filter(d -> !((Collection<Object>) getValue(d, bean)).isEmpty())
-			.filter(d -> ((Collection<Object>) getValue(d, bean)).stream().findFirst()
-				.get().getClass().isAnnotationPresent(Entity.class))
-			.filter(d -> getValue(d, bean) != null).collect(Collectors.toList());
+			.filter(d -> {
+				Object value = getValue(d, bean);
+				if (value == null) return false; 
+				Collection<?> coll = (Collection<?>)value;
+				if (coll.isEmpty()) return false;
+				return coll.stream().findFirst()
+					.get().getClass().isAnnotationPresent(Entity.class);
+			})
+			.collect(Collectors.toList());
 
 		propertiesDescriptors = bean -> notBasePropertyDescriptors.stream()
 			.filter(d -> !d.getPropertyType().isAnnotationPresent(Entity.class))
@@ -103,7 +108,7 @@ public class EntityBeanInfo {
 			return new DbNode(value, d.getName(), "EntityValueAsStream");
 		}).filter(property -> property != null);
 	}
-
+	
 	public Stream<DbNode> getNamedCollectionValuesAsStream(Object bean) {
 		return collectionDescriptors.apply(bean).stream().map(d -> {
 			Object value = EntityBeanInfo.getValue(d, bean);

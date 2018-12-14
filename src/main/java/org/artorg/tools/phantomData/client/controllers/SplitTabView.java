@@ -8,10 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,7 +24,6 @@ import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.editor.FxFactory;
-import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.SmartSplitTabPane;
 import org.artorg.tools.phantomData.client.scene.control.SmartTabPane;
@@ -38,9 +34,7 @@ import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTab
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.table.DbTable;
-import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.client.util.TableViewFactory;
 import org.artorg.tools.phantomData.server.model.base.DbFile;
 import org.artorg.tools.phantomData.server.model.specification.NameGeneratable;
@@ -223,48 +217,55 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 	}
 
-	private static Map<Class<?>, Class<?>> factoryClassMap = new HashMap<>();
+//	private static Map<Class<?>, Class<?>> factoryClassMap = new HashMap<>();
 	
-	public static void searchFactoryClasses(Collection<Class<?>> itemClasses) {
-		itemClasses.forEach(itemClass -> {
-			try {
-				findFactoryClass(itemClass);
-			} catch (Exception e) {}
-		});
-	}
+//	public static void searchFactoryClasses(Collection<Class<?>> itemClasses) {
+//		itemClasses.forEach(itemClass -> {
+//			try {
+//				findFactoryClass(itemClass);
+//			} catch (Exception e) {}
+//		});
+//	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> FxFactory<T> createFxFactory(Class<T> itemClass) {
-		FxFactory<T> fxFactory = null;
-
-		Class<?> factoryClass = null;
-
-		if (factoryClassMap.containsKey(itemClass)) {
-			factoryClass = factoryClassMap.get(itemClass);
-		}
-		else {
-			try {
-				factoryClass = findFactoryClass(itemClass);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		try {
-			fxFactory = (FxFactory<T>) factoryClass.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
-
-		return fxFactory;
+		return (FxFactory<T>) Main.getUIEntity(((Class<DbPersistent<T,?>>)itemClass)).createEditFactory();
 	}
+		
+		
+//		FxFactory<T> fxFactory = null;
+//
+//		Class<?> factoryClass = null;
+//
+//		if (factoryClassMap.containsKey(itemClass)) {
+//			factoryClass = factoryClassMap.get(itemClass);
+//		}
+//		else {
+//			try {
+//				factoryClass = findFactoryClass(itemClass);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+//
+//		try {
+//			fxFactory = (FxFactory<T>) factoryClass.newInstance();
+//		} catch (InstantiationException | IllegalAccessException e) {
+//			e.printStackTrace();
+//		}
+//
+//		return fxFactory;
+//	}
 
-	private static Class<?> findFactoryClass(Class<?> itemClass) throws Exception {
-			Class<?> factoryClass = Reflect.getClassByGenericAndSuperClass(ItemEditFactoryController.class,
-				itemClass, 0, Main.getReflections());
-			factoryClassMap.put(itemClass, factoryClass);
-			return factoryClass;
-	}
+//	private static Class<?> findFactoryClass(Class<?> itemClass) throws Exception {
+//		
+//		
+//		
+//			Class<?> factoryClass = Reflect.getClassByGenericAndSuperClass(ItemEditFactoryController.class,
+//				itemClass, 0, Main.getReflections());
+//			factoryClassMap.put(itemClass, factoryClass);
+//			return factoryClass;
+//	}
 
 	private <ITEM extends DbPersistent<ITEM, ?>> void setTreeTableTab(Tab tab,
 		ProTreeTableView<ITEM> proTreeTableView) {

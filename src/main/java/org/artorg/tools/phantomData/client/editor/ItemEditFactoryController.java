@@ -35,7 +35,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
 @SuppressWarnings("unchecked")
-public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, ?>> extends VGridBoxPane
+public abstract class ItemEditFactoryController<ITEM> extends VGridBoxPane
 		implements FxFactory<ITEM> {
 	protected Button applyButton;
 	private List<Node> rightNodes;
@@ -245,7 +245,7 @@ public abstract class ItemEditFactoryController<ITEM extends DbPersistent<ITEM, 
 	public AnchorPane edit(ITEM item, Class<?> itemClass) {
 		selectors = createSelectors(item, itemClass);
 		Label label = new Label();
-		label.setText(item.getId().toString());
+		label.setText(((Identifiable<?>)item).getId().toString());
 		label.setDisable(true);
 		PropertyEntry idEntry = new PropertyEntry("Id", label);
 		getPropertyEntries().add(idEntry);

@@ -2,7 +2,6 @@ package org.artorg.tools.phantomData.client.select;
 
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbEditFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTableView;
-import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.TableViewFactory;
@@ -10,7 +9,6 @@ import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 

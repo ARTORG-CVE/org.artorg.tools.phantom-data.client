@@ -2,6 +2,8 @@ package org.artorg.tools.phantomData.client;
 
 import static org.artorg.tools.phantomData.client.boot.DatabaseInitializer.initDatabase;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfos;
@@ -9,17 +11,54 @@ import org.artorg.tools.phantomData.client.boot.DatabaseInitializer;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.controllers.MainController;
-import org.artorg.tools.phantomData.client.controllers.SplitTabView;
-import org.artorg.tools.phantomData.client.table.DbTable;
-import org.artorg.tools.phantomData.client.tablesFilter.phantom.PhantomFilterTable;
+import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.modelsUI.base.DbFileUI;
+import org.artorg.tools.phantomData.client.modelsUI.base.FileTagUI;
+import org.artorg.tools.phantomData.client.modelsUI.base.NoteUI;
+import org.artorg.tools.phantomData.client.modelsUI.base.person.AcademicTitleUI;
+import org.artorg.tools.phantomData.client.modelsUI.base.person.PersonUI;
+import org.artorg.tools.phantomData.client.modelsUI.base.property.BooleanPropertyUI;
+import org.artorg.tools.phantomData.client.modelsUI.base.property.DoublePropertyUI;
+import org.artorg.tools.phantomData.client.modelsUI.base.property.IntegerPropertyUI;
+import org.artorg.tools.phantomData.client.modelsUI.base.property.PropertyFieldUI;
+import org.artorg.tools.phantomData.client.modelsUI.base.property.StringPropertyUI;
+import org.artorg.tools.phantomData.client.modelsUI.measurement.ExperimentalSetupUI;
+import org.artorg.tools.phantomData.client.modelsUI.measurement.MeasurementUI;
+import org.artorg.tools.phantomData.client.modelsUI.measurement.ProjectUI;
+import org.artorg.tools.phantomData.client.modelsUI.phantom.AnnulusDiameterUI;
+import org.artorg.tools.phantomData.client.modelsUI.phantom.FabricationTypeUI;
+import org.artorg.tools.phantomData.client.modelsUI.phantom.LiteratureBaseUI;
+import org.artorg.tools.phantomData.client.modelsUI.phantom.ManufacturingUI;
+import org.artorg.tools.phantomData.client.modelsUI.phantom.PhantomUI;
+import org.artorg.tools.phantomData.client.modelsUI.phantom.PhantominaUI;
+import org.artorg.tools.phantomData.client.modelsUI.phantom.SpecialUI;
 import org.artorg.tools.phantomData.server.BootApplication;
 import org.artorg.tools.phantomData.server.boot.ConsoleFrame;
 import org.artorg.tools.phantomData.server.boot.ServerBooter;
 import org.artorg.tools.phantomData.server.boot.StartupProgressFrame;
+import org.artorg.tools.phantomData.server.model.base.DbFile;
+import org.artorg.tools.phantomData.server.model.base.FileTag;
+import org.artorg.tools.phantomData.server.model.base.Note;
+import org.artorg.tools.phantomData.server.model.base.person.AcademicTitle;
+import org.artorg.tools.phantomData.server.model.base.person.Person;
+import org.artorg.tools.phantomData.server.model.base.property.PropertyField;
+import org.artorg.tools.phantomData.server.model.measurement.ExperimentalSetup;
+import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
+import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
+import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
+import org.artorg.tools.phantomData.server.model.phantom.Manufacturing;
+import org.artorg.tools.phantomData.server.model.phantom.Phantom;
+import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
+import org.artorg.tools.phantomData.server.model.phantom.Special;
 import org.artorg.tools.phantomData.server.util.FxUtil;
 import org.reflections.Reflections;
 
+import fxsampler.model.Project;
+import io.micrometer.core.instrument.Measurement;
 import javafx.application.Application;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -34,10 +73,34 @@ public class Main extends DesktopFxBootApplication {
 	private static Scene scene;
 	private static Stage stage;
 	private static MainController mainController;
+	private static final Map<Class<?>,UIEntity<?>> uiEntities;
 
 	static {
 		mainFxClass = null;
 		started = false;
+		
+		uiEntities = new HashMap<>();
+		uiEntities.put(AcademicTitle.class, new AcademicTitleUI());
+		uiEntities.put(Person.class, new PersonUI());
+		uiEntities.put(DbFile.class, new DbFileUI());
+		uiEntities.put(FileTag.class, new FileTagUI());
+		uiEntities.put(Note.class, new NoteUI());
+		uiEntities.put(BooleanPropertyUI.class, new BooleanPropertyUI());
+		uiEntities.put(DoubleProperty.class, new DoublePropertyUI());
+		uiEntities.put(IntegerProperty.class, new IntegerPropertyUI());
+		uiEntities.put(StringProperty.class, new StringPropertyUI());
+		uiEntities.put(PropertyField.class, new PropertyFieldUI());
+		uiEntities.put(ExperimentalSetup.class, new ExperimentalSetupUI());
+		uiEntities.put(Measurement.class, new MeasurementUI());
+		uiEntities.put(Project.class, new ProjectUI());
+		uiEntities.put(AnnulusDiameter.class, new AnnulusDiameterUI());
+		uiEntities.put(FabricationType.class, new FabricationTypeUI());
+		uiEntities.put(LiteratureBase.class, new LiteratureBaseUI());
+		uiEntities.put(Manufacturing.class, new ManufacturingUI());
+		uiEntities.put(Phantomina.class, new PhantominaUI());
+		uiEntities.put(Phantom.class, new PhantomUI());
+		uiEntities.put(Special.class, new SpecialUI());
+		
 	}
 
 	public static void main(String[] args) {
@@ -103,19 +166,18 @@ public class Main extends DesktopFxBootApplication {
 		
 		// speed optimization
 		Connectors.createConnectors(beanInfos.getEntityClasses());
-		SplitTabView.searchFactoryClasses(beanInfos.getEntityClasses());
+//		SplitTabView.searchFactoryClasses(beanInfos.getEntityClasses());
 		
 		
 		stage.show();
 		stage.requestFocus();
 		stage.toFront();
 		started = true;
-
-		DbTable<?> table = new PhantomFilterTable();
-
-		table.readAllData();
-
-		System.out.println(table.toString());
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> UIEntity<T> getUIEntity(Class<T> itemClass) {
+		return (UIEntity<T>) uiEntities.get(itemClass);
 	}
 
 	public static Reflections getReflections() {

@@ -11,7 +11,6 @@ import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
 import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
@@ -20,17 +19,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 
-public class DbFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
+public class DbFilterTableView<ITEM>
 	extends DbTableView<ITEM> {
 	protected List<FilterMenuButton<ITEM, ?>> filterMenuButtons;
 
 	{
 		super.setEditable(true);
 		filterMenuButtons = new ArrayList<FilterMenuButton<ITEM, ?>>();
-	}
-
-	public DbFilterTableView() {
-		super();
 	}
 
 	public DbFilterTableView(Class<ITEM> itemClass) {
@@ -89,10 +84,11 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 	
 	@Override
 	public void refreshColumns() {
-		if (!(getTable() instanceof DbTable)) {
-			super.initTable();
-			return;
-		}
+		System.out.println("DbFilterTableView - refreshColumns");
+//		if (!(getTable() instanceof DbTable)) {
+//			super.initTable();
+//			return;
+//		}
 		DbTable<ITEM> table = (DbTable<ITEM>) getTable();
 		CollectionUtil.addIfAbsent(
 			getTable().getColumnCreator().apply(table.getFilteredItems()),
@@ -143,14 +139,14 @@ public class DbFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
 
 	@Override
 	public void reload() {
+		System.out.println("DbFilterTableView - reload");
 		if (getTable() instanceof DbTable)
 			reloadFilterTable(
 				(DbTable<ITEM>) getTable());
 	}
 
-	private <TABLE extends DbTable<ITEM>> void
-		reloadFilterTable(TABLE table) {
-		table.readAllData();
+	private void reloadFilterTable(DbTable<ITEM> table) {
+		table.reload();
 		
 		
 //		super.setItems(table.getFilteredItems());

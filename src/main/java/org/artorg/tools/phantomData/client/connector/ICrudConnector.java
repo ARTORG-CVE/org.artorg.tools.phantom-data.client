@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import org.artorg.tools.phantomData.client.util.StreamUtils;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 
-public interface ICrudConnector<T extends Identifiable<?>> {
+public interface ICrudConnector<T> {
 	
 	boolean create(T t);
 	
@@ -61,7 +61,7 @@ public interface ICrudConnector<T extends Identifiable<?>> {
 	}
 	
 	default boolean delete(T[] t) {
-		return StreamUtils.forEach(item -> deleteById(item.getId()), t);
+		return StreamUtils.forEach(item -> deleteById(((Identifiable<?>)item).getId()), t);
 	}
 	
 	default boolean update(List<T> t) {
@@ -77,7 +77,7 @@ public interface ICrudConnector<T extends Identifiable<?>> {
 	}
 	
 	default boolean exist(T t) {
-		return existById(t.getId());
+		return existById(((Identifiable<?>)t).getId());
 	}
 	
 }

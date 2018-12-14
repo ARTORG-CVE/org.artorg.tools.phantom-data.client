@@ -5,10 +5,13 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.beans.DbNode;
+import org.artorg.tools.phantomData.client.scene.control.tableView.DbEditFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
+import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
@@ -65,7 +68,7 @@ public class TableViewFactory {
 
 	public static <T, TABLE extends TableBase<T>,
 		TABLE_VIEW extends ProTableView<T>> ProTableView<T>
-		createInitializedTableView(Class<?> itemClass, Class<TABLE> tableClass,
+		createInitializedTableView(Class<T> itemClass, Class<TABLE> tableClass,
 			Class<TABLE_VIEW> tableViewClass) {
 		ProTableView<T> tableView = createTableView(itemClass, tableClass, tableViewClass);
 
@@ -79,7 +82,7 @@ public class TableViewFactory {
 	@SuppressWarnings("unchecked")
 	public static <T, TABLE extends TableBase<T>,
 		TABLE_VIEW extends ProTableView<T>> ProTableView<T>
-		createTableView(Class<?> itemClass, Class<TABLE> tableClass,
+		createTableView(Class<T> itemClass, Class<TABLE> tableClass,
 			Class<TABLE_VIEW> tableViewClass, List<TreeItem<DbNode>> treeItems) {
 		ProTableView<T> tableView = createTableView(itemClass, tableClass, tableViewClass);
 		ObservableList<T> items = FXCollections.observableArrayList();
@@ -98,27 +101,49 @@ public class TableViewFactory {
 	
 	public static <T, TABLE extends TableBase<T>,
 		TABLE_VIEW extends ProTableView<T>> ProTableView<T>
-		createTableView(Class<?> itemClass, Class<TABLE> tableClass,
+		createTableView(Class<T> itemClass, Class<TABLE> tableClass,
 			Class<TABLE_VIEW> tableViewClass) {
 
 		TableBase<T> table = createTableBase(itemClass, tableClass);
 		ProTableView<T> tableView = null;
-		try {
-			tableView = tableViewClass.getConstructor(Class.class).newInstance(itemClass);
-		} catch (InstantiationException | IllegalAccessException
-			| IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-			| SecurityException e) {
-			e.printStackTrace();
-		}
+		
+		if (tableViewClass == ProTableView.class)
+			tableView = new ProTableView<T>(itemClass);
+		else if (tableViewClass == DbTableView.class)
+			tableView = new DbTableView<T>(itemClass);
+		else if (tableViewClass == DbFilterTableView.class)
+			tableView = new DbFilterTableView<T>(itemClass);
+		else if (tableViewClass == DbEditFilterTableView.class)
+			tableView = new DbEditFilterTableView<T>(itemClass);
+		else 
+			throw new IllegalArgumentException();
+		
+//		try {
+//			tableView = tableViewClass.getConstructor(Class.class).newInstance(itemClass);
+//		} catch (InstantiationException | IllegalAccessException
+//			| IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+//			| SecurityException e) {
+//			e.printStackTrace();
+//		}
 		tableView.setTable(table);
 
 		return tableView;
 	}
 
+	@SuppressWarnings({ "unchecked" })
 	public static <T> TableBase<T>
 		createTableBase(Class<?> itemClass, Class<? extends TableBase<T>> tableClass) {
-		return Reflect.createInstanceByGenericAndSuperClass(tableClass, itemClass,
-			Main.getReflections());
+		
+		if (tableClass == TableBase.class)
+			return (TableBase<T>) Main.getUIEntity(itemClass).createTableBase();
+		else if (tableClass == DbTable.class)
+			return (TableBase<T>) Main.getUIEntity(itemClass).createDbTableBase();
+		else
+			throw new IllegalArgumentException();
+		
+		
+//		return Reflect.createInstanceByGenericAndSuperClass(tableClass, itemClass,
+//			Main.getReflections());
 	}
 
 }

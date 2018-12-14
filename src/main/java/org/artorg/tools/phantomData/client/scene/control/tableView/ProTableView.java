@@ -7,7 +7,6 @@ import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
-import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.client.util.TableViewUtils;
 
 import javafx.application.Platform;
@@ -34,12 +33,6 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T>
 			(fromColumn, toColumn) -> toColumn.getText().equals(fromColumn.getName());
 		columnRemovePolicy =
 			(fromColumn, toColumn) -> toColumn.getText().equals(fromColumn.getName());
-	}
-
-	@SuppressWarnings("unchecked")
-	public ProTableView() {
-		itemClass =
-			(Class<T>) Reflect.findSubClassParameterType(this, ProTableView.class, 0);
 	}
 
 	public ProTableView(Class<T> itemClass) {

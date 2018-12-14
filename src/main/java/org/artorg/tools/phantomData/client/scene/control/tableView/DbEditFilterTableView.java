@@ -1,7 +1,6 @@
 package org.artorg.tools.phantomData.client.scene.control.tableView;
 
 import org.artorg.tools.phantomData.client.table.DbTable;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -9,10 +8,8 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 
-public class DbEditFilterTableView<ITEM extends DbPersistent<ITEM, ?>>
+public class DbEditFilterTableView<ITEM>
 		extends DbFilterTableView<ITEM> {
-
-	public DbEditFilterTableView() {}
 	
 	public DbEditFilterTableView(Class<ITEM> itemClass) {
 		super(itemClass);

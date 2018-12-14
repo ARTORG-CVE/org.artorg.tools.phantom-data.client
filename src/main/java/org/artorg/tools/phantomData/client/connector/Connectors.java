@@ -8,7 +8,6 @@ import org.artorg.tools.phantomData.server.model.base.person.AcademicTitle;
 import org.artorg.tools.phantomData.server.model.base.person.Gender;
 import org.artorg.tools.phantomData.server.model.base.person.Person;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
-import org.artorg.tools.phantomData.server.specification.Identifiable;
 
 public class Connectors {
 	private static final Map<Class<?>, CrudConnector<?>> connectorMapUnpersonified;
@@ -22,7 +21,7 @@ public class Connectors {
 		connectorMap = new HashMap<Class<?>, PersonifiedCrudConnector<?>>();
 	}
 	
-	public static <ITEM extends Identifiable<?>>
+	public static <ITEM>
 		ICrudConnector<ITEM> getConnector(Class<ITEM> itemClass) {
 		if (itemClass == Person.class || itemClass == Gender.class || itemClass == AcademicTitle.class)
 			return (ICrudConnector<ITEM>) getOrCreateUnpersonified(itemClass);
@@ -35,7 +34,7 @@ public class Connectors {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static <U extends Identifiable<?>> ICrudConnector<U>
+	private static <U> ICrudConnector<U>
 		getOrCreateUnpersonified(Class<U> cls) {
 		if (connectorMapUnpersonified.containsKey(cls))
 			return (ICrudConnector<U>) connectorMapUnpersonified.get(cls);
@@ -45,7 +44,7 @@ public class Connectors {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static <U extends Identifiable<?>> ICrudConnector<U>
+	private static <U> ICrudConnector<U>
 		getOrCreatePersonified(Class<U> cls) {
 		if (connectorMap.containsKey(cls))
 			return (ICrudConnector<U>) connectorMap.get(cls);

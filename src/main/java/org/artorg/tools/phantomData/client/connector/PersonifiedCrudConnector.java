@@ -8,7 +8,7 @@ import org.artorg.tools.phantomData.server.model.specification.AbstractPropertif
 import org.artorg.tools.phantomData.server.model.specification.AbstractPersonifiedEntity;
 import org.artorg.tools.phantomData.server.specification.Identifiable;
 
-public class PersonifiedCrudConnector<T extends Identifiable<?>> extends CrudConnector<T> {
+public class PersonifiedCrudConnector<T> extends CrudConnector<T> {
 	private static Supplier<Person> userSupplier;
 	
 	static {

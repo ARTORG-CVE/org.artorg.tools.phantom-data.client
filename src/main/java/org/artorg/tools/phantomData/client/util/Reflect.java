@@ -25,71 +25,71 @@ import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 
 public class Reflect {
-	@SuppressWarnings("unchecked")
-	public static <T> T createInstanceByGenericAndSuperClass(Class<T> superClass,
-		Class<?> genericClass, Reflections reflections) {
-		Class<?> subClass = getClassByGenericAndSuperClass(superClass, superClass,
-			genericClass, 0, reflections);
-		T t = null;
-		try {
-			t = (T) subClass.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		return t;
-	}
-
-	public static <T> Class<?> getClassByGenericAndSuperClass(Class<T> superClass,
-		Class<?> genericClass, Reflections reflections) {
-		return getClassByGenericAndSuperClass(superClass, superClass, genericClass, 0,
-			reflections);
-	}
-
-	public static <T> Class<?> getClassByGenericAndSuperClass(Class<T> superClass,
-		Class<?> genericClass, int parameterIndex, Reflections reflections) {
-		return getClassByGenericAndSuperClass(superClass, superClass, genericClass,
-			parameterIndex, reflections);
-	}
-
-	public static <T> Class<?> getClassByGenericAndSuperClass(Class<T> superClass,
-		Class<?> classOfInterest, Class<?> genericClass, int parameterIndex,
-		Reflections reflections) {
-		List<Class<?>> superClasses = Reflect.getSubclasses(superClass, reflections);
-		final List<Exception> exceptions = new ArrayList<Exception>();
-		List<Class<?>> classes = superClasses.stream()
-			.filter(c -> !Modifier.isAbstract(c.getModifiers())).filter(c -> {
-				try {
-					Class<?> temp = Reflect.findSubClassParameterType(c.newInstance(),
-						classOfInterest, parameterIndex);
-					return temp == genericClass;
-				} catch (Exception e2) {
-					exceptions.add(e2);
-//					e2.printStackTrace();						
-				}
-				return false;
-
-			}).collect(Collectors.toList());
-		Class<?> cls = classes.stream().findFirst().orElseThrow(() -> {
-			if (classes.size() == 0) {
-				exceptions.forEach(e -> e.printStackTrace());
-				String superClassesString = superClasses.stream()
-					.map(cls2 -> cls2.getSimpleName()).collect(Collectors.joining(","));
-				return new IllegalArgumentException(String.format(
-					"superClasses: %s, superClass: %s, classOfInterest: %s, genericClass: %s, index: %d",
-					superClassesString, superClass.getSimpleName(),
-					classOfInterest.getSimpleName(), genericClass.getSimpleName(),
-					parameterIndex));
-			} else {
-				exceptions.forEach(e -> e.printStackTrace());
-				String classesString = classes.stream().map(cls2 -> cls2.getSimpleName())
-					.collect(Collectors.joining(",", "{", "}"));
-				return new IllegalArgumentException(
-					"size: " + classes.size() + ", " + classesString);
-			}
-		});
-		if (cls == null) throw new NullPointerException();
-		return cls;
-	}
+//	@SuppressWarnings("unchecked")
+//	public static <T> T createInstanceByGenericAndSuperClass(Class<T> superClass,
+//		Class<?> genericClass, Reflections reflections) {
+//		Class<?> subClass = getClassByGenericAndSuperClass(superClass, superClass,
+//			genericClass, 0, reflections);
+//		T t = null;
+//		try {
+//			t = (T) subClass.newInstance();
+//		} catch (InstantiationException | IllegalAccessException e) {
+//			e.printStackTrace();
+//		}
+//		return t;
+//	}
+//
+//	public static <T> Class<?> getClassByGenericAndSuperClass(Class<T> superClass,
+//		Class<?> genericClass, Reflections reflections) {
+//		return getClassByGenericAndSuperClass(superClass, superClass, genericClass, 0,
+//			reflections);
+//	}
+//
+//	public static <T> Class<?> getClassByGenericAndSuperClass(Class<T> superClass,
+//		Class<?> genericClass, int parameterIndex, Reflections reflections) {
+//		return getClassByGenericAndSuperClass(superClass, superClass, genericClass,
+//			parameterIndex, reflections);
+//	}
+//
+//	public static <T> Class<?> getClassByGenericAndSuperClass(Class<T> superClass,
+//		Class<?> classOfInterest, Class<?> genericClass, int parameterIndex,
+//		Reflections reflections) {
+//		List<Class<?>> superClasses = Reflect.getSubclasses(superClass, reflections);
+//		final List<Exception> exceptions = new ArrayList<Exception>();
+//		List<Class<?>> classes = superClasses.stream()
+//			.filter(c -> !Modifier.isAbstract(c.getModifiers())).filter(c -> {
+//				try {
+//					Class<?> temp = Reflect.findSubClassParameterType(c.newInstance(),
+//						classOfInterest, parameterIndex);
+//					return temp == genericClass;
+//				} catch (Exception e2) {
+//					exceptions.add(e2);
+////					e2.printStackTrace();						
+//				}
+//				return false;
+//
+//			}).collect(Collectors.toList());
+//		Class<?> cls = classes.stream().findFirst().orElseThrow(() -> {
+//			if (classes.size() == 0) {
+//				exceptions.forEach(e -> e.printStackTrace());
+//				String superClassesString = superClasses.stream()
+//					.map(cls2 -> cls2.getSimpleName()).collect(Collectors.joining(","));
+//				return new IllegalArgumentException(String.format(
+//					"superClasses: %s, superClass: %s, classOfInterest: %s, genericClass: %s, index: %d",
+//					superClassesString, superClass.getSimpleName(),
+//					classOfInterest.getSimpleName(), genericClass.getSimpleName(),
+//					parameterIndex));
+//			} else {
+//				exceptions.forEach(e -> e.printStackTrace());
+//				String classesString = classes.stream().map(cls2 -> cls2.getSimpleName())
+//					.collect(Collectors.joining(",", "{", "}"));
+//				return new IllegalArgumentException(
+//					"size: " + classes.size() + ", " + classesString);
+//			}
+//		});
+//		if (cls == null) throw new NullPointerException();
+//		return cls;
+//	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> Class<? extends T[]> getArrayClass(Class<T> clazz) {

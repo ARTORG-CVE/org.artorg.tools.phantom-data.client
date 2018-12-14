@@ -2,12 +2,9 @@ package org.artorg.tools.phantomData.client.connector;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -34,7 +31,7 @@ import org.springframework.web.client.RestTemplate;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
-public class CrudConnector<T extends Identifiable<?>> implements ICrudConnector<T> {
+public class CrudConnector<T> implements ICrudConnector<T> {
 	private static String urlLocalhost;
 	private final String annoStringControlClass;
 	private final String annoStringRead;
@@ -102,12 +99,13 @@ public class CrudConnector<T extends Identifiable<?>> implements ICrudConnector<
 
 	public <U extends Identifiable<ID>, ID extends Comparable<ID>> void reload() {
 		List<T> itemList = Arrays.asList(readAllDb());
-		itemList.stream().forEach(item -> map.put(item.getId().toString(), item));
-		List<String> dbKeys = itemList.stream().map(item -> item.getId().toString())
-			.collect(Collectors.toList());
-		List<String> removableKeys = map.keySet().stream()
-			.filter(key -> !dbKeys.contains(key)).collect(Collectors.toList());
-		removableKeys.stream().forEach(key -> map.remove(key));
+		map.clear();
+		itemList.stream().forEach(item -> map.put(((Identifiable<?>)item).getId().toString(), item));
+//		List<String> dbKeys = itemList.stream().map(item -> item.getId().toString())
+//			.collect(Collectors.toList());
+//		List<String> removableKeys = map.keySet().stream()
+//			.filter(key -> !dbKeys.contains(key)).collect(Collectors.toList());
+//		removableKeys.stream().forEach(key -> map.remove(key));
 	}
 
 	@Override
@@ -137,14 +135,14 @@ public class CrudConnector<T extends Identifiable<?>> implements ICrudConnector<
 	@Override
 	public boolean create(T t) {
 		if (createDb(t)) {
-			map.put(t.getId().toString(), t);
+			map.put(((Identifiable<?>)t).getId().toString(), t);
 			return true;
 		}
 		return false;
 	}
 
 	public boolean createDb(T t) {
-		if (existById(t.getId())) return false;
+		if (existById(((Identifiable<?>)t).getId())) return false;
 		try {
 			HttpHeaders headers = createHttpHeaders();
 			RestTemplate restTemplate = new RestTemplate();
@@ -179,7 +177,7 @@ public class CrudConnector<T extends Identifiable<?>> implements ICrudConnector<
 	@Override
 	public boolean update(T t) {
 		boolean result = updateDb(t);
-		if (result) map.put(t.getId().toString(), t);
+		if (result) map.put(((Identifiable<?>)t).getId().toString(), t);
 		return result;
 	}
 

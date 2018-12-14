@@ -2,13 +2,8 @@ package org.artorg.tools.phantomData.client.scene.control.tableView;
 
 import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.table.TableBase;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class DbTableView<ITEM extends DbPersistent<ITEM,?>> extends ProTableView<ITEM> {
-	
-	public DbTableView() {
-		super();
-	}
+public class DbTableView<ITEM> extends ProTableView<ITEM> {
 	
 	public DbTableView(Class<ITEM> itemClass) {
 		super(itemClass);
@@ -23,8 +18,10 @@ public class DbTableView<ITEM extends DbPersistent<ITEM,?>> extends ProTableView
 	}
 	
 	public void reload() {
+		System.out.println("DbTableView - reload");
 //		getTable().getItems().removeListener(getListenerChangedListenerRefresh());
-		((DbTable<ITEM>)getTable()).readAllData();
+		
+		((DbTable<ITEM>)getTable()).reload();
 		
 		
 		super.setItems(getTable().getItems());

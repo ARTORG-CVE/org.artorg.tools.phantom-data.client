@@ -12,6 +12,12 @@ public class FilterColumn<T,R> extends AbstractFilterColumn<T,R> {
 	private final Function<Object, R> propertyToValueGetter;
 	private final BiConsumer<Object, R> propertyToValueSetter;
 
+	
+	public <SUB extends DbPersistent<SUB,?>> FilterColumn(String columnName, Function<T, SUB> itemToPropertyGetter, 
+		Function<SUB, R> propertyToValueGetter) {
+		this(columnName, itemToPropertyGetter, propertyToValueGetter, (sub,r) -> {});
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <SUB extends DbPersistent<SUB,?>> FilterColumn(String columnName, Function<T, SUB> itemToPropertyGetter, 
 			Function<SUB, R> propertyToValueGetter, 
@@ -21,6 +27,8 @@ public class FilterColumn<T,R> extends AbstractFilterColumn<T,R> {
 		this.propertyToValueGetter = (Function<Object, R>) propertyToValueGetter;
 		this.propertyToValueSetter = (BiConsumer<Object, R>) propertyToValueSetter;
 	}
+	
+	
 	
 	@Override
 	public R get(T item) {
