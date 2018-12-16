@@ -40,7 +40,7 @@ public abstract class PropertyUI<
 	@Override
 	public List<AbstractColumn<T, ?>> createColumns() {
 		List<AbstractColumn<T, ?>> columns = new ArrayList<AbstractColumn<T, ?>>();
-		columns.add(new FilterColumn<T, String>("Type", item -> item, path -> {
+		columns.add(new FilterColumn<T, T, String>("Type", path -> {
 			try {
 				return Class.forName(path.getPropertyField().getType()).getSimpleName();
 			} catch (ClassNotFoundException e) {
@@ -49,9 +49,9 @@ public abstract class PropertyUI<
 			return path.getPropertyField().getType();
 		}, (path, value) -> {}));
 		columns.add(
-			new FilterColumn<T, String>("Field Name", item -> item.getPropertyField(),
+			new FilterColumn<T, PropertyField, String>("Field Name", item -> item.getPropertyField(),
 				path -> path.getName(), (path, value) -> path.setName(value)));
-		columns.add(new FilterColumn<T, String>("Value", item -> item,
+		columns.add(new FilterColumn<T, T, String>("Value",
 			path -> String.valueOf(path.getValue()),
 			(path, value) -> path.setValue(fromString(value))));
 		ColumnUtils.createPersonifiedColumns(columns);

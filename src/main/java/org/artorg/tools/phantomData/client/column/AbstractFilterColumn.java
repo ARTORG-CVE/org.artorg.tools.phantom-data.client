@@ -10,12 +10,12 @@ import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public abstract class AbstractFilterColumn<ITEM,R> extends AbstractColumn<ITEM, R> {
-	private Comparator<ITEM> sortComparator;
-	private Comparator<ITEM> ascendingSortComparator;
-	private Predicate<ITEM> filterPredicate;
-	private Queue<Comparator<ITEM>> sortComparatorQueue;
-	private ObservableList<ITEM> filteredItems;
+public abstract class AbstractFilterColumn<T,R> extends AbstractColumn<T, R> {
+	private Comparator<T> sortComparator;
+	private Comparator<T> ascendingSortComparator;
+	private Predicate<T> filterPredicate;
+	private Queue<Comparator<T>> sortComparatorQueue;
+	private ObservableList<T> filteredItems;
 
 	{
 		filteredItems = FXCollections.observableArrayList();
@@ -41,51 +41,51 @@ public abstract class AbstractFilterColumn<ITEM,R> extends AbstractColumn<ITEM, 
 			.collect(Collectors.toList());
 	}
 	
-	public void setSortComparator(Comparator<ITEM> sortComparator) {
+	public void setSortComparator(Comparator<T> sortComparator) {
 		this.sortComparator = sortComparator;
 		sortComparatorQueue.add(sortComparator);
 	}
 
 	public void setSortComparator(Comparator<R> sortComparator,
-		Function<ITEM, R> valueGetter) {
+		Function<T, R> valueGetter) {
 		this.sortComparator = (item1, item2) -> sortComparator
 			.compare(valueGetter.apply(item1), valueGetter.apply(item2));
 	}
 
 	// Getters & Setters
-	public Comparator<ITEM> getAscendingSortComparator() {
+	public Comparator<T> getAscendingSortComparator() {
 		return ascendingSortComparator;
 	}
 
-	public void setAscendingSortComparator(Comparator<ITEM> ascendingComparator) {
+	public void setAscendingSortComparator(Comparator<T> ascendingComparator) {
 		this.ascendingSortComparator = ascendingComparator;
 	}
 
-	public Comparator<ITEM> getSortComparator() {
+	public Comparator<T> getSortComparator() {
 		return sortComparator;
 	}
 
-	public Predicate<ITEM> getFilterPredicate() {
+	public Predicate<T> getFilterPredicate() {
 		return filterPredicate;
 	}
 
-	public void setFilterPredicate(Predicate<ITEM> filterPredicate) {
+	public void setFilterPredicate(Predicate<T> filterPredicate) {
 		this.filterPredicate = filterPredicate;
 	}
 
-	public Queue<Comparator<ITEM>> getSortComparatorQueue() {
+	public Queue<Comparator<T>> getSortComparatorQueue() {
 		return sortComparatorQueue;
 	}
 
-	public void setSortComparatorQueue(Queue<Comparator<ITEM>> sortComparatorQueue) {
+	public void setSortComparatorQueue(Queue<Comparator<T>> sortComparatorQueue) {
 		this.sortComparatorQueue = sortComparatorQueue;
 	}
 	
-	public ObservableList<ITEM> getFilteredItems() {
+	public ObservableList<T> getFilteredItems() {
 		return filteredItems;
 	}
 
-	public void setFilteredItems(ObservableList<ITEM> filteredItems) {
+	public void setFilteredItems(ObservableList<T> filteredItems) {
 		this.filteredItems = filteredItems;
 	}
 

@@ -30,13 +30,10 @@ public class FileTagUI implements UIEntity<FileTag> {
 
 	@Override
 	public List<AbstractColumn<FileTag, ?>> createColumns() {
-		List<AbstractColumn<FileTag,?>> columns =
-			new ArrayList<AbstractColumn<FileTag,?>>();
-		columns.add(new FilterColumn<FileTag,String>(
-			"Name", item -> item,
-			path -> path.getName(),
-			(path, value) -> path.setName(value)));
-		ColumnUtils.createPersonifiedColumns(columns);			
+		List<AbstractColumn<FileTag, ?>> columns = new ArrayList<AbstractColumn<FileTag, ?>>();
+		columns.add(new FilterColumn<>("Name", path -> path.getName(),
+				(path, value) -> path.setName(value)));
+		ColumnUtils.createPersonifiedColumns(columns);
 		return columns;
 	}
 
@@ -44,20 +41,20 @@ public class FileTagUI implements UIEntity<FileTag> {
 	public ItemEditFactoryController<FileTag> createEditFactory() {
 		return new FileTagEditFactoryController();
 	}
-	
+
 	private class FileTagEditFactoryController extends GroupedItemEditFactoryController<FileTag> {
-		private TextField textField; 
-		
+		private TextField textField;
+
 		{
 			textField = new TextField();
-			
+
 			List<TitledPane> panes = new ArrayList<TitledPane>();
 			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
 			generalProperties.add(new PropertyEntry("Name", textField));
 			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 			panes.add(generalPane);
 			setTitledPanes(panes);
-			
+
 			setItemFactory(this::createItem);
 			setTemplateSetter(this::setEditTemplate);
 			setChangeApplier(this::applyChanges);
@@ -77,10 +74,10 @@ public class FileTagUI implements UIEntity<FileTag> {
 		@Override
 		protected void applyChanges(FileTag item) {
 			String message = textField.getText();
-	    	
+
 			item.setName(message);
 		}
-		
+
 	}
 
 }

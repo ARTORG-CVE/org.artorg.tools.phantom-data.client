@@ -44,23 +44,20 @@ public class MeasurementUI implements UIEntity<Measurement> {
 
 	@Override
 	public List<AbstractColumn<Measurement, ?>> createColumns() {
-		List<AbstractColumn<Measurement, ?>> columns =
-			new ArrayList<AbstractColumn<Measurement, ?>>();
-		columns.add(new FilterColumn<Measurement, String>("Date", item -> item,
-			path -> format.format(path.getStartDate()), (path, value) -> {
-				try {
-					path.setStartDate(format.parse(value));
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
-			}));
-		columns.add(new FilterColumn<Measurement, String>("Person",
-			item -> item.getPerson(), path -> path.toName(), (path, value) -> {}));
-		columns.add(new FilterColumn<Measurement, String>("Project",
-			item -> item.getProject(), path -> path.toName(), (path, value) -> {}));
-		columns.add(new FilterColumn<Measurement, String>("Experimental Setup",
-			item -> item.getExperimentalSetup(), path -> path.getShortName(),
-			(path, value) -> {}));
+		List<AbstractColumn<Measurement, ?>> columns = new ArrayList<>();
+		columns.add(new FilterColumn<>("Date", path -> format.format(path.getStartDate()),
+				(path, value) -> {
+					try {
+						path.setStartDate(format.parse(value));
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+				}));
+		columns.add(new FilterColumn<>("Person", item -> item.getPerson(), path -> path.toName()));
+		columns.add(
+				new FilterColumn<>("Project", item -> item.getProject(), path -> path.toName()));
+		columns.add(new FilterColumn<>("Experimental Setup", item -> item.getExperimentalSetup(),
+				path -> path.getShortName()));
 		ColumnUtils.createCountingColumn("Files", columns, item -> item.getFiles());
 		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
 		ColumnUtils.createPersonifiedColumns(columns);
@@ -73,7 +70,7 @@ public class MeasurementUI implements UIEntity<Measurement> {
 	}
 
 	private class MeasurementEditFactoryController
-		extends GroupedItemEditFactoryController<Measurement> {
+			extends GroupedItemEditFactoryController<Measurement> {
 		private ComboBox<Person> comboBoxPerson;
 		private ComboBox<Project> comboBoxProject;
 		private ComboBox<ExperimentalSetup> comboBoxSetup;
@@ -98,8 +95,7 @@ public class MeasurementUI implements UIEntity<Measurement> {
 			generalProperties.add(new PropertyEntry("Project", comboBoxProject));
 			generalProperties.add(new PropertyEntry("Experimental Setup", comboBoxSetup));
 
-			TitledPropertyPane generalPane =
-				new TitledPropertyPane(generalProperties, "General");
+			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 			panes.add(generalPane);
 			setTitledPanes(panes);
 
@@ -112,13 +108,11 @@ public class MeasurementUI implements UIEntity<Measurement> {
 
 		@Override
 		protected void addProperties(Measurement item) {
-			super.getTitledPanes().stream().filter(p -> p instanceof TitledPropertyPane)
-				.forEach(p -> super.getPropertyEntries()
-					.addAll(((TitledPropertyPane) p).getEntries()));
+			super.getTitledPanes().stream().filter(p -> p instanceof TitledPropertyPane).forEach(
+					p -> super.getPropertyEntries().addAll(((TitledPropertyPane) p).getEntries()));
 
 			TitledPane protocolTitledPane = new TitledPane();
-			protocolTitledPane
-				.setContent(fileController.getTitledPanes().get(0).getContent());
+			protocolTitledPane.setContent(fileController.getTitledPanes().get(0).getContent());
 			protocolTitledPane.setText("Protocol File");
 
 			super.getTitledPanes().add(protocolTitledPane);
@@ -136,17 +130,15 @@ public class MeasurementUI implements UIEntity<Measurement> {
 		}
 
 		private void createComboBoxes() {
-			createComboBox(comboBoxPerson, Person.class,
-				item -> item.getSimpleAcademicName());
+			createComboBox(comboBoxPerson, Person.class, item -> item.getSimpleAcademicName());
 			createComboBox(comboBoxProject, Project.class, item -> item.getName());
-			createComboBox(comboBoxSetup, ExperimentalSetup.class,
-				item -> item.getLongName());
+			createComboBox(comboBoxSetup, ExperimentalSetup.class, item -> item.getLongName());
 		}
 
 		@Override
 		protected void setEditTemplate(Measurement item) {
-			LocalDate localDate = item.getStartDate().toInstant()
-				.atZone(ZoneId.systemDefault()).toLocalDate();
+			LocalDate localDate =
+					item.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			datePicker.setValue(localDate);
 			super.selectComboBoxItem(comboBoxPerson, item.getPerson());
 			super.selectComboBoxItem(comboBoxProject, item.getProject());
@@ -155,8 +147,8 @@ public class MeasurementUI implements UIEntity<Measurement> {
 
 		@Override
 		public Measurement createItem() {
-			Date startDate = Date.from(
-				datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
+			Date startDate = Date
+					.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
 			Person person = comboBoxPerson.getSelectionModel().getSelectedItem();
 			Project project = comboBoxProject.getSelectionModel().getSelectedItem();
 			ExperimentalSetup setup = comboBoxSetup.getSelectionModel().getSelectedItem();
@@ -167,8 +159,8 @@ public class MeasurementUI implements UIEntity<Measurement> {
 
 		@Override
 		protected void applyChanges(Measurement item) {
-			Date startDate = Date.from(
-				datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
+			Date startDate = Date
+					.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
 			Person person = comboBoxPerson.getSelectionModel().getSelectedItem();
 			Project project = comboBoxProject.getSelectionModel().getSelectedItem();
 			ExperimentalSetup setup = comboBoxSetup.getSelectionModel().getSelectedItem();

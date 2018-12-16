@@ -40,29 +40,21 @@ public class PropertyFieldUI implements UIEntity<PropertyField> {
 
 	@Override
 	public List<AbstractColumn<PropertyField, ?>> createColumns() {
-		List<AbstractColumn<PropertyField,?>> columns =
-			new ArrayList<AbstractColumn<PropertyField,?>>();
-		columns.add(new FilterColumn<PropertyField,String>(
-			"Type", item -> item,
-			path -> {
-				try {
-					return Class.forName(path.getType()).getSimpleName();
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-				return path.getType();
-			},
-			(path, value) -> {}));
-		columns.add(new FilterColumn<PropertyField,String>(
-			"Name", item -> item,
-			path -> path.getName(),
-			(path, value) -> path.setName((String) value)));
-		columns.add(new FilterColumn<PropertyField,String>(
-			"Description", item -> item,
-			path -> path.getDescription(),
-			(path, value) -> path.setDescription((String) value)));
+		List<AbstractColumn<PropertyField, ?>> columns = new ArrayList<>();
+		columns.add(new FilterColumn<>("Type", path -> {
+			try {
+				return Class.forName(path.getType()).getSimpleName();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			return path.getType();
+		}));
+		columns.add(new FilterColumn<>("Name", path -> path.getName(),
+				(path, value) -> path.setName((String) value)));
+		columns.add(new FilterColumn<>("Description", path -> path.getDescription(),
+				(path, value) -> path.setDescription((String) value)));
 		ColumnUtils.createPersonifiedColumns(columns);
-		
+
 		return columns;
 	}
 
@@ -70,8 +62,9 @@ public class PropertyFieldUI implements UIEntity<PropertyField> {
 	public ItemEditFactoryController<PropertyField> createEditFactory() {
 		return new PropertyFieldEditFactoryController();
 	}
-	
-	private class PropertyFieldEditFactoryController extends GroupedItemEditFactoryController<PropertyField>{
+
+	private class PropertyFieldEditFactoryController
+			extends GroupedItemEditFactoryController<PropertyField> {
 		private TextField textFielName;
 		private TextField textFieldDescription;
 		private ComboBox<Class<?>> comboBoxParentItemClass;
@@ -86,19 +79,19 @@ public class PropertyFieldUI implements UIEntity<PropertyField> {
 			textFieldParentItemClass = new TextField();
 			textFieldParentItemClass.setDisable(true);
 			textFieldParentItemClass.setEditable(false);
-			
+
 			Collection<Class<?>> parentItemClasses = Main.getBeaninfos().getEntityClasses();
-			
-			ObservableList<Class<?>> observableParentItemClasses = FXCollections.observableArrayList();
+
+			ObservableList<Class<?>> observableParentItemClasses =
+					FXCollections.observableArrayList();
 			observableParentItemClasses.addAll(parentItemClasses);
 			comboBoxParentItemClass.setItems(observableParentItemClasses);
 			comboBoxParentItemClass.getSelectionModel().selectFirst();
-			Callback<ListView<Class<?>>, ListCell<Class<?>>> cellFactory = FxUtil.createComboBoxCellFactory((Class<?> c) -> c.getSimpleName());
+			Callback<ListView<Class<?>>, ListCell<Class<?>>> cellFactory =
+					FxUtil.createComboBoxCellFactory((Class<?> c) -> c.getSimpleName());
 			comboBoxParentItemClass.setButtonCell(cellFactory.call(null));
 			comboBoxParentItemClass.setCellFactory(cellFactory);
-			
-			
-			
+
 			List<TitledPane> panes = new ArrayList<TitledPane>();
 			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
 			generalProperties.add(new PropertyEntry("Name", textFielName));
@@ -108,7 +101,7 @@ public class PropertyFieldUI implements UIEntity<PropertyField> {
 			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 			panes.add(generalPane);
 			setTitledPanes(panes);
-			
+
 			setItemFactory(this::createItem);
 			setTemplateSetter(this::setEditTemplate);
 			setChangeApplier(this::applyChanges);
@@ -133,7 +126,8 @@ public class PropertyFieldUI implements UIEntity<PropertyField> {
 		public PropertyField createItem() {
 			String name = textFielName.getText();
 			String description = textFieldDescription.getText();
-			Class<?> parentItemClass = comboBoxParentItemClass.getSelectionModel().getSelectedItem();
+			Class<?> parentItemClass =
+					comboBoxParentItemClass.getSelectionModel().getSelectedItem();
 			return new PropertyField(name, description, parentItemClass);
 		}
 
@@ -142,7 +136,7 @@ public class PropertyFieldUI implements UIEntity<PropertyField> {
 			String name = textFielName.getText();
 			String description = textFieldDescription.getText();
 			String type = comboBoxParentItemClass.getSelectionModel().getSelectedItem().getName();
-	    	
+
 			item.setName(name);
 			item.setDescription(description);
 			item.setType(type);

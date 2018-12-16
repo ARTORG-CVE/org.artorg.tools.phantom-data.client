@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.beans.DbNode;
-import org.artorg.tools.phantomData.client.scene.control.tableView.DbEditFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
@@ -13,7 +12,6 @@ import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTab
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
 import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.table.TableBase;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,7 +19,7 @@ import javafx.scene.control.TreeItem;
 
 public class TableViewFactory {
 
-	public static <T extends DbPersistent<T, ?>, TABLE extends TableBase<T>,
+	public static <T, TABLE extends TableBase<T>,
 		TABLE_VIEW extends ProTreeTableView<T>> ProTreeTableView<T>
 		createInitializedTreeTableView(Class<?> itemClass, Class<TABLE> tableClass,
 			Class<TABLE_VIEW> tableViewClass) {
@@ -36,7 +34,7 @@ public class TableViewFactory {
 		return tableView;
 	}
 
-	public static <T extends DbPersistent<T, ?>, TABLE extends TableBase<T>,
+	public static <T, TABLE extends TableBase<T>,
 		TABLE_VIEW extends ProTreeTableView<T>> ProTreeTableView<T>
 		createTreeTableView(Class<?> itemClass, Class<TABLE> tableClass,
 			Class<TABLE_VIEW> tableViewClass, List<T> items) {
@@ -46,7 +44,7 @@ public class TableViewFactory {
 		return treeTableView;
 	}
 
-	public static <T extends DbPersistent<T, ?>, TABLE extends TableBase<T>,
+	public static <T, TABLE extends TableBase<T>,
 		TABLE_VIEW extends ProTreeTableView<T>> ProTreeTableView<T>
 		createTreeTableView(Class<?> itemClass, Class<TABLE> tableClass,
 			Class<TABLE_VIEW> tableViewClass) {
@@ -103,8 +101,6 @@ public class TableViewFactory {
 		TABLE_VIEW extends ProTableView<T>> ProTableView<T>
 		createTableView(Class<T> itemClass, Class<TABLE> tableClass,
 			Class<TABLE_VIEW> tableViewClass) {
-
-		TableBase<T> table = createTableBase(itemClass, tableClass);
 		ProTableView<T> tableView = null;
 		
 		if (tableViewClass == ProTableView.class)

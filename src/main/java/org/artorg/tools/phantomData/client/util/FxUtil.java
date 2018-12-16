@@ -11,7 +11,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
@@ -125,7 +124,7 @@ public class FxUtil extends org.artorg.tools.phantomData.server.util.FxUtil {
 		return column;
 	}
 
-	public static <T extends DbPersistent<T, ?>> void createDbComboBox(ComboBox<T> comboBox,
+	public static <T> void createDbComboBox(ComboBox<T> comboBox,
 			ICrudConnector<T> connector, Function<T, String> mapper) {
 		List<T> items = connector.readAllAsStream().distinct().collect(Collectors.toList());
 		comboBox.setItems(FXCollections.observableList(items));

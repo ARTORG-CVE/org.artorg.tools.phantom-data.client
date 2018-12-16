@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.CssGlyph;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
-import org.artorg.tools.phantomData.client.scene.control.tableView.DbEditFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
@@ -123,7 +122,7 @@ public class MainController extends StackPane {
 		
 		getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
 		getOrCreate(0).openViewerTab(createScene3dTab(null));
-//		getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));
+		getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));
 
 		FxUtil.addToPane(contentPane, splitPane);
 
@@ -468,6 +467,7 @@ public class MainController extends StackPane {
 		ProTreeTableView<?> table = createTreeTable(itemClass);
 		Tab tab = new Tab(table.getTable().getTableName());
 		tab.setContent(table);
+		tab.setText(table.getTable().getTableName());
 		return tab;
 	}
 
@@ -484,10 +484,11 @@ public class MainController extends StackPane {
 			DbTreeTableView.class);
 	}
 
-	public <T extends DbPersistent<T, ?>> void openTableTab(int row, Node table,
+	public void openTableTab(int row, ProTableView<?> table,
 		String name) {
 		Tab tab = new Tab(name);
 		tab.setContent(table);
+		tab.setText(table.getTable().getTableName());
 		getOrCreate(row).openTableTab(tab);
 	}
 

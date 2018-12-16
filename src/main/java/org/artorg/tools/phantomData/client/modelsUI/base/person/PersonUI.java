@@ -32,26 +32,15 @@ public class PersonUI implements UIEntity<Person> {
 
 	@Override
 	public List<AbstractColumn<Person, ?>> createColumns() {
-		List<AbstractColumn<Person,?>> columns =
-			new ArrayList<AbstractColumn<Person,?>>();
-
-		columns.add(new FilterColumn<Person,String>(
-			"Title", item -> item.getAcademicTitle(),
-			path -> path.getPrefix(),
-			(path, value) -> {
-			}));
-		columns.add(new FilterColumn<Person,String>(
-			"Firstname", item -> item,
-			path -> path.getFirstname(),
-			(path, value) -> path.setFirstname((String) value)));
-		columns.add(new FilterColumn<Person,String>(
-			"Lastname", item -> item,
-			path -> path.getLastname(),
-			(path, value) -> path.setLastname((String) value)));
-		columns.add(new FilterColumn<Person,String>(
-			"Gender", item -> item.getGender(),
-			path -> path.getName(),
-			(path, value) -> path.setName((String) value)));
+		List<AbstractColumn<Person, ?>> columns = new ArrayList<>();
+		columns.add(new FilterColumn<>("Title", item -> item.getAcademicTitle(),
+				path -> path.getPrefix()));
+		columns.add(new FilterColumn<>("Firstname", path -> path.getFirstname(),
+				(path, value) -> path.setFirstname((String) value)));
+		columns.add(new FilterColumn<>("Lastname", path -> path.getLastname(),
+				(path, value) -> path.setLastname((String) value)));
+		columns.add(new FilterColumn<>("Gender", item -> item.getGender(), path -> path.getName(),
+				(path, value) -> path.setName((String) value)));
 		return columns;
 	}
 
@@ -59,19 +48,19 @@ public class PersonUI implements UIEntity<Person> {
 	public ItemEditFactoryController<Person> createEditFactory() {
 		return new PersonEditFactoryController();
 	}
-	
+
 	private class PersonEditFactoryController extends GroupedItemEditFactoryController<Person> {
 		private ComboBox<Gender> comboBoxGender;
 		private ComboBox<AcademicTitle> comboBoxTitle;
 		private TextField textFieldFirstname;
 		private TextField textFieldLastname;
-		
+
 		{
 			comboBoxGender = new ComboBox<Gender>();
 			comboBoxTitle = new ComboBox<AcademicTitle>();
 			textFieldFirstname = new TextField();
 			textFieldLastname = new TextField();
-			
+
 			List<TitledPane> panes = new ArrayList<TitledPane>();
 			createComboBoxes();
 			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
@@ -82,17 +71,17 @@ public class PersonUI implements UIEntity<Person> {
 			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 			panes.add(generalPane);
 			setTitledPanes(panes);
-			
+
 			setItemFactory(this::createItem);
 			setTemplateSetter(this::setEditTemplate);
 			setChangeApplier(this::applyChanges);
 		}
-		
+
 		private void createComboBoxes() {
-	        createComboBox(comboBoxGender, Gender.class, g -> g.getName());
-	        createComboBox(comboBoxTitle, AcademicTitle.class, t -> t.getPrefix());
-	    }
-		
+			createComboBox(comboBoxGender, Gender.class, g -> g.getName());
+			createComboBox(comboBoxTitle, AcademicTitle.class, t -> t.getPrefix());
+		}
+
 		@Override
 		public void initDefaultValues() {
 			super.initDefaultValues();
@@ -123,13 +112,13 @@ public class PersonUI implements UIEntity<Person> {
 			AcademicTitle title = comboBoxTitle.getSelectionModel().getSelectedItem();
 			String firstname = textFieldFirstname.getText();
 			String lastname = textFieldLastname.getText();
-	    	
+
 			item.setGender(gender);
 			item.setAcademicTitle(title);
 			item.setFirstname(firstname);
 			item.setLastname(lastname);
 		}
-		
+
 	}
 
 }

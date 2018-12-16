@@ -35,18 +35,18 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
 @SuppressWarnings("unchecked")
-public abstract class ItemEditFactoryController<ITEM> extends VGridBoxPane
-		implements FxFactory<ITEM> {
+public abstract class ItemEditFactoryController<T> extends VGridBoxPane
+		implements FxFactory<T> {
 	protected Button applyButton;
 	private List<Node> rightNodes;
 	private List<AbstractTableViewSelector<?>> selectors;
 	private AnchorPane pane;
-	private final Class<ITEM> itemClass;
+	private final Class<T> itemClass;
 	
 
-	private ICrudConnector<ITEM> connector;
+	private ICrudConnector<T> connector;
 
-	public ICrudConnector<ITEM> getConnector() {
+	public ICrudConnector<T> getConnector() {
 		return this.connector;
 	}
 
@@ -57,20 +57,20 @@ public abstract class ItemEditFactoryController<ITEM> extends VGridBoxPane
 	}
 	
 	public ItemEditFactoryController() {
-		itemClass = (Class<ITEM>) Reflect.findGenericClasstype(this);
-		connector = (ICrudConnector<ITEM>) Connectors
+		itemClass = (Class<T>) Reflect.findGenericClasstype(this);
+		connector = (ICrudConnector<T>) Connectors
 			.getConnector(itemClass);
 	}
 
-	public abstract ITEM createItem();
+	public abstract T createItem();
 
-	protected abstract void setEditTemplate(ITEM item);
+	protected abstract void setEditTemplate(T item);
 
-	public void setAddTemplate(ITEM item) {
+	public void setAddTemplate(T item) {
 //		setEditTemplate();
 	}
 
-	protected abstract void applyChanges(ITEM item);
+	protected abstract void applyChanges(T item);
 
 	public Node getGraphic() {
 		return pane;
@@ -78,11 +78,11 @@ public abstract class ItemEditFactoryController<ITEM> extends VGridBoxPane
 
 	protected abstract AnchorPane createRootPane();
 
-	protected abstract void addProperties(ITEM item);
+	protected abstract void addProperties(T item);
 
 	public abstract List<PropertyEntry> getPropertyEntries();
 
-	protected void setSelectedChildItems(ITEM item, AbstractTableViewSelector<ITEM> selector) {
+	protected void setSelectedChildItems(T item, AbstractTableViewSelector<T> selector) {
 		selector.setSelectedChildItems(item);
 	}
 
@@ -91,7 +91,7 @@ public abstract class ItemEditFactoryController<ITEM> extends VGridBoxPane
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private List<AbstractTableViewSelector<?>> createSelectors(ITEM item, Class<?> itemClass) {
+	private List<AbstractTableViewSelector<?>> createSelectors(T item, Class<?> itemClass) {
 		List<AbstractTableViewSelector<?>> selectors = new ArrayList<>();
 
 		List<Class<? extends DbPersistent<?, ?>>> subItemClasses = Reflect.getCollectionSetterMethods(itemClass)
@@ -119,7 +119,7 @@ public abstract class ItemEditFactoryController<ITEM> extends VGridBoxPane
 							Method selectedMethod = Reflect.getMethodByGenericReturnType(itemClass, subItemClass);
 
 							if (selectedMethod != null) {
-								Function<ITEM, Collection<Object>> subItemGetter2;
+								Function<T, Collection<Object>> subItemGetter2;
 								subItemGetter2 = i -> {
 									if (i == null)
 										return null;
@@ -150,9 +150,9 @@ public abstract class ItemEditFactoryController<ITEM> extends VGridBoxPane
 	}
 
 //	@SuppressWarnings("unchecked")
-//	public final ICrudConnector<ITEM, ?> getConnector() {
+//	public final ICrudConnector<T, ?> getConnector() {
 //		if (getTableView().getTable() instanceof IDbTable)
-//			return ((IDbTable<ITEM,?>) getTableView().getTable()).getConnector();
+//			return ((IDbTable<T,?>) getTableView().getTable()).getConnector();
 //		return null;
 //	}
 
@@ -167,28 +167,28 @@ public abstract class ItemEditFactoryController<ITEM> extends VGridBoxPane
 		});
 	}
 
-	protected <T extends Comparable<T> & Identifiable<ID>,ID extends Comparable<ID>> void selectComboBoxItem(ComboBox<T> comboBox, T item) {
+	protected <U> void selectComboBoxItem(ComboBox<U> comboBox, U item) {
 		if (item == null) return;
 		for (int i = 0; i < comboBox.getItems().size(); i++)
-			if (comboBox.getItems().get(i).equalsId(item)) {
+			if (((Identifiable<?>)comboBox.getItems().get(i)).equalsId((Identifiable<?>) item)) {
 				comboBox.getSelectionModel().select(i);
 				break;
 			}
 	}
 
-	protected <T extends DbPersistent<T, ID>, ID extends Comparable<ID>> void createComboBox(ComboBox<T> comboBox,
-			Class<T> itemClass, Function<T, String> mapper) {
+	protected <U> void createComboBox(ComboBox<U> comboBox,
+			Class<U> itemClass, Function<U, String> mapper) {
 		createComboBox(comboBox, itemClass, mapper, item -> {
 		});
 	}
 	
-	protected <T extends DbPersistent<T, ?>> void createComboBox(ComboBox<T> comboBox,
-			Class<T> itemClass, Function<T, String> mapper, Consumer<T> selectedItemChangedConsumer) {
-		ICrudConnector<T> connector = (ICrudConnector<T>) Connectors
+	protected <U> void createComboBox(ComboBox<U> comboBox,
+			Class<U> itemClass, Function<U, String> mapper, Consumer<U> selectedItemChangedConsumer) {
+		ICrudConnector<U> connector = (ICrudConnector<U>) Connectors
 				.getConnector(itemClass);
 		FxUtil.createDbComboBox(comboBox, connector, mapper);
 
-		ChangeListener<T> listener = (observable, oldValue, newValue) -> {
+		ChangeListener<U> listener = (observable, oldValue, newValue) -> {
 			try {
 				selectedItemChangedConsumer.accept(newValue);
 			} catch (Exception e) {
@@ -201,7 +201,7 @@ public abstract class ItemEditFactoryController<ITEM> extends VGridBoxPane
 		return create(null, itemClass);
 	}
 
-	public AnchorPane create(ITEM item, Class<?> itemClass) {
+	public AnchorPane create(T item, Class<?> itemClass) {
 		selectors = createSelectors(item, itemClass);
 		addProperties(item);
 		createRightNodes(getPropertyEntries());
@@ -222,9 +222,9 @@ public abstract class ItemEditFactoryController<ITEM> extends VGridBoxPane
 		return pane;
 	}
 	
-	public ITEM createAndPersistItem() {
+	public T createAndPersistItem() {
 		try {
-			ITEM newItem = createItem();
+			T newItem = createItem();
 			if (newItem != null) {
 				if (selectors != null)
 					selectors.stream().filter(selector -> selector != null)
@@ -242,7 +242,7 @@ public abstract class ItemEditFactoryController<ITEM> extends VGridBoxPane
 		throw new NullPointerException();
 	}
 
-	public AnchorPane edit(ITEM item, Class<?> itemClass) {
+	public AnchorPane edit(T item, Class<?> itemClass) {
 		selectors = createSelectors(item, itemClass);
 		Label label = new Label();
 		label.setText(((Identifiable<?>)item).getId().toString());
@@ -286,7 +286,7 @@ public abstract class ItemEditFactoryController<ITEM> extends VGridBoxPane
 		rightNodes = entries.stream().map(e -> e.getRightNode()).collect(Collectors.toList());
 	}
 	
-	public Class<ITEM> getItemClass() {
+	public Class<T> getItemClass() {
 		return itemClass;
 	}
 

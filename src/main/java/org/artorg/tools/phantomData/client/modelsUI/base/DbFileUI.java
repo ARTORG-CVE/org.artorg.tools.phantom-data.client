@@ -14,8 +14,6 @@ import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.base.DbFile;
 
-import javafx.scene.image.ImageView;
-
 public class DbFileUI implements UIEntity<DbFile> {
 
 	@Override
@@ -30,20 +28,16 @@ public class DbFileUI implements UIEntity<DbFile> {
 
 	@Override
 	public List<AbstractColumn<DbFile, ?>> createColumns() {
-		List<AbstractColumn<DbFile,?>> columns =
-			new ArrayList<AbstractColumn<DbFile,?>>();
-		columns.add(new Column<DbFile,ImageView>("", item -> item,
-			path -> FxUtil.getFxFileIcon(path.getFile()), (path, value) -> {}));
-		
-		columns.add(new FilterColumn<DbFile,String>("Name", item -> item,
-			path -> path.getName(), (path, value) -> path.setName(value)));
-		columns.add(new FilterColumn<DbFile,String>("Extension", item -> item,
-			path -> path.getExtension(), (path, value) -> path.setExtension(value)));
-		columns.add(new FilterColumn<DbFile,String>("File Tags", item -> item,
-			path -> path.getFileTags().stream().map(fileTag -> fileTag.getName()).collect(Collectors.joining(", ")), 
-			(path, value) -> {}));
-		columns.add(new FilterColumn<DbFile, String>("Phantoms", item -> item,
-			path -> String.valueOf(path.getPhantoms().size()), (path, value) -> {}));
+		List<AbstractColumn<DbFile, ?>> columns = new ArrayList<>();
+		columns.add(new Column<>("", path -> FxUtil.getFxFileIcon(path.getFile())));
+		columns.add(new FilterColumn<>("Name", path -> path.getName(),
+				(path, value) -> path.setName(value)));
+		columns.add(new FilterColumn<>("Extension", path -> path.getExtension(),
+				(path, value) -> path.setExtension(value)));
+		columns.add(new FilterColumn<>("File Tags", path -> path.getFileTags().stream()
+				.map(fileTag -> fileTag.getName()).collect(Collectors.joining(", "))));
+		columns.add(
+				new FilterColumn<>("Phantoms", path -> String.valueOf(path.getPhantoms().size())));
 		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
 		ColumnUtils.createPersonifiedColumns(columns);
 		return columns;
@@ -53,7 +47,5 @@ public class DbFileUI implements UIEntity<DbFile> {
 	public ItemEditFactoryController<DbFile> createEditFactory() {
 		return new DbFileEditFactoryController();
 	}
-	
-	
 
 }

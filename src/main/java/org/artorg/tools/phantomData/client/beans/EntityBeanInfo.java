@@ -25,7 +25,7 @@ public class EntityBeanInfo {
 //	private static final EntityBeanInfo abstractBaseEntityBeanInfo;
 	private final Class<?> entityClass;
 	private final List<PropertyDescriptor> allPropertyDescriptors;
-	private final List<PropertyDescriptor> notBasePropertyDescriptors;
+	private final List<PropertyDescriptor> notPersonifiedPropertyDescriptors;
 	private final Function<Object, List<PropertyDescriptor>> entityDescriptors;
 	private final Function<Object, List<PropertyDescriptor>> collectionDescriptors;
 	private final Function<Object, List<PropertyDescriptor>> propertiesDescriptors;
@@ -39,8 +39,7 @@ public class EntityBeanInfo {
 			new EntityBeanInfo(AbstractPersonifiedEntity.class);
 //		abstractBaseEntityBeanInfo = new EntityBeanInfo(AbstractBaseEntity.class);
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	public EntityBeanInfo(Class<?> entityClass) {
 		if (!entityClass.isAnnotationPresent(Entity.class))
 			if (entityClass != AbstractPropertifiedEntity.class && entityClass != AbstractPersonifiedEntity.class)
@@ -58,19 +57,19 @@ public class EntityBeanInfo {
 			.collect(Collectors.toList());
 
 		if (entityClass == AbstractPersonifiedEntity.class)
-			notBasePropertyDescriptors = new ArrayList<PropertyDescriptor>();
+			notPersonifiedPropertyDescriptors = new ArrayList<PropertyDescriptor>();
 		else {
-			notBasePropertyDescriptors = allPropertyDescriptors.stream().filter(d -> {
+			notPersonifiedPropertyDescriptors = allPropertyDescriptors.stream().filter(d -> {
 				return !(abstractPersonifiedEntityBeanInfo.allPropertyDescriptors.stream()
 					.filter(bd -> bd == d).findFirst().isPresent());
 			}).collect(Collectors.toList());
 		}
 
-		entityDescriptors = bean -> notBasePropertyDescriptors.stream()
+		entityDescriptors = bean -> notPersonifiedPropertyDescriptors.stream()
 			.filter(d -> d.getPropertyType().isAnnotationPresent(Entity.class))
 			.filter(d -> getValue(d, bean) != null).collect(Collectors.toList());
 
-		collectionDescriptors = bean -> notBasePropertyDescriptors.stream()
+		collectionDescriptors = bean -> notPersonifiedPropertyDescriptors.stream()
 			.filter(d -> !d.getPropertyType().isAnnotationPresent(Entity.class))
 			.filter(d -> Collection.class.isAssignableFrom(d.getPropertyType()))
 			.filter(d -> {
@@ -83,18 +82,18 @@ public class EntityBeanInfo {
 			})
 			.collect(Collectors.toList());
 
-		propertiesDescriptors = bean -> notBasePropertyDescriptors.stream()
+		propertiesDescriptors = bean -> notPersonifiedPropertyDescriptors.stream()
 			.filter(d -> !d.getPropertyType().isAnnotationPresent(Entity.class))
 			.filter(d -> !Collection.class.isAssignableFrom(d.getPropertyType()))
 			.filter(d -> getValue(d, bean) != null).collect(Collectors.toList());
 
-		getterFunctionsMap = notBasePropertyDescriptors.stream()
+		getterFunctionsMap = notPersonifiedPropertyDescriptors.stream()
 			.collect(Collectors.groupingBy((PropertyDescriptor d) -> d.getPropertyType(),
 				Collectors.toMap(d -> d.getName(), d -> {
 					return bean -> getValue(d, bean);
 				})));
 
-		setterFunctionsMap = notBasePropertyDescriptors.stream()
+		setterFunctionsMap = notPersonifiedPropertyDescriptors.stream()
 			.collect(Collectors.groupingBy((PropertyDescriptor d) -> d.getPropertyType(),
 				Collectors.toMap(d -> d.getName(), d -> {
 					return (bean, value) -> d.createPropertyEditor(bean).setValue(value);
@@ -178,7 +177,7 @@ public class EntityBeanInfo {
 	}
 
 	public List<PropertyDescriptor> getNotBasePropertyDescriptors() {
-		return notBasePropertyDescriptors;
+		return notPersonifiedPropertyDescriptors;
 	}
 
 }

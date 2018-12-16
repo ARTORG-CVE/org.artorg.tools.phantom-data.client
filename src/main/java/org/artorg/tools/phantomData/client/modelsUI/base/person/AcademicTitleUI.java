@@ -29,16 +29,12 @@ public class AcademicTitleUI implements UIEntity<AcademicTitle> {
 
 	@Override
 	public List<AbstractColumn<AcademicTitle, ?>> createColumns() {
-		List<AbstractColumn<AcademicTitle,?>> columns =
-			new ArrayList<AbstractColumn<AcademicTitle,?>>();
-		columns.add(new FilterColumn<AcademicTitle,String>(
-			"Prefix", item -> item,
-			path -> path.getPrefix(),
-			(path, value) -> path.setPrefix((String) value)));
-		columns.add(new FilterColumn<AcademicTitle,String>(
-			"Descirption", item -> item,
-			path -> path.getDescription(),
-			(path, value) -> path.setDescription((String) value)));
+		List<AbstractColumn<AcademicTitle, ?>> columns =
+				new ArrayList<AbstractColumn<AcademicTitle, ?>>();
+		columns.add(new FilterColumn<>("Prefix", path -> path.getPrefix(),
+				(path, value) -> path.setPrefix((String) value)));
+		columns.add(new FilterColumn<>("Descirption", path -> path.getDescription(),
+				(path, value) -> path.setDescription((String) value)));
 		return columns;
 	}
 
@@ -46,15 +42,16 @@ public class AcademicTitleUI implements UIEntity<AcademicTitle> {
 	public ItemEditFactoryController<AcademicTitle> createEditFactory() {
 		return new AcademicTitleEditFactoryController();
 	}
-	
-	private class AcademicTitleEditFactoryController extends GroupedItemEditFactoryController<AcademicTitle> {
+
+	private class AcademicTitleEditFactoryController
+			extends GroupedItemEditFactoryController<AcademicTitle> {
 		private TextField textFieldPrefix;
 		private TextField textFieldDescription;
-		
+
 		{
 			textFieldPrefix = new TextField();
 			textFieldDescription = new TextField();
-			
+
 			List<TitledPane> panes = new ArrayList<TitledPane>();
 			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
 			generalProperties.add(new PropertyEntry("prefix", textFieldPrefix));
@@ -62,12 +59,12 @@ public class AcademicTitleUI implements UIEntity<AcademicTitle> {
 			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 			panes.add(generalPane);
 			setTitledPanes(panes);
-			
+
 			setItemFactory(this::createItem);
 			setTemplateSetter(this::setEditTemplate);
 			setChangeApplier(this::applyChanges);
 		}
-		
+
 		@Override
 		public void initDefaultValues() {
 			textFieldPrefix.setText("");
@@ -91,12 +88,11 @@ public class AcademicTitleUI implements UIEntity<AcademicTitle> {
 		protected void applyChanges(AcademicTitle item) {
 			String prefix = textFieldPrefix.getText();
 			String description = textFieldDescription.getText();
-			
+
 			item.setPrefix(prefix);
 			item.setDescription(description);
 		}
-		
-	}
 
+	}
 
 }

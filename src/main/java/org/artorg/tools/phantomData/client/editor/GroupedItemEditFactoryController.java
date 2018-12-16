@@ -8,19 +8,18 @@ import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.select.AbstractTableViewSelector;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-public abstract class GroupedItemEditFactoryController<ITEM extends DbPersistent<ITEM, ?>>
-		extends ItemEditFactoryController<ITEM> {
+public abstract class GroupedItemEditFactoryController<T>
+		extends ItemEditFactoryController<T> {
 	private List<TitledPane> titledPanes;
-	private Supplier<ITEM> itemFactory;
-	private Consumer<ITEM> templateSetter;
-	private Consumer<ITEM> changeApplier;
+	private Supplier<T> itemFactory;
+	private Consumer<T> templateSetter;
+	private Consumer<T> changeApplier;
 	private List<PropertyEntry> entries;
 
 	{
@@ -29,7 +28,7 @@ public abstract class GroupedItemEditFactoryController<ITEM extends DbPersistent
 	}
 
 	@Override
-	protected void addProperties(ITEM item) {
+	protected void addProperties(T item) {
 		titledPanes.stream().filter(p -> p instanceof TitledPropertyPane)
 				.forEach(p -> entries.addAll(((TitledPropertyPane) p).getEntries()));
 
@@ -67,17 +66,17 @@ public abstract class GroupedItemEditFactoryController<ITEM extends DbPersistent
 	}
 
 	@Override
-	public ITEM createItem() {
+	public T createItem() {
 		return itemFactory.get();
 	}
 
 	@Override
-	protected void setEditTemplate(ITEM item) {
+	protected void setEditTemplate(T item) {
 		templateSetter.accept(item);
 	}
 	
 	@Override
-	protected void applyChanges(ITEM item) {
+	protected void applyChanges(T item) {
 		this.changeApplier.accept(item);
 	}
 	
@@ -89,27 +88,27 @@ public abstract class GroupedItemEditFactoryController<ITEM extends DbPersistent
 		this.titledPanes = titledPanes;
 	}
 
-	public Supplier<ITEM> getItemFactory() {
+	public Supplier<T> getItemFactory() {
 		return itemFactory;
 	}
 
-	public void setItemFactory(Supplier<ITEM> itemFactory) {
+	public void setItemFactory(Supplier<T> itemFactory) {
 		this.itemFactory = itemFactory;
 	}
 
-	public Consumer<ITEM> getTemplateSetter() {
+	public Consumer<T> getTemplateSetter() {
 		return templateSetter;
 	}
 
-	public void setTemplateSetter(Consumer<ITEM> templateSetter) {
+	public void setTemplateSetter(Consumer<T> templateSetter) {
 		this.templateSetter = templateSetter;
 	}
 	
-	public Consumer<ITEM> getChangeApplier() {
+	public Consumer<T> getChangeApplier() {
 		return changeApplier;
 	}
 
-	public void setChangeApplier(Consumer<ITEM> changeApplier) {
+	public void setChangeApplier(Consumer<T> changeApplier) {
 		this.changeApplier = changeApplier;
 	}
 

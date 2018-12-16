@@ -30,13 +30,11 @@ public class FabricationTypeUI implements UIEntity<FabricationType> {
 
 	@Override
 	public List<AbstractColumn<FabricationType, ?>> createColumns() {
-		List<AbstractColumn<FabricationType, ?>> columns =
-			new ArrayList<AbstractColumn<FabricationType, ?>>();
-		columns.add(new FilterColumn<FabricationType, String>("Shortcut",
-			item -> item, path -> path.getShortcut(),
-			(path, value) -> path.setShortcut(value)));
-		columns.add(new FilterColumn<FabricationType, String>("Value", item -> item,
-			path -> path.getValue(), (path, value) -> path.setValue(value)));
+		List<AbstractColumn<FabricationType, ?>> columns = new ArrayList<>();
+		columns.add(new FilterColumn<>("Shortcut", path -> path.getShortcut(),
+				(path, value) -> path.setShortcut(value)));
+		columns.add(new FilterColumn<>("Value", path -> path.getValue(),
+				(path, value) -> path.setValue(value)));
 		ColumnUtils.createCountingColumn("Files", columns, item -> item.getFiles());
 		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
 		ColumnUtils.createPersonifiedColumns(columns);
@@ -47,15 +45,16 @@ public class FabricationTypeUI implements UIEntity<FabricationType> {
 	public ItemEditFactoryController<FabricationType> createEditFactory() {
 		return new FabricationTypeEditFactoryController();
 	}
-	
-	public class FabricationTypeEditFactoryController extends GroupedItemEditFactoryController<FabricationType> {
+
+	public class FabricationTypeEditFactoryController
+			extends GroupedItemEditFactoryController<FabricationType> {
 		private TextField textFieldShortcut;
 		private TextField textFieldValue;
 
 		{
 			textFieldShortcut = new TextField();
 			textFieldValue = new TextField();
-			
+
 			List<TitledPane> panes = new ArrayList<TitledPane>();
 			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
 			generalProperties.add(new PropertyEntry("Shortcut", textFieldShortcut));
@@ -63,7 +62,7 @@ public class FabricationTypeUI implements UIEntity<FabricationType> {
 			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 			panes.add(generalPane);
 			setTitledPanes(panes);
-			
+
 			setItemFactory(this::createItem);
 			setTemplateSetter(this::setEditTemplate);
 			setChangeApplier(this::applyChanges);
@@ -86,12 +85,11 @@ public class FabricationTypeUI implements UIEntity<FabricationType> {
 		protected void applyChanges(FabricationType item) {
 			String shortcut = textFieldShortcut.getText();
 			String value = textFieldValue.getText();
-	    	
+
 			item.setShortcut(shortcut);
 			item.setValue(value);
 		}
 
 	}
-
 
 }

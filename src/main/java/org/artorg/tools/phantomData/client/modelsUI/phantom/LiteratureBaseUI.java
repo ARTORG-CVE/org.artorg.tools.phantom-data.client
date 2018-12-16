@@ -30,13 +30,11 @@ public class LiteratureBaseUI implements UIEntity<LiteratureBase> {
 
 	@Override
 	public List<AbstractColumn<LiteratureBase, ?>> createColumns() {
-		List<AbstractColumn<LiteratureBase, ?>> columns =
-			new ArrayList<AbstractColumn<LiteratureBase, ?>>();
-		columns.add(new FilterColumn<LiteratureBase, String>("Shortcut", item -> item,
-			path -> path.getShortcut(),
-			(path, value) -> path.setShortcut((String) value)));
-		columns.add(new FilterColumn<LiteratureBase, String>("Value", item -> item,
-			path -> path.getValue(), (path, value) -> path.setValue((String) value)));
+		List<AbstractColumn<LiteratureBase, ?>> columns = new ArrayList<>();
+		columns.add(new FilterColumn<>("Shortcut", path -> path.getShortcut(),
+				(path, value) -> path.setShortcut((String) value)));
+		columns.add(new FilterColumn<>("Value", path -> path.getValue(),
+				(path, value) -> path.setValue((String) value)));
 		ColumnUtils.createCountingColumn("Files", columns, item -> item.getFiles());
 		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
 		ColumnUtils.createPersonifiedColumns(columns);
@@ -47,15 +45,16 @@ public class LiteratureBaseUI implements UIEntity<LiteratureBase> {
 	public ItemEditFactoryController<LiteratureBase> createEditFactory() {
 		return new LiteratureBaseEditFactoryController();
 	}
-	
-	private class LiteratureBaseEditFactoryController extends GroupedItemEditFactoryController<LiteratureBase> {
+
+	private class LiteratureBaseEditFactoryController
+			extends GroupedItemEditFactoryController<LiteratureBase> {
 		private TextField textFieldShortcut;
 		private TextField textFieldValue;
 
 		{
 			textFieldShortcut = new TextField();
 			textFieldValue = new TextField();
-			
+
 			List<TitledPane> panes = new ArrayList<TitledPane>();
 			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
 			generalProperties.add(new PropertyEntry("Shortcut", textFieldShortcut));
@@ -63,12 +62,12 @@ public class LiteratureBaseUI implements UIEntity<LiteratureBase> {
 			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 			panes.add(generalPane);
 			setTitledPanes(panes);
-			
+
 			setItemFactory(this::createItem);
 			setTemplateSetter(this::setEditTemplate);
 			setChangeApplier(this::applyChanges);
 		}
-		
+
 		@Override
 		protected void setEditTemplate(LiteratureBase item) {
 			textFieldShortcut.setText(item.getShortcut());
@@ -86,11 +85,11 @@ public class LiteratureBaseUI implements UIEntity<LiteratureBase> {
 		protected void applyChanges(LiteratureBase item) {
 			String shortcut = textFieldShortcut.getText();
 			String value = textFieldValue.getText();
-	    	
+
 			item.setShortcut(shortcut);
 			item.setValue(value);
 		}
-		
+
 	}
 
 }

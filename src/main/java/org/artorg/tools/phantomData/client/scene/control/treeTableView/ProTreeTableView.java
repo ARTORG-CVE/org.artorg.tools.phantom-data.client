@@ -27,7 +27,7 @@ import javafx.scene.control.TreeTableColumn.CellDataFeatures;
 import javafx.scene.control.TreeTableView;
 import javafx.util.Callback;
 
-public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
+public class ProTreeTableView<ITEM>
 	extends TreeTableView<DbNode> implements AddableToPane {
 	private List<DbTreeTableColumn> treeTableColumns;
 	private TableBase<ITEM> table;
@@ -124,7 +124,7 @@ public class ProTreeTableView<ITEM extends DbPersistent<ITEM, ?>>
 		List<TreeItem<DbNode>> treeItems = new ArrayList<TreeItem<DbNode>>();
 		items.forEach(item -> {
 			TreeItem<DbNode> treeItem = createTreeItem(
-				new DbNode(item, item.getItemClass().getSimpleName(), "Items"), 0);
+				new DbNode(item, ((DbPersistent<?,?>)item).getItemClass().getSimpleName(), "Items"), 0);
 			if (treeItem != null) {
 				treeItems.add(treeItem);
 				addResizeColumnsExpandListener(treeItem);

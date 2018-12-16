@@ -8,54 +8,93 @@ import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
-public class OptionalFilterColumn<T,R> extends AbstractFilterColumn<T,R> {
-	private final Function<T, Optional<? extends Object>> itemToPropertyGetter;
-	private final Function<Object, R> propertyToValueGetter;
-	private final BiConsumer<Object, R> propertyToValueSetter;
+public class OptionalFilterColumn<T, S, R> extends AbstractFilterColumn<T, R> {
+	private final Function<T, Optional<? extends S>> itemToPropertyGetter;
+	private final Function<S, R> propertyToValueGetter;
+	private final BiConsumer<S, R> propertyToValueSetter;
 	private final R emptyValue;
 
 	@SuppressWarnings("unchecked")
-	public <SUB extends DbPersistent<SUB,?>> OptionalFilterColumn(String columnName, 
-			Function<T, Optional<SUB>> itemToPropertyGetter, 
-			Function<SUB, R> propertyToValueGetter, 
-			BiConsumer<SUB, R> propertyToValueSetter,
+	public OptionalFilterColumn(String columnName, Function<T, String> propertyToValueGetter) {
+		this(columnName, item -> (Optional<S>) item,
+				(S sub) -> (R) propertyToValueGetter.apply((T) sub), (sub, value) -> {}, (R) "");
+	}
+
+	@SuppressWarnings("unchecked")
+	public OptionalFilterColumn(String columnName, Function<T, String> propertyToValueGetter,
+			BiConsumer<T, R> propertyToValueSetter) {
+		this(columnName, item -> (Optional<S>) item,
+				(S sub) -> (R) propertyToValueGetter.apply((T) sub),
+				(S sub, R value) -> propertyToValueSetter.accept((T) sub, value), (R) "");
+	}
+
+	@SuppressWarnings("unchecked")
+	public OptionalFilterColumn(String columnName, Function<T, Optional<S>> itemToPropertyGetter,
+			Function<S, String> propertyToValueGetter) {
+		this(columnName, itemToPropertyGetter, sub -> (R) propertyToValueGetter.apply(sub),
+				(sub, r) -> {}, (R) "");
+	}
+
+	@SuppressWarnings("unchecked")
+	public OptionalFilterColumn(String columnName, Function<T, R> propertyToValueGetter,
+			R emptyValue) {
+		this(columnName, item -> (Optional<S>) item,
+				(S sub) -> propertyToValueGetter.apply((T) sub), (sub, value) -> {}, emptyValue);
+	}
+
+	@SuppressWarnings("unchecked")
+	public OptionalFilterColumn(String columnName, Function<T, R> propertyToValueGetter,
+			BiConsumer<T, R> propertyToValueSetter, R emptyValue) {
+		this(columnName, item -> (Optional<S>) item,
+				(S sub) -> propertyToValueGetter.apply((T) sub),
+				(S sub, R value) -> propertyToValueSetter.accept((T) sub, value), emptyValue);
+	}
+
+	public OptionalFilterColumn(String columnName, Function<T, Optional<S>> itemToPropertyGetter,
+			Function<S, R> propertyToValueGetter, R emptyValue) {
+		this(columnName, itemToPropertyGetter, propertyToValueGetter, (sub, r) -> {}, emptyValue);
+	}
+
+	public OptionalFilterColumn(String columnName, Function<T, Optional<S>> itemToPropertyGetter,
+			Function<S, R> propertyToValueGetter, BiConsumer<S, R> propertyToValueSetter,
 			R emtpyValue) {
 		super(columnName);
 		this.itemToPropertyGetter = item -> itemToPropertyGetter.apply(item);
-		this.propertyToValueGetter = (Function<Object, R>) propertyToValueGetter;
-		this.propertyToValueSetter = (BiConsumer<Object, R>) propertyToValueSetter;
+		this.propertyToValueGetter = propertyToValueGetter;
+		this.propertyToValueSetter = propertyToValueSetter;
 		this.emptyValue = emtpyValue;
 	}
-	
+
 	@Override
 	public R get(T item) {
-		Optional<? extends Object> path = itemToPropertyGetter.apply(item);
-		if (path.isPresent())  {
-			Object o = path.get();
-			if (o == null) return emptyValue;
-			return propertyToValueGetter.apply(o);
+		Optional<? extends S> optional = itemToPropertyGetter.apply(item);
+		if (optional.isPresent()) {
+			S sub = optional.get();
+			if (sub == null) return emptyValue;
+			return propertyToValueGetter.apply(sub);
 		}
 		return emptyValue;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public  void set(T item, Object value) {
-		Optional<? extends Object> path = itemToPropertyGetter.apply(item);
-		if (path.isPresent()) {
-			Object o = path.get();
-			if (o == null) return;
-			propertyToValueSetter.accept(o, (R)value);
+	public void set(T item, Object value) {
+		Optional<? extends S> optional = itemToPropertyGetter.apply(item);
+		if (optional.isPresent()) {
+			S sub = optional.get();
+			if (sub == null) return;
+			propertyToValueSetter.accept(sub, (R) value);
 		}
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	@Override
-	public <U extends DbPersistent<U,?>>  boolean update(T item) {
-		Optional<U> optional = (Optional<U>) itemToPropertyGetter.apply(item);
+	@SuppressWarnings("unchecked")
+	public boolean update(T item) {
+		Optional<S> optional = (Optional<S>) itemToPropertyGetter.apply(item);
 		if (!optional.isPresent()) return false;
-		U sub = optional.get();
-		ICrudConnector<U> connector = Connectors.getConnector(sub.getItemClass()); 
+		S sub = optional.get();
+		ICrudConnector<S> connector =
+				Connectors.getConnector(((DbPersistent<S, ?>) sub).getItemClass());
 		return connector.update(sub);
 	}
 

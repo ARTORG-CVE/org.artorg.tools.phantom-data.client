@@ -31,14 +31,11 @@ public class AnnulusDiameterUI implements UIEntity<AnnulusDiameter> {
 
 	@Override
 	public List<AbstractColumn<AnnulusDiameter, ?>> createColumns() {
-		List<AbstractColumn<AnnulusDiameter, ?>> columns =
-			new ArrayList<AbstractColumn<AnnulusDiameter, ?>>();
-		columns.add(new FilterColumn<AnnulusDiameter, String>("Sortcut", item -> item,
-			path -> String.valueOf(path.getShortcut()),
-			(path, value) -> path.setShortcut(Integer.valueOf(value))));
-		columns.add(new FilterColumn<AnnulusDiameter, String>("Value", item -> item,
-			path -> String.valueOf(path.getValue()),
-			(path, value) -> path.setValue(Double.valueOf(value))));
+		List<AbstractColumn<AnnulusDiameter, ?>> columns = new ArrayList<>();
+		columns.add(new FilterColumn<>("Sortcut", path -> String.valueOf(path.getShortcut()),
+				(path, value) -> path.setShortcut(Integer.valueOf(value))));
+		columns.add(new FilterColumn<>("Value", path -> String.valueOf(path.getValue()),
+				(path, value) -> path.setValue(Double.valueOf(value))));
 		ColumnUtils.createCountingColumn("Files", columns, item -> item.getFiles());
 		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
 		ColumnUtils.createPersonifiedColumns(columns);
@@ -49,24 +46,26 @@ public class AnnulusDiameterUI implements UIEntity<AnnulusDiameter> {
 	public ItemEditFactoryController<AnnulusDiameter> createEditFactory() {
 		return new AnnulusDiameterEditFactoryController();
 	}
-	
-	private class AnnulusDiameterEditFactoryController extends GroupedItemEditFactoryController<AnnulusDiameter> {
+
+	private class AnnulusDiameterEditFactoryController
+			extends GroupedItemEditFactoryController<AnnulusDiameter> {
 		private Label labelShortcut;
 		private TextField textFieldValue;
-		
+
 		{
 			labelShortcut = new Label();
 			textFieldValue = new TextField();
 			labelShortcut.setDisable(true);
-			
+
 			List<TitledPane> panes = new ArrayList<TitledPane>();
 			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
 			generalProperties.add(new PropertyEntry("Shortcut [mm]", labelShortcut));
-			generalProperties.add(new PropertyEntry("Diameter [mm]", textFieldValue, () -> updateLabel()));
+			generalProperties
+					.add(new PropertyEntry("Diameter [mm]", textFieldValue, () -> updateLabel()));
 			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 			panes.add(generalPane);
 			setTitledPanes(panes);
-			
+
 			setItemFactory(this::createItem);
 			setTemplateSetter(this::setEditTemplate);
 			setChangeApplier(this::applyChanges);
@@ -78,7 +77,7 @@ public class AnnulusDiameterUI implements UIEntity<AnnulusDiameter> {
 				labelShortcut.setText(String.valueOf(shortcut));
 			} catch (Exception e) {}
 		}
-		
+
 		@Override
 		public void initDefaultValues() {
 			labelShortcut.setText("0");
@@ -102,12 +101,11 @@ public class AnnulusDiameterUI implements UIEntity<AnnulusDiameter> {
 		protected void applyChanges(AnnulusDiameter item) {
 			Integer shortcut = Integer.valueOf(labelShortcut.getText());
 			Double value = Double.valueOf(textFieldValue.getText());
-	    	
+
 			item.setShortcut(shortcut);
 			item.setValue(value);
 		}
 
 	}
-
 
 }

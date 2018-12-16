@@ -13,26 +13,22 @@ public interface UIEntity<T> {
 
 	String getTableName();
 
-	List<AbstractColumn<T,?>> createColumns();
+	List<AbstractColumn<T, ?>> createColumns();
 
 	ItemEditFactoryController<T> createEditFactory();
-	
+
 	default TableBase<T> createTableBase() {
-		return new TableBase<T>(getItemClass()) {
-			{
-				setTableName(getTableName());
-				setColumnCreator(items -> createColumns());
-			}
-		};
+		TableBase<T> table = new TableBase<T>(getItemClass());
+		table.setTableName(getTableName());
+		table.setColumnCreator(items -> createColumns());
+		return table;
 	}
-	
+
 	default DbTable<T> createDbTableBase() {
-		return new DbTable<T>(getItemClass()) {
-			{
-				setTableName(getTableName());
-				setColumnCreator(items -> createColumns());
-			}
-		};
+		DbTable<T> table = new DbTable<T>(getItemClass());
+		table.setTableName(getTableName());
+		table.setColumnCreator(items -> createColumns());
+		return table;
 	}
 
 }

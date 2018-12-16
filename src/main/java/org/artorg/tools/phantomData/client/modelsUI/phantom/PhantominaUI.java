@@ -35,27 +35,22 @@ public class PhantominaUI implements UIEntity<Phantomina> {
 
 	@Override
 	public List<AbstractColumn<Phantomina, ?>> createColumns() {
-		List<AbstractColumn<Phantomina, ?>> columns =
-			new ArrayList<AbstractColumn<Phantomina, ?>>();
-		FilterColumn<Phantomina, ?> column;
-		column = new FilterColumn<Phantomina, String>("PID", item -> item,
-			path -> path.getProductId(), (path, value) -> path.setProductId(value));
+		List<AbstractColumn<Phantomina, ?>> columns = new ArrayList<>();
+		FilterColumn<Phantomina, ?, ?> column;
+		column = new FilterColumn<>("PID", path -> path.getProductId(),
+				(path, value) -> path.setProductId(value));
 		column.setAscendingSortComparator(
-			(p1, p2) -> Phantomina.comparePid(p1.getProductId(), p2.getProductId()));
+				(p1, p2) -> Phantomina.comparePid(p1.getProductId(), p2.getProductId()));
 		columns.add(column);
-		columns.add(new FilterColumn<Phantomina, String>("Annulus [mm]",
-			item -> item.getAnnulusDiameter(),
-			path -> String.valueOf(path.getValue()),
-			(path, value) -> path.setValue(Double.valueOf(value))));
-		columns.add(new FilterColumn<Phantomina, String>("Type",
-			item -> item.getFabricationType(), path -> path.getValue(),
-			(path, value) -> path.setValue(value)));
-		columns.add(new FilterColumn<Phantomina, String>("Literature",
-			item -> item.getLiteratureBase(), path -> path.getValue(),
-			(path, value) -> path.setValue(value)));
-		columns.add(new FilterColumn<Phantomina, String>("Special",
-			item -> item.getSpecial(), path -> path.getShortcut(),
-			(path, value) -> path.setShortcut(value)));
+		columns.add(new FilterColumn<>("Annulus [mm]", item -> item.getAnnulusDiameter(),
+				path -> String.valueOf(path.getValue()),
+				(path, value) -> path.setValue(Double.valueOf(value))));
+		columns.add(new FilterColumn<>("Type", item -> item.getFabricationType(),
+				path -> path.getValue(), (path, value) -> path.setValue(value)));
+		columns.add(new FilterColumn<>("Literature", item -> item.getLiteratureBase(),
+				path -> path.getValue(), (path, value) -> path.setValue(value)));
+		columns.add(new FilterColumn<>("Special", item -> item.getSpecial(),
+				path -> path.getShortcut(), (path, value) -> path.setShortcut(value)));
 		ColumnUtils.createCountingColumn("Files", columns, item -> item.getFiles());
 		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
 //		createPropertyColumns(columns, this.getItems());
@@ -67,23 +62,24 @@ public class PhantominaUI implements UIEntity<Phantomina> {
 	public ItemEditFactoryController<Phantomina> createEditFactory() {
 		return new PhantominaEditFactoryController();
 	}
-	
-	private class PhantominaEditFactoryController extends GroupedItemEditFactoryController<Phantomina> {
+
+	private class PhantominaEditFactoryController
+			extends GroupedItemEditFactoryController<Phantomina> {
 		private Label labelIdValue;
-	    private ComboBox<AnnulusDiameter> comboBoxAnnulus;
-	    private ComboBox<FabricationType> comboBoxFabricationType;
-	    private ComboBox<LiteratureBase> comboBoxLiterature;
-	    private ComboBox<Special> comboBoxSpecials;
-		
+		private ComboBox<AnnulusDiameter> comboBoxAnnulus;
+		private ComboBox<FabricationType> comboBoxFabricationType;
+		private ComboBox<LiteratureBase> comboBoxLiterature;
+		private ComboBox<Special> comboBoxSpecials;
+
 		{
 			labelIdValue = new Label("id");
 			comboBoxAnnulus = new ComboBox<AnnulusDiameter>();
 			comboBoxFabricationType = new ComboBox<FabricationType>();
 			comboBoxLiterature = new ComboBox<LiteratureBase>();
 			comboBoxSpecials = new ComboBox<Special>();
-			
+
 			labelIdValue.setDisable(true);
-			
+
 			List<TitledPane> panes = new ArrayList<TitledPane>();
 			createComboBoxes();
 			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
@@ -95,32 +91,38 @@ public class PhantominaUI implements UIEntity<Phantomina> {
 			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 			panes.add(generalPane);
 			setTitledPanes(panes);
-			
+
 			setItemFactory(this::createItem);
 			setTemplateSetter(this::setEditTemplate);
 			setChangeApplier(this::applyChanges);
 		}
-		
+
 		private void updateId() {
 			try {
 				labelIdValue.setText(createItem().getProductId());
 			} catch (Exception e) {}
-	    }
-		
+		}
+
 		private void createComboBoxes() {
-	        createComboBox(comboBoxAnnulus, AnnulusDiameter.class, d -> String.valueOf(d.getValue()), item -> updateId());
-	        createComboBox(comboBoxFabricationType, FabricationType.class, f -> f.getValue(), item -> updateId());
-	        createComboBox(comboBoxLiterature, LiteratureBase.class, l -> l.getValue(), item -> updateId());
-	        createComboBox(comboBoxSpecials, Special.class, s -> s.getShortcut(), item -> updateId());
-	    }
+			createComboBox(comboBoxAnnulus, AnnulusDiameter.class,
+					d -> String.valueOf(d.getValue()), item -> updateId());
+			createComboBox(comboBoxFabricationType, FabricationType.class, f -> f.getValue(),
+					item -> updateId());
+			createComboBox(comboBoxLiterature, LiteratureBase.class, l -> l.getValue(),
+					item -> updateId());
+			createComboBox(comboBoxSpecials, Special.class, s -> s.getShortcut(),
+					item -> updateId());
+		}
 
 		@Override
 		public Phantomina createItem() {
 			AnnulusDiameter annulusDiameter = comboBoxAnnulus.getSelectionModel().getSelectedItem();
-	    	FabricationType fabricationType = comboBoxFabricationType.getSelectionModel().getSelectedItem();
-	    	LiteratureBase literatureBase = comboBoxLiterature.getSelectionModel().getSelectedItem();
-	    	Special special = comboBoxSpecials.getSelectionModel().getSelectedItem();
-			
+			FabricationType fabricationType =
+					comboBoxFabricationType.getSelectionModel().getSelectedItem();
+			LiteratureBase literatureBase =
+					comboBoxLiterature.getSelectionModel().getSelectedItem();
+			Special special = comboBoxSpecials.getSelectionModel().getSelectedItem();
+
 			return new Phantomina(annulusDiameter, fabricationType, literatureBase, special);
 		}
 
@@ -131,22 +133,22 @@ public class PhantominaUI implements UIEntity<Phantomina> {
 			super.selectComboBoxItem(comboBoxLiterature, item.getLiteratureBase());
 			super.selectComboBoxItem(comboBoxSpecials, item.getSpecial());
 		}
-		
+
 		@Override
 		protected void applyChanges(Phantomina item) {
 			AnnulusDiameter annulusDiameter = comboBoxAnnulus.getSelectionModel().getSelectedItem();
-	    	FabricationType fabricationType = comboBoxFabricationType.getSelectionModel().getSelectedItem();
-	    	LiteratureBase literatureBase = comboBoxLiterature.getSelectionModel().getSelectedItem();
-	    	Special special = comboBoxSpecials.getSelectionModel().getSelectedItem();
-	    	
-	    	item.setAnnulusDiameter(annulusDiameter);
-	    	item.setFabricationType(fabricationType);
-	    	item.setLiteratureBase(literatureBase);
-	    	item.setSpecial(special);
+			FabricationType fabricationType =
+					comboBoxFabricationType.getSelectionModel().getSelectedItem();
+			LiteratureBase literatureBase =
+					comboBoxLiterature.getSelectionModel().getSelectedItem();
+			Special special = comboBoxSpecials.getSelectionModel().getSelectedItem();
+
+			item.setAnnulusDiameter(annulusDiameter);
+			item.setFabricationType(fabricationType);
+			item.setLiteratureBase(literatureBase);
+			item.setSpecial(special);
 		}
-		
+
 	}
 
-
-	
 }

@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
 
 import javafx.geometry.Insets;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-public abstract class UngroupedItemEditFactoryController<ITEM extends DbPersistent<ITEM,?>> extends ItemEditFactoryController<ITEM> {
+public abstract class UngroupedItemEditFactoryController<T> extends ItemEditFactoryController<T> {
 	
 	
 
@@ -21,10 +20,10 @@ public abstract class UngroupedItemEditFactoryController<ITEM extends DbPersiste
 		entries = new ArrayList<PropertyEntry>();
 	}
 	
-	protected abstract List<PropertyEntry> createUngroupedProperties(ITEM item);
+	protected abstract List<PropertyEntry> createUngroupedProperties(T item);
 	
 	@Override
-	protected void addProperties(ITEM item) {
+	protected void addProperties(T item) {
 		entries.addAll(createUngroupedProperties(item));
 	}
 	

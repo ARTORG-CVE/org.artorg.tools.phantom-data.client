@@ -30,17 +30,13 @@ public class ExperimentalSetupUI implements UIEntity<ExperimentalSetup> {
 
 	@Override
 	public List<AbstractColumn<ExperimentalSetup, ?>> createColumns() {
-		List<AbstractColumn<ExperimentalSetup, ?>> columns =
-			new ArrayList<AbstractColumn<ExperimentalSetup, ?>>();
-		columns.add(new FilterColumn<ExperimentalSetup, String>("Short name",
-			item -> item, path -> path.getShortName(),
-			(path, value) -> path.setShortName(value)));
-		columns.add(new FilterColumn<ExperimentalSetup, String>("Long name",
-			item -> item, path -> path.getLongName(),
-			(path, value) -> path.setLongName(value)));
-		columns.add(new FilterColumn<ExperimentalSetup, String>("Description",
-			item -> item, path -> path.getDescription(),
-			(path, value) -> path.setDescription(value)));
+		List<AbstractColumn<ExperimentalSetup, ?>> columns = new ArrayList<>();
+		columns.add(new FilterColumn<>("Short name", path -> path.getShortName(),
+				(path, value) -> path.setShortName(value)));
+		columns.add(new FilterColumn<>("Long name", path -> path.getLongName(),
+				(path, value) -> path.setLongName(value)));
+		columns.add(new FilterColumn<>("Description", path -> path.getDescription(),
+				(path, value) -> path.setDescription(value)));
 		ColumnUtils.createCountingColumn("Files", columns, item -> item.getFiles());
 		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
 		ColumnUtils.createPersonifiedColumns(columns);
@@ -51,18 +47,19 @@ public class ExperimentalSetupUI implements UIEntity<ExperimentalSetup> {
 	public ItemEditFactoryController<ExperimentalSetup> createEditFactory() {
 		return new ExperimentalSetupEditFactoryController();
 	}
-	
-	private class ExperimentalSetupEditFactoryController extends GroupedItemEditFactoryController<ExperimentalSetup> {
-		
+
+	private class ExperimentalSetupEditFactoryController
+			extends GroupedItemEditFactoryController<ExperimentalSetup> {
+
 		private final TextField textFieldShortName;
 		private final TextField textFieldLongName;
 		private final TextField textFieldDescription;
-		
+
 		{
 			textFieldShortName = new TextField();
 			textFieldLongName = new TextField();
 			textFieldDescription = new TextField();
-			
+
 			List<TitledPane> panes = new ArrayList<TitledPane>();
 			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
 			generalProperties.add(new PropertyEntry("Short name", textFieldShortName));
@@ -71,13 +68,12 @@ public class ExperimentalSetupUI implements UIEntity<ExperimentalSetup> {
 			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 			panes.add(generalPane);
 			setTitledPanes(panes);
-			
+
 			setItemFactory(this::createItem);
 			setTemplateSetter(this::setEditTemplate);
 			setChangeApplier(this::applyChanges);
 		}
-		
-		
+
 		@Override
 		public ExperimentalSetup createItem() {
 			String shortName = textFieldShortName.getText();
@@ -98,12 +94,11 @@ public class ExperimentalSetupUI implements UIEntity<ExperimentalSetup> {
 			String shortName = textFieldShortName.getText();
 			String longName = textFieldLongName.getText();
 			String description = textFieldDescription.getText();
-	    	
+
 			item.setShortName(shortName);
 			item.setLongName(longName);
 			item.setDescription(description);
 		}
 	}
-
 
 }

@@ -14,17 +14,17 @@ public interface ICrudConnector<T> {
 	
 	boolean create(T t);
 	
-	<U extends Identifiable<ID>, ID extends Comparable<ID>> U readById(ID id);
+	<ID> T readById(ID id);
 	
 	boolean update(T t);
 	
-	<U extends Identifiable<ID>, ID extends Comparable<ID>> boolean deleteById(ID id);
+	<ID> boolean deleteById(ID id);
 	
 	T[] readAll();
 	
-	<U extends Identifiable<ID>, ID extends Comparable<ID>, V> U readByAttribute(V attribute, String annString);
+	<ID, V> T readByAttribute(V attribute, String annString);
 	
-	<U extends Identifiable<ID>, ID extends Comparable<ID>> Boolean existById(ID id);
+	<ID> Boolean existById(ID id);
 	
 	default boolean create(List<T> t) {
 		return StreamUtils.forEach(this::create, t);
@@ -34,8 +34,8 @@ public interface ICrudConnector<T> {
 		return StreamUtils.forEach(item -> create(item), t);
 	}
 	
-	default <U extends Identifiable<ID>, ID extends Comparable<ID>> U read(U t) {
-		return readById(t.getId());
+	default T read(T t) {
+		return readById(((Identifiable<?>)t).getId());
 	}
 	
 	default List<T> readAllAsList() {

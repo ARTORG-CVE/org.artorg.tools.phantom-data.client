@@ -97,7 +97,7 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 		CrudConnector.urlLocalhost = urlLocalhost;
 	}
 
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>> void reload() {
+	public void reload() {
 		List<T> itemList = Arrays.asList(readAllDb());
 		map.clear();
 		itemList.stream().forEach(item -> map.put(((Identifiable<?>)item).getId().toString(), item));
@@ -155,22 +155,21 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 		}
 		return false;
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	@Override
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>> U readById(ID id) {
-		if (map.containsKey(id.toString())) return (U) map.get(id.toString());
-		U u = readByIdDb(id);
-		map.put(u.getId().toString(), (T) u);
+	public <ID> T readById(ID id) {
+		if (map.containsKey(id.toString())) return (T) map.get(id.toString());
+		T u = readByIdDb(id);
+		map.put(((Identifiable<?>)u).getId().toString(), (T) u);
 		return u;
 	}
 
 	@SuppressWarnings("unchecked")
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>> U readByIdDb(ID id) {
+	public <ID> T readByIdDb(ID id) {
 		RestTemplate restTemplate = new RestTemplate();
 		String url = createUrl(getAnnoStringRead());
-		U result = (U) restTemplate.getForObject(url, getModelClass(), id);
-		result.setId(id);
+		T result = (T) restTemplate.getForObject(url, getModelClass(), id);
+		((Identifiable<Comparable<ID>>)result).setId((Comparable<ID>) id);
 		return result;
 	}
 
@@ -196,14 +195,14 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 	}
 
 	@Override
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean
+	public <ID> boolean
 		deleteById(ID id) {
 		boolean result = deleteByIdDb(id);
 		if (result) map.remove(id.toString());
 		return result;
 	}
 
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean
+	public <ID> boolean
 		deleteByIdDb(ID id) {
 		try {
 			HttpHeaders headers = createHttpHeaders();
@@ -219,7 +218,7 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 	}
 
 	@Override
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>> Boolean
+	public <ID> Boolean
 		existById(ID id) {
 		return map.containsKey(id.toString());
 	}
@@ -231,14 +230,13 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 		Boolean result = (Boolean) restTemplate.getForObject(url, Boolean.class, id);
 		return result;
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	@Override
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>, V> U
+	public <ID, V> T
 		readByAttribute(V attribute, String attributeName) {
-		U u = readByAttributeDb(attribute, attributeName);
-		map.put(u.getId().toString(), (T) u);
-		return u;
+		T t = readByAttributeDb(attribute, attributeName);
+		map.put(((Identifiable<?>)t).getId().toString(), (T) t);
+		return t;
 	}
 
 	@SuppressWarnings("unchecked")

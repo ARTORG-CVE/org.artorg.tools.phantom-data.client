@@ -4,9 +4,8 @@ import java.util.function.Supplier;
 
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.server.model.base.person.Person;
-import org.artorg.tools.phantomData.server.model.specification.AbstractPropertifiedEntity;
 import org.artorg.tools.phantomData.server.model.specification.AbstractPersonifiedEntity;
-import org.artorg.tools.phantomData.server.specification.Identifiable;
+import org.artorg.tools.phantomData.server.model.specification.AbstractPropertifiedEntity;
 
 public class PersonifiedCrudConnector<T> extends CrudConnector<T> {
 	private static Supplier<Person> userSupplier;
@@ -44,12 +43,12 @@ public class PersonifiedCrudConnector<T> extends CrudConnector<T> {
 	}
 	
 	@Override
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean deleteById(ID id) {
+	public <ID> boolean deleteById(ID id) {
 		if (!isUserLoggedIn()) return false; 
 		return deleteById(id, getUser());
 	}
 	
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean deleteById(ID id, Person p) {
+	public <ID> boolean deleteById(ID id, Person p) {
 		return super.deleteById(id);
 	}
 	

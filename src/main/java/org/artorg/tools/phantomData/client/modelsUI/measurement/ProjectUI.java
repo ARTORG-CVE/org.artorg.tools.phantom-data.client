@@ -34,18 +34,18 @@ public class ProjectUI implements UIEntity<Project> {
 	public List<AbstractColumn<Project, ?>> createColumns() {
 		List<AbstractColumn<Project, ?>> columns =
 			new ArrayList<AbstractColumn<Project, ?>>();
-		columns.add(new FilterColumn<Project, String>("Name", item -> item,
+		columns.add(new FilterColumn<>("Name",
 			path -> path.getName(), (path, value) -> path.setName(value)));
-		columns.add(new FilterColumn<Project, String>("Description", item -> item,
+		columns.add(new FilterColumn<>("Description",
 			path -> path.getDescription(),
 			(path, value) -> path.setDescription(value)));
-		columns.add(new FilterColumn<Project, String>("Project", item -> item,
+		columns.add(new FilterColumn<>("Project", 
 			path -> Short.toString(path.getStartYear()),
 			(path, value) -> path.setStartYear(Short.valueOf(value))));
-		columns.add(new FilterColumn<Project, String>("Leader",
-			item -> item.getLeader(), path -> path.toName(), (path, value) -> {}));
-		columns.add(new FilterColumn<Project, String>("Members", item -> item,
-			path -> String.valueOf(path.getMembers().size()), (path, value) -> {}));
+		columns.add(new FilterColumn<>("Leader",
+			item -> item.getLeader(), path -> path.toName()));
+		columns.add(new FilterColumn<>("Members", 
+			path -> String.valueOf(path.getMembers().size())));
 		ColumnUtils.createCountingColumn("Files", columns, item -> item.getFiles());
 		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
 		ColumnUtils.createPersonifiedColumns(columns);

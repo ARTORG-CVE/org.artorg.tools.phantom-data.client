@@ -21,11 +21,11 @@ public class Connectors {
 		connectorMap = new HashMap<Class<?>, PersonifiedCrudConnector<?>>();
 	}
 	
-	public static <ITEM>
-		ICrudConnector<ITEM> getConnector(Class<ITEM> itemClass) {
+	public static <T>
+		ICrudConnector<T> getConnector(Class<T> itemClass) {
 		if (itemClass == Person.class || itemClass == Gender.class || itemClass == AcademicTitle.class)
-			return (ICrudConnector<ITEM>) getOrCreateUnpersonified(itemClass);
-		return (ICrudConnector<ITEM>) getOrCreatePersonified(itemClass);
+			return (ICrudConnector<T>) getOrCreateUnpersonified(itemClass);
+		return (ICrudConnector<T>) getOrCreatePersonified(itemClass);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -34,21 +34,21 @@ public class Connectors {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static <U> ICrudConnector<U>
-		getOrCreateUnpersonified(Class<U> cls) {
+	private static <T> ICrudConnector<T>
+		getOrCreateUnpersonified(Class<T> cls) {
 		if (connectorMapUnpersonified.containsKey(cls))
-			return (ICrudConnector<U>) connectorMapUnpersonified.get(cls);
-		CrudConnector<U> connector = new CrudConnector(cls);
+			return (ICrudConnector<T>) connectorMapUnpersonified.get(cls);
+		CrudConnector<T> connector = new CrudConnector(cls);
 		connectorMapUnpersonified.put(cls, connector);
 		return connector;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static <U> ICrudConnector<U>
-		getOrCreatePersonified(Class<U> cls) {
+	private static <T> ICrudConnector<T>
+		getOrCreatePersonified(Class<T> cls) {
 		if (connectorMap.containsKey(cls))
-			return (ICrudConnector<U>) connectorMap.get(cls);
-		PersonifiedCrudConnector<U> connector =
+			return (ICrudConnector<T>) connectorMap.get(cls);
+		PersonifiedCrudConnector<T> connector =
 			new PersonifiedCrudConnector(cls);
 		connectorMap.put(cls, connector);
 		return connector;

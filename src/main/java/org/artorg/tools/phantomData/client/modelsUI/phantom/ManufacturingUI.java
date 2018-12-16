@@ -30,13 +30,11 @@ public class ManufacturingUI implements UIEntity<Manufacturing> {
 
 	@Override
 	public List<AbstractColumn<Manufacturing, ?>> createColumns() {
-		List<AbstractColumn<Manufacturing, ?>> columns =
-			new ArrayList<AbstractColumn<Manufacturing, ?>>();
-		columns.add(new FilterColumn<Manufacturing, String>("Name", item -> item,
-			path -> path.getName(), (path, value) -> path.setName(value)));
-		columns.add(new FilterColumn<Manufacturing, String>("Description",
-			item -> item, path -> path.getDescription(),
-			(path, value) -> path.setDescription(value)));
+		List<AbstractColumn<Manufacturing, ?>> columns = new ArrayList<>();
+		columns.add(new FilterColumn<>("Name", path -> path.getName(),
+				(path, value) -> path.setName(value)));
+		columns.add(new FilterColumn<>("Description", path -> path.getDescription(),
+				(path, value) -> path.setDescription(value)));
 		ColumnUtils.createCountingColumn("Files", columns, item -> item.getFiles());
 		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
 		ColumnUtils.createPersonifiedColumns(columns);
@@ -47,15 +45,16 @@ public class ManufacturingUI implements UIEntity<Manufacturing> {
 	public ItemEditFactoryController<Manufacturing> createEditFactory() {
 		return new ManufacturingEditFactoryController();
 	}
-	
-	private class ManufacturingEditFactoryController extends GroupedItemEditFactoryController<Manufacturing> {
+
+	private class ManufacturingEditFactoryController
+			extends GroupedItemEditFactoryController<Manufacturing> {
 		private final TextField textFieldName;
 		private final TextField textFieldDescription;
-		
+
 		{
 			textFieldName = new TextField();
 			textFieldDescription = new TextField();
-			
+
 			List<TitledPane> panes = new ArrayList<TitledPane>();
 			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
 			generalProperties.add(new PropertyEntry("Name", textFieldName));
@@ -63,13 +62,12 @@ public class ManufacturingUI implements UIEntity<Manufacturing> {
 			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 			panes.add(generalPane);
 			setTitledPanes(panes);
-			
+
 			setItemFactory(this::createItem);
 			setTemplateSetter(this::setEditTemplate);
 			setChangeApplier(this::applyChanges);
 		}
-		
-		
+
 		@Override
 		public Manufacturing createItem() {
 			String name = textFieldName.getText();
@@ -87,7 +85,7 @@ public class ManufacturingUI implements UIEntity<Manufacturing> {
 		protected void applyChanges(Manufacturing item) {
 			String name = textFieldName.getText();
 			String description = textFieldDescription.getText();
-	    	
+
 			item.setName(name);
 			item.setDescription(description);
 		}

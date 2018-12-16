@@ -139,7 +139,7 @@ public class TableBase<T> {
 		filterPredicate = mappedColumnIndexes.stream()
 			.filter(i -> i < columnItemFilterPredicates.size())
 			.map(i -> getColumns().get(i))
-			.collect(castFilter(column -> ((FilterColumn<T, ?>) column)))
+			.collect(castFilter(column -> ((FilterColumn<T, ?, ?>) column)))
 			.map(filterColumn -> filterColumn.getFilterPredicate())
 			.reduce((f1, f2) -> f1.and(f2)).orElse(item -> true);
 

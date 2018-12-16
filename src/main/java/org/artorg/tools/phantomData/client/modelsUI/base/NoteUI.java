@@ -30,13 +30,10 @@ public class NoteUI implements UIEntity<Note> {
 
 	@Override
 	public List<AbstractColumn<Note, ?>> createColumns() {
-		List<AbstractColumn<Note,?>> columns =
-			new ArrayList<AbstractColumn<Note,?>>();
-		columns.add(new FilterColumn<Note,String>(
-			"Name", item -> item,
-			path -> path.getName(),
-			(path, value) -> path.setName(value)));
-		ColumnUtils.createPersonifiedColumns(columns);			
+		List<AbstractColumn<Note, ?>> columns = new ArrayList<>();
+		columns.add(new FilterColumn<>("Name", path -> path.getName(),
+				(path, value) -> path.setName(value)));
+		ColumnUtils.createPersonifiedColumns(columns);
 		return columns;
 	}
 
@@ -44,20 +41,20 @@ public class NoteUI implements UIEntity<Note> {
 	public ItemEditFactoryController<Note> createEditFactory() {
 		return new NoteEditFactoryController();
 	}
-	
+
 	private class NoteEditFactoryController extends GroupedItemEditFactoryController<Note> {
-		private TextField textFieldMessage; 
-		
+		private TextField textFieldMessage;
+
 		{
 			textFieldMessage = new TextField();
-			
+
 			List<TitledPane> panes = new ArrayList<TitledPane>();
 			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
 			generalProperties.add(new PropertyEntry("Message", textFieldMessage));
 			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 			panes.add(generalPane);
 			setTitledPanes(panes);
-			
+
 			setItemFactory(this::createItem);
 			setTemplateSetter(this::setEditTemplate);
 			setChangeApplier(this::applyChanges);
@@ -77,10 +74,10 @@ public class NoteUI implements UIEntity<Note> {
 		@Override
 		protected void applyChanges(Note item) {
 			String message = textFieldMessage.getText();
-	    	
+
 			item.setName(message);
 		}
-		
+
 	}
 
 }
