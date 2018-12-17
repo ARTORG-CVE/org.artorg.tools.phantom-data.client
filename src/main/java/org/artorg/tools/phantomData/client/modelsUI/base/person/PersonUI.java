@@ -18,6 +18,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
+
 public class PersonUI implements UIEntity<Person> {
 
 	@Override
