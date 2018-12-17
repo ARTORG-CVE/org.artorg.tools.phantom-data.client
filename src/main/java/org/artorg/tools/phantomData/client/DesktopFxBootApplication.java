@@ -2,6 +2,7 @@ package org.artorg.tools.phantomData.client;
 
 import java.util.List;
 
+import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.server.DesktopFxBootServer;
 import org.artorg.tools.phantomData.server.boot.ConsoleFrame;
 import org.artorg.tools.phantomData.server.boot.FxConsoleFrame;
@@ -19,6 +20,8 @@ public class DesktopFxBootApplication extends Application {
 	private static final int nConsoleLinesClient = 1;
 
 	public static void main(String[] args) {
+		System.out.println("test");
+		Logger.info.println("Launching Client Application...");
 		Application.launch(args);
 	}
 

@@ -31,6 +31,12 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			<version>0.3.5</version>
 		</dependency>
 		
+		<dependency>
+		<groupId>ch.huma</groupId>
+	<artifactId>huma-library</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	</dependency>
+		
 		<!-- https://mvnrepository.com/artifact/org.controlsfx/controlsfx-samples -->
 		<dependency>
 			<groupId>org.controlsfx</groupId>

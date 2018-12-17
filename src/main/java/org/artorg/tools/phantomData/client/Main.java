@@ -29,6 +29,7 @@ import org.artorg.tools.phantomData.server.models.phantom.*;
 import org.artorg.tools.phantomData.server.util.FxUtil;
 import org.reflections.Reflections;
 
+import huma.logging.Level;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.scene.Scene;
@@ -75,7 +76,6 @@ public class Main extends DesktopFxBootApplication {
 	}
 
 	public static void main(String[] args) {
-
 		Application.launch(args);
 	}
 
