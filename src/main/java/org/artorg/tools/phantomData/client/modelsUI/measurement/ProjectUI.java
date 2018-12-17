@@ -11,8 +11,8 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
-import org.artorg.tools.phantomData.server.model.base.person.Person;
-import org.artorg.tools.phantomData.server.model.measurement.Project;
+import org.artorg.tools.phantomData.server.models.base.person.Person;
+import org.artorg.tools.phantomData.server.models.measurement.Project;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;

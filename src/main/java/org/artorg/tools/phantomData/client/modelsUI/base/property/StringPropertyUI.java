@@ -1,8 +1,8 @@
 package org.artorg.tools.phantomData.client.modelsUI.base.property;
 
 import org.artorg.tools.phantomData.client.modelUI.PropertyUI;
-import org.artorg.tools.phantomData.server.model.base.property.PropertyField;
-import org.artorg.tools.phantomData.server.model.base.property.StringProperty;
+import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
+import org.artorg.tools.phantomData.server.models.base.property.StringProperty;
 
 import javafx.scene.Node;
 import javafx.scene.control.TextField;

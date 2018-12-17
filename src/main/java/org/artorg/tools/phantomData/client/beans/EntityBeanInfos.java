@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 import javax.persistence.Entity;
 
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.model.DbPersistent;
 import org.reflections.Reflections;
 
 public class EntityBeanInfos {

@@ -7,7 +7,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.model.DbPersistent;
 
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Orientation;

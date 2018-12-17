@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.artorg.tools.phantomData.client.util.StreamUtils;
-import org.artorg.tools.phantomData.server.specification.Identifiable;
+import org.artorg.tools.phantomData.server.model.Identifiable;
 
 public interface ICrudConnector<T> {
 	

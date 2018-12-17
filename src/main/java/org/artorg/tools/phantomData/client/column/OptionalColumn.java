@@ -6,7 +6,7 @@ import java.util.function.Function;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.model.DbPersistent;
 
 public class OptionalColumn<T, S, R extends Comparable<R>> extends AbstractColumn<T, R> {
 	private final Function<T, Optional<? extends S>> itemToPropertyGetter;

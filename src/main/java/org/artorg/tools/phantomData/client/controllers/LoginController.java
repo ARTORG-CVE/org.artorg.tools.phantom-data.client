@@ -4,7 +4,7 @@ import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.scene.control.VGridBoxPane;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.model.base.person.Person;
+import org.artorg.tools.phantomData.server.models.base.person.Person;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;

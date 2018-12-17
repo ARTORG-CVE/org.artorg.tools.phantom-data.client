@@ -2,7 +2,7 @@ package org.artorg.tools.phantomData.client.scene.control.treeTableView;
 
 import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.table.TableBase;
-import org.artorg.tools.phantomData.server.model.phantom.Phantom;
+import org.artorg.tools.phantomData.server.models.phantom.Phantom;
 
 public class DbTreeTableView<T> extends ProTreeTableView<T> {
 	

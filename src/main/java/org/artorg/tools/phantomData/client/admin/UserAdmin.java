@@ -6,7 +6,7 @@ import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.connector.PersonifiedCrudConnector;
-import org.artorg.tools.phantomData.server.model.base.person.Person;
+import org.artorg.tools.phantomData.server.models.base.person.Person;
 
 import javafx.application.Platform;
 

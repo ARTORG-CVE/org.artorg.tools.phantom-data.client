@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.artorg.tools.phantomData.server.model.base.person.AcademicTitle;
-import org.artorg.tools.phantomData.server.model.base.person.Gender;
-import org.artorg.tools.phantomData.server.model.base.person.Person;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.model.DbPersistent;
+import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
+import org.artorg.tools.phantomData.server.models.base.person.Gender;
+import org.artorg.tools.phantomData.server.models.base.person.Person;
 
 public class Connectors {
 	private static final Map<Class<?>, CrudConnector<?>> connectorMapUnpersonified;

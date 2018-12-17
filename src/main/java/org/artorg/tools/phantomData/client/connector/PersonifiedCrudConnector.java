@@ -3,9 +3,9 @@ package org.artorg.tools.phantomData.client.connector;
 import java.util.function.Supplier;
 
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
-import org.artorg.tools.phantomData.server.model.base.person.Person;
-import org.artorg.tools.phantomData.server.model.specification.AbstractPersonifiedEntity;
-import org.artorg.tools.phantomData.server.model.specification.AbstractPropertifiedEntity;
+import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
+import org.artorg.tools.phantomData.server.model.AbstractPropertifiedEntity;
+import org.artorg.tools.phantomData.server.models.base.person.Person;
 
 public class PersonifiedCrudConnector<T> extends CrudConnector<T> {
 	private static Supplier<Person> userSupplier;

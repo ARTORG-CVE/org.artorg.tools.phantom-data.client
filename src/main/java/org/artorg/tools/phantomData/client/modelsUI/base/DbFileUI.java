@@ -12,7 +12,7 @@ import org.artorg.tools.phantomData.client.editors.DbFileEditFactoryController;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.model.base.DbFile;
+import org.artorg.tools.phantomData.server.models.base.DbFile;
 
 public class DbFileUI implements UIEntity<DbFile> {
 

@@ -11,11 +11,11 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
-import org.artorg.tools.phantomData.server.model.phantom.AnnulusDiameter;
-import org.artorg.tools.phantomData.server.model.phantom.FabricationType;
-import org.artorg.tools.phantomData.server.model.phantom.LiteratureBase;
-import org.artorg.tools.phantomData.server.model.phantom.Phantomina;
-import org.artorg.tools.phantomData.server.model.phantom.Special;
+import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
+import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
+import org.artorg.tools.phantomData.server.models.phantom.LiteratureBase;
+import org.artorg.tools.phantomData.server.models.phantom.Phantomina;
+import org.artorg.tools.phantomData.server.models.phantom.Special;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;

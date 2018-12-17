@@ -2,7 +2,7 @@ package org.artorg.tools.phantomData.client.scene.control;
 
 import java.util.Set;
 
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.model.DbPersistent;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

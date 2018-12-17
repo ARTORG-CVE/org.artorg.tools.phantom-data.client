@@ -14,7 +14,7 @@ import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.model.base.property.PropertyField;
+import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

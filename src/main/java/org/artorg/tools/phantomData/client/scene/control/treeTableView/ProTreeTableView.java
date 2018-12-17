@@ -13,9 +13,9 @@ import org.artorg.tools.phantomData.client.beans.DbNode;
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
-import org.artorg.tools.phantomData.server.model.specification.AbstractPersonifiedEntity;
-import org.artorg.tools.phantomData.server.model.specification.NameGeneratable;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
+import org.artorg.tools.phantomData.server.model.DbPersistent;
+import org.artorg.tools.phantomData.server.model.NameGeneratable;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;

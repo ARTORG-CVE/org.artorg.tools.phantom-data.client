@@ -8,7 +8,7 @@ import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
-import org.artorg.tools.phantomData.server.model.base.DbFile;
+import org.artorg.tools.phantomData.server.models.base.DbFile;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;

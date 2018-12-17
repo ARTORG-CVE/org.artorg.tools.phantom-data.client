@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.column.OptionalFilterColumn;
-import org.artorg.tools.phantomData.server.model.specification.AbstractPersonifiedEntity;
-import org.artorg.tools.phantomData.server.model.specification.AbstractPropertifiedEntity;
-import org.artorg.tools.phantomData.server.model.specification.AbstractProperty;
+import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
+import org.artorg.tools.phantomData.server.model.AbstractPropertifiedEntity;
+import org.artorg.tools.phantomData.server.model.AbstractProperty;
 
 import javafx.collections.ObservableList;
 

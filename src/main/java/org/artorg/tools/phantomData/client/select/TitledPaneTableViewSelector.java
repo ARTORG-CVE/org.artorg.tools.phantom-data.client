@@ -5,7 +5,7 @@ import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTable
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.TableViewFactory;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.model.DbPersistent;
 
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;

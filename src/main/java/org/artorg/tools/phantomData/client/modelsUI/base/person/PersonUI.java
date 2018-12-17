@@ -10,9 +10,9 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
-import org.artorg.tools.phantomData.server.model.base.person.AcademicTitle;
-import org.artorg.tools.phantomData.server.model.base.person.Gender;
-import org.artorg.tools.phantomData.server.model.base.person.Person;
+import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
+import org.artorg.tools.phantomData.server.models.base.person.Gender;
+import org.artorg.tools.phantomData.server.models.base.person.Person;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;

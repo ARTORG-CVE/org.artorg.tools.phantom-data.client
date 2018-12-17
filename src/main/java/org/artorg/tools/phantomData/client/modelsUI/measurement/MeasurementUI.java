@@ -19,11 +19,11 @@ import org.artorg.tools.phantomData.client.editors.DbFileEditFactoryController;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.select.AbstractTableViewSelector;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
-import org.artorg.tools.phantomData.server.model.base.DbFile;
-import org.artorg.tools.phantomData.server.model.base.person.Person;
-import org.artorg.tools.phantomData.server.model.measurement.ExperimentalSetup;
-import org.artorg.tools.phantomData.server.model.measurement.Measurement;
-import org.artorg.tools.phantomData.server.model.measurement.Project;
+import org.artorg.tools.phantomData.server.models.base.DbFile;
+import org.artorg.tools.phantomData.server.models.base.person.Person;
+import org.artorg.tools.phantomData.server.models.measurement.ExperimentalSetup;
+import org.artorg.tools.phantomData.server.models.measurement.Measurement;
+import org.artorg.tools.phantomData.server.models.measurement.Project;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;

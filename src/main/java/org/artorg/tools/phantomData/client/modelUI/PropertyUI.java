@@ -13,9 +13,9 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.model.base.property.PropertyField;
-import org.artorg.tools.phantomData.server.model.specification.AbstractProperty;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.model.AbstractProperty;
+import org.artorg.tools.phantomData.server.model.DbPersistent;
+import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;

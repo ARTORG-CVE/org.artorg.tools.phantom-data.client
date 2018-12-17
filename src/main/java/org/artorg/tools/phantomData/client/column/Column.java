@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
+import org.artorg.tools.phantomData.server.model.DbPersistent;
 
 public class Column<T, S,R> extends AbstractColumn<T,R> {
 	private final Function<T, S> itemToPropertyGetter;

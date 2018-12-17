@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.server.model.base.person.*;
-import org.artorg.tools.phantomData.server.model.base.property.*;
-import org.artorg.tools.phantomData.server.model.phantom.*;
+import org.artorg.tools.phantomData.server.models.base.person.*;
+import org.artorg.tools.phantomData.server.models.base.property.*;
+import org.artorg.tools.phantomData.server.models.phantom.*;
 
 public class DatabaseInitializer {
 	private static ICrudConnector<Gender> genderConn =

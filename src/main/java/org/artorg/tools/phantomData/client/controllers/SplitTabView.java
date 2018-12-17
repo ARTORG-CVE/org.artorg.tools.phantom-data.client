@@ -36,10 +36,10 @@ import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.TableViewFactory;
-import org.artorg.tools.phantomData.server.model.base.DbFile;
-import org.artorg.tools.phantomData.server.model.specification.NameGeneratable;
-import org.artorg.tools.phantomData.server.specification.DbPersistent;
-import org.artorg.tools.phantomData.server.specification.Identifiable;
+import org.artorg.tools.phantomData.server.model.DbPersistent;
+import org.artorg.tools.phantomData.server.model.Identifiable;
+import org.artorg.tools.phantomData.server.model.NameGeneratable;
+import org.artorg.tools.phantomData.server.models.base.DbFile;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -152,7 +152,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 	@SuppressWarnings("unchecked")
 	private <T> void
 		changeToTableView(ProTreeTableView<T> tableView) {
-		ProTableView<T> treeTableView = TableViewFactory.createTableView(
+		ProTableView<T> treeTableView = (ProTableView<T>)TableViewFactory.createTableView(
 			tableView.getItemClass(), DbTable.class, DbEditFilterTableView.class,
 			tableView.getSelectionModel().getSelectedItems());
 		Tab tab;

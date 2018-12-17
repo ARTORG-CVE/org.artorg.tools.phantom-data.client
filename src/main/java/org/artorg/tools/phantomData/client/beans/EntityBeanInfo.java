@@ -17,8 +17,8 @@ import java.util.stream.Stream;
 
 import javax.persistence.Entity;
 
-import org.artorg.tools.phantomData.server.model.specification.AbstractPropertifiedEntity;
-import org.artorg.tools.phantomData.server.model.specification.AbstractPersonifiedEntity;
+import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
+import org.artorg.tools.phantomData.server.model.AbstractPropertifiedEntity;
 
 public class EntityBeanInfo {
 	private static final EntityBeanInfo abstractPersonifiedEntityBeanInfo;

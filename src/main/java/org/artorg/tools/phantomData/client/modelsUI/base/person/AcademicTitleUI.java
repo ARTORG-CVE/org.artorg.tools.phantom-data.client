@@ -10,7 +10,7 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
-import org.artorg.tools.phantomData.server.model.base.person.AcademicTitle;
+import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
 
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;

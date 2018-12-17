@@ -11,7 +11,7 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
-import org.artorg.tools.phantomData.server.model.phantom.Special;
+import org.artorg.tools.phantomData.server.models.phantom.Special;
 
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
