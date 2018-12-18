@@ -2,6 +2,7 @@ package org.artorg.tools.phantomData.client.scene.control.tableView;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.table.DbTable;
+import org.artorg.tools.phantomData.server.logging.Logger;
 
 import javafx.scene.control.SelectionMode;
 
@@ -37,7 +38,7 @@ public class DbTableView<ITEM> extends ProTableView<ITEM> {
 //	}
 	
 	public void reload() {
-		System.out.println("DbTableView - reload");
+		Logger.debug.println("DbTableView - reload");
 //		getTable().getItems().removeListener(getListenerChangedListenerRefresh());
 		
 		((DbTable<ITEM>)getTable()).reload();

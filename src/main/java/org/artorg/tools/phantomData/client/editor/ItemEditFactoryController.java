@@ -210,13 +210,13 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane
 		if (item != null)
 			setAddTemplate(item);
 		applyButton.setOnAction(event -> {
-			if (!UserAdmin.isUserLoggedIn())
-				Main.getMainController().openLoginLogoutFrame();
-			else {
+//			if (!UserAdmin.isUserLoggedIn())
+//				Main.getMainController().openLoginLogoutFrame();
+//			else {
 				FxUtil.runNewSingleThreaded(() -> {
 					createAndPersistItem();
 				});
-			}
+//			}
 		});
 		applyButton.setText("Create");
 		return pane;

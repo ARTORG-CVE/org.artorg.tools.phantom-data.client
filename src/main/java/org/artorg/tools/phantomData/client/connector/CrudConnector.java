@@ -11,10 +11,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
-import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.controller.ControllerSpecDefault;
+import org.artorg.tools.phantomData.server.logging.Logger;
 import org.artorg.tools.phantomData.server.model.Identifiable;
 import org.artorg.tools.phantomData.server.model.NameGeneratable;
 import org.springframework.http.HttpEntity;
@@ -157,11 +157,11 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 			String url = createUrl(getAnnoStringCreate());
 			HttpEntity<T> requestEntity = new HttpEntity<T>(t, headers);
 			restTemplate.postForLocation(url, requestEntity);
-			if (t instanceof NameGeneratable)
-				Logger.info.println(String.format("CREATE - %s - %s",
-						itemClass.getSimpleName(), ((NameGeneratable) t).toName()));
-			else Logger.info.println(String.format("CREATE - %s - %s",
-					itemClass.getSimpleName(), t.toString()));
+//			if (t instanceof NameGeneratable)
+//				Logger.info.println(String.format("CREATE - %s - %s",
+//						itemClass.getSimpleName(), ((NameGeneratable) t).toName()));
+//			else Logger.info.println(String.format("CREATE - %s - %s",
+//					itemClass.getSimpleName(), t.toString()));
 			return true;
 		} catch (Exception e) {
 			handleException(e);

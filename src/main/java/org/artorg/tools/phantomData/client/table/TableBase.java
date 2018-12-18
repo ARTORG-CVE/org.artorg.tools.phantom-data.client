@@ -19,6 +19,7 @@ import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.LimitedQueue;
+import org.artorg.tools.phantomData.server.logging.Logger;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -95,7 +96,7 @@ public class TableBase<T> {
 	}
 
 	public void refresh() {
-		System.out.println("TableBase - refresh");
+		Logger.debug.println("TableBase - refresh");
 		updateColumns();
 
 		if (isFilterable()) {
@@ -107,7 +108,7 @@ public class TableBase<T> {
 	}
 
 	public void updateColumns() {
-		System.out.println("TableBase - updateColumns");
+		Logger.debug.println("TableBase - updateColumns");
 		CollectionUtil.syncLists(this.columns, columnCreator.apply(getItems()),
 			(column, newColumn) -> column.getName().equals(newColumn.getName()));
 		getColumns().stream().forEach(column -> {
@@ -135,7 +136,7 @@ public class TableBase<T> {
 	}
 
 	public void applyFilter() {
-		System.out.println("TableBase - applyFilter");
+		Logger.debug.println("TableBase - applyFilter");
 		filterPredicate = mappedColumnIndexes.stream()
 			.filter(i -> i < columnItemFilterPredicates.size())
 			.map(i -> getColumns().get(i))

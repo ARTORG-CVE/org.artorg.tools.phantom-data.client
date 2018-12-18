@@ -4,6 +4,7 @@ import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
+import org.artorg.tools.phantomData.server.logging.Logger;
 
 public class DbTable<ITEM> extends TableBase<ITEM> {
 	private ICrudConnector<ITEM> connector;
@@ -21,7 +22,7 @@ public class DbTable<ITEM> extends TableBase<ITEM> {
 	}
 	
 	public void reload() {
-		System.out.println("DbTable - reload");
+		Logger.debug.println("DbTable - reload");
 		Class<ITEM> itemClass = getItemClass();
 		if (itemClass == null) throw new NullPointerException();
 		ICrudConnector<ITEM> connector = getConnector();
@@ -34,7 +35,7 @@ public class DbTable<ITEM> extends TableBase<ITEM> {
 	
 
 	public void readAllData() {
-		System.out.println("DbTable - readAllData");
+		Logger.debug.println("DbTable - readAllData");
 		Class<ITEM> itemClass = getItemClass();
 		if (itemClass == null) throw new NullPointerException();
 		ICrudConnector<ITEM> connector = getConnector();

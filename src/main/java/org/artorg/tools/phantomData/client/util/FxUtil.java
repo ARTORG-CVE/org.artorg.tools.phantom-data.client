@@ -50,21 +50,9 @@ public class FxUtil extends org.artorg.tools.phantomData.server.util.FxUtil {
 		scene.setRoot(root);
 		
 		stage.setScene(scene);
-		
-		
-		
-		
-		
 		stage.sizeToScene();
 		stage.setTitle(title);
 		stage.show();
-//		Platform.runLater(() -> {
-//			Main.getBooter().getConsoleDiverter().setDefaultOut(System.out);
-//			Main.getBooter().getConsoleDiverter().setDefaultErr(System.err);
-//		Main.getBooter().getConsoleDiverter().addOutLineConsumer((consoleLines, newLine) -> {
-//			Main.getMainController().setStatus(newLine);
-//		});
-//		});
     }
 	
 	

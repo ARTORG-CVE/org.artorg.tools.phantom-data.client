@@ -12,6 +12,7 @@ import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
 import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
+import org.artorg.tools.phantomData.server.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
@@ -85,7 +86,7 @@ public class DbFilterTableView<ITEM>
 //	
 	@Override
 	public void refreshColumns() {
-		System.out.println("DbFilterTableView - refreshColumns");
+		Logger.debug.println("DbFilterTableView - refreshColumns");
 //		if (!(getTable() instanceof DbTable)) {
 //			super.initTable();
 //			return;
@@ -140,7 +141,7 @@ public class DbFilterTableView<ITEM>
 
 	@Override
 	public void reload() {
-		System.out.println("DbFilterTableView - reload");
+		Logger.debug.println("DbFilterTableView - reload");
 		if (getTable() instanceof DbTable)
 			reloadFilterTable(
 				(DbTable<ITEM>) getTable());

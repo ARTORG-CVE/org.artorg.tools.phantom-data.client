@@ -11,7 +11,6 @@ import org.artorg.tools.phantomData.client.boot.DatabaseInitializer;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.controllers.MainController;
-import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.modelsUI.base.*;
 import org.artorg.tools.phantomData.client.modelsUI.base.person.*;
@@ -22,6 +21,7 @@ import org.artorg.tools.phantomData.server.BootApplication;
 import org.artorg.tools.phantomData.server.boot.ConsoleFrame;
 import org.artorg.tools.phantomData.server.boot.ServerBooter;
 import org.artorg.tools.phantomData.server.boot.StartupProgressFrame;
+import org.artorg.tools.phantomData.server.logging.Logger;
 import org.artorg.tools.phantomData.server.models.base.*;
 import org.artorg.tools.phantomData.server.models.base.person.*;
 import org.artorg.tools.phantomData.server.models.base.property.*;
@@ -149,13 +149,13 @@ public class Main extends DesktopFxBootApplication {
 		
 		getBooter().getConsoleDiverter().addOutLineConsumer((consoleLines, newLine) -> {
 			Platform.runLater(() -> {
-				mainController.setStatus(newLine);
+				mainController.setStatus(newLine, true);
 			});
 		});
 		
 		getBooter().getConsoleDiverter().addErrLineConsumer((consoleLines, newLine) -> {
 			Platform.runLater(() -> {
-				mainController.setStatus("Exception thrown");
+				mainController.setStatus("Exception thrown", false);
 			});
 		});
 		

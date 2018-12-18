@@ -2,10 +2,14 @@ package org.artorg.tools.phantomData.client.connector;
 
 import java.util.function.Supplier;
 
+import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
 import org.artorg.tools.phantomData.server.model.AbstractPropertifiedEntity;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
+
+import javafx.application.Platform;
 
 public class PersonifiedCrudConnector<T> extends CrudConnector<T> {
 	private static Supplier<Person> userSupplier;
@@ -20,6 +24,12 @@ public class PersonifiedCrudConnector<T> extends CrudConnector<T> {
 	
 	@Override
 	public boolean create(T t) {
+		if (!UserAdmin.isUserLoggedIn()) {
+			Platform.runLater(() -> {
+			Main.getMainController().openLoginLogoutFrame();
+			});
+			return false;
+		}
 		return create(t, getUser());
 	}
 	
@@ -33,6 +43,12 @@ public class PersonifiedCrudConnector<T> extends CrudConnector<T> {
 	
 	@Override
 	public boolean update(T t) {
+		if (!UserAdmin.isUserLoggedIn()) {
+			Platform.runLater(() -> {
+			Main.getMainController().openLoginLogoutFrame();
+			});
+			return false;
+		}
 		return update(t, getUser());
 	}
 	
@@ -44,11 +60,22 @@ public class PersonifiedCrudConnector<T> extends CrudConnector<T> {
 	
 	@Override
 	public <ID> boolean deleteById(ID id) {
-		if (!isUserLoggedIn()) return false; 
+		if (!UserAdmin.isUserLoggedIn()) {
+			Platform.runLater(() -> {
+			Main.getMainController().openLoginLogoutFrame();
+			});
+			return false;
+		}
 		return deleteById(id, getUser());
 	}
 	
 	public <ID> boolean deleteById(ID id, Person p) {
+		if (!UserAdmin.isUserLoggedIn()) {
+			Platform.runLater(() -> {
+			Main.getMainController().openLoginLogoutFrame();
+			});
+			return false;
+		}
 		return super.deleteById(id);
 	}
 	
