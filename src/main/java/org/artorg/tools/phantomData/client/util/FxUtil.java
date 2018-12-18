@@ -10,8 +10,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 
+import huma.io.ConsoleDiverter;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
@@ -47,9 +50,21 @@ public class FxUtil extends org.artorg.tools.phantomData.server.util.FxUtil {
 		scene.setRoot(root);
 		
 		stage.setScene(scene);
+		
+		
+		
+		
+		
 		stage.sizeToScene();
 		stage.setTitle(title);
 		stage.show();
+//		Platform.runLater(() -> {
+//			Main.getBooter().getConsoleDiverter().setDefaultOut(System.out);
+//			Main.getBooter().getConsoleDiverter().setDefaultErr(System.err);
+//		Main.getBooter().getConsoleDiverter().addOutLineConsumer((consoleLines, newLine) -> {
+//			Main.getMainController().setStatus(newLine);
+//		});
+//		});
     }
 	
 	

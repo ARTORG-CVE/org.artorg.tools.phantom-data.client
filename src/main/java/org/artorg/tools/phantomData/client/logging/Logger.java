@@ -7,20 +7,17 @@ import java.util.function.Supplier;
 import huma.logging.Level;
 
 public class Logger {
-	public static final huma.logging.PrintStream debug;
-	public static final huma.logging.PrintStream info;
-	public static final huma.logging.PrintStream warn;
-	public static final huma.logging.PrintStream error;
-	public static final huma.logging.PrintStream fatal;
-	private static final Level level;
+	public static huma.logging.PrintStream debug;
+	public static huma.logging.PrintStream info;
+	public static huma.logging.PrintStream warn;
+	public static huma.logging.PrintStream error;
+	public static huma.logging.PrintStream fatal;
+	private static Level level;
 	
 	static {
-		debug = new huma.logging.PrintStream(System.out, createPrefixSupplier("DEBUG"), Level.DEBUG);
-		info = new huma.logging.PrintStream(System.out, createPrefixSupplier("INFO "), Level.INFO );
-		warn = new huma.logging.PrintStream(System.out, createPrefixSupplier("WARN "), Level.WARN);
-		error = new huma.logging.PrintStream(System.err, createPrefixSupplier("ERROR"), Level.ERROR);
-		fatal = new huma.logging.PrintStream(System.err, createPrefixSupplier("FATAL"), Level.FATAL);
-		level = Level.DEBUG;
+		setDefaultOut(System.out);
+		setDefaultErr(System.err);
+		setLevel(Level.DEBUG);
 	}
 	
 	private static Supplier<String> createPrefixSupplier(String logType) {
@@ -31,6 +28,21 @@ public class Logger {
 	
 	public static Level getLevel() {
 		return level;
+	}
+	
+	public static void setLevel(Level level) {
+		Logger.level = level;
+	}
+	
+	public static void setDefaultOut(java.io.PrintStream printStream) {
+		debug = new huma.logging.PrintStream(System.out, createPrefixSupplier("DEBUG"), Level.DEBUG);
+		info = new huma.logging.PrintStream(System.out, createPrefixSupplier("INFO "), Level.INFO );
+		warn = new huma.logging.PrintStream(System.out, createPrefixSupplier("WARN "), Level.WARN);
+	}
+	
+	public static void setDefaultErr(java.io.PrintStream printStream) {
+		error = new huma.logging.PrintStream(System.err, createPrefixSupplier("ERROR"), Level.ERROR);
+		fatal = new huma.logging.PrintStream(System.err, createPrefixSupplier("FATAL"), Level.FATAL);
 	}
 
 }

@@ -11,6 +11,7 @@ import org.artorg.tools.phantomData.client.boot.DatabaseInitializer;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.controllers.MainController;
+import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.modelsUI.base.*;
 import org.artorg.tools.phantomData.client.modelsUI.base.person.*;
@@ -31,22 +32,23 @@ import org.reflections.Reflections;
 
 import huma.logging.Level;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends DesktopFxBootApplication {
 	private static ServerBooter booter;
-	private static final Reflections reflections =
-		new Reflections("org.artorg.tools.phantomData");
+	private static final Reflections reflections = new Reflections(
+			"org.artorg.tools.phantomData");
 	private static final EntityBeanInfos beanInfos = new EntityBeanInfos(reflections);
 	private static Class<?> mainFxClass;
 	private static boolean started;
 	private static Scene scene;
 	private static Stage stage;
 	private static MainController mainController;
-	private static final Map<Class<?>,UIEntity<?>> uiEntities;
-
+	private static final Map<Class<?>, UIEntity<?>> uiEntities;
+	
 	static {
 		mainFxClass = null;
 		started = false;
@@ -74,31 +76,33 @@ public class Main extends DesktopFxBootApplication {
 		uiEntities.put(Special.class, new SpecialUI());
 		
 	}
-
+	
 	public static void main(String[] args) {
 		Application.launch(args);
 	}
-
+	
 	public static ServerBooter createBooter(ConsoleFrame consoleFrame,
-		StartupProgressFrame startupFrame, int nConsoleLinesServer,
-		int nConsoleLinesClient) {
+			StartupProgressFrame startupFrame, int nConsoleLinesServer,
+			int nConsoleLinesClient) {
 		return new ServerBooter() {
-
+			
 			@Override
 			protected void uncatchedBoot(String[] args) {
 				Main.setBooter(this);
 				initBeforeServerStart(BootApplication.class, consoleFrame, startupFrame);
-
+				Logger.setDefaultOut(getBooter().getConsoleDiverter().getOut());
+				Logger.setDefaultErr(getBooter().getConsoleDiverter().getErr());
+				
 				getStartupFrame().setVisible(true);
 				getStartupFrame().setTitle("Phantom Database");
 				getStartupFrame().setProgressing(true);
 				if (isDebugConsoleMode()) getConsoleFrame().setVisible(true);
 				if (!isConnected()) {
 					getStartupFrame()
-						.setnConsoleLines(nConsoleLinesServer + nConsoleLinesClient);
+							.setnConsoleLines(nConsoleLinesServer + nConsoleLinesClient);
 					setServerStartedEmbedded(true);
 					Task<Void> task = FxUtil.createTask(() -> startSpringServer(args),
-						e -> handleException(e));
+							e -> handleException(e));
 					task.setOnSucceeded(event -> Main.bootClient(this));
 					task.setOnFailed(event -> finish());
 					task.setOnCancelled(event -> finish());
@@ -110,7 +114,7 @@ public class Main extends DesktopFxBootApplication {
 			}
 		};
 	}
-
+	
 	public static void bootClient(ServerBooter booter) {
 		Main.setMainFxClass(DesktopFxBootApplication.class);
 //		ICrudConnector.connectorGetter = itemClass -> Connectors.getConnector(itemClass);
@@ -118,11 +122,11 @@ public class Main extends DesktopFxBootApplication {
 		MainController.setUrlLocalhost(booter.getUrlLocalhost());
 		MainController.setUrlShutdownActuator(booter.getUrlShutdownActuator());
 		if (!DatabaseInitializer.isInitialized()) initDatabase();
-
+		
 		loadClientStage();
 		booter.finish();
 	}
-
+	
 	public static void loadClientStage() {
 		stage = new Stage();
 		mainController = new MainController(stage);
@@ -134,11 +138,26 @@ public class Main extends DesktopFxBootApplication {
 		stage.setHeight(500);
 		FxUtil.addIcon(stage);
 		
-		
 		// speed optimization
 		Connectors.createConnectors(beanInfos.getEntityClasses());
 //		SplitTabView.searchFactoryClasses(beanInfos.getEntityClasses());
 		
+//		getBooter().getConsoleDiverter().setDefaultOut(System.out);
+//		getBooter().getConsoleDiverter().setDefaultErr(System.err);
+		Logger.setDefaultOut(getBooter().getConsoleDiverter().getOut());
+		Logger.setDefaultErr(getBooter().getConsoleDiverter().getErr());
+		
+		getBooter().getConsoleDiverter().addOutLineConsumer((consoleLines, newLine) -> {
+			Platform.runLater(() -> {
+				mainController.setStatus(newLine);
+			});
+		});
+		
+		getBooter().getConsoleDiverter().addErrLineConsumer((consoleLines, newLine) -> {
+			Platform.runLater(() -> {
+				mainController.setStatus("Exception thrown");
+			});
+		});
 		
 		stage.show();
 		stage.requestFocus();
@@ -150,55 +169,55 @@ public class Main extends DesktopFxBootApplication {
 	public static <T> UIEntity<T> getUIEntity(Class<T> itemClass) {
 		return (UIEntity<T>) uiEntities.get(itemClass);
 	}
-
+	
 	public static Reflections getReflections() {
 		return reflections;
 	}
-
+	
 	public static ServerBooter getBooter() {
 		return booter;
 	}
-
+	
 	public static void setBooter(ServerBooter booter) {
 		Main.booter = booter;
 	}
-
+	
 	public static EntityBeanInfos getBeaninfos() {
 		return beanInfos;
 	}
-
+	
 	public static void setMainFxClass(Class<?> mainClass) {
 		if (Main.mainFxClass != null) throw new UnsupportedOperationException();
 		Main.mainFxClass = mainClass;
 	}
-
+	
 	public static Class<?> getMainFxClass() {
 		if (Main.mainFxClass == null) throw new NullPointerException();
 		return Main.mainFxClass;
 	}
-
+	
 	public static boolean isStarted() {
 		return started;
 	}
-
+	
 	public static Scene getScene() {
 		return scene;
 	}
-
+	
 	public static void setScene(Scene scene) {
 		Main.scene = scene;
 	}
-
+	
 	public static Stage getStage() {
 		return stage;
 	}
-
+	
 	public static void setStage(Stage stage) {
 		Main.stage = stage;
 	}
-
+	
 	public static MainController getMainController() {
 		return mainController;
 	}
-
+	
 }

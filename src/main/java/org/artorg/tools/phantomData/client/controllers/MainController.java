@@ -50,11 +50,11 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -66,6 +66,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -73,14 +74,15 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 public class MainController extends StackPane {
-	private MenuBar menuBar;
+	private final MenuBar menuBar;
 	private static String urlShutdownActuator;
-	private Stage stage;
-	private AnchorPane contentPane;
-	private StackPane rootPane;
-	private SplitPane splitPane;
-	private ObservableList<SplitTabView> splitTabViews;
+	private final Stage stage;
+	private final AnchorPane contentPane;
+	private final StackPane rootPane;
+	private final SplitPane splitPane;
+	private final ObservableList<SplitTabView> splitTabViews;
 	private static String urlLocalhost;
+	private final Label statusLabel;
 
 	public MainController(Stage stage) {
 		this.stage = stage;
@@ -91,19 +93,31 @@ public class MainController extends StackPane {
 			}
 		});
 
-		VBox vBox = new VBox();
-		menuBar = new MenuBar();
+//		VBox vBox = new VBox();
+		
 		rootPane = this;
 		contentPane = new AnchorPane();
 		splitPane = new SplitPane();
+		splitTabViews = FXCollections.<SplitTabView>observableArrayList();
+		menuBar = new MenuBar();
+		
+		
+		BorderPane desktopLayout = new BorderPane();
+		desktopLayout.setTop(menuBar);
+		desktopLayout.setCenter(contentPane);
+		statusLabel = new Label();
+		desktopLayout.setBottom(statusLabel);
+		
 
-		vBox.getChildren().add(menuBar);
-		vBox.getChildren().add(contentPane);
+		FxUtil.addToPane(rootPane, desktopLayout);
+		
+//		vBox.getChildren().add(menuBar);
+//		vBox.getChildren().add(contentPane);
 		VBox.setVgrow(splitPane, Priority.ALWAYS);
 		VBox.setVgrow(contentPane, Priority.ALWAYS);
 
 		splitPane.setOrientation(Orientation.VERTICAL);
-		splitTabViews = FXCollections.<SplitTabView>observableArrayList();
+		
 		splitTabViews.addListener((ListChangeListener<SplitTabView>) c -> {
 			if (c.next()) do {
 				if (c.wasAdded()) splitPane.getItems()
@@ -126,83 +140,11 @@ public class MainController extends StackPane {
 
 		FxUtil.addToPane(contentPane, splitPane);
 
-		Menu menu;
-		MenuItem menuItem;
+		
+		initMenuBar(menuBar);
 
-		menu = new Menu("File");
-		menuItem =
-			new MenuItem("New", new CssGlyph("FontAwesome", FontAwesome.Glyph.FILE));
-		menu.getItems().add(menuItem);
 
-		menuItem = new MenuItem("Export...",
-			new CssGlyph("FontAwesome", FontAwesome.Glyph.CARET_UP));
-		menuItem.setOnAction(event -> loginLogout(event));
-		menu.getItems().add(menuItem);
-
-		menuItem = new MenuItem("Login/Logout...",
-			new CssGlyph("FontAwesome", FontAwesome.Glyph.SIGN_IN));
-		menuItem.setOnAction(event -> loginLogout(event));
-		menu.getItems().add(menuItem);
-
-//		menu.getItems().add(new MenuItem("Preference"));
-		menuItem = new MenuItem("Close");
-		menuItem.setOnAction(event -> close(event));
-		menu.getItems().add(menuItem);
-		menuBar.getMenus().add(menu);
-
-		menu = new Menu("Edit");
-		menuItem = new MenuItem("Undo",
-			new CssGlyph("FontAwesome", FontAwesome.Glyph.ROTATE_LEFT));
-		menuItem.setAccelerator(
-			new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
-		menuItem.setOnAction(event -> undo(event));
-		menu.getItems().add(menuItem);
-
-		menuItem = new MenuItem("Redo",
-			new CssGlyph("FontAwesome", FontAwesome.Glyph.ROTATE_RIGHT));
-		menuItem.setAccelerator(
-			new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
-		menuItem.setOnAction(event -> redo(event));
-		menu.getItems().add(menuItem);
-
-		menuItem = new MenuItem("Refresh",
-			new CssGlyph("FontAwesome", FontAwesome.Glyph.REFRESH));
-		menuItem.setOnAction(event -> refresh(event));
-		menu.getItems().add(menuItem);
-
-		menuItem =
-			new MenuItem("Delete", new CssGlyph("FontAwesome", FontAwesome.Glyph.REMOVE));
-		menu.getItems().add(menuItem);
-
-		menuBar.getMenus().add(menu);
-
-		menu = new Menu("Table");
-		createTableMenu(menu, splitTabViews.get(0),
-			(view, cls) -> view.openTableTab(createTableViewTab(castClass(cls))));
-		menuBar.getMenus().add(menu);
-
-		menu = new Menu("TreeTable");
-		createTableMenu(menu, splitTabViews.get(0),
-			(view, cls) -> view.openTableTab(createTreeTableViewTab(castClass(cls))));
-		menuBar.getMenus().add(menu);
-
-		menu = new Menu("Window");
-		menuItem = new MenuItem("Open SplitTabPane");
-		menuItem.setOnAction(event -> newSplitTabPane(event));
-		menu.getItems().add(menuItem);
-		menuItem = new MenuItem("Show LoggingPane");
-		menuItem.setOnAction(event -> {
-			Main.getBooter().getConsoleFrame().setVisible(true);
-		});
-		menu.getItems().add(menuItem);
-		menuBar.getMenus().add(menu);
-
-//		menu = new Menu("Help");
-//		menuItem = new MenuItem("About");
-//		menu.getItems().add(menuItem);
-//		menuBar.getMenus().add(menu);
-
-		FxUtil.addToPane(rootPane, vBox);
+//		FxUtil.addToPane(rootPane, vBox);
 
 	}
 
@@ -211,6 +153,8 @@ public class MainController extends StackPane {
 	void about(ActionEvent event) {
 
 	}
+	
+
 
 	void close(ActionEvent event) {
 		close();
@@ -437,6 +381,7 @@ public class MainController extends StackPane {
 
 	public void openLoginLogoutFrame() {
 		FxUtil.openFrame("Login/Logout", new LoginController());
+		
 	}
 
 	public void openTable(Class<?> itemClass) {
@@ -588,6 +533,93 @@ public class MainController extends StackPane {
 
 	public static void setUrlShutdownActuator(String urlShutdownActuator) {
 		MainController.urlShutdownActuator = urlShutdownActuator;
+	}
+	
+	private void initMenuBar(MenuBar menuBar) {
+		Menu menu;
+		MenuItem menuItem;
+
+		menu = new Menu("File");
+		menuItem =
+			new MenuItem("New", new CssGlyph("FontAwesome", FontAwesome.Glyph.FILE));
+		menu.getItems().add(menuItem);
+
+		menuItem = new MenuItem("Export...",
+			new CssGlyph("FontAwesome", FontAwesome.Glyph.CARET_UP));
+		menuItem.setOnAction(event -> loginLogout(event));
+		menu.getItems().add(menuItem);
+
+		menuItem = new MenuItem("Login/Logout...",
+			new CssGlyph("FontAwesome", FontAwesome.Glyph.SIGN_IN));
+		menuItem.setOnAction(event -> loginLogout(event));
+		menu.getItems().add(menuItem);
+
+//		menu.getItems().add(new MenuItem("Preference"));
+		menuItem = new MenuItem("Close");
+		menuItem.setOnAction(event -> close(event));
+		menu.getItems().add(menuItem);
+		menuBar.getMenus().add(menu);
+
+		menu = new Menu("Edit");
+		menuItem = new MenuItem("Undo",
+			new CssGlyph("FontAwesome", FontAwesome.Glyph.ROTATE_LEFT));
+		menuItem.setAccelerator(
+			new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
+		menuItem.setOnAction(event -> undo(event));
+		menu.getItems().add(menuItem);
+
+		menuItem = new MenuItem("Redo",
+			new CssGlyph("FontAwesome", FontAwesome.Glyph.ROTATE_RIGHT));
+		menuItem.setAccelerator(
+			new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
+		menuItem.setOnAction(event -> redo(event));
+		menu.getItems().add(menuItem);
+
+		menuItem = new MenuItem("Refresh",
+			new CssGlyph("FontAwesome", FontAwesome.Glyph.REFRESH));
+		menuItem.setOnAction(event -> refresh(event));
+		menu.getItems().add(menuItem);
+
+		menuItem =
+			new MenuItem("Delete", new CssGlyph("FontAwesome", FontAwesome.Glyph.REMOVE));
+		menu.getItems().add(menuItem);
+
+		menuBar.getMenus().add(menu);
+
+		menu = new Menu("Table");
+		createTableMenu(menu, splitTabViews.get(0),
+			(view, cls) -> view.openTableTab(createTableViewTab(castClass(cls))));
+		menuBar.getMenus().add(menu);
+
+		menu = new Menu("TreeTable");
+		createTableMenu(menu, splitTabViews.get(0),
+			(view, cls) -> view.openTableTab(createTreeTableViewTab(castClass(cls))));
+		menuBar.getMenus().add(menu);
+
+		menu = new Menu("Window");
+		menuItem = new MenuItem("Open SplitTabPane");
+		menuItem.setOnAction(event -> newSplitTabPane(event));
+		menu.getItems().add(menuItem);
+		menuItem = new MenuItem("Show LoggingPane");
+		menuItem.setOnAction(event -> {
+			Main.getBooter().getConsoleFrame().setVisible(true);
+		});
+		menu.getItems().add(menuItem);
+		menuBar.getMenus().add(menu);
+		
+//		menu = new Menu("Help");
+//		menuItem = new MenuItem("About");
+//		menu.getItems().add(menuItem);
+//		menuBar.getMenus().add(menu);
+	}
+
+
+	public void setStatus(String text) {
+		statusLabel.setText(text);
+	}
+
+	public Label getStatusLabel() {
+		return statusLabel;
 	}
 
 }

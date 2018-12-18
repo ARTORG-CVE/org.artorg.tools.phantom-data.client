@@ -6,6 +6,7 @@ import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.connector.PersonifiedCrudConnector;
+import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
 
 import javafx.application.Platform;
@@ -37,9 +38,11 @@ public class UserAdmin {
 				Main.getMainController().removeDevToolsMenu();
 			});
 		}
+		Logger.info.println("Logged in as " +user.getAcademicName());
 	}
 
 	public static void logout() {
+		Person person = UserAdmin.user;
 		UserAdmin.user = null;
 		PersonifiedCrudConnector.setUserSupplier(() -> getUser());
 
@@ -48,7 +51,11 @@ public class UserAdmin {
 				Main.getMainController().removeDevToolsMenu();
 			});
 		}
-
+		
+		if (person != null)
+		Logger.info.println("Logged out " +person.getAcademicName());
+		else
+			Logger.info.println("Logged out");
 	}
 
 	public static Person getUser() {
