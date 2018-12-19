@@ -81,9 +81,12 @@ public class DbFileEditFactoryController
 
 	@Override
 	protected void setEditTemplate(DbFile item) {
-		textFieldPath.setText("");
+		textFieldPath.setText(item.getFile().getPath());
+		textFieldPath.setDisable(true);
 		textFieldName.setText(item.getName());
+		textFieldName.setDisable(false);
 		textFieldExtension.setText(item.getExtension());
+		textFieldExtension.setDisable(false);
 	}
 
 	@Override

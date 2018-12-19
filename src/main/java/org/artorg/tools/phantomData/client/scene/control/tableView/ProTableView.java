@@ -9,6 +9,7 @@ import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.TableViewUtils;
+import org.artorg.tools.phantomData.server.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -71,6 +72,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T>
 //	}
 
 	public void refreshColumns() {
+		Logger.debug.println(getItemClass().getSimpleName());
 		CollectionUtil.addIfAbsent(table.getColumnCreator().apply(getItems()),
 			super.getColumns(), columnAddPolicy,
 			(baseColumn, index) -> createTableColumn(table, index));
@@ -152,6 +154,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T>
 
 	@Override
 	public void refresh() {
+		Logger.debug.println(getItemClass());
 		getTable().refresh();
 		super.refresh();
 		refreshColumns();

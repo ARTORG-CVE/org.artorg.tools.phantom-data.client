@@ -70,7 +70,7 @@ public class TableViewFactory {
 			Class<TABLE_VIEW> tableViewClass) {
 		ProTableView<T> tableView = createTableView(itemClass, tableClass, tableViewClass);
 
-		if (tableView instanceof DbTableView) ((DbTableView<?>) tableView).reload();
+//		if (tableView instanceof DbTableView) ((DbTableView<?>) tableView).reload();
 
 //		tableView.initTable();
 

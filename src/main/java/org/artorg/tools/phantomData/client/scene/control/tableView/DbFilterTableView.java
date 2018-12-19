@@ -86,7 +86,7 @@ public class DbFilterTableView<ITEM>
 //	
 	@Override
 	public void refreshColumns() {
-		Logger.debug.println("DbFilterTableView - refreshColumns");
+		Logger.debug.println(getItemClass().getSimpleName());
 //		if (!(getTable() instanceof DbTable)) {
 //			super.initTable();
 //			return;
@@ -157,7 +157,7 @@ public class DbFilterTableView<ITEM>
 		
 		
 		
-		refresh();
+//		refresh();
 	}
 
 	public List<FilterMenuButton<ITEM, ?>> getFilterMenuButtons() {

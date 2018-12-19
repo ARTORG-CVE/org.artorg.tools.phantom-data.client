@@ -14,6 +14,9 @@ public class DbTableView<ITEM> extends ProTableView<ITEM> {
 		this(itemClass, Main.getUIEntity(itemClass).createDbTableBase());
 		super.setItems(getTable().getItems());
 		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		
+		getTable().readAllData();
+		
 		reload();
 		refreshColumns();
 		autoResizeColumns();
@@ -38,7 +41,7 @@ public class DbTableView<ITEM> extends ProTableView<ITEM> {
 //	}
 	
 	public void reload() {
-		Logger.debug.println("DbTableView - reload");
+		Logger.debug.println(getItemClass().getSimpleName());
 //		getTable().getItems().removeListener(getListenerChangedListenerRefresh());
 		
 		((DbTable<ITEM>)getTable()).reload();

@@ -96,7 +96,7 @@ public class TableBase<T> {
 	}
 
 	public void refresh() {
-		Logger.debug.println("TableBase - refresh");
+		Logger.debug.println(getItemClass().getSimpleName());
 		updateColumns();
 
 		if (isFilterable()) {
@@ -108,7 +108,7 @@ public class TableBase<T> {
 	}
 
 	public void updateColumns() {
-		Logger.debug.println("TableBase - updateColumns");
+		Logger.debug.println(getItemClass().getSimpleName());
 		CollectionUtil.syncLists(this.columns, columnCreator.apply(getItems()),
 			(column, newColumn) -> column.getName().equals(newColumn.getName()));
 		getColumns().stream().forEach(column -> {
@@ -136,7 +136,7 @@ public class TableBase<T> {
 	}
 
 	public void applyFilter() {
-		Logger.debug.println("TableBase - applyFilter");
+		Logger.debug.println(getItemClass().getSimpleName());
 		filterPredicate = mappedColumnIndexes.stream()
 			.filter(i -> i < columnItemFilterPredicates.size())
 			.map(i -> getColumns().get(i))
