@@ -47,7 +47,7 @@ public class ProjectUI implements UIEntity<Project> {
 		columns.add(new FilterColumn<>("Members",
 			path -> String.valueOf(path.getMembers().stream()
 				.map(member -> member.getLastname()).collect(Collectors.joining(", ")))));
-		ColumnUtils.createCountingColumn("Measur.", columns, item -> item.getMeasurements());
+//		ColumnUtils.createCountingColumn("Measur.", columns, item -> item.getMeasurements());
 		ColumnUtils.createCountingColumn("Files", columns, item -> item.getFiles());
 		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
 		ColumnUtils.createPersonifiedColumns(columns);

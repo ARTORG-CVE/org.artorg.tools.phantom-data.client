@@ -21,6 +21,7 @@ import org.artorg.tools.phantomData.client.select.AbstractTableViewSelector;
 import org.artorg.tools.phantomData.client.select.TitledPaneTableViewSelector;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
+import org.artorg.tools.phantomData.server.model.BackReference;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
 import org.artorg.tools.phantomData.server.model.Identifiable;
 
@@ -94,12 +95,15 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		List<AbstractTableViewSelector<?>> selectors = new ArrayList<>();
 
 		List<Class<? extends DbPersistent<?, ?>>> subItemClasses =
-				Reflect.getCollectionSetterMethods(itemClass).map(m -> {
-					Type type = m.getGenericParameterTypes()[0];
-					Class<? extends DbPersistent<?, ?>> cls =
-							(Class<? extends DbPersistent<?, ?>>) Reflect.getGenericTypeClass(type);
-					return cls;
-				}).filter(c -> c != null).filter(c -> DbPersistent.class.isAssignableFrom(c))
+				Reflect.getCollectionSetterMethods(itemClass)
+						.filter(m -> !m.isAnnotationPresent(BackReference.class)).map(m -> {
+							Type type = m.getGenericParameterTypes()[0];
+							Class<? extends DbPersistent<?, ?>> cls =
+									(Class<? extends DbPersistent<?, ?>>) Reflect
+											.getGenericTypeClass(type);
+							return cls;
+						}).filter(c -> c != null)
+						.filter(c -> DbPersistent.class.isAssignableFrom(c))
 						.collect(Collectors.toList());
 
 		subItemClasses.forEach(subItemClass -> {
@@ -151,8 +155,7 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 										.filter(titledPane2 -> titledPane2 != titledPane)
 										.forEach(titledSelector -> {
 											titledSelector.setAnimated(true);
-											titledSelector
-												.setExpanded(false);
+											titledSelector.setExpanded(false);
 										});
 
 							}
