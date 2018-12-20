@@ -85,8 +85,9 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 			itemFilterAll.getCheckBox().setSelected(true);
 			streamCheckBoxes().forEach(c -> c.setSelected(true));
 			setRegex("");
-			if (column != null) column.resetFilter();
+//			if (column != null) column.resetFilter();
 			refreshImage();
+			getRefresher().run();
 		});
 
 		itemAscending.getCheckBox().addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
@@ -143,7 +144,7 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 	}
 
 	private void unsortOther() {
-		parentList.stream().filter(menuButton -> menuButton != FilterMenuButton.this)
+		getParentList().stream().filter(menuButton -> menuButton != FilterMenuButton.this)
 				.forEach(menuButton -> {
 					menuButton.itemAscending.getCheckBox().setSelected(false);
 					menuButton.itemDescending.getCheckBox().setSelected(false);
@@ -162,7 +163,6 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 	}
 
 	public void applyFilter() {
-		System.out.println("ON HIDING");
 		Predicate<ITEM> itemFilter = item -> getSelectedValues().stream()
 				.filter(value -> column.get(item).equals(value)).findFirst().isPresent();
 		Predicate<ITEM> textFilter;
@@ -196,9 +196,9 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 	}
 
 	public void setImage(Node node) {
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
+//		Platform.runLater(new Runnable() {
+//			@Override
+//			public void run() {
 				StackPane sPane = (StackPane) lookup(".arrow-button");
 				if (sPane != null) {
 					if (!sPane.getChildren().contains(node)) {
@@ -206,8 +206,21 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 						if (node != null) sPane.getChildren().add(node);
 					}
 				}
-			}
-		});
+//			}
+//		});
+				
+				Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					StackPane sPane = (StackPane) lookup(".arrow-button");
+					if (sPane != null) {
+						if (!sPane.getChildren().contains(node)) {
+							sPane.getChildren().clear();
+							if (node != null) sPane.getChildren().add(node);
+						}
+					}
+				}
+			});
 	}
 
 	private static Map<String, HBox> imageBoxMap;
@@ -391,12 +404,8 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 	}
 
 	public void updateNodes() {
-		System.out.println("UPDATE NODES");
-
 		List<String> distinctValues = column.getValues().stream().distinct().map(o -> o.toString())
 				.sorted().collect(Collectors.toList());
-
-		Logger.debug.println("Updating nodes, distinct values " + distinctValues.size());
 		this.getItems().removeAll(itemsFilter);
 
 		CollectionUtil.addIfAbsent(distinctValues, itemsFilter,

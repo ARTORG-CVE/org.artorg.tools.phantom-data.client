@@ -443,16 +443,16 @@ public class MainController extends StackPane {
 //		};
 
 		Platform.runLater(() -> {
-		tableView.reload();
+//		tableView.reload();
 		tableView.showFilterButtons();
 		tableView.refresh();
 		});
 
-		tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
-			filterMenuButton.show();
-			filterMenuButton.hide();
-			filterMenuButton.refreshImage();
-		});
+//		tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
+//			filterMenuButton.show();
+//			filterMenuButton.hide();
+//			filterMenuButton.refreshImage();
+//		});
 		tableView.getFilterMenuButtons().stream().forEach(column -> {
 			column.updateNodes();
 			column.applyFilter();
@@ -466,27 +466,30 @@ public class MainController extends StackPane {
 	}
 
 	private static void showFilterMenuButtonsDelayd(ProTableView<?> tableView) {
-		FxUtil.runNewSingleThreaded(() -> {
-			Platform.runLater(() -> {
-				tableView.refresh();
-			});
-			for (int i = 0; i < 5; i++) {
-				Platform.runLater(() -> {
-//					tableView.refresh();
-					tableView.showFilterButtons();
-					tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
-						filterMenuButton.refreshImage();
-						filterMenuButton.updateNodes();
-						filterMenuButton.applyFilter();
-					});
-				});
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
+//		FxUtil.runNewSingleThreaded(() -> {
+//			Platform.runLater(() -> {
+//				tableView.refresh();
+//			});
+//			for (int i = 0; i < 5; i++) {
+//				Platform.runLater(() -> {
+////					tableView.refresh();
+//					tableView.showFilterButtons();
+//					tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
+//						tableView.showFilterButtons();
+//						filterMenuButton.refreshImage();
+//						filterMenuButton.show();
+//						filterMenuButton.hide();
+////						filterMenuButton.updateNodes();
+////						filterMenuButton.applyFilter();
+//					});
+//				});
+//				try {
+//					Thread.sleep(100);
+//				} catch (InterruptedException e1) {
+//					e1.printStackTrace();
+//				}
+//			}
+//		});
 	}
 
 	private Tab createTreeTableViewTab(Class<?> itemClass) {

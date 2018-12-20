@@ -83,7 +83,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		}
 
 		refreshColumns();
-		super.refresh();
+//		super.refresh();
 	}
 
 	public void refreshColumns() {
@@ -137,8 +137,9 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 					filterMenuButton.get().getStyleClass().add("filter-menu-button");
 					label.setGraphic(filterMenuButton.get());
 					label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-					System.out.println("showFilterButton");
 //					label.addEventHandler(eventType, eventHandler);
+					
+					filterMenuButton.get().refreshImage();
 
 				}
 			}
@@ -182,20 +183,12 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 				new FilterMenuButton<T, U>(filterColumn, filterMenuButtons);
 		filterMenuButton.setText(filterColumn.getName());
 		filterMenuButton.setRefresh(() -> {
-			System.out.println("----------------------------------");
-			System.out.println("Applying filter ####");
-			System.out.println("Table filtered items before filtering "
-					+ getTable().getFilteredItems().size());
 			table.applyFilter();
 //			System.out.println("items before filtering: " +super.getItems().size());
 //			super.getItems().clear();
 //			super.getItems().addAll(table.getFilteredItems());
 //			System.out.println("items after filtering: " +super.getItems().size());
 //			super.refresh();
-
-			System.out.println(
-					"Table filtered items after filtering " + getTable().getFilteredItems().size());
-			System.out.println("----------------------------------");
 		});
 		return filterMenuButton;
 	}
