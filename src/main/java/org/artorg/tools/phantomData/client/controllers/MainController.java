@@ -442,21 +442,21 @@ public class MainController extends StackPane {
 //
 //		};
 
-//		Platform.runLater(() -> {
-//		tableView.reload();
-//		tableView.showFilterButtons();
-//		tableView.refresh();
-//		});
+		Platform.runLater(() -> {
+		tableView.reload();
+		tableView.showFilterButtons();
+		tableView.refresh();
+		});
 
-//		tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
-//			filterMenuButton.show();
-//			filterMenuButton.hide();
-//			filterMenuButton.refreshImage();
-//		});
-//		tableView.getFilterMenuButtons().stream().forEach(column -> {
-//			column.updateNodes();
-//			column.applyFilter();
-//		});
+		tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
+			filterMenuButton.show();
+			filterMenuButton.hide();
+			filterMenuButton.refreshImage();
+		});
+		tableView.getFilterMenuButtons().stream().forEach(column -> {
+			column.updateNodes();
+			column.applyFilter();
+		});
 
 		Tab tab = new Tab(table.getTable().getTableName());
 		tab.setContent(table);
@@ -470,12 +470,14 @@ public class MainController extends StackPane {
 			Platform.runLater(() -> {
 				tableView.refresh();
 			});
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i < 5; i++) {
 				Platform.runLater(() -> {
 //					tableView.refresh();
 					tableView.showFilterButtons();
 					tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
 						filterMenuButton.refreshImage();
+						filterMenuButton.updateNodes();
+						filterMenuButton.applyFilter();
 					});
 				});
 				try {

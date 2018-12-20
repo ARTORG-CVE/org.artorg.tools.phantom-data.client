@@ -196,9 +196,9 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 	}
 
 	public void setImage(Node node) {
-//		Platform.runLater(new Runnable() {
-//			@Override
-//			public void run() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
 				StackPane sPane = (StackPane) lookup(".arrow-button");
 				if (sPane != null) {
 					if (!sPane.getChildren().contains(node)) {
@@ -206,8 +206,8 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 						if (node != null) sPane.getChildren().add(node);
 					}
 				}
-//			}
-//		});
+			}
+		});
 	}
 
 	private static Map<String, HBox> imageBoxMap;

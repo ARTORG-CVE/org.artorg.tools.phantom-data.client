@@ -65,12 +65,30 @@ public class TableViewFactory {
 
 	public static <T> ProTableView<T> createInitializedTableView(Class<T> itemClass,
 			Class<?> tableClass, Class<?> tableViewClass) {
-		ProTableView<T> tableView = createTableView(itemClass, tableClass, tableViewClass);
+		DbTableView<T> tableView = (DbTableView<T>) createTableView(itemClass, tableClass, tableViewClass);
 
 //		if (tableView instanceof DbTableView) ((DbTableView<?>) tableView).reload();
 
 //		tableView.initTable();
 
+		Platform.runLater(() -> {
+			
+			tableView.reload();
+			tableView.showFilterButtons();
+			tableView.refresh();
+			});
+
+			tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
+				filterMenuButton.show();
+				filterMenuButton.hide();
+				filterMenuButton.refreshImage();
+			});
+			tableView.getFilterMenuButtons().stream().forEach(column -> {
+				column.updateNodes();
+				column.applyFilter();
+			});
+		
+		
 		showFilterMenuButtonsDelayd(tableView);
 		
 		
@@ -82,12 +100,14 @@ public class TableViewFactory {
 			Platform.runLater(() -> {
 				tableView.refresh();
 			});
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i < 5; i++) {
 				Platform.runLater(() -> {
 //					tableView.refresh();
 					tableView.showFilterButtons();
 					tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
 						filterMenuButton.refreshImage();
+						filterMenuButton.updateNodes();
+						filterMenuButton.applyFilter();
 					});
 				});
 				try {
