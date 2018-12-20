@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
+import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.table.TableBase;
@@ -58,7 +60,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		super.getSelectionModel().selectFirst();
 		refresh();
 		Platform.runLater(() -> {
-			
+
 			refresh();
 		});
 		refresh();
@@ -135,8 +137,9 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 					filterMenuButton.get().getStyleClass().add("filter-menu-button");
 					label.setGraphic(filterMenuButton.get());
 					label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+					System.out.println("showFilterButton");
 //					label.addEventHandler(eventType, eventHandler);
-					
+
 				}
 			}
 	}
@@ -159,7 +162,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 			if (baseColumn instanceof AbstractFilterColumn) {
 				AbstractFilterColumn<T, ?> filterColumn = (AbstractFilterColumn<T, ?>) baseColumn;
 				filterColumn.setSortComparatorQueue(table.getSortComparatorQueue());
-				
+
 				filterColumn.setItems(getItems());
 				getFilterMenuButtons().add(createFilterMenuButton(filterColumn, index));
 			}
@@ -175,21 +178,23 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 	public <U> FilterMenuButton<T, ?>
 			createFilterMenuButton(AbstractFilterColumn<T, U> filterColumn, int index) {
 
-		FilterMenuButton<T, ?> filterMenuButton = new FilterMenuButton<T, U>(filterColumn,
-				filterMenuButtons);
+		FilterMenuButton<T, ?> filterMenuButton =
+				new FilterMenuButton<T, U>(filterColumn, filterMenuButtons);
 		filterMenuButton.setText(filterColumn.getName());
 		filterMenuButton.setRefresh(() -> {
 			System.out.println("----------------------------------");
-			System.out.println("Applying filter ####"); 
-			System.out.println("Table filtered items before filtering " +getTable().getFilteredItems().size());
+			System.out.println("Applying filter ####");
+			System.out.println("Table filtered items before filtering "
+					+ getTable().getFilteredItems().size());
 			table.applyFilter();
 //			System.out.println("items before filtering: " +super.getItems().size());
 //			super.getItems().clear();
 //			super.getItems().addAll(table.getFilteredItems());
 //			System.out.println("items after filtering: " +super.getItems().size());
-			super.refresh();
-			
-			System.out.println("Table filtered items after filtering " +getTable().getFilteredItems().size());
+//			super.refresh();
+
+			System.out.println(
+					"Table filtered items after filtering " + getTable().getFilteredItems().size());
 			System.out.println("----------------------------------");
 		});
 		return filterMenuButton;

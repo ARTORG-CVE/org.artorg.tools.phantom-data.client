@@ -1,6 +1,9 @@
 package org.artorg.tools.phantomData.client.scene.control.tableView;
 
+import java.util.stream.Collectors;
+
 import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.server.logging.Logger;
 
@@ -19,25 +22,33 @@ public class DbTableView<ITEM> extends ProTableView<ITEM> {
 		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		getTable().readAllData();
-		
+
 		getTable().updateColumns();
 		refreshColumns();
 		autoResizeColumns();
-		
+
 		getTable().applyFilter();
 		showFilterButtons();
 		super.getSelectionModel().selectFirst();
 		refresh();
-		showFilterButtons();
-		Platform.runLater(() -> {
-			showFilterButtons();
-			getFilterMenuButtons().forEach(filterMenuButton -> {
-				filterMenuButton.refreshImage();
-			});
-			refresh();
-		});
-		refresh();
-		
+//		showFilterButtons();
+//		Platform.runLater(() -> {
+//			showFilterButtons();
+//			getFilterMenuButtons().forEach(filterMenuButton -> {
+//				filterMenuButton.refreshImage();
+//			});
+//			refresh();
+//		});
+//		refresh();
+//
+//		Platform.runLater(() -> {
+//			reload();
+//			getFilterMenuButtons().stream().forEach(column -> {
+//				column.updateNodes();
+//				column.applyFilter();
+//			});
+//		});
+
 	}
 
 	protected DbTableView(Class<ITEM> itemClass, DbTable<ITEM> table) {

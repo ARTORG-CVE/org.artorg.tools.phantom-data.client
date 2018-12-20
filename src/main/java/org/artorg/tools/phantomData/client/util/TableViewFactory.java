@@ -1,7 +1,11 @@
 package org.artorg.tools.phantomData.client.util;
 
+import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.TimerTask;
+
+import javax.swing.Timer;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.beans.DbNode;
@@ -12,6 +16,7 @@ import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTa
 import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.table.TableBase;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
@@ -40,15 +45,15 @@ public class TableViewFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T>
-			ProTreeTableView<T> createTreeTableView(Class<?> itemClass, Class<?> tableClass,
-					Class<?> tableViewClass) {
+	public static <T> ProTreeTableView<T> createTreeTableView(Class<?> itemClass,
+			Class<?> tableClass, Class<?> tableViewClass) {
 
 		TableBase<T> table = createTableBase(itemClass, tableClass);
 
 		ProTreeTableView<T> tableView = null;
 		try {
-			tableView = (ProTreeTableView<T>) tableViewClass.getConstructor(Class.class).newInstance(itemClass);
+			tableView = (ProTreeTableView<T>) tableViewClass.getConstructor(Class.class)
+					.newInstance(itemClass);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
@@ -58,16 +63,40 @@ public class TableViewFactory {
 		return tableView;
 	}
 
-	public static <T>
-			ProTableView<T> createInitializedTableView(Class<T> itemClass, Class<?> tableClass,
-					Class<?> tableViewClass) {
+	public static <T> ProTableView<T> createInitializedTableView(Class<T> itemClass,
+			Class<?> tableClass, Class<?> tableViewClass) {
 		ProTableView<T> tableView = createTableView(itemClass, tableClass, tableViewClass);
 
 //		if (tableView instanceof DbTableView) ((DbTableView<?>) tableView).reload();
 
 //		tableView.initTable();
 
+		showFilterMenuButtonsDelayd(tableView);
+		
+		
 		return tableView;
+	}
+	
+	private static void showFilterMenuButtonsDelayd(ProTableView<?> tableView) {
+		FxUtil.runNewSingleThreaded(() -> {
+			Platform.runLater(() -> {
+				tableView.refresh();
+			});
+			for (int i = 0; i < 20; i++) {
+				Platform.runLater(() -> {
+//					tableView.refresh();
+					tableView.showFilterButtons();
+					tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
+						filterMenuButton.refreshImage();
+					});
+				});
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 	}
 
 	@SuppressWarnings("unchecked")
@@ -90,19 +119,29 @@ public class TableViewFactory {
 
 	public static <T> ProTableView<T> createTableView(Class<T> itemClass, Class<?> tableClass,
 			Class<?> tableViewClass) {
-		ProTableView<T> tableView = null;
+		if (tableViewClass == ProTableView.class) {
+			ProTableView<T> tableView = new ProTableView<T>(itemClass);
+		} else if (tableViewClass == DbTableView.class) {
+			DbTableView<T> tableView = new DbTableView<T>(itemClass);
+//			tableView.reload();
+//			tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
+//				filterMenuButton.show();
+//				filterMenuButton.hide();
+//				filterMenuButton.refreshImage();
+//			});
+//			tableView.getFilterMenuButtons().stream().forEach(column -> {
+//				column.updateNodes();
+//				column.applyFilter();
+//			});
+			
+			return tableView;
+		}
 
-		if (tableViewClass == ProTableView.class) tableView = new ProTableView<T>(itemClass);
-		else if (tableViewClass == DbTableView.class) tableView = new DbTableView<T>(itemClass);
-		else
-			throw new IllegalArgumentException();
-
-		return tableView;
+		throw new IllegalArgumentException();
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	public static <T> TableBase<T> createTableBase(Class<?> itemClass,
-			Class<?> tableClass) {
+	public static <T> TableBase<T> createTableBase(Class<?> itemClass, Class<?> tableClass) {
 
 		if (tableClass == TableBase.class)
 			return (TableBase<T>) Main.getUIEntity(itemClass).createTableBase();
