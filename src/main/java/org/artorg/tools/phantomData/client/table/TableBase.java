@@ -38,7 +38,7 @@ public class TableBase<T> {
 	private boolean filterable = true;
 
 	// FilterTable
-	private final ObservableList<T> filteredItems;
+	private ObservableList<T> filteredItems;
 	private Predicate<T> filterPredicate;
 	private List<Predicate<T>> columnItemFilterPredicates;
 	private List<Predicate<T>> columnTextFilterPredicates;
@@ -85,7 +85,7 @@ public class TableBase<T> {
 			}
 			unfilteredItems.addListener(unfilteredListener);
 		};
-		filteredItems.addListener(filteredListener);
+		getFilteredItems().addListener(filteredListener);
 	}
 
 	public TableBase(Class<T> itemClass) {
@@ -98,8 +98,8 @@ public class TableBase<T> {
 		updateColumns();
 
 		if (isFilterable()) {
-			CollectionUtil.addIfAbsent(filteredItems, getItems());
-			CollectionUtil.removeIfAbsent(getItems(), filteredItems);
+			CollectionUtil.addIfAbsent(getFilteredItems(), getItems());
+			CollectionUtil.removeIfAbsent(getItems(), getFilteredItems());
 
 			applyFilter();
 		}
@@ -147,8 +147,8 @@ public class TableBase<T> {
 		sortComparator = sortComparatorQueue.stream().reduce((c1, c2) -> c2.thenComparing(c1))
 				.orElse((c1, c2) -> 0);
 
-		this.filteredItems.clear();
-		this.filteredItems.addAll(getItems().stream().filter(filterPredicate).sorted(sortComparator)
+		getFilteredItems().clear();
+		getFilteredItems().addAll(getItems().stream().filter(filterPredicate).sorted(sortComparator)
 				.collect(Collectors.toList()));
 		
 		Logger.debug.println(getItemClass().getSimpleName() + " - Applied filter in "

@@ -18,44 +18,39 @@ import javafx.scene.control.TreeItem;
 
 public class TableViewFactory {
 
-	public static <T, TABLE extends TableBase<T>,
-		TABLE_VIEW extends ProTreeTableView<T>> ProTreeTableView<T>
-		createInitializedTreeTableView(Class<?> itemClass, Class<TABLE> tableClass,
-			Class<TABLE_VIEW> tableViewClass) {
-		ProTreeTableView<T> tableView =
-			createTreeTableView(itemClass, tableClass, tableViewClass);
+	public static <T, TABLE extends TableBase<T>, TABLE_VIEW extends ProTreeTableView<T>>
+			ProTreeTableView<T> createInitializedTreeTableView(Class<?> itemClass,
+					Class<TABLE> tableClass, Class<TABLE_VIEW> tableViewClass) {
+		ProTreeTableView<T> tableView = createTreeTableView(itemClass, tableClass, tableViewClass);
 
-		if (tableView instanceof DbTreeTableView)
-			((DbTreeTableView<T>) tableView).reload();
+		if (tableView instanceof DbTreeTableView) ((DbTreeTableView<T>) tableView).reload();
 
 		tableView.initTable();
 
 		return tableView;
 	}
 
-	public static <T, TABLE extends TableBase<T>,
-		TABLE_VIEW extends ProTreeTableView<T>> ProTreeTableView<T>
-		createTreeTableView(Class<?> itemClass, Class<TABLE> tableClass,
-			Class<TABLE_VIEW> tableViewClass, List<T> items) {
+	public static <T, TABLE extends TableBase<T>, TABLE_VIEW extends ProTreeTableView<T>>
+			ProTreeTableView<T> createTreeTableView(Class<?> itemClass, Class<TABLE> tableClass,
+					Class<TABLE_VIEW> tableViewClass, List<T> items) {
 		ProTreeTableView<T> treeTableView =
-			createTreeTableView(itemClass, tableClass, tableViewClass);
+				createTreeTableView(itemClass, tableClass, tableViewClass);
 		treeTableView.setItems(items);
 		return treeTableView;
 	}
 
-	public static <T, TABLE extends TableBase<T>,
-		TABLE_VIEW extends ProTreeTableView<T>> ProTreeTableView<T>
-		createTreeTableView(Class<?> itemClass, Class<TABLE> tableClass,
-			Class<TABLE_VIEW> tableViewClass) {
+	@SuppressWarnings("unchecked")
+	public static <T>
+			ProTreeTableView<T> createTreeTableView(Class<?> itemClass, Class<?> tableClass,
+					Class<?> tableViewClass) {
 
 		TableBase<T> table = createTableBase(itemClass, tableClass);
 
 		ProTreeTableView<T> tableView = null;
 		try {
-			tableView = tableViewClass.getConstructor(Class.class).newInstance(itemClass);
-		} catch (InstantiationException | IllegalAccessException
-			| IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-			| SecurityException e) {
+			tableView = (ProTreeTableView<T>) tableViewClass.getConstructor(Class.class).newInstance(itemClass);
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
 		}
 		tableView.setTable(table);
@@ -63,10 +58,9 @@ public class TableViewFactory {
 		return tableView;
 	}
 
-	public static <T, TABLE extends TableBase<T>,
-		TABLE_VIEW extends ProTableView<T>> ProTableView<T>
-		createInitializedTableView(Class<T> itemClass, Class<TABLE> tableClass,
-			Class<TABLE_VIEW> tableViewClass) {
+	public static <T>
+			ProTableView<T> createInitializedTableView(Class<T> itemClass, Class<?> tableClass,
+					Class<?> tableViewClass) {
 		ProTableView<T> tableView = createTableView(itemClass, tableClass, tableViewClass);
 
 //		if (tableView instanceof DbTableView) ((DbTableView<?>) tableView).reload();
@@ -77,10 +71,8 @@ public class TableViewFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T, TABLE extends TableBase<T>,
-		TABLE_VIEW extends ProTableView<T>> ProTableView<T>
-		createTableView(Class<T> itemClass, Class<TABLE> tableClass,
-			Class<TABLE_VIEW> tableViewClass, List<TreeItem<DbNode>> treeItems) {
+	public static <T> ProTableView<T> createTableView(Class<T> itemClass, Class<?> tableClass,
+			Class<?> tableViewClass, List<TreeItem<DbNode>> treeItems) {
 		ProTableView<T> tableView = createTableView(itemClass, tableClass, tableViewClass);
 		ObservableList<T> items = FXCollections.observableArrayList();
 		for (int i = 0; i < treeItems.size(); i++)
@@ -92,38 +84,33 @@ public class TableViewFactory {
 //		tableView.setItems(items);
 		tableView.getItems().clear();
 		tableView.getItems().addAll(items);
-		
+
 		return tableView;
 	}
-	
-	public static <T, TABLE extends TableBase<T>,
-		TABLE_VIEW extends ProTableView<T>> ProTableView<T>
-		createTableView(Class<T> itemClass, Class<TABLE> tableClass,
-			Class<TABLE_VIEW> tableViewClass) {
+
+	public static <T> ProTableView<T> createTableView(Class<T> itemClass, Class<?> tableClass,
+			Class<?> tableViewClass) {
 		ProTableView<T> tableView = null;
-		
-		if (tableViewClass == ProTableView.class)
-			tableView = new ProTableView<T>(itemClass);
-		else if (tableViewClass == DbTableView.class)
-			tableView = new DbTableView<T>(itemClass);
-		else 
+
+		if (tableViewClass == ProTableView.class) tableView = new ProTableView<T>(itemClass);
+		else if (tableViewClass == DbTableView.class) tableView = new DbTableView<T>(itemClass);
+		else
 			throw new IllegalArgumentException();
 
 		return tableView;
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	public static <T> TableBase<T>
-		createTableBase(Class<?> itemClass, Class<? extends TableBase<T>> tableClass) {
-		
+	public static <T> TableBase<T> createTableBase(Class<?> itemClass,
+			Class<?> tableClass) {
+
 		if (tableClass == TableBase.class)
 			return (TableBase<T>) Main.getUIEntity(itemClass).createTableBase();
 		else if (tableClass == DbTable.class)
 			return (TableBase<T>) Main.getUIEntity(itemClass).createDbTableBase();
 		else
 			throw new IllegalArgumentException();
-		
-		
+
 //		return Reflect.createInstanceByGenericAndSuperClass(tableClass, itemClass,
 //			Main.getReflections());
 	}

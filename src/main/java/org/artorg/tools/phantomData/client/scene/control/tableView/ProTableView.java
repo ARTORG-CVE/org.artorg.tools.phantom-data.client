@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
@@ -34,7 +33,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 	private BiPredicate<AbstractColumn<T, ? extends Object>, TableColumn<T, ?>> columnRemovePolicy;
 	private final Class<T> itemClass;
 	private TableBase<T> table;
-	private final List<FilterMenuButton<T, ?>> filterMenuButtons;
+	private List<FilterMenuButton<T, ?>> filterMenuButtons;
 
 	{
 		columnAddPolicy = (fromColumn, toColumn) -> toColumn.getText().equals(fromColumn.getName());
@@ -59,9 +58,10 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		super.getSelectionModel().selectFirst();
 		refresh();
 		Platform.runLater(() -> {
-			showFilterButtons();
+			
 			refresh();
 		});
+		refresh();
 	}
 
 	protected ProTableView(Class<T> itemClass, TableBase<T> table) {
@@ -128,13 +128,15 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 				Label label = (Label) n;
 
 				String columnName = label.getText();
-				Optional<FilterMenuButton<T, ?>> filterMenuButton = filterMenuButtons.stream()
+				Optional<FilterMenuButton<T, ?>> filterMenuButton = getFilterMenuButtons().stream()
 						.filter(f -> f.getText().equals(columnName)).findFirst();
 				if (filterMenuButton.isPresent()) {
 					filterMenuButton.get().prefWidthProperty().bind(label.widthProperty());
 					filterMenuButton.get().getStyleClass().add("filter-menu-button");
 					label.setGraphic(filterMenuButton.get());
 					label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+//					label.addEventHandler(eventType, eventHandler);
+					
 				}
 			}
 	}
@@ -159,7 +161,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 				filterColumn.setSortComparatorQueue(table.getSortComparatorQueue());
 				
 				filterColumn.setItems(getItems());
-				filterMenuButtons.add(createFilterMenuButton(filterColumn, index));
+				getFilterMenuButtons().add(createFilterMenuButton(filterColumn, index));
 			}
 
 			tableColumn.setSortable(false);
@@ -174,8 +176,22 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 			createFilterMenuButton(AbstractFilterColumn<T, U> filterColumn, int index) {
 
 		FilterMenuButton<T, ?> filterMenuButton = new FilterMenuButton<T, U>(filterColumn,
-				filterMenuButtons, () -> table.applyFilter());
+				filterMenuButtons);
 		filterMenuButton.setText(filterColumn.getName());
+		filterMenuButton.setRefresh(() -> {
+			System.out.println("----------------------------------");
+			System.out.println("Applying filter ####"); 
+			System.out.println("Table filtered items before filtering " +getTable().getFilteredItems().size());
+			table.applyFilter();
+//			System.out.println("items before filtering: " +super.getItems().size());
+//			super.getItems().clear();
+//			super.getItems().addAll(table.getFilteredItems());
+//			System.out.println("items after filtering: " +super.getItems().size());
+			super.refresh();
+			
+			System.out.println("Table filtered items after filtering " +getTable().getFilteredItems().size());
+			System.out.println("----------------------------------");
+		});
 		return filterMenuButton;
 	}
 

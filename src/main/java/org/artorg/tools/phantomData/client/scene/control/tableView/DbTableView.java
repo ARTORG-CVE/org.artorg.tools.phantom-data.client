@@ -28,10 +28,15 @@ public class DbTableView<ITEM> extends ProTableView<ITEM> {
 		showFilterButtons();
 		super.getSelectionModel().selectFirst();
 		refresh();
+		showFilterButtons();
 		Platform.runLater(() -> {
 			showFilterButtons();
+			getFilterMenuButtons().forEach(filterMenuButton -> {
+				filterMenuButton.refreshImage();
+			});
 			refresh();
 		});
+		refresh();
 		
 	}
 
