@@ -5,7 +5,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 
 	<groupId>org.artorg.tools</groupId>
 	<artifactId>phantom-data-client</artifactId>
-	<version>0.3.7</version>
+	<version>0.3.8</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -28,7 +28,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		<dependency>
 			<groupId>org.artorg.tools</groupId>
 			<artifactId>phantom-data-server</artifactId>
-			<version>0.3.7</version>
+			<version>0.3.8</version>
 		</dependency>
 		
 		<dependency>
