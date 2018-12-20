@@ -27,7 +27,6 @@ import org.artorg.tools.phantomData.client.editor.FxFactory;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.SmartSplitTabPane;
 import org.artorg.tools.phantomData.client.scene.control.SmartTabPane;
-import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
@@ -153,7 +152,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 	private <T> void
 		changeToTableView(ProTreeTableView<T> tableView) {
 		ProTableView<T> treeTableView = (ProTableView<T>)TableViewFactory.createTableView(
-			tableView.getItemClass(), DbTable.class, DbFilterTableView.class,
+			tableView.getItemClass(), DbTable.class, DbTableView.class,
 			tableView.getSelectionModel().getSelectedItems());
 		Tab tab;
 		tab = findTabByContent(tableTabPane.getTabPane(), tableView);

@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.beans.DbNode;
-import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
@@ -107,21 +106,8 @@ public class TableViewFactory {
 			tableView = new ProTableView<T>(itemClass);
 		else if (tableViewClass == DbTableView.class)
 			tableView = new DbTableView<T>(itemClass);
-		else if (tableViewClass == DbFilterTableView.class)
-			tableView = new DbFilterTableView<T>(itemClass);
-//		else if (tableViewClass == DbEditFilterTableView.class)
-//			tableView = new DbEditFilterTableView<T>(itemClass);
 		else 
 			throw new IllegalArgumentException();
-		
-//		try {
-//			tableView = tableViewClass.getConstructor(Class.class).newInstance(itemClass);
-//		} catch (InstantiationException | IllegalAccessException
-//			| IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-//			| SecurityException e) {
-//			e.printStackTrace();
-//		}
-//		tableView.setTable(table);
 
 		return tableView;
 	}

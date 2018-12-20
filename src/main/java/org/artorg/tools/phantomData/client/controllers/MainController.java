@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.CssGlyph;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
-import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTableView;
+import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
@@ -428,7 +428,7 @@ public class MainController extends StackPane {
 	@SuppressWarnings("unchecked")
 	private ProTableView<?> createTable(Class<?> itemClass) {
 		return TableViewFactory.createInitializedTableView(itemClass, DbTable.class,
-				DbFilterTableView.class);
+				DbTableView.class);
 	}
 	
 	@SuppressWarnings("unchecked")

@@ -47,7 +47,6 @@ public class TableBase<T> {
 	private List<Integer> mappedColumnIndexes;
 	private Function<Integer, Integer> columnIndexMapper;
 	private Queue<Comparator<T>> sortComparatorQueue;
-	
 
 	{
 		// TableBase
@@ -82,14 +81,13 @@ public class TableBase<T> {
 		ListChangeListener<T> filteredListener = (ListChangeListener<T>) c -> {
 			unfilteredItems.removeListener(unfilteredListener);
 			while (c.next()) {
-				if (c.wasAdded())
-					CollectionUtil.addIfAbsent(c.getAddedSubList(), unfilteredItems);
+				if (c.wasAdded()) CollectionUtil.addIfAbsent(c.getAddedSubList(), unfilteredItems);
 			}
 			unfilteredItems.addListener(unfilteredListener);
 		};
 		filteredItems.addListener(filteredListener);
 	}
-	
+
 	public TableBase(Class<T> itemClass) {
 		this.itemClass = itemClass;
 		this.itemName = itemClass.getSimpleName();
@@ -108,9 +106,9 @@ public class TableBase<T> {
 	}
 
 	public void updateColumns() {
-		Logger.debug.println(getItemClass().getSimpleName());
+		long startTime = System.currentTimeMillis();
 		CollectionUtil.syncLists(this.columns, columnCreator.apply(getItems()),
-			(column, newColumn) -> column.getName().equals(newColumn.getName()));
+				(column, newColumn) -> column.getName().equals(newColumn.getName()));
 		getColumns().stream().forEach(column -> {
 			column.setItems(getItems());
 		});
@@ -126,54 +124,57 @@ public class TableBase<T> {
 				columnTextFilterPredicates.add(item -> true);
 			}
 			columnIndexMapper = i -> mappedColumnIndexes.get(i);
-			
-			getFilteredColumns().stream()
-				.collect(castFilter(column -> ((AbstractFilterColumn<T, ?>) column)))
-				.forEach(column -> column.setFilteredItems(getFilteredItems()));
 
-			applyFilter();
+			getFilteredColumns().stream()
+					.collect(castFilter(column -> ((AbstractFilterColumn<T, ?>) column)))
+					.forEach(column -> column.setFilteredItems(getFilteredItems()));
+
 		}
+		Logger.debug.println(
+				getItemClass().getSimpleName() + " - Updated " + getFilteredColumns().size()
+						+ " column(s) in " + (System.currentTimeMillis() - startTime) + " ms");
+		if (isFilterable()) applyFilter();
 	}
 
 	public void applyFilter() {
-		Logger.debug.println(getItemClass().getSimpleName());
+		long startTime = System.currentTimeMillis();
 		filterPredicate = mappedColumnIndexes.stream()
-			.filter(i -> i < columnItemFilterPredicates.size())
-			.map(i -> getColumns().get(i))
-			.collect(castFilter(column -> ((FilterColumn<T, ?, ?>) column)))
-			.map(filterColumn -> filterColumn.getFilterPredicate())
-			.reduce((f1, f2) -> f1.and(f2)).orElse(item -> true);
+				.filter(i -> i < columnItemFilterPredicates.size()).map(i -> getColumns().get(i))
+				.collect(castFilter(column -> ((FilterColumn<T, ?, ?>) column)))
+				.map(filterColumn -> filterColumn.getFilterPredicate())
+				.reduce((f1, f2) -> f1.and(f2)).orElse(item -> true);
 
-		sortComparator = sortComparatorQueue.stream()
-			.reduce((c1, c2) -> c2.thenComparing(c1)).orElse((c1, c2) -> 0);
+		sortComparator = sortComparatorQueue.stream().reduce((c1, c2) -> c2.thenComparing(c1))
+				.orElse((c1, c2) -> 0);
 
 		this.filteredItems.clear();
-		this.filteredItems.addAll(getItems().stream().filter(filterPredicate)
-			.sorted(sortComparator).collect(Collectors.toList()));
-//
-//		System.out.println(toString());
+		this.filteredItems.addAll(getItems().stream().filter(filterPredicate).sorted(sortComparator)
+				.collect(Collectors.toList()));
+		
+		Logger.debug.println(getItemClass().getSimpleName() + " - Applied filter in "
+				+ (System.currentTimeMillis() - startTime) + " ms");
 	}
 
 	public void setColumnItemFilterValues(int columnIndex, List<Object> values) {
 		columnItemFilterPredicates.set(columnIndexMapper.apply(columnIndex), item -> {
 			return values.stream()
-				.filter(value -> getFilteredValue(item, columnIndex).equals(value))
-				.findFirst().isPresent();
+					.filter(value -> getFilteredValue(item, columnIndex).equals(value)).findFirst()
+					.isPresent();
 		});
 	}
 
 	public void setColumnTextFilterValues(int columnIndex, String searchText) {
 		final Pattern p = Pattern.compile("(?i)" + searchText);
-		if (searchText.isEmpty()) columnTextFilterPredicates
-			.set(columnIndexMapper.apply(columnIndex), item -> true);
-		else columnTextFilterPredicates.set(columnIndexMapper.apply(columnIndex),
-			item -> p.matcher(getFilteredValue(item, columnIndex).toString()).find());
+		if (searchText.isEmpty())
+			columnTextFilterPredicates.set(columnIndexMapper.apply(columnIndex), item -> true);
+		else
+			columnTextFilterPredicates.set(columnIndexMapper.apply(columnIndex),
+					item -> p.matcher(getFilteredValue(item, columnIndex).toString()).find());
 	}
 
-	public void setColumnCreator(
-		Function<List<T>, List<AbstractColumn<T, ?>>> columnCreator) {
+	public void setColumnCreator(Function<List<T>, List<AbstractColumn<T, ?>>> columnCreator) {
 		this.columnCreator = columnCreator;
-		updateColumns();
+//		updateColumns();
 	}
 
 	public Object getColumnFilteredValue(int row, int col) {
@@ -218,19 +219,18 @@ public class TableBase<T> {
 	}
 
 	public List<String> getFilteredColumnNames() {
-		return getFilteredColumns().stream().map(c -> c.getName())
-			.collect(Collectors.toList());
+		return getFilteredColumns().stream().map(c -> c.getName()).collect(Collectors.toList());
 	}
 
 	public List<AbstractFilterColumn<T, ? extends Object>> getFilteredFilterColumns() {
 		return getFilteredColumns().stream()
-			.collect(castFilter(column -> (AbstractFilterColumn<T, ?>) column))
-			.collect(Collectors.toList());
+				.collect(castFilter(column -> (AbstractFilterColumn<T, ?>) column))
+				.collect(Collectors.toList());
 	}
 
 	public List<AbstractColumn<T, ? extends Object>> getFilteredColumns() {
 		return mappedColumnIndexes.stream().map(i -> getColumns().get(i))
-			.collect(Collectors.toList());
+				.collect(Collectors.toList());
 	}
 
 	public List<String> getColumnNames() {
@@ -248,14 +248,14 @@ public class TableBase<T> {
 	@Override
 	public String toString() {
 		if (!isFilterable()) return createString(getNrows(), getNcols(), getColumnNames(),
-			(row, col) -> getValue(row, col).toString());
-		else return createString(getFilteredNrows(), getFilteredNcols(),
-			getFilteredColumnNames(),
-			(row, col) -> getFilteredValue(row, col).toString());
+				(row, col) -> getValue(row, col).toString());
+		else
+			return createString(getFilteredNrows(), getFilteredNcols(), getFilteredColumnNames(),
+					(row, col) -> getFilteredValue(row, col).toString());
 	}
 
 	private String createString(int nRows, int nCols, List<String> columnNames,
-		BiFunction<Integer, Integer, String> valueGetter) {
+			BiFunction<Integer, Integer, String> valueGetter) {
 		if (nRows == 0 || nCols == 0) return "";
 		String[][] content = new String[nRows + 1][nCols];
 
@@ -282,24 +282,22 @@ public class TableBase<T> {
 
 		for (int col = 0; col < nCols; col++) {
 			content[0][col] = content[0][col]
-				+ StringUtils.repeat(" ", columnWidth[col] - content[0][col].length());
+					+ StringUtils.repeat(" ", columnWidth[col] - content[0][col].length());
 		}
 		columnStrings.add(Arrays.stream(content[0]).collect(Collectors.joining("|")));
 		columnStrings.add(StringUtils.repeat("-", columnStrings.get(0).length()));
 		for (int row = 1; row < nRows + 1; row++) {
 			for (int col = 0; col < nCols; col++)
-				content[row][col] = content[row][col] + StringUtils.repeat(" ",
-					columnWidth[col] - content[row][col].length());
-			columnStrings
-				.add(Arrays.stream(content[row]).collect(Collectors.joining("|")));
+				content[row][col] = content[row][col]
+						+ StringUtils.repeat(" ", columnWidth[col] - content[row][col].length());
+			columnStrings.add(Arrays.stream(content[row]).collect(Collectors.joining("|")));
 		}
 
 		return columnStrings.stream().collect(Collectors.joining("\n"));
 	}
 
 	// Getters & Setters
-	public Function<List<T>, List<AbstractColumn<T, ? extends Object>>>
-		getColumnCreator() {
+	public Function<List<T>, List<AbstractColumn<T, ? extends Object>>> getColumnCreator() {
 		return columnCreator;
 	}
 
