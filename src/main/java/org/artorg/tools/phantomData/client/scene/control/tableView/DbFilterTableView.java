@@ -40,10 +40,12 @@ public class DbFilterTableView<ITEM>
 		refreshColumns();
 		autoResizeColumns();
 		getTable().applyFilter();
-		Platform.runLater(() -> showFilterButtons());
+		showFilterButtons();
+		Platform.runLater(() -> {
+			showFilterButtons();
+			refresh();
+		});
 	}
-	
-	
 	
 	protected DbFilterTableView(Class<ITEM> itemClass, DbTable<ITEM> table) {
 		super(itemClass, table);
@@ -142,22 +144,12 @@ public class DbFilterTableView<ITEM>
 	@Override
 	public void reload() {
 		Logger.debug.println("DbFilterTableView - reload");
-		if (getTable() instanceof DbTable)
-			reloadFilterTable(
-				(DbTable<ITEM>) getTable());
-	}
-
-	private void reloadFilterTable(DbTable<ITEM> table) {
-		table.reload();
+		getTable().reload();
+		super.setItems(getTable().getFilteredItems());
+//		super.getItems().clear();
+//		super.getItems().addAll(getTable().getFilteredItems());
 		
-		
-//		super.setItems(table.getFilteredItems());
-		super.getItems().clear();
-		super.getItems().addAll(table.getFilteredItems());
-		
-		
-		
-//		refresh();
+		refresh();
 	}
 
 	public List<FilterMenuButton<ITEM, ?>> getFilterMenuButtons() {

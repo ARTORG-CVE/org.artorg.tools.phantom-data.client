@@ -5,7 +5,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 
 	<groupId>org.artorg.tools</groupId>
 	<artifactId>phantom-data-client</artifactId>
-	<version>0.3.9</version>
+	<version>0.4.0-SNAPSHOT</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -17,6 +17,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- Solves: [ERROR] Unable to determine if resource... -->
 		<dependency.locations.enabled>false</dependency.locations.enabled>
+		
+		<maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
 	<dependencies>
@@ -49,7 +52,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 <dependency>
     <groupId>com.fasterxml.jackson.core</groupId>
     <artifactId>jackson-core</artifactId>
-    <version>2.9.7</version>
 </dependency>
 
 	
@@ -105,13 +107,11 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.8</version>
 		</dependency>
 		<!-- REQUIRED -->
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
-			<version>2.2.11</version>
 		</dependency>
 		<!-- REQUIRED -->
 		<dependency>
@@ -126,8 +126,56 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		</dependency>
 	</dependencies>
 
+
+
+
+
 	<build> 
+	
+	
+	<pluginManagement>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+        </plugin>
+
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.0</version>
+            <configuration>
+                <compilerId>eclipse</compilerId>
+                <source>1.8</source>
+                <target>1.8</target>
+                <!-- Passing arguments is a trainwreck, see https://issues.apache.org/jira/browse/MCOMPILER-123 -->
+                <compilerArguments>
+                    <properties>${project.basedir}/.settings/org.eclipse.jdt.core.prefs</properties>
+                </compilerArguments>
+                <showWarnings>true</showWarnings>
+                <showDeprecation>true</showDeprecation>
+            </configuration>
+
+            <dependencies>
+                <dependency>
+                    <groupId>org.codehaus.plexus</groupId>
+                    <artifactId>plexus-compiler-eclipse</artifactId>
+                    <version>2.8.5</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.eclipse.jdt</groupId>
+                    <artifactId>ecj</artifactId>
+                    <version>3.15.0</version>
+                </dependency>
+            </dependencies>
+        </plugin>
+        </plugins>
+</pluginManagement>
+	
+	
 		<plugins>
+	
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
@@ -142,7 +190,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.6.0</version>
 				<configuration>
 					<compilerId>eclipse</compilerId>
 				</configuration>
@@ -157,7 +204,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>2.1.0.RELEASE</version>
 				<configuration>
 					<classifier>spring-boot</classifier>
 					<mainClass>org.artorg.tools.phantomData.client.Main</mainClass>

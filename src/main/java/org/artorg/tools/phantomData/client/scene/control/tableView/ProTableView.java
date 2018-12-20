@@ -21,20 +21,16 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.util.Callback;
 
-public class ProTableView<T> extends javafx.scene.control.TableView<T>
-	implements AddableToPane {
-	private BiPredicate<AbstractColumn<T, ? extends Object>,
-		TableColumn<T, ?>> columnAddPolicy;
-	private BiPredicate<AbstractColumn<T, ? extends Object>,
-		TableColumn<T, ?>> columnRemovePolicy;
+public class ProTableView<T> extends javafx.scene.control.TableView<T> implements AddableToPane {
+	private BiPredicate<AbstractColumn<T, ? extends Object>, TableColumn<T, ?>> columnAddPolicy;
+	private BiPredicate<AbstractColumn<T, ? extends Object>, TableColumn<T, ?>> columnRemovePolicy;
 	private final Class<T> itemClass;
 	private TableBase<T> table;
 
 	{
-		columnAddPolicy =
-			(fromColumn, toColumn) -> toColumn.getText().equals(fromColumn.getName());
+		columnAddPolicy = (fromColumn, toColumn) -> toColumn.getText().equals(fromColumn.getName());
 		columnRemovePolicy =
-			(fromColumn, toColumn) -> toColumn.getText().equals(fromColumn.getName());
+				(fromColumn, toColumn) -> toColumn.getText().equals(fromColumn.getName());
 	}
 
 	public ProTableView(Class<T> itemClass) {
@@ -45,7 +41,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T>
 		autoResizeColumns();
 		super.getSelectionModel().selectFirst();
 	}
-	
+
 	protected ProTableView(Class<T> itemClass, TableBase<T> table) {
 		this.itemClass = itemClass;
 		this.table = table;
@@ -61,10 +57,10 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T>
 	public void showHeaderRow() {
 		this.getStyleClass().remove("noheader");
 		this.getStyleClass().add("header");
-		
-		((DbFilterTableView<?>)this).getFilterMenuButtons().forEach(filterMenuButton -> {
-		filterMenuButton.refreshImage();
-	});
+
+		((DbFilterTableView<?>) this).getFilterMenuButtons().forEach(filterMenuButton -> {
+			filterMenuButton.refreshImage();
+		});
 	}
 
 //	public void initTable() {
@@ -73,28 +69,27 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T>
 
 	public void refreshColumns() {
 		Logger.debug.println(getItemClass().getSimpleName());
-		CollectionUtil.addIfAbsent(table.getColumnCreator().apply(getItems()),
-			super.getColumns(), columnAddPolicy,
-			(baseColumn, index) -> createTableColumn(table, index));
+		CollectionUtil.addIfAbsent(table.getColumnCreator().apply(getItems()), super.getColumns(),
+				columnAddPolicy, (baseColumn, index) -> createTableColumn(table, index));
 
 		CollectionUtil.removeIfAbsent(table.getColumnCreator().apply(getItems()),
-			super.getColumns(), columnRemovePolicy);
+				super.getColumns(), columnRemovePolicy);
 
 	}
 
 	protected TableColumn<T, ?> createTableColumn(TableBase<T> table, int index) {
 		TableColumn<T, Object> tableColumn =
-			new TableColumn<T, Object>(table.getColumns().get(index).getName());
+				new TableColumn<T, Object>(table.getColumns().get(index).getName());
 
 		tableColumn.setSortable(false);
 		tableColumn.setCellFactory(createCellFactory(tableColumn));
 		tableColumn.setCellValueFactory(createCellValueFactory(tableColumn,
-			cellData -> table.getValue(cellData.getValue(), index)));
+				cellData -> table.getValue(cellData.getValue(), index)));
 		return tableColumn;
 	}
 
 	protected <U> Callback<TableColumn<T, U>, TableCell<T, U>>
-		createCellFactory(TableColumn<T, U> tableColumn) {
+			createCellFactory(TableColumn<T, U> tableColumn) {
 		return column -> new TableCell<T, U>() {
 			@Override
 			protected void updateItem(U item, boolean empty) {
@@ -116,9 +111,8 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T>
 		};
 	}
 
-	protected <U> Callback<CellDataFeatures<T, U>, ObservableValue<U>>
-		createCellValueFactory(TableColumn<T, U> tableColumn,
-			Function<CellDataFeatures<T, U>, U> valueGetter) {
+	protected <U> Callback<CellDataFeatures<T, U>, ObservableValue<U>> createCellValueFactory(
+			TableColumn<T, U> tableColumn, Function<CellDataFeatures<T, U>, U> valueGetter) {
 		return cellData -> new ReadOnlyObjectWrapper<U>(valueGetter.apply(cellData));
 	}
 
@@ -156,8 +150,14 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T>
 	public void refresh() {
 		Logger.debug.println(getItemClass());
 		getTable().refresh();
-		super.refresh();
+		
+		
+		((DbFilterTableView<?>) this).getFilterMenuButtons().forEach(filterMenuButton -> {
+			filterMenuButton.refreshImage();
+		});
+		
 		refreshColumns();
+		super.refresh();
 	}
 
 	public Class<T> getItemClass() {
@@ -165,22 +165,22 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T>
 	}
 
 	public BiPredicate<AbstractColumn<T, ? extends Object>, TableColumn<T, ?>>
-		getColumnAddPolicy() {
+			getColumnAddPolicy() {
 		return columnAddPolicy;
 	}
 
-	public void setColumnAddPolicy(BiPredicate<AbstractColumn<T, ? extends Object>,
-		TableColumn<T, ?>> addColumnPolicy) {
+	public void setColumnAddPolicy(
+			BiPredicate<AbstractColumn<T, ? extends Object>, TableColumn<T, ?>> addColumnPolicy) {
 		this.columnAddPolicy = addColumnPolicy;
 	}
 
 	public BiPredicate<AbstractColumn<T, ? extends Object>, TableColumn<T, ?>>
-		getColumnRemovePolicy() {
+			getColumnRemovePolicy() {
 		return columnRemovePolicy;
 	}
 
 	public void setColumnRemovePolicy(BiPredicate<AbstractColumn<T, ? extends Object>,
-		TableColumn<T, ?>> removeColumnPolicy) {
+			TableColumn<T, ?>> removeColumnPolicy) {
 		this.columnRemovePolicy = removeColumnPolicy;
 	}
 
