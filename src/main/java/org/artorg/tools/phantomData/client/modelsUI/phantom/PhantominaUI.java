@@ -91,10 +91,6 @@ public class PhantominaUI implements UIEntity<Phantomina> {
 			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 			panes.add(generalPane);
 			setTitledPanes(panes);
-
-			setItemFactory(this::createItem);
-			setTemplateSetter(this::setEditTemplate);
-			setChangeApplier(this::applyChanges);
 		}
 
 		private void updateId() {

@@ -7,7 +7,6 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
-import org.artorg.tools.phantomData.server.model.DbPersistent;
 
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Orientation;
@@ -22,7 +21,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
-public class TableViewSelector<ITEM extends DbPersistent<ITEM, ?>>
+public class TableViewSelector<ITEM>
 	extends AbstractTableViewSelector<ITEM> {
 	private SplitPane splitPane;
 	private int height;

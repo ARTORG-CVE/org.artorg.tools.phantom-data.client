@@ -1,18 +1,15 @@
 package org.artorg.tools.phantomData.client.select;
 
-import org.artorg.tools.phantomData.client.scene.control.tableView.DbEditFilterTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbFilterTableView;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.TableViewFactory;
-import org.artorg.tools.phantomData.server.model.DbPersistent;
 
-import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 
-public class TitledPaneTableViewSelector<ITEM extends DbPersistent<ITEM, ?>> extends TableViewSelector<ITEM> {
+public class TitledPaneTableViewSelector<ITEM> extends TableViewSelector<ITEM> {
 	private final TitledPane titledPane;
 
 	{

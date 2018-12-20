@@ -99,10 +99,6 @@ public class MeasurementUI implements UIEntity<Measurement> {
 			panes.add(generalPane);
 			setTitledPanes(panes);
 
-			setItemFactory(this::createItem);
-			setTemplateSetter(this::setEditTemplate);
-			setChangeApplier(this::applyChanges);
-
 			fileController.create(DbFile.class);
 		}
 

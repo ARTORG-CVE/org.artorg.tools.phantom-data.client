@@ -15,8 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.stage.FileChooser;
 
-public class DbFileEditFactoryController
-	extends GroupedItemEditFactoryController<DbFile> {
+public class DbFileEditFactoryController extends GroupedItemEditFactoryController<DbFile> {
 	private TextField textFieldPath;
 	private TextField textFieldName;
 	private TextField textFieldExtension;
@@ -35,14 +34,19 @@ public class DbFileEditFactoryController
 		buttonFileChooser.setOnAction(event -> {
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.setTitle("Open source file");
-			File file = fileChooser.showOpenDialog(Main.getStage());
-			textFieldPath.setText(file.getAbsolutePath());
-			String[] splits = splitOffFileExtension(file.getName());
-			textFieldName.setText(splits[0]);
-			textFieldExtension.setText(splits[1]);
-			textFieldPath.setDisable(false);
-			textFieldName.setDisable(false);
-			textFieldExtension.setDisable(false);
+			File file = null;
+			try {
+				file = fileChooser.showOpenDialog(Main.getStage());
+			} catch (NullPointerException e) {}
+			if (file != null) {
+				textFieldPath.setText(file.getAbsolutePath());
+				String[] splits = splitOffFileExtension(file.getName());
+				textFieldName.setText(splits[0]);
+				textFieldExtension.setText(splits[1]);
+				textFieldPath.setDisable(false);
+				textFieldName.setDisable(false);
+				textFieldExtension.setDisable(false);
+			}
 		});
 
 		List<TitledPane> panes = new ArrayList<TitledPane>();
@@ -52,14 +56,9 @@ public class DbFileEditFactoryController
 		generalProperties.add(new PropertyEntry("Name", textFieldName));
 		generalProperties.add(new PropertyEntry("Extension", textFieldExtension));
 
-		TitledPropertyPane generalPane =
-			new TitledPropertyPane(generalProperties, "General");
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 		panes.add(generalPane);
 		setTitledPanes(panes);
-
-		setItemFactory(this::createItem);
-		setTemplateSetter(this::setEditTemplate);
-		setChangeApplier(this::applyChanges);
 	}
 
 	private String[] splitOffFileExtension(String name) {

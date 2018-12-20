@@ -5,7 +5,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -39,16 +41,22 @@ import javafx.scene.layout.AnchorPane;
 
 @SuppressWarnings("unchecked")
 public abstract class ItemEditFactoryController<T> extends VGridBoxPane implements FxFactory<T> {
+	private static final Map<Class<?>, List<Class<?>>> subItemClassesMap;
+	private static final Map<Class<?>,
+			Map<Class<?>, Function<Object, Collection<Object>>>> subItemGetterMap;
+	private static final Map<Class<?>, Map<Class<?>, Boolean>> containsCollectionSetterMap;
 	protected Button applyButton;
 	private List<Node> rightNodes;
 	private List<AbstractTableViewSelector<?>> selectors;
 	private AnchorPane pane;
 	private final Class<T> itemClass;
-
 	private ICrudConnector<T> connector;
+	private final List<Class<?>> subItemClasses;
 
-	public ICrudConnector<T> getConnector() {
-		return this.connector;
+	static {
+		subItemClassesMap = new HashMap<>();
+		subItemGetterMap = new HashMap<>();
+		containsCollectionSetterMap = new HashMap<>();
 	}
 
 	{
@@ -60,6 +68,19 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 	public ItemEditFactoryController() {
 		itemClass = (Class<T>) Reflect.findGenericClasstype(this);
 		connector = (ICrudConnector<T>) Connectors.getConnector(itemClass);
+
+		if (subItemClassesMap.containsKey(itemClass))
+			subItemClasses = subItemClassesMap.get(itemClass);
+		else {
+			subItemClasses = Reflect.getCollectionSetterMethods(itemClass)
+					.filter(m -> !m.isAnnotationPresent(BackReference.class)).map(m -> {
+						Type type = m.getGenericParameterTypes()[0];
+						Class<?> cls = Reflect.getGenericTypeClass(type);
+						return cls;
+					}).filter(c -> c != null).filter(c -> DbPersistent.class.isAssignableFrom(c))
+					.collect(Collectors.toList());
+			subItemClassesMap.put(itemClass, subItemClasses);
+		}
 	}
 
 	public abstract T createItem();
@@ -72,10 +93,6 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 
 	protected abstract void applyChanges(T item);
 
-	public Node getGraphic() {
-		return pane;
-	}
-
 	protected abstract AnchorPane createRootPane();
 
 	protected abstract void addProperties(T item);
@@ -86,99 +103,131 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		selector.setSelectedChildItems(item);
 	}
 
-	public List<AbstractTableViewSelector<?>> getSelectors() {
-		return selectors;
-	}
-
-	@SuppressWarnings("rawtypes")
 	private List<AbstractTableViewSelector<?>> createSelectors(T item, Class<?> itemClass) {
 		List<AbstractTableViewSelector<?>> selectors = new ArrayList<>();
-
-		List<Class<? extends DbPersistent<?, ?>>> subItemClasses =
-				Reflect.getCollectionSetterMethods(itemClass)
-						.filter(m -> !m.isAnnotationPresent(BackReference.class)).map(m -> {
-							Type type = m.getGenericParameterTypes()[0];
-							Class<? extends DbPersistent<?, ?>> cls =
-									(Class<? extends DbPersistent<?, ?>>) Reflect
-											.getGenericTypeClass(type);
-							return cls;
-						}).filter(c -> c != null)
-						.filter(c -> DbPersistent.class.isAssignableFrom(c))
-						.collect(Collectors.toList());
-
 		subItemClasses.forEach(subItemClass -> {
-			if (Reflect.containsCollectionSetter(itemClass, subItemClass)) {
-				ICrudConnector<?> connector = Connectors.getConnector(subItemClass);
-				Set<?> selectableItemSet = connector.readAllAsSet();
-
-				if (selectableItemSet.size() > 0) {
-					try {
-						AbstractTableViewSelector<Object> titledSelector =
-								new TitledPaneTableViewSelector(subItemClass);
-						titledSelector.getSelectableItems().clear();
-						titledSelector.getSelectedItems().clear();
-						titledSelector.getSelectableItems().addAll(selectableItemSet);
-						if (item != null) {
-							Method selectedMethod =
-									Reflect.getMethodByGenericReturnType(itemClass, subItemClass);
-
-							if (selectedMethod != null) {
-								Function<T, Collection<Object>> subItemGetter2;
-								subItemGetter2 = i -> {
-									if (i == null) return null;
-									try {
-										return (Collection<Object>) (selectedMethod.invoke(i));
-									} catch (IllegalAccessException | IllegalArgumentException
-											| InvocationTargetException e) {
-										e.printStackTrace();
-									}
-									return null;
-								};
-								Set<Object> selectedItems = subItemGetter2.apply(item).stream()
-										.filter(e -> e != null).collect(Collectors.toSet());
-								titledSelector.getSelectedItems().addAll(selectedItems);
-							}
-						}
-
-						titledSelector.init();
-
-						TitledPane titledPane =
-								((TitledPane) ((TitledPaneTableViewSelector) titledSelector)
-										.getGraphic());
-						titledPane.expandedProperty().addListener(new ChangeListener<Boolean>() {
-							@Override
-							public void changed(ObservableValue<? extends Boolean> observable,
-									Boolean oldValue, Boolean newValue) {
-								if (newValue) selectors.stream().map(
-										titledSelector -> ((TitledPane) ((TitledPaneTableViewSelector) titledSelector)
-												.getGraphic()))
-										.filter(titledPane2 -> titledPane2 != titledPane)
-										.forEach(titledSelector -> {
-											titledSelector.setAnimated(true);
-											titledSelector.setExpanded(false);
-										});
-
-							}
-
-						});
-
-						selectors.add(titledSelector);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
+			Set<?> selectableItems = getSelectableItems(subItemClass);
+			if (!selectableItems.isEmpty()) {
+				AbstractTableViewSelector<?> selector =
+						createSelector(item, itemClass, subItemClass, selectableItems);
+				if (selector != null) selectors.add(selector);
 			}
 		});
 
 		return selectors;
 	}
 
-//	@SuppressWarnings("unchecked")
-//	public final ICrudConnector<T, ?> getConnector() {
-//		if (getTableView().getTable() instanceof IDbTable)
-//			return ((IDbTable<T,?>) getTableView().getTable()).getConnector();
-//		return null;
-//	}
+	protected AbstractTableViewSelector<?> createSelector(T item, Class<?> itemClass,
+			Class<?> subItemClass, Set<?> selectableItems) {
+		if (containsCollectionSetter(itemClass, subItemClass)) {
+			try {
+				AbstractTableViewSelector<Object> titledSelector =
+						new TitledPaneTableViewSelector<Object>(subItemClass);
+				titledSelector.getSelectableItems().clear();
+				titledSelector.getSelectedItems().clear();
+				titledSelector.getSelectableItems().addAll(selectableItems);
+				if (item != null) {
+					Function<Object, Collection<Object>> subItemGetter =
+							getSubItemGetter(itemClass, subItemClass);
+					if (subItemGetter != null) {
+						Set<Object> selectedItems = subItemGetter.apply(item).stream()
+								.filter(e -> e != null).collect(Collectors.toSet());
+						titledSelector.getSelectedItems().addAll(selectedItems);
+					}
+
+				}
+
+				titledSelector.init();
+
+				TitledPane titledPane =
+						((TitledPane) ((TitledPaneTableViewSelector<?>) titledSelector)
+								.getGraphic());
+				titledPane.expandedProperty().addListener(new ChangeListener<Boolean>() {
+					@Override
+					public void changed(ObservableValue<? extends Boolean> observable,
+							Boolean oldValue, Boolean newValue) {
+						if (newValue) selectors.stream()
+								.map(titledSelector -> ((TitledPane) ((TitledPaneTableViewSelector<
+										?>) titledSelector).getGraphic()))
+								.filter(titledPane2 -> titledPane2 != titledPane)
+								.forEach(titledSelector -> {
+									titledSelector.setAnimated(true);
+									titledSelector.setExpanded(false);
+								});
+
+					}
+
+				});
+				return titledSelector;
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	protected Set<?> getSelectableItems(Class<?> subItemClass) {
+		ICrudConnector<?> connector = Connectors.getConnector(subItemClass);
+		return connector.readAllAsSet();
+	}
+
+	private Function<Object, Collection<Object>> createSubItemGetter(Class<?> itemClass,
+			Class<?> subItemClass) {
+		Method selectedMethod = Reflect.getMethodByGenericReturnType(itemClass, subItemClass);
+		if (selectedMethod == null) return null;
+		Function<Object, Collection<Object>> subItemGetter;
+		subItemGetter = i -> {
+			if (i == null) return null;
+			try {
+				return (Collection<Object>) (selectedMethod.invoke(i));
+			} catch (IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException e) {
+				e.printStackTrace();
+			}
+			return null;
+		};
+		return subItemGetter;
+	}
+
+	private Function<Object, Collection<Object>> getSubItemGetter(Class<?> itemClass,
+			Class<?> subItemClass) {
+		Function<Object, Collection<Object>> subItemGetter = null;
+		if (subItemGetterMap.containsKey(itemClass)) {
+			if (subItemGetterMap.get(itemClass).containsKey(subItemClass))
+				subItemGetter = subItemGetterMap.get(itemClass).get(subItemClass);
+			else {
+				subItemGetter = createSubItemGetter(itemClass, subItemClass);
+				if (subItemGetter == null) return null;
+				subItemGetterMap.get(itemClass).put(subItemClass, subItemGetter);
+			}
+		} else {
+			subItemGetter = createSubItemGetter(itemClass, subItemClass);
+			if (subItemGetter == null) return null;
+			Map<Class<?>, Function<Object, Collection<Object>>> map = new HashMap<>();
+			map.put(subItemClass, subItemGetter);
+			subItemGetterMap.put(itemClass, map);
+		}
+		return subItemGetter;
+	}
+
+	private boolean containsCollectionSetter(Class<?> itemClass, Class<?> subItemClass) {
+		boolean result;
+		if (containsCollectionSetterMap.containsKey(itemClass)) {
+			if (containsCollectionSetterMap.get(itemClass).containsKey(subItemClass))
+				result = containsCollectionSetterMap.get(itemClass).get(subItemClass);
+			else {
+				result = Reflect.containsCollectionSetter(itemClass, subItemClass);
+				containsCollectionSetterMap.get(itemClass).put(subItemClass, result);
+			}
+		} else {
+			result = Reflect.containsCollectionSetter(itemClass, subItemClass);
+			Map<Class<?>, Boolean> map = new HashMap<>();
+			map.put(subItemClass, result);
+			containsCollectionSetterMap.put(itemClass, map);
+		}
+		return result;
+	}
 
 	protected void initDefaultValues() {
 		rightNodes.forEach(node -> {
@@ -227,13 +276,7 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		pane = createRootPane();
 		if (item != null) setAddTemplate(item);
 		applyButton.setOnAction(event -> {
-//			if (!UserAdmin.isUserLoggedIn())
-//				Main.getMainController().openLoginLogoutFrame();
-//			else {
-			FxUtil.runNewSingleThreaded(() -> {
-				createAndPersistItem();
-			});
-//			}
+			FxUtil.runNewSingleThreaded(() -> createAndPersistItem());
 		});
 		applyButton.setText("Create");
 		return pane;
@@ -246,9 +289,7 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 				if (selectors != null) selectors.stream().filter(selector -> selector != null)
 						.forEach(selector -> selector.setSelectedChildItems(newItem));
 				if (getConnector().create(newItem)) {
-					Platform.runLater(() -> {
-						initDefaultValues();
-					});
+					Platform.runLater(() -> initDefaultValues());
 				}
 			}
 			return newItem;
@@ -303,4 +344,16 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		return itemClass;
 	}
 
+	public ICrudConnector<T> getConnector() {
+		return this.connector;
+	}
+	
+	public Node getGraphic() {
+		return pane;
+	}
+
+	public List<AbstractTableViewSelector<?>> getSelectors() {
+		return selectors;
+	}
+	
 }
