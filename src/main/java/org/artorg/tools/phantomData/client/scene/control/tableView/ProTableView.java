@@ -101,7 +101,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		}
 
 //		updateColumns();
-//		super.refresh();
+		super.refresh();
 	}
 
 	public void updateColumns() {
@@ -111,35 +111,35 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 			CollectionUtil.addIfAbsent(table.createColumns(getItems()),
 					super.getColumns(), columnAddPolicy,
 					(baseColumn, index) -> createTableColumn(table, index));
-
-			CollectionUtil.removeIfAbsent(table.createColumns(getItems()),
-					super.getColumns(), columnRemovePolicy);
+//
+//			CollectionUtil.removeIfAbsent(table.createColumns(getItems()),
+//					super.getColumns(), columnRemovePolicy);
 		} else {
 			CollectionUtil.addIfAbsent(
 					table.createColumns(table.getFilteredItems()),
 					super.getColumns(), getColumnAddPolicy(),
 					(baseColumn, index) -> createTableColumn(table, index));
-			CollectionUtil.removeIfAbsent(
-					table.createColumns(table.getFilteredItems()),
-					super.getColumns(), getColumnRemovePolicy());
+//			CollectionUtil.removeIfAbsent(
+//					table.createColumns(table.getFilteredItems()),
+//					super.getColumns(), getColumnRemovePolicy());
 		}
 	}
 
 	public void removeHeaderRow() {
-		this.getStyleClass().remove("header");
-		this.getStyleClass().add("noheader");
+//		this.getStyleClass().remove("header");
+//		this.getStyleClass().add("noheader");
 	}
 
 	public void showHeaderRow() {
-		this.getStyleClass().remove("noheader");
-		this.getStyleClass().add("header");
-
-		if (isFilterable()) {
-			showFilterButtons();
-			getFilterMenuButtons().forEach(filterMenuButton -> {
-				filterMenuButton.refreshImage();
-			});
-		}
+//		this.getStyleClass().remove("noheader");
+//		this.getStyleClass().add("header");
+//
+//		if (isFilterable()) {
+//			showFilterButtons();
+//			getFilterMenuButtons().forEach(filterMenuButton -> {
+//				filterMenuButton.refreshImage();
+//			});
+//		}
 	}
 
 	public void showFilterButtons() {
@@ -165,11 +165,10 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 					List<?> columns1 = getColumns();
 					List<?> columns2 = getFilterMenuButtons();
 					
-					
-					System.err.println("FilterMenuButton not present");
+					Logger.error.println("FilterMenuButton not found.");
 				}
 			} else {
-				System.err.println("n not instance of Label");
+				Logger.error.println("n not instance of Label");
 			}
 	}
 

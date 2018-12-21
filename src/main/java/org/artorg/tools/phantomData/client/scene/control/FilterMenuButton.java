@@ -163,8 +163,14 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 	}
 
 	public void applyFilter() {
-		Predicate<ITEM> itemFilter = item -> getSelectedValues().stream()
-				.filter(value -> column.get(item).equals(value)).findFirst().isPresent();
+		Predicate<ITEM> itemFilter;
+		if (itemFilterAll.getCheckBox().isSelected()) itemFilter = item -> true;
+		else {
+			itemFilter = item -> getSelectedValues().stream().filter(value -> {
+				Object itemValue = column.get(item);
+				return (itemValue == null || itemValue.equals("") || itemValue.equals(value));
+			}).findFirst().isPresent();
+		}
 		Predicate<ITEM> textFilter;
 		if (this.getRegex().isEmpty()) textFilter = item -> true;
 		else {
@@ -199,6 +205,19 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 //		Platform.runLater(new Runnable() {
 //			@Override
 //			public void run() {
+		StackPane sPane = (StackPane) lookup(".arrow-button");
+		if (sPane != null) {
+			if (!sPane.getChildren().contains(node)) {
+				sPane.getChildren().clear();
+				if (node != null) sPane.getChildren().add(node);
+			}
+		}
+//			}
+//		});
+
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
 				StackPane sPane = (StackPane) lookup(".arrow-button");
 				if (sPane != null) {
 					if (!sPane.getChildren().contains(node)) {
@@ -206,21 +225,8 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 						if (node != null) sPane.getChildren().add(node);
 					}
 				}
-//			}
-//		});
-				
-				Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					StackPane sPane = (StackPane) lookup(".arrow-button");
-					if (sPane != null) {
-						if (!sPane.getChildren().contains(node)) {
-							sPane.getChildren().clear();
-							if (node != null) sPane.getChildren().add(node);
-						}
-					}
-				}
-			});
+			}
+		});
 	}
 
 	private static Map<String, HBox> imageBoxMap;
@@ -250,7 +256,7 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 		String key = sb.toString();
 //		if (imageBoxMap.containsKey(key)) hBox = imageBoxMap.get(key);
 //		else
-			imageBoxMap.put(key, hBox);
+		imageBoxMap.put(key, hBox);
 
 		setImage(hBox);
 	}
@@ -404,8 +410,15 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 	}
 
 	public void updateNodes() {
-		List<String> distinctValues = column.getValues().stream().distinct().map(o -> o.toString())
-				.sorted().collect(Collectors.toList());
+		List<String> distinctValues = null;
+		try {
+			distinctValues = column.getValues().stream().filter(value -> value != null).distinct()
+					.map(o -> o.toString()).sorted().collect(Collectors.toList());
+		} catch (Exception e) {
+			e.printStackTrace();
+			AbstractFilterColumn<ITEM, ?> tempCol = column;
+			List<?> values = column.getValues();
+		}
 		this.getItems().removeAll(itemsFilter);
 
 		CollectionUtil.addIfAbsent(distinctValues, itemsFilter,
@@ -434,8 +447,9 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 				(c1, c2) -> c1.getCheckBox().getText().compareTo(c2.getCheckBox().getText());
 		itemsFilter.sort(comparator);
 
-		List<String> distinctFilteredValues = column.getFilteredValues().stream().distinct()
-				.map(o -> o.toString()).sorted().collect(Collectors.toList());
+		List<String> distinctFilteredValues =
+				column.getFilteredValues().stream().filter(value -> value != null).distinct()
+						.map(o -> o.toString()).sorted().collect(Collectors.toList());
 
 		if (distinctValues.size() < distinctFilteredValues.size())
 			throw new ArrayIndexOutOfBoundsException();

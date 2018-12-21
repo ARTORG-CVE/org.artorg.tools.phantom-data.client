@@ -74,18 +74,18 @@ public abstract class TableBase<T> {
 		mappedColumnIndexes = new ArrayList<>();
 		sortComparatorQueue = new LimitedQueue<>(1);
 
-		TableBase<T> reference = this;
-		ObservableList<T> unfilteredItems = getItems();
+//		TableBase<T> reference = this;
+//		ObservableList<T> unfilteredItems = getItems();
 
-		ListChangeListener<T> unfilteredListener = reference.getItemListChangeListener();
-		ListChangeListener<T> filteredListener = (ListChangeListener<T>) c -> {
-			unfilteredItems.removeListener(unfilteredListener);
-			while (c.next()) {
-				if (c.wasAdded()) CollectionUtil.addIfAbsent(c.getAddedSubList(), unfilteredItems);
-			}
-			unfilteredItems.addListener(unfilteredListener);
-		};
-		getFilteredItems().addListener(filteredListener);
+//		ListChangeListener<T> unfilteredListener = reference.getItemListChangeListener();
+//		ListChangeListener<T> filteredListener = (ListChangeListener<T>) c -> {
+//			unfilteredItems.removeListener(unfilteredListener);
+//			while (c.next()) {
+//				if (c.wasAdded()) CollectionUtil.addIfAbsent(c.getAddedSubList(), unfilteredItems);
+//			}
+//			unfilteredItems.addListener(unfilteredListener);
+//		};
+//		getFilteredItems().addListener(filteredListener);
 	}
 
 	public TableBase(Class<T> itemClass) {
@@ -108,8 +108,8 @@ public abstract class TableBase<T> {
 		updateColumns();
 
 		if (isFilterable()) {
-			CollectionUtil.addIfAbsent(getFilteredItems(), getItems());
-			CollectionUtil.removeIfAbsent(getItems(), getFilteredItems());
+//			CollectionUtil.addIfAbsent(getFilteredItems(), getItems());
+//			CollectionUtil.removeIfAbsent(getItems(), getFilteredItems());
 
 			applyFilter();
 		}
@@ -148,7 +148,29 @@ public abstract class TableBase<T> {
 		if (isFilterable()) applyFilter();
 	}
 
+	public void resetFilter() {
+		filterPredicate = item -> true;
+		getFilteredItems().clear();
+		getFilteredItems().addAll(getItems());
+	}
+	
+	private boolean filterActivated = true;
+	
+	
+	
+	public boolean isFilterActivated() {
+		return filterActivated;
+	}
+
+	public void setFilterActivated(boolean filterActivated) {
+		this.filterActivated = filterActivated;
+	}
+
 	public void applyFilter() {
+		if (!filterActivated) {
+			resetFilter();
+			return;
+		}
 		long startTime = System.currentTimeMillis();
 		filterPredicate = mappedColumnIndexes.stream()
 				.filter(i -> i < columnItemFilterPredicates.size()).map(i -> getColumns().get(i))
@@ -159,9 +181,11 @@ public abstract class TableBase<T> {
 		sortComparator = sortComparatorQueue.stream().reduce((c1, c2) -> c2.thenComparing(c1))
 				.orElse((c1, c2) -> 0);
 
+		List<T> filteredItems = getItems().stream().filter(filterPredicate).sorted(sortComparator)
+				.collect(Collectors.toList());
+		
 		getFilteredItems().clear();
-		getFilteredItems().addAll(getItems().stream().filter(filterPredicate).sorted(sortComparator)
-				.collect(Collectors.toList()));
+		getFilteredItems().addAll(filteredItems);
 		
 		Logger.debug.println(getItemClass().getSimpleName() + " - Applied filter in "
 				+ (System.currentTimeMillis() - startTime) + " ms");
@@ -367,7 +391,6 @@ public abstract class TableBase<T> {
 	}
 
 	public ObservableList<T> getFilteredItems() {
-		System.out.println("getting filtered items, size = " +filteredItems.size());
 		return filteredItems;
 	}
 

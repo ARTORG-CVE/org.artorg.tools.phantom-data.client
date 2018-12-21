@@ -223,30 +223,17 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 //		column.getItems().addAll(getItems());
 
 		});
-
 		tableView.applyFilter();
-
 		tableView.getSelectionModel().selectFirst();
 		tableView.refresh();
-
 		if (tableView.isFilterable()) {
 			tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
 				filterMenuButton.refreshImage();
 			});
 		}
-
 		tableView.showFilterButtons();
-
-//		List<?> items = tableView.getItems();
-//		List<?> items2 = tableView.getTable().getItems();
-//		List<?> items3 = tableView.getTable().getFilteredItems();
-//		List<?> items4 = tableView.getTable().getColumns();
-//		List<?> items5 = tableView.getTable().getFilteredColumns();
-
-		System.out.println("-.-");
-
 		tableView.getFilterMenuButtons().stream().forEach(column -> {
-			column.updateNodes();
+//			column.updateNodes();
 			column.applyFilter();
 			tableView.showFilterButtons();
 		});
@@ -283,14 +270,6 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 			}
 
 			tableView.showFilterButtons();
-
-			List<?> items = tableView.getItems();
-			List<?> items2 = tableView.getTable().getItems();
-			List<?> items3 = tableView.getTable().getFilteredItems();
-			List<?> items4 = tableView.getTable().getColumns();
-			List<?> items5 = tableView.getTable().getFilteredColumns();
-
-			System.out.println("-.-");
 
 			tableView.getFilterMenuButtons().stream().forEach(column -> {
 				column.updateNodes();

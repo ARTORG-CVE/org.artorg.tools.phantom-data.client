@@ -47,11 +47,11 @@ public abstract class AbstractTableViewSelector<ITEM> {
 //	}
 
 	public ObservableList<ITEM> getSelectableItems() {
-		return ((ProTableView<ITEM>) getTableView1()).getTable().getItems();
+		return ((ProTableView<ITEM>) getTableView1()).getItems();
 	}
 
 	public ObservableList<ITEM> getSelectedItems() {
-		return ((ProTableView<ITEM>) getTableView2()).getTable().getItems();
+		return ((ProTableView<ITEM>) getTableView2()).getItems();
 	}
 
 //	public void setSelectedItems(Set<Object> set) {

@@ -22,6 +22,8 @@ public class DbTableView<ITEM> extends ProTableView<ITEM> {
 		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		getTable().readAllData();
+		
+		getTable().setFilterActivated(true);
 
 		getTable().updateColumns();
 		updateColumns();

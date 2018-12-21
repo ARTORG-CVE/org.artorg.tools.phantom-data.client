@@ -9,6 +9,8 @@ import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 
 import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -21,8 +23,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
-public class TableViewSelector<ITEM>
-	extends AbstractTableViewSelector<ITEM> {
+public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 	private SplitPane splitPane;
 	private int height;
 	private final Class<?> subItemClass;
@@ -55,20 +56,20 @@ public class TableViewSelector<ITEM>
 //		});
 
 		if (getTableView1().getItems().size() != 0
-			&& !splitPane.getItems().contains(getTableView1())) {
+				&& !splitPane.getItems().contains(getTableView1())) {
 			splitPane.getItems().add(getTableView1());
 			autoResizeColumns(getTableView1());
 		}
 		if (getTableView2().getItems().size() != 0
-			&& !splitPane.getItems().contains(getTableView2())) {
+				&& !splitPane.getItems().contains(getTableView2())) {
 			splitPane.getItems().add(getTableView2());
 			autoResizeColumns(getTableView2());
 		}
 
 		TableColumn<ITEM, Void> addButtonCellColumn =
-			FxUtil.createButtonCellColumn("+", this::moveToSelected);
+				FxUtil.createButtonCellColumn("+", this::moveToSelected);
 		TableColumn<ITEM, Void> removeButtonCellColumn =
-			FxUtil.createButtonCellColumn("-", this::moveToSelectable);
+				FxUtil.createButtonCellColumn("-", this::moveToSelectable);
 
 		if (this.getTableView1() instanceof ProTableView) {
 			ProTableView<ITEM> proTableView = (ProTableView<ITEM>) this.getTableView1();
@@ -105,11 +106,10 @@ public class TableViewSelector<ITEM>
 				menuItem.setOnAction(event -> moveToSelected());
 				contextMenu.getItems().add(menuItem);
 				menuItem = new MenuItem("Refresh");
-				menuItem.setOnAction(event -> tableView.refresh());
+				menuItem.setOnAction(event -> ((ProTableView) tableView).getTable().refresh());
 				contextMenu.getItems().add(menuItem);
 
-				row.contextMenuProperty()
-					.bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
+				row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
 						.then(contextMenu).otherwise((ContextMenu) null));
 				return row;
 			};
@@ -126,11 +126,10 @@ public class TableViewSelector<ITEM>
 				menuItem.setOnAction(event -> moveToSelectable());
 				contextMenu.getItems().addAll(menuItem);
 				menuItem = new MenuItem("Refresh");
-				menuItem.setOnAction(event -> tableView.refresh());
+				menuItem.setOnAction(event -> ((ProTableView) tableView).getTable().refresh());
 				contextMenu.getItems().add(menuItem);
 
-				row.contextMenuProperty()
-					.bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
+				row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
 						.then(contextMenu).otherwise((ContextMenu) null));
 				return row;
 			};
@@ -157,8 +156,50 @@ public class TableViewSelector<ITEM>
 	}
 
 	public void moveToSelected(Collection<ITEM> items) {
-		getSelectableItems().removeAll(items);
-		getSelectedItems().addAll(items);
+//		getSelectableItems().removeAll(items);
+
+		((ProTableView<ITEM>) getTableView2()).getTable().getItems()
+				.addListener(new ListChangeListener<ITEM>() {
+
+					@Override
+					public void onChanged(Change<? extends ITEM> c) {
+						while (c.next()) {
+							System.out.println("items changed: addedSize " + c.getAddedSize()
+									+ ", new size " + c.getList().size());
+						}
+					}
+
+				});
+
+		((ProTableView<ITEM>) getTableView2()).getTable().getFilteredItems()
+				.addListener(new ListChangeListener<ITEM>() {
+
+					@Override
+					public void onChanged(Change<? extends ITEM> c) {
+						while (c.next()) {
+							System.out.println("filtered items changed: addedSize "
+									+ c.getAddedSize() + ", new size " + c.getList().size());
+						}
+
+					}
+
+				});
+
+		((ProTableView) getTableView1()).getTable().getItems().removeAll(items);
+		((ProTableView) getTableView1()).getTable().getFilteredItems().removeAll(items);
+		((ProTableView) getTableView1()).setItems(FXCollections.observableArrayList());
+		((ProTableView) getTableView1())
+				.setItems(((ProTableView) getTableView1()).getTable().getFilteredItems());
+//		flyingHero(((ProTableView) getTableView1()));
+//		((ProTableView)getTableView1()).applyFilter();
+//		getSelectedItems().addAll(items);
+		((ProTableView) getTableView2()).getTable().getItems().addAll(items);
+		((ProTableView) getTableView2()).getTable().getFilteredItems().addAll(items);
+		((ProTableView) getTableView2()).setItems(FXCollections.observableArrayList());
+		((ProTableView) getTableView2())
+				.setItems(((ProTableView) getTableView2()).getTable().getFilteredItems());
+		flyingHero(((ProTableView) getTableView2()));
+//		((ProTableView)getTableView2()).applyFilter();
 		if (getTableView1().getItems().size() == 0) {
 			splitPane.getItems().remove(getTableView1());
 			if (!splitPane.getItems().contains(getTableView2()))
@@ -180,8 +221,20 @@ public class TableViewSelector<ITEM>
 	}
 
 	public void moveToSelectable(Collection<ITEM> items) {
-		getSelectedItems().removeAll(items);
-		getSelectableItems().addAll(items);
+//		getSelectedItems().removeAll(items);
+		((ProTableView) getTableView2()).getTable().getItems().removeAll(items);
+		((ProTableView) getTableView2()).getTable().getFilteredItems().removeAll(items);
+		((ProTableView) getTableView2()).setItems(FXCollections.observableArrayList());
+		((ProTableView) getTableView2())
+				.setItems(((ProTableView) getTableView2()).getTable().getFilteredItems());
+		flyingHero(((ProTableView) getTableView2()));
+//		getSelectableItems().addAll(items);
+		((ProTableView) getTableView1()).getTable().getItems().addAll(items);
+		((ProTableView) getTableView1()).getTable().getFilteredItems().addAll(items);
+		((ProTableView) getTableView1()).setItems(FXCollections.observableArrayList());
+		((ProTableView) getTableView1())
+				.setItems(((ProTableView) getTableView1()).getTable().getFilteredItems());
+//		flyingHero(((ProTableView) getTableView1()));
 		if (getTableView2().getItems().size() == 0) {
 			splitPane.getItems().remove(getTableView2());
 		} else {
@@ -191,12 +244,50 @@ public class TableViewSelector<ITEM>
 			}
 			((ProTableView<?>) getTableView1()).showHeaderRow();
 			splitPane.setDividerPositions(0.5f);
-			if (getTableView2().getItems().size() < 10)
-				if (getTableView2() instanceof ProTableView)
-					((ProTableView<?>) getTableView2()).removeHeaderRow();
+			if (getTableView2().getItems().size() < 10) if (getTableView2() instanceof ProTableView)
+				((ProTableView<?>) getTableView2()).removeHeaderRow();
 		}
 		autoResizeColumns(getTableView1());
 		autoResizeColumns(getTableView2());
+	}
+
+	private <U> void flyingHero(ProTableView<U> tableView) {
+		tableView.getTable().setFilterActivated(false);
+//		tableView.getTable().getColumns().stream().forEach(column -> {
+//			column.setItems(tableView.getItems());
+////			column.getItems().clear();
+////			column.getItems().addAll(getItems());
+//
+//		});
+
+//		tableView.updateColumns();
+//		tableView.getTable().refresh();
+//		tableView.autoResizeColumns();
+//
+//		tableView.getTable().getColumns().stream().forEach(column -> {
+//			column.setItems(tableView.getItems());
+////		column.getItems().clear();
+////		column.getItems().addAll(getItems());
+//
+//		});
+
+//		tableView.updateColumns();
+
+//		tableView.applyFilter();
+//		tableView.getSelectionModel().selectFirst();
+//		tableView.refresh();
+//		if (tableView.isFilterable()) {
+//			tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
+//				filterMenuButton.refreshImage();
+//			});
+//		}
+//		tableView.showFilterButtons();
+//		tableView.getFilterMenuButtons().stream().forEach(column -> {
+////			column.updateNodes();
+//			column.applyFilter();
+//			tableView.showFilterButtons();
+//		});
+//		tableView.showFilterButtons();
 	}
 
 	public void autoResizeColumns(TableView<?> tableView) {
