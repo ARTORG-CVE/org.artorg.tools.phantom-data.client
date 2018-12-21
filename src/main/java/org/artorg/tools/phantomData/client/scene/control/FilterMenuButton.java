@@ -18,6 +18,7 @@ import org.controlsfx.glyphfont.FontAwesome;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -426,17 +427,33 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 				(s, i) -> {
 					CheckBoxItemFilter checkBoxItemFilter =
 							new CheckBoxItemFilter(s.toString(), true);
-					checkBoxItemFilter.getCheckBox().addEventHandler(MouseEvent.MOUSE_CLICKED,
-							event -> {
-								if (!checkBoxItemFilter.getCheckBox().isSelected())
-									itemFilterAll.getCheckBox().setSelected(false);
-								else if (!streamCheckBoxes().filter(c -> !c.isSelected())
-										.findFirst().isPresent())
-									itemFilterAll.getCheckBox().setSelected(true);
+					checkBoxItemFilter.getCheckBox().selectedProperty().addListener(new ChangeListener<Boolean>() {
 
-								refreshImage();
-								getRefresher().run();
-							});
+						@Override
+						public void changed(ObservableValue<? extends Boolean> observable,
+								Boolean oldValue, Boolean newValue) {
+							if (!newValue)
+								itemFilterAll.getCheckBox().setSelected(false);
+							else if (!streamCheckBoxes().filter(c -> !c.isSelected())
+									.findFirst().isPresent())
+								itemFilterAll.getCheckBox().setSelected(true);
+							refreshImage();
+							getRefresher().run();
+						}
+					});
+					
+					
+//					.addEventHandler(MouseEvent.MOUSE_CLICKED,
+//							event -> {
+//								if (!checkBoxItemFilter.getCheckBox().isSelected())
+//									itemFilterAll.getCheckBox().setSelected(false);
+//								else if (!streamCheckBoxes().filter(c -> !c.isSelected())
+//										.findFirst().isPresent())
+//									itemFilterAll.getCheckBox().setSelected(true);
+//
+//								refreshImage();
+//								getRefresher().run();
+//							});
 					return checkBoxItemFilter;
 				});
 
