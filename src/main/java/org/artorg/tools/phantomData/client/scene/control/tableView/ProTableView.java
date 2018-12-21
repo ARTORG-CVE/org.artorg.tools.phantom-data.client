@@ -21,6 +21,7 @@ import org.artorg.tools.phantomData.server.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
@@ -46,14 +47,17 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 
 	public ProTableView(Class<T> itemClass) {
 		this(itemClass, Main.getUIEntity(itemClass).createTableBase());
-		if (!isFilterable()) super.setItems(getTable().getItems());
-		else
-			super.setItems(getTable().getFilteredItems());
+		
+		getItems().clear();
+		
+//		if (!isFilterable()) super.setItems(getTable().getItems());
+//		else
+//			super.setItems(getTable().getFilteredItems());
 
 		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-		refreshColumns();
-		autoResizeColumns();
+//		updateColumns();
+//		autoResizeColumns();
 		super.getSelectionModel().selectFirst();
 
 		showFilterButtons();
@@ -64,11 +68,25 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 			refresh();
 		});
 		refresh();
+		
+		getFilterMenuButtons().stream().forEach(column -> {
+			column.updateNodes();
+			column.applyFilter();
+		});
+	}
+	
+	
+	public void applyFilter() {
+		getTable().applyFilter();
+		super.setItems(FXCollections.observableArrayList());
+		super.setItems(getTable().getFilteredItems());
 	}
 
 	protected ProTableView(Class<T> itemClass, TableBase<T> table) {
 		this.itemClass = itemClass;
 		this.table = table;
+		super.setItems(FXCollections.observableArrayList());
+		super.setItems(table.getFilteredItems());
 	}
 
 	@Override
@@ -82,26 +100,27 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 			});
 		}
 
-		refreshColumns();
+//		updateColumns();
 //		super.refresh();
 	}
 
-	public void refreshColumns() {
+	public void updateColumns() {
 		Logger.debug.println(getItemClass().getSimpleName());
+		getTable().updateColumns();
 		if (!isFilterable()) {
-			CollectionUtil.addIfAbsent(table.getColumnCreator().apply(getItems()),
+			CollectionUtil.addIfAbsent(table.createColumns(getItems()),
 					super.getColumns(), columnAddPolicy,
 					(baseColumn, index) -> createTableColumn(table, index));
 
-			CollectionUtil.removeIfAbsent(table.getColumnCreator().apply(getItems()),
+			CollectionUtil.removeIfAbsent(table.createColumns(getItems()),
 					super.getColumns(), columnRemovePolicy);
 		} else {
 			CollectionUtil.addIfAbsent(
-					getTable().getColumnCreator().apply(table.getFilteredItems()),
+					table.createColumns(table.getFilteredItems()),
 					super.getColumns(), getColumnAddPolicy(),
 					(baseColumn, index) -> createTableColumn(table, index));
 			CollectionUtil.removeIfAbsent(
-					getTable().getColumnCreator().apply(table.getFilteredItems()),
+					table.createColumns(table.getFilteredItems()),
 					super.getColumns(), getColumnRemovePolicy());
 		}
 	}
@@ -141,7 +160,16 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 					
 					filterMenuButton.get().refreshImage();
 
+				} else {
+					
+					List<?> columns1 = getColumns();
+					List<?> columns2 = getFilterMenuButtons();
+					
+					
+					System.err.println("FilterMenuButton not present");
 				}
+			} else {
+				System.err.println("n not instance of Label");
 			}
 	}
 

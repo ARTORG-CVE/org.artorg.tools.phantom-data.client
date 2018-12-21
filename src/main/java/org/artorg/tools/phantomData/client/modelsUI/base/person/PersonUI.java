@@ -21,7 +21,6 @@ import javafx.scene.control.TitledPane;
 
 public class PersonUI implements UIEntity<Person> {
 
-	@Override
 	public Class<Person> getItemClass() {
 		return Person.class;
 	}
@@ -32,7 +31,7 @@ public class PersonUI implements UIEntity<Person> {
 	}
 
 	@Override
-	public List<AbstractColumn<Person, ?>> createColumns() {
+	public List<AbstractColumn<Person, ?>> createColumns(List<Person> items) {
 		List<AbstractColumn<Person, ?>> columns = new ArrayList<>();
 		columns.add(new FilterColumn<>("Title", item -> item.getAcademicTitle(),
 				path -> path.getPrefix()));

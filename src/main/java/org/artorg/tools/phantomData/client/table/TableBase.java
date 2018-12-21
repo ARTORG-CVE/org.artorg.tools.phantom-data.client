@@ -26,19 +26,19 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 @SuppressWarnings("unchecked")
-public class TableBase<T> {
+public abstract class TableBase<T> {
 	private final ObservableList<T> items;
 	private List<AbstractColumn<T, ? extends Object>> columns;
-	private String tableName;
 	private String itemName;
 	private final Class<T> itemClass;
-	private Function<List<T>, List<AbstractColumn<T, ? extends Object>>> columnCreator;
+//	private Function<List<T>, List<AbstractColumn<T, ? extends Object>>> columnCreator;
 	private final ListChangeListener<T> itemListChangeListener;
 	private boolean editable = true;
 	private boolean filterable = true;
+	private String tableName;
 
 	// FilterTable
-	private ObservableList<T> filteredItems;
+	private final ObservableList<T> filteredItems;
 	private Predicate<T> filterPredicate;
 	private List<Predicate<T>> columnItemFilterPredicates;
 	private List<Predicate<T>> columnTextFilterPredicates;
@@ -52,7 +52,7 @@ public class TableBase<T> {
 		// TableBase
 		items = FXCollections.observableArrayList();
 		columns = new ArrayList<AbstractColumn<T, ? extends Object>>();
-		columnCreator = items -> new ArrayList<AbstractColumn<T, ? extends Object>>();
+//		columnCreator = items -> new ArrayList<AbstractColumn<T, ? extends Object>>();
 
 		itemListChangeListener = new ListChangeListener<T>() {
 			@Override
@@ -92,7 +92,17 @@ public class TableBase<T> {
 		this.itemClass = itemClass;
 		this.itemName = itemClass.getSimpleName();
 	}
+	
+	public abstract List<AbstractColumn<T, ? extends Object>> createColumns(List<T> items);
 
+	public String getTableName() {
+		return tableName;
+	}
+	
+	public void setTableName(String name) {
+		this.tableName = name;
+	}
+	
 	public void refresh() {
 		Logger.debug.println(getItemClass().getSimpleName());
 		updateColumns();
@@ -107,7 +117,9 @@ public class TableBase<T> {
 
 	public void updateColumns() {
 		long startTime = System.currentTimeMillis();
-		CollectionUtil.syncLists(this.columns, columnCreator.apply(getItems()),
+		List<AbstractColumn<T, ? extends Object>> columns = createColumns(getItems());
+		System.out.println("update columns");
+		CollectionUtil.syncLists(this.columns, columns,
 				(column, newColumn) -> column.getName().equals(newColumn.getName()));
 		getColumns().stream().forEach(column -> {
 			column.setItems(getItems());
@@ -172,10 +184,10 @@ public class TableBase<T> {
 					item -> p.matcher(getFilteredValue(item, columnIndex).toString()).find());
 	}
 
-	public void setColumnCreator(Function<List<T>, List<AbstractColumn<T, ?>>> columnCreator) {
-		this.columnCreator = columnCreator;
+//	public void setColumnCreator(Function<List<T>, List<AbstractColumn<T, ?>>> columnCreator) {
+//		this.columnCreator = columnCreator;
 //		updateColumns();
-	}
+//	}
 
 	public Object getColumnFilteredValue(int row, int col) {
 		List<AbstractColumn<T, ? extends Object>> columns = getFilteredColumns();
@@ -297,9 +309,9 @@ public class TableBase<T> {
 	}
 
 	// Getters & Setters
-	public Function<List<T>, List<AbstractColumn<T, ? extends Object>>> getColumnCreator() {
-		return columnCreator;
-	}
+//	public Function<List<T>, List<AbstractColumn<T, ? extends Object>>> getColumnCreator() {
+//		return columnCreator;
+//	}
 
 	public boolean isFilterable() {
 		return filterable;
@@ -319,14 +331,6 @@ public class TableBase<T> {
 
 	public ListChangeListener<T> getItemListChangeListener() {
 		return itemListChangeListener;
-	}
-
-	public String getTableName() {
-		return tableName;
-	}
-
-	public void setTableName(String name) {
-		this.tableName = name;
 	}
 
 	public String getItemName() {
@@ -363,6 +367,7 @@ public class TableBase<T> {
 	}
 
 	public ObservableList<T> getFilteredItems() {
+		System.out.println("getting filtered items, size = " +filteredItems.size());
 		return filteredItems;
 	}
 

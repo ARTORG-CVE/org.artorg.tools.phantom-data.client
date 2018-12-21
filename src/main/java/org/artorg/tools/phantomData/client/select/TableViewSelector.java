@@ -100,9 +100,13 @@ public class TableViewSelector<ITEM>
 				final TableRow<ITEM> row = new TableRow<>();
 
 				ContextMenu contextMenu = new ContextMenu();
-				MenuItem menuItem = new MenuItem("Add");
+				MenuItem menuItem;
+				menuItem = new MenuItem("Add");
 				menuItem.setOnAction(event -> moveToSelected());
-				contextMenu.getItems().addAll(menuItem);
+				contextMenu.getItems().add(menuItem);
+				menuItem = new MenuItem("Refresh");
+				menuItem.setOnAction(event -> tableView.refresh());
+				contextMenu.getItems().add(menuItem);
 
 				row.contextMenuProperty()
 					.bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
@@ -116,14 +120,18 @@ public class TableViewSelector<ITEM>
 			public TableRow<ITEM> call(TableView<ITEM> tableView) {
 				final TableRow<ITEM> row = new TableRow<>();
 
-				ContextMenu rowMenu = new ContextMenu();
-				MenuItem addMenu = new MenuItem("Remove");
-				addMenu.setOnAction(event -> moveToSelectable());
-				rowMenu.getItems().addAll(addMenu);
+				ContextMenu contextMenu = new ContextMenu();
+				MenuItem menuItem;
+				menuItem = new MenuItem("Remove");
+				menuItem.setOnAction(event -> moveToSelectable());
+				contextMenu.getItems().addAll(menuItem);
+				menuItem = new MenuItem("Refresh");
+				menuItem.setOnAction(event -> tableView.refresh());
+				contextMenu.getItems().add(menuItem);
 
 				row.contextMenuProperty()
 					.bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
-						.then(rowMenu).otherwise((ContextMenu) null));
+						.then(contextMenu).otherwise((ContextMenu) null));
 				return row;
 			};
 		});

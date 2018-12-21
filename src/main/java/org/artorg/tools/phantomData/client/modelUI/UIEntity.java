@@ -10,24 +10,32 @@ import org.artorg.tools.phantomData.client.table.TableBase;
 public interface UIEntity<T> {
 
 	Class<T> getItemClass();
-
+	
 	String getTableName();
-
-	List<AbstractColumn<T, ?>> createColumns();
+	
+	List<AbstractColumn<T, ? extends Object>> createColumns(List<T> items);
 
 	ItemEditFactoryController<T> createEditFactory();
 
 	default TableBase<T> createTableBase() {
-		TableBase<T> table = new TableBase<T>(getItemClass());
+		TableBase<T> table = new TableBase<T>(getItemClass()) {
+			@Override
+			public List<AbstractColumn<T, ? extends Object>> createColumns(List<T> items) {
+				return UIEntity.this.createColumns(items);
+			}			
+		};
 		table.setTableName(getTableName());
-		table.setColumnCreator(items -> createColumns());
 		return table;
 	}
-
+	
 	default DbTable<T> createDbTableBase() {
-		DbTable<T> table = new DbTable<T>(getItemClass());
+		DbTable<T> table = new DbTable<T>(getItemClass()) {
+			@Override
+			public List<AbstractColumn<T, ? extends Object>> createColumns(List<T> items) {
+				return UIEntity.this.createColumns(items);
+			}			
+		};
 		table.setTableName(getTableName());
-		table.setColumnCreator(items -> createColumns());
 		return table;
 	}
 

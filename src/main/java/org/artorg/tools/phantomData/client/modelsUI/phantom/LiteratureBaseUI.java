@@ -11,6 +11,7 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
+import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.models.phantom.LiteratureBase;
 
 import javafx.scene.control.TextField;
@@ -18,18 +19,18 @@ import javafx.scene.control.TitledPane;
 
 public class LiteratureBaseUI implements UIEntity<LiteratureBase> {
 
-	@Override
+
 	public Class<LiteratureBase> getItemClass() {
 		return LiteratureBase.class;
 	}
-
+	
 	@Override
 	public String getTableName() {
 		return "Literature Bases";
 	}
 
 	@Override
-	public List<AbstractColumn<LiteratureBase, ?>> createColumns() {
+	public List<AbstractColumn<LiteratureBase, ?>> createColumns(List<LiteratureBase> items) {
 		List<AbstractColumn<LiteratureBase, ?>> columns = new ArrayList<>();
 		columns.add(new FilterColumn<>("Shortcut", path -> path.getShortcut(),
 				(path, value) -> path.setShortcut((String) value)));

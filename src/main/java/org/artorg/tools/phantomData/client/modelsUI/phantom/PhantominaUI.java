@@ -14,6 +14,7 @@ import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.models.phantom.LiteratureBase;
+import org.artorg.tools.phantomData.server.models.phantom.Manufacturing;
 import org.artorg.tools.phantomData.server.models.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.models.phantom.Special;
 
@@ -23,7 +24,8 @@ import javafx.scene.control.TitledPane;
 
 public class PhantominaUI implements UIEntity<Phantomina> {
 
-	@Override
+	
+
 	public Class<Phantomina> getItemClass() {
 		return Phantomina.class;
 	}
@@ -34,7 +36,7 @@ public class PhantominaUI implements UIEntity<Phantomina> {
 	}
 
 	@Override
-	public List<AbstractColumn<Phantomina, ?>> createColumns() {
+	public List<AbstractColumn<Phantomina, ?>> createColumns(List<Phantomina> items) {
 		List<AbstractColumn<Phantomina, ?>> columns = new ArrayList<>();
 		FilterColumn<Phantomina, ?, ?> column;
 		column = new FilterColumn<>("PID", path -> path.getProductId(),

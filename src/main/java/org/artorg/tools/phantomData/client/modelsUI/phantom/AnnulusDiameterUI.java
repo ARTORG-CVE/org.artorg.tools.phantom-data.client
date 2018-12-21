@@ -11,6 +11,7 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
+import org.artorg.tools.phantomData.server.models.measurement.Project;
 import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
 
 import javafx.scene.control.Label;
@@ -19,7 +20,6 @@ import javafx.scene.control.TitledPane;
 
 public class AnnulusDiameterUI implements UIEntity<AnnulusDiameter> {
 
-	@Override
 	public Class<AnnulusDiameter> getItemClass() {
 		return AnnulusDiameter.class;
 	}
@@ -30,7 +30,7 @@ public class AnnulusDiameterUI implements UIEntity<AnnulusDiameter> {
 	}
 
 	@Override
-	public List<AbstractColumn<AnnulusDiameter, ?>> createColumns() {
+	public List<AbstractColumn<AnnulusDiameter, ?>> createColumns(List<AnnulusDiameter> items) {
 		List<AbstractColumn<AnnulusDiameter, ?>> columns = new ArrayList<>();
 		columns.add(new FilterColumn<>("Sortcut", path -> String.valueOf(path.getShortcut()),
 				(path, value) -> path.setShortcut(Integer.valueOf(value))));

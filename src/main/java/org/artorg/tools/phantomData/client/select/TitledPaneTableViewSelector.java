@@ -1,6 +1,7 @@
 package org.artorg.tools.phantomData.client.select;
 
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
+import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.TableViewFactory;
@@ -20,10 +21,10 @@ public class TitledPaneTableViewSelector<ITEM> extends TableViewSelector<ITEM> {
 	public TitledPaneTableViewSelector(Class<?> subItemClass) {
 		super(subItemClass);
 		
-		DbTableView<ITEM> tableView1 = (DbTableView<ITEM>) TableViewFactory.createInitializedTableView(subItemClass,
-			TableBase.class, DbTableView.class);
-		DbTableView<ITEM> tableView2 = (DbTableView<ITEM>) TableViewFactory.createInitializedTableView(subItemClass,
-			TableBase.class, DbTableView.class);
+		ProTableView<ITEM> tableView1 = (ProTableView<ITEM>) TableViewFactory.createTableView(subItemClass,
+			TableBase.class, ProTableView.class);
+		ProTableView<ITEM> tableView2 = (ProTableView<ITEM>) TableViewFactory.createTableView(subItemClass,
+			TableBase.class, ProTableView.class);
 
 		this.setTableView1(tableView1);
 		this.setTableView2(tableView2);

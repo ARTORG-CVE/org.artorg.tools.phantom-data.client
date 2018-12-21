@@ -11,6 +11,7 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
+import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
 
 import javafx.scene.control.TextField;
@@ -18,7 +19,8 @@ import javafx.scene.control.TitledPane;
 
 public class FabricationTypeUI implements UIEntity<FabricationType> {
 
-	@Override
+	
+
 	public Class<FabricationType> getItemClass() {
 		return FabricationType.class;
 	}
@@ -29,7 +31,7 @@ public class FabricationTypeUI implements UIEntity<FabricationType> {
 	}
 
 	@Override
-	public List<AbstractColumn<FabricationType, ?>> createColumns() {
+	public List<AbstractColumn<FabricationType, ?>> createColumns(List<FabricationType> items) {
 		List<AbstractColumn<FabricationType, ?>> columns = new ArrayList<>();
 		columns.add(new FilterColumn<>("Shortcut", path -> path.getShortcut(),
 				(path, value) -> path.setShortcut(value)));

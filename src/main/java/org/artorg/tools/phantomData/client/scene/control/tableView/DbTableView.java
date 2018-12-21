@@ -24,13 +24,33 @@ public class DbTableView<ITEM> extends ProTableView<ITEM> {
 		getTable().readAllData();
 
 		getTable().updateColumns();
-		refreshColumns();
+		updateColumns();
 		autoResizeColumns();
 
-		getTable().applyFilter();
+//		getTable().applyFilter();
+		
+		applyFilter();
+		
 		showFilterButtons();
 		super.getSelectionModel().selectFirst();
 		refresh();
+		
+		
+		
+		
+		getFilterMenuButtons().stream().forEach(column -> {
+			column.updateNodes();
+			column.applyFilter();
+		});
+		
+//		Platform.runLater(() -> {
+//		showFilterButtons();
+////		refresh();
+//		
+//		
+//		
+//		});
+	
 //		showFilterButtons();
 //		Platform.runLater(() -> {
 //			showFilterButtons();

@@ -83,26 +83,7 @@ public class Main extends DesktopFxBootApplication {
 		started = false;
 		
 		uiEntities = new HashMap<>();
-		uiEntities.put(AcademicTitle.class, new AcademicTitleUI());
-		uiEntities.put(Person.class, new PersonUI());
-		uiEntities.put(DbFile.class, new DbFileUI());
-		uiEntities.put(FileTag.class, new FileTagUI());
-		uiEntities.put(Note.class, new NoteUI());
-		uiEntities.put(BooleanProperty.class, new BooleanPropertyUI());
-		uiEntities.put(DoubleProperty.class, new DoublePropertyUI());
-		uiEntities.put(IntegerProperty.class, new IntegerPropertyUI());
-		uiEntities.put(StringProperty.class, new StringPropertyUI());
-		uiEntities.put(PropertyField.class, new PropertyFieldUI());
-		uiEntities.put(ExperimentalSetup.class, new ExperimentalSetupUI());
-		uiEntities.put(Measurement.class, new MeasurementUI());
-		uiEntities.put(Project.class, new ProjectUI());
-		uiEntities.put(AnnulusDiameter.class, new AnnulusDiameterUI());
-		uiEntities.put(FabricationType.class, new FabricationTypeUI());
-		uiEntities.put(LiteratureBase.class, new LiteratureBaseUI());
-		uiEntities.put(Manufacturing.class, new ManufacturingUI());
-		uiEntities.put(Phantomina.class, new PhantominaUI());
-		uiEntities.put(Phantom.class, new PhantomUI());
-		uiEntities.put(Special.class, new SpecialUI());
+		
 		
 	}
 	
@@ -157,6 +138,27 @@ public class Main extends DesktopFxBootApplication {
 	}
 	
 	public static void loadClientStage() {
+		uiEntities.put(AcademicTitle.class, new AcademicTitleUI());
+		uiEntities.put(Person.class, new PersonUI());
+		uiEntities.put(DbFile.class, new DbFileUI());
+		uiEntities.put(FileTag.class, new FileTagUI());
+		uiEntities.put(Note.class, new NoteUI());
+		uiEntities.put(BooleanProperty.class, new BooleanPropertyUI());
+		uiEntities.put(DoubleProperty.class, new DoublePropertyUI());
+		uiEntities.put(IntegerProperty.class, new IntegerPropertyUI());
+		uiEntities.put(StringProperty.class, new StringPropertyUI());
+		uiEntities.put(PropertyField.class, new PropertyFieldUI());
+		uiEntities.put(ExperimentalSetup.class, new ExperimentalSetupUI());
+		uiEntities.put(Measurement.class, new MeasurementUI());
+		uiEntities.put(Project.class, new ProjectUI());
+		uiEntities.put(AnnulusDiameter.class, new AnnulusDiameterUI());
+		uiEntities.put(FabricationType.class, new FabricationTypeUI());
+		uiEntities.put(LiteratureBase.class, new LiteratureBaseUI());
+		uiEntities.put(Manufacturing.class, new ManufacturingUI());
+		uiEntities.put(Phantomina.class, new PhantominaUI());
+		uiEntities.put(Phantom.class, new PhantomUI());
+		uiEntities.put(Special.class, new SpecialUI());
+		
 		stage = new Stage();
 		mainController = new MainController(stage);
 		scene = new Scene(mainController);
@@ -191,6 +193,9 @@ public class Main extends DesktopFxBootApplication {
 		stage.show();
 		stage.requestFocus();
 		stage.toFront();
+		
+		
+		
 		started = true;
 	}
 	

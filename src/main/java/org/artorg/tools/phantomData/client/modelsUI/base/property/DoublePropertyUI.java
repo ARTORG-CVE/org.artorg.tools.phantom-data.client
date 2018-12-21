@@ -1,6 +1,7 @@
 package org.artorg.tools.phantomData.client.modelsUI.base.property;
 
 import org.artorg.tools.phantomData.client.modelUI.PropertyUI;
+import org.artorg.tools.phantomData.server.models.base.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.models.base.property.DoubleProperty;
 import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 
@@ -9,7 +10,6 @@ import javafx.scene.control.TextField;
 
 public class DoublePropertyUI extends PropertyUI<DoubleProperty,Double> {
 
-	@Override
 	public Class<DoubleProperty> getItemClass() {
 		return DoubleProperty.class;
 	}

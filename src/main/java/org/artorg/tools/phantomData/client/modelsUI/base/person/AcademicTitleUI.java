@@ -17,7 +17,7 @@ import javafx.scene.control.TitledPane;
 
 public class AcademicTitleUI implements UIEntity<AcademicTitle> {
 
-	@Override
+
 	public Class<AcademicTitle> getItemClass() {
 		return AcademicTitle.class;
 	}
@@ -28,7 +28,7 @@ public class AcademicTitleUI implements UIEntity<AcademicTitle> {
 	}
 
 	@Override
-	public List<AbstractColumn<AcademicTitle, ?>> createColumns() {
+	public List<AbstractColumn<AcademicTitle, ?>> createColumns(List<AcademicTitle> items) {
 		List<AbstractColumn<AcademicTitle, ?>> columns =
 				new ArrayList<AbstractColumn<AcademicTitle, ?>>();
 		columns.add(new FilterColumn<>("Prefix", path -> path.getPrefix(),

@@ -14,7 +14,7 @@ import org.artorg.tools.phantomData.server.models.base.property.IntegerProperty;
 import javafx.collections.MapChangeListener;
 import javafx.collections.MapChangeListener.Change;
 
-public class DbTable<ITEM> extends TableBase<ITEM> {
+public abstract class DbTable<ITEM> extends TableBase<ITEM> {
 	private final ICrudConnector<ITEM> connector;
 	private final MapChangeListener<String, ITEM> listener;
 

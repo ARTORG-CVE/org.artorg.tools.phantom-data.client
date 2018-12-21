@@ -11,6 +11,7 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
+import org.artorg.tools.phantomData.server.models.base.Note;
 import org.artorg.tools.phantomData.server.models.measurement.ExperimentalSetup;
 
 import javafx.scene.control.TextField;
@@ -18,7 +19,6 @@ import javafx.scene.control.TitledPane;
 
 public class ExperimentalSetupUI implements UIEntity<ExperimentalSetup> {
 
-	@Override
 	public Class<ExperimentalSetup> getItemClass() {
 		return ExperimentalSetup.class;
 	}
@@ -29,7 +29,7 @@ public class ExperimentalSetupUI implements UIEntity<ExperimentalSetup> {
 	}
 
 	@Override
-	public List<AbstractColumn<ExperimentalSetup, ?>> createColumns() {
+	public List<AbstractColumn<ExperimentalSetup, ?>> createColumns(List<ExperimentalSetup> items) {
 		List<AbstractColumn<ExperimentalSetup, ?>> columns = new ArrayList<>();
 		columns.add(new FilterColumn<>("Short name", path -> path.getShortName(),
 				(path, value) -> path.setShortName(value)));

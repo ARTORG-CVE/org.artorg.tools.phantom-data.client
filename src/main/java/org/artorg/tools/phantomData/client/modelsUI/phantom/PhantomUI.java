@@ -28,8 +28,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class PhantomUI implements UIEntity<Phantom> {
-
-	@Override
+	
 	public Class<Phantom> getItemClass() {
 		return Phantom.class;
 	}
@@ -40,7 +39,7 @@ public class PhantomUI implements UIEntity<Phantom> {
 	}
 
 	@Override
-	public List<AbstractColumn<Phantom, ?>> createColumns() {
+	public List<AbstractColumn<Phantom, ?>> createColumns(List<Phantom> items) {
 		List<AbstractColumn<Phantom, ?>> columns = new ArrayList<>();
 		FilterColumn<Phantom, ?, ?> column;
 		column = new FilterColumn<>("PID", item -> item, path -> path.getProductId(),

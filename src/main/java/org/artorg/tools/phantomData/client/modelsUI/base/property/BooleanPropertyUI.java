@@ -1,6 +1,7 @@
 package org.artorg.tools.phantomData.client.modelsUI.base.property;
 
 import org.artorg.tools.phantomData.client.modelUI.PropertyUI;
+import org.artorg.tools.phantomData.server.models.base.person.Person;
 import org.artorg.tools.phantomData.server.models.base.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 
@@ -9,7 +10,6 @@ import javafx.scene.control.CheckBox;
 
 public class BooleanPropertyUI extends PropertyUI<BooleanProperty, Boolean> {
 
-	@Override
 	public Class<BooleanProperty> getItemClass() {
 		return BooleanProperty.class;
 	}

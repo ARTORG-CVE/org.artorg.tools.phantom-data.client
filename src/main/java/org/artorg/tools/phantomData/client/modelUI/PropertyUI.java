@@ -15,6 +15,7 @@ import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
+import org.artorg.tools.phantomData.server.models.base.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 
 import javafx.scene.Node;
@@ -38,7 +39,7 @@ public abstract class PropertyUI<
 	protected abstract void setValueToNode(Node valueNode, VALUE value);
 	
 	@Override
-	public List<AbstractColumn<T, ?>> createColumns() {
+	public List<AbstractColumn<T, ?>> createColumns(List<T> items) {
 		List<AbstractColumn<T, ?>> columns = new ArrayList<AbstractColumn<T, ?>>();
 		columns.add(new FilterColumn<T, T, String>("Type", path -> {
 			try {

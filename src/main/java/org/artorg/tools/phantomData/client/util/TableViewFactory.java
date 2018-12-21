@@ -142,10 +142,11 @@ public class TableViewFactory {
 
 	public static <T> ProTableView<T> createTableView(Class<T> itemClass, Class<?> tableClass,
 			Class<?> tableViewClass) {
+		
 		if (tableViewClass == ProTableView.class) {
-			ProTableView<T> tableView = new ProTableView<T>(itemClass);
+			return new ProTableView<T>(itemClass);
 		} else if (tableViewClass == DbTableView.class) {
-			DbTableView<T> tableView = new DbTableView<T>(itemClass);
+			return new DbTableView<T>(itemClass);
 //			tableView.reload();
 //			tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
 //				filterMenuButton.show();
@@ -156,9 +157,9 @@ public class TableViewFactory {
 //				column.updateNodes();
 //				column.applyFilter();
 //			});
-			
-			return tableView;
 		}
+//			return tableView;
+//		}
 
 		throw new IllegalArgumentException();
 	}

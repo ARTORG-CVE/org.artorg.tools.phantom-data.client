@@ -30,12 +30,14 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TitledPane;
 
 public class MeasurementUI implements UIEntity<Measurement> {
-	private static final SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-
-	@Override
+	
 	public Class<Measurement> getItemClass() {
 		return Measurement.class;
 	}
+
+	private static final SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+
+	
 
 	@Override
 	public String getTableName() {
@@ -43,7 +45,7 @@ public class MeasurementUI implements UIEntity<Measurement> {
 	}
 
 	@Override
-	public List<AbstractColumn<Measurement, ?>> createColumns() {
+	public List<AbstractColumn<Measurement, ?>> createColumns(List<Measurement> items) {
 		List<AbstractColumn<Measurement, ?>> columns = new ArrayList<>();
 		columns.add(new FilterColumn<>("Date", path -> format.format(path.getStartDate()),
 				(path, value) -> {

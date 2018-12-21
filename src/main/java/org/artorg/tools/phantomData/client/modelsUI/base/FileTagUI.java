@@ -11,6 +11,7 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
+import org.artorg.tools.phantomData.server.models.base.DbFile;
 import org.artorg.tools.phantomData.server.models.base.FileTag;
 
 import javafx.scene.control.TextField;
@@ -18,7 +19,7 @@ import javafx.scene.control.TitledPane;
 
 public class FileTagUI implements UIEntity<FileTag> {
 
-	@Override
+
 	public Class<FileTag> getItemClass() {
 		return FileTag.class;
 	}
@@ -29,7 +30,7 @@ public class FileTagUI implements UIEntity<FileTag> {
 	}
 
 	@Override
-	public List<AbstractColumn<FileTag, ?>> createColumns() {
+	public List<AbstractColumn<FileTag, ?>> createColumns(List<FileTag> items) {
 		List<AbstractColumn<FileTag, ?>> columns = new ArrayList<AbstractColumn<FileTag, ?>>();
 		columns.add(new FilterColumn<>("Name", path -> path.getName(),
 				(path, value) -> path.setName(value)));

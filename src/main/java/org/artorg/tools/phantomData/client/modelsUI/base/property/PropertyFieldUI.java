@@ -14,6 +14,7 @@ import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.server.models.base.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 
 import javafx.collections.FXCollections;
@@ -28,7 +29,6 @@ import javafx.util.Callback;
 
 public class PropertyFieldUI implements UIEntity<PropertyField> {
 
-	@Override
 	public Class<PropertyField> getItemClass() {
 		return PropertyField.class;
 	}
@@ -39,7 +39,7 @@ public class PropertyFieldUI implements UIEntity<PropertyField> {
 	}
 
 	@Override
-	public List<AbstractColumn<PropertyField, ?>> createColumns() {
+	public List<AbstractColumn<PropertyField, ?>> createColumns(List<PropertyField> items) {
 		List<AbstractColumn<PropertyField, ?>> columns = new ArrayList<>();
 		columns.add(new FilterColumn<>("Type", path -> {
 			try {

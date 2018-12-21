@@ -1,6 +1,9 @@
 package org.artorg.tools.phantomData.client.editor;
 
 import java.lang.reflect.InvocationTargetException;
+import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
+import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -21,6 +24,7 @@ import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.client.scene.control.VGridBoxPane;
 import org.artorg.tools.phantomData.client.select.AbstractTableViewSelector;
 import org.artorg.tools.phantomData.client.select.TitledPaneTableViewSelector;
+import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.model.BackReference;
@@ -125,7 +129,21 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 						new TitledPaneTableViewSelector<Object>(subItemClass);
 				titledSelector.getSelectableItems().clear();
 				titledSelector.getSelectedItems().clear();
+
+				((ProTableView<?>) (titledSelector.getTableView1())).getTable().getItems().clear();
+				((ProTableView<?>) (titledSelector.getTableView1())).getTable().getFilteredItems()
+						.clear();
+				((ProTableView<?>) (titledSelector.getTableView2())).getTable().getItems().clear();
+				((ProTableView<?>) (titledSelector.getTableView2())).getTable().getFilteredItems()
+						.clear();
+
 				titledSelector.getSelectableItems().addAll(selectableItems);
+
+				((ProTableView) (titledSelector.getTableView1())).getTable().getItems()
+						.addAll(selectableItems);
+				((ProTableView) (titledSelector.getTableView1())).getTable().getFilteredItems()
+						.addAll(selectableItems);
+
 				if (item != null) {
 					Function<Object, Collection<Object>> subItemGetter =
 							getSubItemGetter(itemClass, subItemClass);
@@ -133,6 +151,11 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 						Set<Object> selectedItems = subItemGetter.apply(item).stream()
 								.filter(e -> e != null).collect(Collectors.toSet());
 						titledSelector.getSelectedItems().addAll(selectedItems);
+
+						((ProTableView) (titledSelector.getTableView2())).getTable().getItems()
+								.addAll(selectedItems);
+						((ProTableView) (titledSelector.getTableView2())).getTable()
+								.getFilteredItems().addAll(selectedItems);
 					}
 
 				}
@@ -158,6 +181,10 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 					}
 
 				});
+
+				initTableView(((ProTableView<?>) (titledSelector.getTableView1())));
+				initTableView(((ProTableView<?>) (titledSelector.getTableView2())));
+
 				return titledSelector;
 
 			} catch (Exception e) {
@@ -165,6 +192,113 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 			}
 		}
 		return null;
+	}
+
+	private <U> void initTableView(ProTableView<U> tableView) {
+
+//		if (!tableView.isFilterable()) tableView.setItems(tableView.getTable().getItems());
+//		else
+//			tableView.setItems(tableView.getTable().getFilteredItems());
+
+//		if (tableView.isFilterable()) {
+//			CollectionUtil.syncLists(tableView.getTable().getItems(), tableView.getTable().getFilteredItems());
+//			tableView.getTable().applyFilter();
+//		}
+
+//		tableView.getItems().clear();
+
+		tableView.getTable().getColumns().stream().forEach(column -> {
+			column.setItems(tableView.getItems());
+//			column.getItems().clear();
+//			column.getItems().addAll(getItems());
+
+		});
+
+		tableView.updateColumns();
+		tableView.autoResizeColumns();
+
+		tableView.getTable().getColumns().stream().forEach(column -> {
+			column.setItems(tableView.getItems());
+//		column.getItems().clear();
+//		column.getItems().addAll(getItems());
+
+		});
+
+		tableView.applyFilter();
+
+		tableView.getSelectionModel().selectFirst();
+		tableView.refresh();
+
+		if (tableView.isFilterable()) {
+			tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
+				filterMenuButton.refreshImage();
+			});
+		}
+
+		tableView.showFilterButtons();
+
+//		List<?> items = tableView.getItems();
+//		List<?> items2 = tableView.getTable().getItems();
+//		List<?> items3 = tableView.getTable().getFilteredItems();
+//		List<?> items4 = tableView.getTable().getColumns();
+//		List<?> items5 = tableView.getTable().getFilteredColumns();
+
+		System.out.println("-.-");
+
+		tableView.getFilterMenuButtons().stream().forEach(column -> {
+			column.updateNodes();
+			column.applyFilter();
+			tableView.showFilterButtons();
+		});
+		tableView.showFilterButtons();
+		
+		Platform.runLater(() -> {
+
+			tableView.getTable().getColumns().stream().forEach(column -> {
+				column.setItems(tableView.getItems());
+//				column.getItems().clear();
+//				column.getItems().addAll(getItems());
+
+			});
+
+			tableView.updateColumns();
+			tableView.autoResizeColumns();
+
+			tableView.getTable().getColumns().stream().forEach(column -> {
+				column.setItems(tableView.getItems());
+//			column.getItems().clear();
+//			column.getItems().addAll(getItems());
+
+			});
+
+			tableView.applyFilter();
+
+			tableView.getSelectionModel().selectFirst();
+			tableView.refresh();
+
+			if (tableView.isFilterable()) {
+				tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
+					filterMenuButton.refreshImage();
+				});
+			}
+
+			tableView.showFilterButtons();
+
+			List<?> items = tableView.getItems();
+			List<?> items2 = tableView.getTable().getItems();
+			List<?> items3 = tableView.getTable().getFilteredItems();
+			List<?> items4 = tableView.getTable().getColumns();
+			List<?> items5 = tableView.getTable().getFilteredColumns();
+
+			System.out.println("-.-");
+
+			tableView.getFilterMenuButtons().stream().forEach(column -> {
+				column.updateNodes();
+				column.applyFilter();
+				tableView.showFilterButtons();
+			});
+			tableView.showFilterButtons();
+		});
 	}
 
 	protected Set<?> getSelectableItems(Class<?> subItemClass) {
@@ -347,7 +481,7 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 	public ICrudConnector<T> getConnector() {
 		return this.connector;
 	}
-	
+
 	public Node getGraphic() {
 		return pane;
 	}
@@ -355,5 +489,5 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 	public List<AbstractTableViewSelector<?>> getSelectors() {
 		return selectors;
 	}
-	
+
 }

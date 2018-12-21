@@ -13,10 +13,10 @@ import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
+import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 
 public class DbFileUI implements UIEntity<DbFile> {
 
-	@Override
 	public Class<DbFile> getItemClass() {
 		return DbFile.class;
 	}
@@ -27,7 +27,7 @@ public class DbFileUI implements UIEntity<DbFile> {
 	}
 
 	@Override
-	public List<AbstractColumn<DbFile, ?>> createColumns() {
+	public List<AbstractColumn<DbFile, ?>> createColumns(List<DbFile> items) {
 		List<AbstractColumn<DbFile, ?>> columns = new ArrayList<>();
 		columns.add(new Column<>("", path -> FxUtil.getFxFileIcon(path.getFile())));
 		columns.add(new FilterColumn<>("Name", path -> path.getName(),
