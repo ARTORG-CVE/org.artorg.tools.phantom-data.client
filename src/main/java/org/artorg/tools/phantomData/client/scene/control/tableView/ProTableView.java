@@ -58,20 +58,26 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 //		autoResizeColumns();
 		super.getSelectionModel().selectFirst();
 
-		showFilterButtons();
+//		showFilterButtons();
 		super.getSelectionModel().selectFirst();
-		refresh();
-		Platform.runLater(() -> {
-
-			refresh();
-		});
-		refresh();
+//		refresh();
+//		Platform.runLater(() -> {
+//
+//			refresh();
+//		});
+//		refresh();
 		
 		getFilterMenuButtons().stream().forEach(column -> {
 			column.updateNodes();
-			column.applyFilter();
-			column.refreshImage();
+//			column.applyFilter();
+//			column.refreshImage();
 		});
+		
+		Platform.runLater(() -> {
+//			tableView.reload();
+			showFilterButtons();
+//			tableView.refresh();
+			});
 	}
 	
 	
@@ -111,7 +117,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 			CollectionUtil.addIfAbsent(table.createColumns(getItems()),
 					super.getColumns(), columnAddPolicy,
 					(baseColumn, index) -> createTableColumn(table, index));
-			getFilterMenuButtons().stream().forEach(fmb -> fmb.updateNodes());
+//			getFilterMenuButtons().stream().forEach(fmb -> fmb.updateNodes());
 			
 //
 //			CollectionUtil.removeIfAbsent(table.createColumns(getItems()),
@@ -160,10 +166,6 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 					label.setGraphic(filterMenuButton.get());
 					label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 //					label.addEventHandler(eventType, eventHandler);
-					
-					
-					
-					
 					
 					filterMenuButton.get().refreshImage();
 

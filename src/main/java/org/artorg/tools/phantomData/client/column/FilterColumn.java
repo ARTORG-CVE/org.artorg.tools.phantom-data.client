@@ -24,7 +24,11 @@ public class FilterColumn<T, S, R> extends AbstractFilterColumn<T, R> {
 	public R get(T item) {
 		S sub = itemToPropertyGetter.apply(item);
 		if (sub == null) return null;
-		return propertyToValueGetter.apply(sub);
+		R r = null;
+		try {
+			r = propertyToValueGetter.apply(sub);
+		} catch (NullPointerException e) {}
+		return r;
 	}
 
 	@SuppressWarnings("unchecked")

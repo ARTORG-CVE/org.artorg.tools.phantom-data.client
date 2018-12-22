@@ -20,8 +20,6 @@ public class DesktopFxBootApplication extends Application {
 	private static final int nConsoleLinesClient = 1;
 
 	public static void main(String[] args) {
-		System.out.println("test");
-		Logger.info.println("Launching Client Application...");
 		Application.launch(args);
 	}
 

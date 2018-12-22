@@ -193,87 +193,16 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 	}
 
 	private <U> void initTableView(ProTableView<U> tableView) {
-
-//		if (!tableView.isFilterable()) tableView.setItems(tableView.getTable().getItems());
-//		else
-//			tableView.setItems(tableView.getTable().getFilteredItems());
-
-//		if (tableView.isFilterable()) {
-//			CollectionUtil.syncLists(tableView.getTable().getItems(), tableView.getTable().getFilteredItems());
-//			tableView.getTable().applyFilter();
-//		}
-
-//		tableView.getItems().clear();
-
 		tableView.getTable().getColumns().stream().forEach(column -> {
 			column.setItems(tableView.getItems());
-//			column.getItems().clear();
-//			column.getItems().addAll(getItems());
-
 		});
 
 		tableView.updateColumns();
 		tableView.autoResizeColumns();
 
-		tableView.getTable().getColumns().stream().forEach(column -> {
-			column.setItems(tableView.getItems());
-//		column.getItems().clear();
-//		column.getItems().addAll(getItems());
+//		tableView.getSelectionModel().selectFirst();
 
-		});
-		tableView.applyFilter();
-		tableView.getSelectionModel().selectFirst();
-		tableView.refresh();
-		if (tableView.isFilterable()) {
-			tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
-				filterMenuButton.refreshImage();
-			});
-		}
-		tableView.showFilterButtons();
-		tableView.getFilterMenuButtons().stream().forEach(column -> {
-//			column.updateNodes();
-			column.applyFilter();
-			tableView.showFilterButtons();
-		});
-		tableView.showFilterButtons();
-		
 		Platform.runLater(() -> {
-
-			tableView.getTable().getColumns().stream().forEach(column -> {
-				column.setItems(tableView.getItems());
-//				column.getItems().clear();
-//				column.getItems().addAll(getItems());
-
-			});
-
-			tableView.updateColumns();
-			tableView.autoResizeColumns();
-
-			tableView.getTable().getColumns().stream().forEach(column -> {
-				column.setItems(tableView.getItems());
-//			column.getItems().clear();
-//			column.getItems().addAll(getItems());
-
-			});
-
-			tableView.applyFilter();
-
-			tableView.getSelectionModel().selectFirst();
-			tableView.refresh();
-
-			if (tableView.isFilterable()) {
-				tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
-					filterMenuButton.refreshImage();
-				});
-			}
-
-			tableView.showFilterButtons();
-
-			tableView.getFilterMenuButtons().stream().forEach(column -> {
-				column.updateNodes();
-				column.applyFilter();
-				tableView.showFilterButtons();
-			});
 			tableView.showFilterButtons();
 		});
 	}

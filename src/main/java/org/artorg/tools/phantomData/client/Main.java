@@ -99,10 +99,16 @@ public class Main extends DesktopFxBootApplication {
 			
 			@Override
 			protected void uncatchedBoot(String[] args) {
+				setDebugConsoleMode(true);
+				
+				
 				Main.setBooter(this);
 				initBeforeServerStart(BootApplication.class, consoleFrame, startupFrame);
 				Logger.setDefaultOut(getBooter().getConsoleDiverter().getOut());
 				Logger.setDefaultErr(getBooter().getConsoleDiverter().getErr());
+				
+				getConsoleFrame().setVisible(true);
+				
 				
 				getStartupFrame().setVisible(true);
 				getStartupFrame().setTitle("Phantom Database");

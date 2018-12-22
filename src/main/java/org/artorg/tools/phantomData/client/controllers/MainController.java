@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.CssGlyph;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
-import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
 import org.artorg.tools.phantomData.client.util.FxUtil;
@@ -390,23 +389,8 @@ public class MainController extends StackPane {
 	}
 
 	public void openTableViewTab(int row, Class<?> itemClass) {
-		ProTableView<?> table = createTable(itemClass);
+		ProTableView<?> table = Main.getUIEntity(itemClass).createDbTableView();
 		openTableTab(row, table, table.getTable().getTableName());
-
-//		Platform.runLater(() -> {
-//			DbTableView<?> tableView = ((DbTableView<?>)table);
-//			tableView.reload();
-//			tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
-//				filterMenuButton.show();
-//				filterMenuButton.hide();
-//				filterMenuButton.refreshImage();
-//			});
-//			tableView.getFilterMenuButtons().stream().forEach(column -> {
-//				column.updateNodes();
-//				column.applyFilter();
-//			});
-//		});
-		showFilterMenuButtonsDelayd(table);
 	}
 
 	private Tab createScene3dTab(File file) {
@@ -418,82 +402,20 @@ public class MainController extends StackPane {
 	}
 
 	private Tab createTableViewTab(Class<?> itemClass) {
-		ProTableView<?> table = createTable(itemClass);
-
-		DbTableView<?> tableView = ((DbTableView<?>) table);
-
-//		Task<?> task = new Task<Void>() {
-//
-//			@Override
-//			protected Void call() throws Exception {
-//				tableView.reload();
-//				tableView.showFilterButtons();
-//				tableView.refresh();
-//				return null;
-//			}
-//
-//		};
-
-		Platform.runLater(() -> {
-//		tableView.reload();
-		tableView.showFilterButtons();
-		tableView.refresh();
-		});
-
-//		tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
-//			filterMenuButton.show();
-//			filterMenuButton.hide();
-//			filterMenuButton.refreshImage();
-//		});
-		tableView.getFilterMenuButtons().stream().forEach(column -> {
-			column.updateNodes();
-			column.applyFilter();
-		});
+		ProTableView<?> table = Main.getUIEntity(itemClass).createDbTableView();
 
 		Tab tab = new Tab(table.getTable().getTableName());
 		tab.setContent(table);
-
-		showFilterMenuButtonsDelayd(table);
+		
 		return tab;
 	}
-
-	private static void showFilterMenuButtonsDelayd(ProTableView<?> tableView) {
-//		FxUtil.runNewSingleThreaded(() -> {
-//			Platform.runLater(() -> {
-//				tableView.refresh();
-//			});
-//			for (int i = 0; i < 5; i++) {
-//				Platform.runLater(() -> {
-////					tableView.refresh();
-//					tableView.showFilterButtons();
-//					tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
-//						tableView.showFilterButtons();
-//						filterMenuButton.refreshImage();
-//						filterMenuButton.show();
-//						filterMenuButton.hide();
-////						filterMenuButton.updateNodes();
-////						filterMenuButton.applyFilter();
-//					});
-//				});
-//				try {
-//					Thread.sleep(100);
-//				} catch (InterruptedException e1) {
-//					e1.printStackTrace();
-//				}
-//			}
-//		});
-	}
-
+	
 	private Tab createTreeTableViewTab(Class<?> itemClass) {
 		ProTreeTableView<?> table = createTreeTable(itemClass);
 		Tab tab = new Tab(table.getTable().getTableName());
 		tab.setContent(table);
 		tab.setText(table.getTable().getTableName());
 		return tab;
-	}
-
-	private ProTableView<?> createTable(Class<?> itemClass) {
-		return Main.getUIEntity(itemClass).createDbTableView();
 	}
 	
 	private ProTreeTableView<?> createTreeTable(Class<?> itemClass) {

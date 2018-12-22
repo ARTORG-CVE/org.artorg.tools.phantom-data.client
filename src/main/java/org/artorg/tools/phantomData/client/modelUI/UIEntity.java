@@ -63,21 +63,21 @@ public interface UIEntity<T> {
 	default DbTableView<T> createDbTableView() {
 		DbTableView<T> tableView = new DbTableView<>(getItemClass());
 
-		tableView.showFilterButtons();
-		tableView.refresh();
-
-		tableView.getFilterMenuButtons().stream().forEach(column -> {
-			column.updateNodes();
-			column.applyFilter();
-		});
-		
-		Platform.runLater(() -> {
-			if (tableView.isFilterable()) {
-				tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
-					filterMenuButton.refreshImage();
-				});
-			}
-		});
+//		tableView.showFilterButtons();
+//		tableView.refresh();
+//
+//		tableView.getFilterMenuButtons().stream().forEach(column -> {
+//			column.updateNodes();
+//			column.applyFilter();
+//		});
+//		
+//		Platform.runLater(() -> {
+//			if (tableView.isFilterable()) {
+//				tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
+//					filterMenuButton.refreshImage();
+//				});
+//			}
+//		});
 
 		return tableView;
 	}

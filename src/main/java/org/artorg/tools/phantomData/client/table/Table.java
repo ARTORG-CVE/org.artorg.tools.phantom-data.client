@@ -143,7 +143,7 @@ public abstract class Table<T> {
 		Logger.debug.println(
 				getItemClass().getSimpleName() + " - Updated " + getFilteredColumns().size()
 						+ " column(s) in " + (System.currentTimeMillis() - startTime) + " ms");
-		if (isFilterable()) applyFilter();
+//		if (isFilterable()) applyFilter();
 	}
 
 	public void resetFilter() {

@@ -95,7 +95,7 @@ public abstract class DbTable<ITEM> extends Table<ITEM> {
 
 		if (isFilterable()) {
 			CollectionUtil.syncLists(super.getItems(), getFilteredItems());
-			applyFilter();
+//			applyFilter();
 		}
 		setListening(true);
 	}
