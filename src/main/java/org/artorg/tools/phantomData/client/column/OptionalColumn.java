@@ -8,54 +8,16 @@ import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
 
-public class OptionalColumn<T, S, R extends Comparable<R>> extends AbstractColumn<T, R> {
+public class OptionalColumn<T, S, R> extends AbstractColumn<T, R> {
 	private final Function<T, Optional<? extends S>> itemToPropertyGetter;
 	private final Function<S, R> propertyToValueGetter;
 	private final BiConsumer<S, R> propertyToValueSetter;
 	private final R emptyValue;
-
-	@SuppressWarnings("unchecked")
-	public OptionalColumn(String columnName, Function<T, String> propertyToValueGetter) {
-		this(columnName, item -> (Optional<S>) item,
-				(S sub) -> (R) propertyToValueGetter.apply((T) sub), (sub, value) -> {}, (R) "");
-	}
-
-	@SuppressWarnings("unchecked")
-	public OptionalColumn(String columnName, Function<T, String> propertyToValueGetter,
-			BiConsumer<T, R> propertyToValueSetter) {
-		this(columnName, item -> (Optional<S>) item,
-				(S sub) -> (R) propertyToValueGetter.apply((T) sub),
-				(S sub, R value) -> propertyToValueSetter.accept((T) sub, value), (R) "");
-	}
-
-	@SuppressWarnings("unchecked")
-	public OptionalColumn(String columnName, Function<T, Optional<S>> itemToPropertyGetter,
-			Function<S, String> propertyToValueGetter) {
-		this(columnName, itemToPropertyGetter, sub -> (R) propertyToValueGetter.apply(sub),
-				(sub, r) -> {}, (R) "");
-	}
 	
-	@SuppressWarnings("unchecked")
-	public OptionalColumn(String columnName, Function<T, R> propertyToValueGetter, R emptyValue) {
-		this(columnName, item -> (Optional<S>) item, (S sub) -> propertyToValueGetter.apply((T) sub), (sub, value) -> {}, emptyValue);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public OptionalColumn(String columnName, Function<T, R> propertyToValueGetter,
-			BiConsumer<T, R> propertyToValueSetter, R emptyValue) {
-		this(columnName, item -> (Optional<S>) item, (S sub) -> propertyToValueGetter.apply((T) sub),
-				(S sub, R value) -> propertyToValueSetter.accept((T) sub, value), emptyValue);
-	}
-
-	public OptionalColumn(String columnName, Function<T, Optional<S>> itemToPropertyGetter,
-			Function<S, R> propertyToValueGetter, R emptyValue) {
-		this(columnName, itemToPropertyGetter, propertyToValueGetter, (sub, r) -> {}, emptyValue);
-	}
-	
-	public OptionalColumn(String columnName, Function<T, Optional<S>> itemToPropertyGetter,
+	public OptionalColumn(Class<T> itemClass, String columnName, Function<T, Optional<S>> itemToPropertyGetter,
 			Function<S, R> propertyToValueGetter, BiConsumer<S, R> propertyToValueSetter,
 			R emptyValue) {
-		super(columnName);
+		super(itemClass, columnName);
 		this.itemToPropertyGetter = item -> itemToPropertyGetter.apply(item);
 		this.propertyToValueGetter = sub -> propertyToValueGetter.apply((S) sub);
 		this.propertyToValueSetter =

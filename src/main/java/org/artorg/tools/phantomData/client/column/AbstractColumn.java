@@ -17,6 +17,7 @@ public abstract class AbstractColumn<T, E> {
 	private final String columnName;
 	private Function<T,E> valueGetter;
 	private BiConsumer<T,E> valueSetter;
+	private Class<T> itemClass;
 
 	{
 		visible = true;
@@ -26,7 +27,8 @@ public abstract class AbstractColumn<T, E> {
 		items = FXCollections.observableArrayList();
 	}
 	
-	public AbstractColumn(String columnName) {
+	public AbstractColumn(Class<T> itemClass, String columnName) {
+		this.itemClass = itemClass;
 		this.columnName = columnName;
 	}
 	
@@ -59,10 +61,18 @@ public abstract class AbstractColumn<T, E> {
 	}
 	
 	// Getters & Setters
+	public Class<T> getItemClass() {
+		return itemClass;
+	}
+
+	public void setItemClass(Class<T> itemClass) {
+		this.itemClass = itemClass;
+	}
+	
 	public Function<T, E> getValueGetter() {
 		return valueGetter;
 	}
-
+	
 	public void setValueGetter(Function<T, E> valueGetter) {
 		this.valueGetter = valueGetter;
 	}

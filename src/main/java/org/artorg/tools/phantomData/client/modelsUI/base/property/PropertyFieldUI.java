@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
-import org.artorg.tools.phantomData.client.column.FilterColumn;
+import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
@@ -14,7 +14,6 @@ import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.models.base.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 
 import javafx.collections.FXCollections;
@@ -41,7 +40,8 @@ public class PropertyFieldUI implements UIEntity<PropertyField> {
 	@Override
 	public List<AbstractColumn<PropertyField, ?>> createColumns(List<PropertyField> items) {
 		List<AbstractColumn<PropertyField, ?>> columns = new ArrayList<>();
-		columns.add(new FilterColumn<>("Type", path -> {
+		ColumnCreator<PropertyField, PropertyField> creator = new ColumnCreator<>(getItemClass());
+		columns.add(creator.createFilterColumn("Type", path -> {
 			try {
 				return Class.forName(path.getType()).getSimpleName();
 			} catch (ClassNotFoundException e) {
@@ -49,11 +49,11 @@ public class PropertyFieldUI implements UIEntity<PropertyField> {
 			}
 			return path.getType();
 		}));
-		columns.add(new FilterColumn<>("Name", path -> path.getName(),
+		columns.add(creator.createFilterColumn("Name", path -> path.getName(),
 				(path, value) -> path.setName((String) value)));
-		columns.add(new FilterColumn<>("Description", path -> path.getDescription(),
+		columns.add(creator.createFilterColumn("Description", path -> path.getDescription(),
 				(path, value) -> path.setDescription((String) value)));
-		ColumnUtils.createPersonifiedColumns(columns);
+		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
 
 		return columns;
 	}

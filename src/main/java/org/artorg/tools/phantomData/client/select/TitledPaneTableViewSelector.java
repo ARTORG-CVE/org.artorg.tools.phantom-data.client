@@ -1,10 +1,8 @@
 package org.artorg.tools.phantomData.client.select;
 
-import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
+import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
-import org.artorg.tools.phantomData.client.table.TableBase;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.client.util.TableViewFactory;
 
 import javafx.scene.Node;
 import javafx.scene.control.TitledPane;
@@ -17,14 +15,11 @@ public class TitledPaneTableViewSelector<ITEM> extends TableViewSelector<ITEM> {
 		titledPane = new TitledPane();
 	}
 
-	@SuppressWarnings("unchecked")
-	public TitledPaneTableViewSelector(Class<?> subItemClass) {
+	public TitledPaneTableViewSelector(Class<ITEM> subItemClass) {
 		super(subItemClass);
 		
-		ProTableView<ITEM> tableView1 = (ProTableView<ITEM>) TableViewFactory.createTableView(subItemClass,
-			TableBase.class, ProTableView.class);
-		ProTableView<ITEM> tableView2 = (ProTableView<ITEM>) TableViewFactory.createTableView(subItemClass,
-			TableBase.class, ProTableView.class);
+		ProTableView<ITEM> tableView1 = Main.getUIEntity(subItemClass).createProTableView();
+		ProTableView<ITEM> tableView2 = Main.getUIEntity(subItemClass).createProTableView();
 
 		this.setTableView1(tableView1);
 		this.setTableView2(tableView2);

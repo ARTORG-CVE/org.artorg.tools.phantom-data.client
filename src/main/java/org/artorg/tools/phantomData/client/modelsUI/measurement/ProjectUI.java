@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
-import org.artorg.tools.phantomData.client.column.FilterColumn;
+import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
@@ -13,7 +13,6 @@ import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
-import org.artorg.tools.phantomData.server.models.measurement.Measurement;
 import org.artorg.tools.phantomData.server.models.measurement.Project;
 
 import javafx.scene.control.ComboBox;
@@ -33,24 +32,21 @@ public class ProjectUI implements UIEntity<Project> {
 
 	@Override
 	public List<AbstractColumn<Project, ?>> createColumns(List<Project> items) {
-		List<AbstractColumn<Project, ?>> columns =
-			new ArrayList<AbstractColumn<Project, ?>>();
-		columns.add(new FilterColumn<>("Name", path -> path.getName(),
-			(path, value) -> path.setName(value)));
-		columns.add(new FilterColumn<>("Description", path -> path.getDescription(),
-			(path, value) -> path.setDescription(value)));
-		columns.add(
-			new FilterColumn<>("Start Year", path -> Short.toString(path.getStartYear()),
+		List<AbstractColumn<Project, ?>> columns = new ArrayList<AbstractColumn<Project, ?>>();
+		ColumnCreator<Project, Project> creator = new ColumnCreator<>(getItemClass());
+		columns.add(creator.createFilterColumn("Name", path -> path.getName(),
+				(path, value) -> path.setName(value)));
+		columns.add(creator.createFilterColumn("Description", path -> path.getDescription(),
+				(path, value) -> path.setDescription(value)));
+		columns.add(creator.createFilterColumn("Start Year", path -> Short.toString(path.getStartYear()),
 				(path, value) -> path.setStartYear(Short.valueOf(value))));
-		columns.add(new FilterColumn<>("Leader", item -> item.getLeader(),
-			path -> path.toName()));
-		columns.add(new FilterColumn<>("Members",
-			path -> String.valueOf(path.getMembers().stream()
-				.map(member -> member.getLastname()).collect(Collectors.joining(", ")))));
+		columns.add(creator.createFilterColumn("Leader", path -> path.getLeader().toName()));
+		columns.add(creator.createFilterColumn("Members", path -> String.valueOf(path.getMembers()
+				.stream().map(member -> member.getLastname()).collect(Collectors.joining(", ")))));
 //		ColumnUtils.createCountingColumn("Measur.", columns, item -> item.getMeasurements());
-		ColumnUtils.createCountingColumn("Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(columns);
+		ColumnUtils.createCountingColumn(getItemClass(), "Files", columns, item -> item.getFiles());
+		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
+		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
 		return columns;
 	}
 
@@ -59,8 +55,7 @@ public class ProjectUI implements UIEntity<Project> {
 		return new ProjectEditFactoryController();
 	}
 
-	private class ProjectEditFactoryController
-		extends GroupedItemEditFactoryController<Project> {
+	private class ProjectEditFactoryController extends GroupedItemEditFactoryController<Project> {
 		private TextField textFieldName;
 		private TextField textFieldDescription;
 		private TextField textFieldStartYear;
@@ -79,15 +74,13 @@ public class ProjectUI implements UIEntity<Project> {
 			generalProperties.add(new PropertyEntry("Description", textFieldDescription));
 			generalProperties.add(new PropertyEntry("Start year", textFieldStartYear));
 			generalProperties.add(new PropertyEntry("Person", comboBoxPerson));
-			TitledPropertyPane generalPane =
-				new TitledPropertyPane(generalProperties, "General");
+			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 			panes.add(generalPane);
 			setTitledPanes(panes);
 		}
 
 		private void createComboBoxes() {
-			createComboBox(comboBoxPerson, Person.class,
-				item -> item.getSimpleAcademicName());
+			createComboBox(comboBoxPerson, Person.class, item -> item.getSimpleAcademicName());
 		}
 
 		@Override

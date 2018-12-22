@@ -1,7 +1,6 @@
 package org.artorg.tools.phantomData.client.modelsUI.base.property;
 
 import org.artorg.tools.phantomData.client.modelUI.PropertyUI;
-import org.artorg.tools.phantomData.server.models.base.property.IntegerProperty;
 import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 import org.artorg.tools.phantomData.server.models.base.property.StringProperty;
 

@@ -12,7 +12,7 @@ import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.beans.DbNode;
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
-import org.artorg.tools.phantomData.client.table.TableBase;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
 import org.artorg.tools.phantomData.server.model.NameGeneratable;
@@ -30,18 +30,26 @@ import javafx.util.Callback;
 public class ProTreeTableView<ITEM>
 	extends TreeTableView<DbNode> implements AddableToPane {
 	private List<DbTreeTableColumn> treeTableColumns;
-	private TableBase<ITEM> table;
+	private final Table<ITEM> table;
 	private TreeItem<DbNode> root;
-	private Class<?> itemClass;
+	private Class<ITEM> itemClass;
 	private static final int dephtLevelMax = 8;
 
 	{
 		treeTableColumns = new ArrayList<DbTreeTableColumn>();
 		root = new TreeItem<DbNode>(new DbNode("Root value", "Root name", "Root type"));
 	}
-
-	public ProTreeTableView(Class<?> itemClass) {
+	
+	public ProTreeTableView(Class<ITEM> itemClass) {
+		this(itemClass, Main.getUIEntity(itemClass).createTableBase());
+		
+		initTable();
+		setItems(getTable().getItems());
+	}
+	
+	protected ProTreeTableView(Class<ITEM> itemClass, Table<ITEM> table) {
 		this.itemClass = itemClass;
+		this.table = table;
 	}
 
 	public void initTable() {
@@ -227,13 +235,7 @@ public class ProTreeTableView<ITEM>
 			.forEach(column -> column.autoResizeWidth(getRoot().getChildren()));
 	}
 
-	public void setTable(TableBase<ITEM> table) {
-		this.table = table;
-		initTable();
-		setItems(table.getItems());
-	}
-
-	public TableBase<ITEM> getTable() {
+	public Table<ITEM> getTable() {
 		return table;
 	}
 
@@ -241,7 +243,7 @@ public class ProTreeTableView<ITEM>
 		return this;
 	}
 
-	public Class<?> getItemClass() {
+	public Class<ITEM> getItemClass() {
 		return itemClass;
 	}
 

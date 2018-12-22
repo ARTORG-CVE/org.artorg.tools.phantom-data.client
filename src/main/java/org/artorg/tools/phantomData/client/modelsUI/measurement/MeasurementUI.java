@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
-import org.artorg.tools.phantomData.client.column.FilterColumn;
+import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
@@ -30,14 +30,12 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TitledPane;
 
 public class MeasurementUI implements UIEntity<Measurement> {
-	
+
 	public Class<Measurement> getItemClass() {
 		return Measurement.class;
 	}
 
 	private static final SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-
-	
 
 	@Override
 	public String getTableName() {
@@ -47,7 +45,8 @@ public class MeasurementUI implements UIEntity<Measurement> {
 	@Override
 	public List<AbstractColumn<Measurement, ?>> createColumns(List<Measurement> items) {
 		List<AbstractColumn<Measurement, ?>> columns = new ArrayList<>();
-		columns.add(new FilterColumn<>("Date", path -> format.format(path.getStartDate()),
+		ColumnCreator<Measurement, Measurement> creator = new ColumnCreator<>(getItemClass());
+		columns.add(creator.createFilterColumn("Date", path -> format.format(path.getStartDate()),
 				(path, value) -> {
 					try {
 						path.setStartDate(format.parse(value));
@@ -55,14 +54,13 @@ public class MeasurementUI implements UIEntity<Measurement> {
 						e.printStackTrace();
 					}
 				}));
-		columns.add(new FilterColumn<>("Person", item -> item.getPerson(), path -> path.toName()));
-		columns.add(
-				new FilterColumn<>("Project", item -> item.getProject(), path -> path.toName()));
-		columns.add(new FilterColumn<>("Experimental Setup", item -> item.getExperimentalSetup(),
-				path -> path.getShortName()));
-		ColumnUtils.createCountingColumn("Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(columns);
+		columns.add(creator.createFilterColumn("Person", path -> path.getPerson().toName()));
+		columns.add(creator.createFilterColumn("Project", path -> path.getProject().toName()));
+		columns.add(creator.createFilterColumn("Experimental Setup",
+				path -> path.getExperimentalSetup().getShortName()));
+		ColumnUtils.createCountingColumn(getItemClass(), "Files", columns, item -> item.getFiles());
+		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
+		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
 		return columns;
 	}
 

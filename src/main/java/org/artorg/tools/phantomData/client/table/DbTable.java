@@ -1,7 +1,6 @@
 package org.artorg.tools.phantomData.client.table;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
@@ -14,7 +13,7 @@ import org.artorg.tools.phantomData.server.models.base.property.IntegerProperty;
 import javafx.collections.MapChangeListener;
 import javafx.collections.MapChangeListener.Change;
 
-public abstract class DbTable<ITEM> extends TableBase<ITEM> {
+public abstract class DbTable<ITEM> extends Table<ITEM> {
 	private final ICrudConnector<ITEM> connector;
 	private final MapChangeListener<String, ITEM> listener;
 

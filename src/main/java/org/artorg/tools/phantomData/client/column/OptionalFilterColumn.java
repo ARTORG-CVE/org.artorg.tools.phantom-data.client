@@ -14,51 +14,10 @@ public class OptionalFilterColumn<T, S, R> extends AbstractFilterColumn<T, R> {
 	private final BiConsumer<S, R> propertyToValueSetter;
 	private final R emptyValue;
 
-	@SuppressWarnings("unchecked")
-	public OptionalFilterColumn(String columnName, Function<T, String> propertyToValueGetter) {
-		this(columnName, item -> (Optional<S>) item,
-				(S sub) -> (R) propertyToValueGetter.apply((T) sub), (sub, value) -> {}, (R) "");
-	}
-
-	@SuppressWarnings("unchecked")
-	public OptionalFilterColumn(String columnName, Function<T, String> propertyToValueGetter,
-			BiConsumer<T, R> propertyToValueSetter) {
-		this(columnName, item -> (Optional<S>) item,
-				(S sub) -> (R) propertyToValueGetter.apply((T) sub),
-				(S sub, R value) -> propertyToValueSetter.accept((T) sub, value), (R) "");
-	}
-
-	@SuppressWarnings("unchecked")
-	public OptionalFilterColumn(String columnName, Function<T, Optional<S>> itemToPropertyGetter,
-			Function<S, String> propertyToValueGetter) {
-		this(columnName, itemToPropertyGetter, sub -> (R) propertyToValueGetter.apply(sub),
-				(sub, r) -> {}, (R) "");
-	}
-
-	@SuppressWarnings("unchecked")
-	public OptionalFilterColumn(String columnName, Function<T, R> propertyToValueGetter,
-			R emptyValue) {
-		this(columnName, item -> (Optional<S>) item,
-				(S sub) -> propertyToValueGetter.apply((T) sub), (sub, value) -> {}, emptyValue);
-	}
-
-	@SuppressWarnings("unchecked")
-	public OptionalFilterColumn(String columnName, Function<T, R> propertyToValueGetter,
-			BiConsumer<T, R> propertyToValueSetter, R emptyValue) {
-		this(columnName, item -> (Optional<S>) item,
-				(S sub) -> propertyToValueGetter.apply((T) sub),
-				(S sub, R value) -> propertyToValueSetter.accept((T) sub, value), emptyValue);
-	}
-
-	public OptionalFilterColumn(String columnName, Function<T, Optional<S>> itemToPropertyGetter,
-			Function<S, R> propertyToValueGetter, R emptyValue) {
-		this(columnName, itemToPropertyGetter, propertyToValueGetter, (sub, r) -> {}, emptyValue);
-	}
-
-	public OptionalFilterColumn(String columnName, Function<T, Optional<S>> itemToPropertyGetter,
+	public OptionalFilterColumn(Class<T> itemClass, String columnName, Function<T, Optional<S>> itemToPropertyGetter,
 			Function<S, R> propertyToValueGetter, BiConsumer<S, R> propertyToValueSetter,
 			R emtpyValue) {
-		super(columnName);
+		super(itemClass, columnName);
 		this.itemToPropertyGetter = item -> itemToPropertyGetter.apply(item);
 		this.propertyToValueGetter = propertyToValueGetter;
 		this.propertyToValueSetter = propertyToValueSetter;

@@ -32,9 +32,7 @@ import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
-import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.client.util.TableViewFactory;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
 import org.artorg.tools.phantomData.server.model.Identifiable;
 import org.artorg.tools.phantomData.server.model.NameGeneratable;
@@ -54,6 +52,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.stage.DirectoryChooser;
@@ -118,25 +117,24 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 	public <T> void openTableTab(Tab tab) {
 		setTab(tableTabPane.getTabPane(), tab, tab.getContent());
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	private <T> void
 		changeToTreeTableView(ProTableView<T> tableView) {
-		ProTreeTableView<T> treeTableView =
-			TableViewFactory.createTreeTableView(tableView.getItemClass(), DbTable.class,
-				DbTreeTableView.class, tableView.getSelectionModel().getSelectedItems());
+		List<T> items = tableView.getSelectionModel().getSelectedItems();
+		ProTreeTableView<T> treeTableView = Main.getUIEntity(tableView.getItemClass()).createDbTreeTableView();
+		treeTableView.setItems(items);
 		Tab tab;
 		tab = findTabByContent(tableTabPane.getTabPane(), tableView);
 		if (controlDown) tab = new Tab(tab.getText());
 		setTab(tableTabPane.getTabPane(), tab, treeTableView);
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	private <T> void
 		openTreeTableViewBelow(ProTableView<T> tableView) {
-		ProTreeTableView<T> treeTableView =
-			TableViewFactory.createTreeTableView(tableView.getItemClass(), DbTable.class,
-				DbTreeTableView.class, tableView.getSelectionModel().getSelectedItems());
+		List<T> items = tableView.getSelectionModel().getSelectedItems();
+		ProTreeTableView<T> treeTableView = Main.getUIEntity(tableView.getItemClass()).createDbTreeTableView();
+		treeTableView.setItems(items);
+		
 		SplitTabView splitTabView = twinGetter.apply(index + 1);
 
 		ObservableList<T> selectedItems =
@@ -147,13 +145,17 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		Tab tab = new Tab(tabName);
 		setTab(splitTabView.tableTabPane.getTabPane(), tab, treeTableView);
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	private <T> void
 		changeToTableView(ProTreeTableView<T> tableView) {
-		ProTableView<T> treeTableView = (ProTableView<T>)TableViewFactory.createTableView(
-			tableView.getItemClass(), DbTable.class, DbTableView.class,
-			tableView.getSelectionModel().getSelectedItems());
+//		ProTableView<T> treeTableView = (ProTableView<T>)TableViewFactory.createTableView(
+//			tableView.getItemClass(), DbTable.class, DbTableView.class,
+//			tableView.getSelectionModel().getSelectedItems());
+		
+		List<TreeItem<DbNode>> treeItems = tableView.getSelectionModel().getSelectedItems(); 
+		ProTableView<T> treeTableView = Main.getUIEntity(tableView.getItemClass()).createDbTableView(treeItems);
+		
+		
 		Tab tab;
 		tab = findTabByContent(tableTabPane.getTabPane(), tableView);
 		if (controlDown) tab = new Tab(tab.getText());

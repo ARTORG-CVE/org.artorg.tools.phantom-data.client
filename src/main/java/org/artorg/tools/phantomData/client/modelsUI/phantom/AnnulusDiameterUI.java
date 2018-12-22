@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
-import org.artorg.tools.phantomData.client.column.FilterColumn;
+import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
-import org.artorg.tools.phantomData.server.models.measurement.Project;
 import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
 
 import javafx.scene.control.Label;
@@ -32,13 +31,15 @@ public class AnnulusDiameterUI implements UIEntity<AnnulusDiameter> {
 	@Override
 	public List<AbstractColumn<AnnulusDiameter, ?>> createColumns(List<AnnulusDiameter> items) {
 		List<AbstractColumn<AnnulusDiameter, ?>> columns = new ArrayList<>();
-		columns.add(new FilterColumn<>("Sortcut", path -> String.valueOf(path.getShortcut()),
+		ColumnCreator<AnnulusDiameter, AnnulusDiameter> creator =
+				new ColumnCreator<>(getItemClass());
+		columns.add(creator.createFilterColumn("Sortcut", path -> String.valueOf(path.getShortcut()),
 				(path, value) -> path.setShortcut(Integer.valueOf(value))));
-		columns.add(new FilterColumn<>("Value", path -> String.valueOf(path.getValue()),
+		columns.add(creator.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(Double.valueOf(value))));
-		ColumnUtils.createCountingColumn("Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(columns);
+		ColumnUtils.createCountingColumn(getItemClass(), "Files", columns, item -> item.getFiles());
+		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
+		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
 		return columns;
 	}
 

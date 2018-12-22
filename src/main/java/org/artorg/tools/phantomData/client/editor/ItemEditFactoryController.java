@@ -1,9 +1,6 @@
 package org.artorg.tools.phantomData.client.editor;
 
 import java.lang.reflect.InvocationTargetException;
-import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
-import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -22,9 +19,9 @@ import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.client.scene.control.VGridBoxPane;
+import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.select.AbstractTableViewSelector;
 import org.artorg.tools.phantomData.client.select.TitledPaneTableViewSelector;
-import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.model.BackReference;
@@ -121,12 +118,13 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		return selectors;
 	}
 
+	@SuppressWarnings("rawtypes")
 	protected AbstractTableViewSelector<?> createSelector(T item, Class<?> itemClass,
 			Class<?> subItemClass, Set<?> selectableItems) {
 		if (containsCollectionSetter(itemClass, subItemClass)) {
 			try {
 				AbstractTableViewSelector<Object> titledSelector =
-						new TitledPaneTableViewSelector<Object>(subItemClass);
+						new TitledPaneTableViewSelector(subItemClass);
 				titledSelector.getSelectableItems().clear();
 				titledSelector.getSelectedItems().clear();
 

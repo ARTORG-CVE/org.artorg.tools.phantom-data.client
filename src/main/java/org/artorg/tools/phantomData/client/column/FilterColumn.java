@@ -11,27 +11,10 @@ public class FilterColumn<T, S, R> extends AbstractFilterColumn<T, R> {
 	private final Function<T, S> itemToPropertyGetter;
 	private final Function<S, R> propertyToValueGetter;
 	private final BiConsumer<S, R> propertyToValueSetter;
-
-	@SuppressWarnings("unchecked")
-	public FilterColumn(String columnName, Function<T, R> propertyToValueGetter) {
-		this(columnName, item -> (S) item, (S sub) -> propertyToValueGetter.apply((T) sub), (sub, value) -> {});
-	}
 	
-	@SuppressWarnings("unchecked")
-	public FilterColumn(String columnName, Function<T, R> propertyToValueGetter,
-			BiConsumer<T, R> propertyToValueSetter) {
-		this(columnName, item -> (S) item, (S sub) -> propertyToValueGetter.apply((T) sub),
-				(S sub, R value) -> propertyToValueSetter.accept((T) sub, value));
-	}
-
-	public FilterColumn(String columnName, Function<T, S> itemToPropertyGetter,
-			Function<S, R> propertyToValueGetter) {
-		this(columnName, itemToPropertyGetter, propertyToValueGetter, (sub, r) -> {});
-	}
-
-	public FilterColumn(String columnName, Function<T, S> itemToPropertyGetter,
+	public FilterColumn(Class<T> itemClass, String columnName, Function<T, S> itemToPropertyGetter,
 			Function<S, R> propertyToValueGetter, BiConsumer<S, R> propertyToValueSetter) {
-		super(columnName);
+		super(itemClass, columnName);
 		this.itemToPropertyGetter = itemToPropertyGetter;
 		this.propertyToValueGetter = propertyToValueGetter;
 		this.propertyToValueSetter = propertyToValueSetter;

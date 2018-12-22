@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
+import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
@@ -28,7 +29,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 public class PhantomUI implements UIEntity<Phantom> {
-	
+
 	public Class<Phantom> getItemClass() {
 		return Phantom.class;
 	}
@@ -42,34 +43,37 @@ public class PhantomUI implements UIEntity<Phantom> {
 	public List<AbstractColumn<Phantom, ?>> createColumns(List<Phantom> items) {
 		List<AbstractColumn<Phantom, ?>> columns = new ArrayList<>();
 		FilterColumn<Phantom, ?, ?> column;
-		column = new FilterColumn<>("PID", item -> item, path -> path.getProductId(),
+		ColumnCreator<Phantom, Phantom> creator = new ColumnCreator<>(getItemClass());
+		ColumnCreator<Phantom, Phantomina> creatorP =
+				new ColumnCreator<>(getItemClass(), item -> item.getPhantomina());
+		column = creator.createFilterColumn("PID", path -> path.getProductId(),
 				(path, value) -> path.setProductId(value));
 		column.setAscendingSortComparator(
 				(p1, p2) -> Phantomina.comparePid(p1.getProductId(), p2.getProductId()));
 		columns.add(column);
-		columns.add(new FilterColumn<>("Annulus [mm]",
-				item -> item.getPhantomina().getAnnulusDiameter(),
-				path -> String.valueOf(path.getValue()),
-				(path, value) -> path.setValue(Double.valueOf(value))));
-		columns.add(new FilterColumn<>("Type", item -> item.getPhantomina().getFabricationType(),
-				path -> path.getValue(), (path, value) -> path.setValue(value)));
+		columns.add(creatorP.createFilterColumn("Annulus [mm]",
+				path -> String.valueOf(path.getAnnulusDiameter().getValue()),
+				(path, value) -> path.getAnnulusDiameter().setValue(Double.valueOf(value))));
 		columns.add(
-				new FilterColumn<>("Literature", item -> item.getPhantomina().getLiteratureBase(),
-						path -> path.getValue(), (path, value) -> path.setValue(value)));
-		columns.add(new FilterColumn<>("Special", item -> item.getPhantomina().getSpecial(),
-				path -> path.getShortcut(), (path, value) -> path.setShortcut(value)));
+				creatorP.createFilterColumn("Type", path -> path.getFabricationType().getValue(),
+						(path, value) -> path.getFabricationType().setValue(value)));
+		columns.add(creatorP.createFilterColumn("Literature",
+				path -> path.getLiteratureBase().getValue(),
+				(path, value) -> path.getLiteratureBase().setValue(value)));
+		columns.add(creatorP.createFilterColumn("Special", path -> path.getSpecial().getShortcut(),
+				(path, value) -> path.getSpecial().setShortcut(value)));
+		columns.add(creator.createFilterColumn("Number", path -> String.valueOf(path.getNumber()),
+				(path, value) -> path.setNumber(Integer.valueOf(value))));
+		columns.add(creator.createFilterColumn("Manufacturing",
+				path -> path.getManufacturing().getName(),
+				(path, value) -> path.getManufacturing().setName(value)));
 		columns.add(
-				new FilterColumn<>("Number", item -> item, path -> String.valueOf(path.getNumber()),
-						(path, value) -> path.setNumber(Integer.valueOf(value))));
-		columns.add(new FilterColumn<>("Manufacturing", item -> item.getManufacturing(),
-				path -> path.getName(), (path, value) -> path.setName(value)));
-		columns.add(new FilterColumn<>("Thickness", item -> item,
-				path -> Float.toString(path.getThickness()),
-				(path, value) -> path.setThickness(Float.valueOf(value))));
-		ColumnUtils.createCountingColumn("Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn("Measurements", columns, item -> item.getMeasurements());
-		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(columns);
+				creator.createFilterColumn("Thickness", path -> Float.toString(path.getThickness()),
+						(path, value) -> path.setThickness(Float.valueOf(value))));
+		ColumnUtils.createCountingColumn(getItemClass(), "Files", columns, item -> item.getFiles());
+		ColumnUtils.createCountingColumn(getItemClass(), "Measurements", columns, item -> item.getMeasurements());
+		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
+		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
 
 		column.setAscendingSortComparator(
 				(p1, p2) -> ((Integer) p1.getNumber()).compareTo((Integer) p2.getNumber()));

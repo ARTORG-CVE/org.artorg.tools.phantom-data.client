@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
-import org.artorg.tools.phantomData.client.column.FilterColumn;
+import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
@@ -17,7 +17,6 @@ import javafx.scene.control.TitledPane;
 
 public class AcademicTitleUI implements UIEntity<AcademicTitle> {
 
-
 	public Class<AcademicTitle> getItemClass() {
 		return AcademicTitle.class;
 	}
@@ -29,11 +28,13 @@ public class AcademicTitleUI implements UIEntity<AcademicTitle> {
 
 	@Override
 	public List<AbstractColumn<AcademicTitle, ?>> createColumns(List<AcademicTitle> items) {
-		List<AbstractColumn<AcademicTitle, ?>> columns =
-				new ArrayList<AbstractColumn<AcademicTitle, ?>>();
-		columns.add(new FilterColumn<>("Prefix", path -> path.getPrefix(),
+		List<AbstractColumn<AcademicTitle, ?>> columns = new ArrayList<>();
+		ColumnCreator<AcademicTitle, AcademicTitle> creator = new ColumnCreator<>(getItemClass());
+		columns.add(creator.createFilterColumn("Prefix", path -> path.getPrefix(),
 				(path, value) -> path.setPrefix((String) value)));
-		columns.add(new FilterColumn<>("Descirption", path -> path.getDescription(),
+		columns.add(creator.createFilterColumn("Prefix", path -> path.getPrefix(),
+				(path, value) -> path.setPrefix((String) value)));
+		columns.add(creator.createFilterColumn("Descirption", path -> path.getDescription(),
 				(path, value) -> path.setDescription((String) value)));
 		return columns;
 	}

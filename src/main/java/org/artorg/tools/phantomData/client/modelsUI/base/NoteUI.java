@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
-import org.artorg.tools.phantomData.client.column.FilterColumn;
+import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
-import org.artorg.tools.phantomData.server.models.base.FileTag;
 import org.artorg.tools.phantomData.server.models.base.Note;
 
 import javafx.scene.control.TextField;
@@ -33,9 +32,10 @@ public class NoteUI implements UIEntity<Note> {
 	@Override
 	public List<AbstractColumn<Note, ?>> createColumns(List<Note> items) {
 		List<AbstractColumn<Note, ?>> columns = new ArrayList<>();
-		columns.add(new FilterColumn<>("Name", path -> path.getName(),
+		ColumnCreator<Note, Note> creator = new ColumnCreator<>(getItemClass());
+		columns.add(creator.createFilterColumn("Name", path -> path.getName(),
 				(path, value) -> path.setName(value)));
-		ColumnUtils.createPersonifiedColumns(columns);
+		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
 		return columns;
 	}
 

@@ -22,8 +22,8 @@ public abstract class AbstractFilterColumn<T,R> extends AbstractColumn<T, R> {
 		resetFilter();
 	}
 
-	public AbstractFilterColumn(String columnName) {
-		super(columnName);
+	public AbstractFilterColumn(Class<T> itemClass, String columnName) {
+		super(itemClass, columnName);
 	}
 
 	@SuppressWarnings("unchecked")

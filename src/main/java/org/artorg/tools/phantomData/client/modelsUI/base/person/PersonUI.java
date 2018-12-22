@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
-import org.artorg.tools.phantomData.client.column.FilterColumn;
+import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
@@ -33,14 +33,14 @@ public class PersonUI implements UIEntity<Person> {
 	@Override
 	public List<AbstractColumn<Person, ?>> createColumns(List<Person> items) {
 		List<AbstractColumn<Person, ?>> columns = new ArrayList<>();
-		columns.add(new FilterColumn<>("Title", item -> item.getAcademicTitle(),
-				path -> path.getPrefix()));
-		columns.add(new FilterColumn<>("Firstname", path -> path.getFirstname(),
+		ColumnCreator<Person, Person> creator = new ColumnCreator<>(getItemClass());
+		columns.add(creator.createFilterColumn("Title", item -> item.getAcademicTitle().getPrefix()));
+		columns.add(creator.createFilterColumn("Firstname", path -> path.getFirstname(),
 				(path, value) -> path.setFirstname((String) value)));
-		columns.add(new FilterColumn<>("Lastname", path -> path.getLastname(),
+		columns.add(creator.createFilterColumn("Lastname", path -> path.getLastname(),
 				(path, value) -> path.setLastname((String) value)));
-		columns.add(new FilterColumn<>("Gender", item -> item.getGender(), path -> path.getName(),
-				(path, value) -> path.setName((String) value)));
+		columns.add(creator.createFilterColumn("Gender", path -> path.getGender().getName(),
+				(path, value) -> path.getGender().setName((String) value)));
 		return columns;
 	}
 

@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
-import org.artorg.tools.phantomData.client.column.FilterColumn;
+import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
-import org.artorg.tools.phantomData.server.models.phantom.Phantom;
 import org.artorg.tools.phantomData.server.models.phantom.Special;
 
 import javafx.scene.control.TextField;
@@ -32,14 +31,15 @@ public class SpecialUI implements UIEntity<Special> {
 	@Override
 	public List<AbstractColumn<Special, ?>> createColumns(List<Special> items) {
 		List<AbstractColumn<Special, ?>> columns = new ArrayList<>();
-		columns.add(new FilterColumn<>("Shortcut", path -> path.getShortcut(),
+		ColumnCreator<Special, Special> creator = new ColumnCreator<>(getItemClass());
+		columns.add(creator.createFilterColumn("Shortcut", path -> path.getShortcut(),
 				(path, value) -> path.setShortcut(value)));
-		columns.add(new FilterColumn<>("Description", path -> path.getDescription(),
+		columns.add(creator.createFilterColumn("Description", path -> path.getDescription(),
 				(path, value) -> path.setDescription(value)));
-		ColumnUtils.createCountingColumn("Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
+		ColumnUtils.createCountingColumn(getItemClass(), "Files", columns, item -> item.getFiles());
+		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
 //		createPropertyColumns(columns, this.getItems());
-		ColumnUtils.createPersonifiedColumns(columns);
+		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
 		return columns;
 	}
 

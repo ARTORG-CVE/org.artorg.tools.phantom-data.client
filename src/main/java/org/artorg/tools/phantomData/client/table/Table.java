@@ -26,12 +26,11 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 @SuppressWarnings("unchecked")
-public abstract class TableBase<T> {
+public abstract class Table<T> {
 	private final ObservableList<T> items;
 	private List<AbstractColumn<T, ? extends Object>> columns;
 	private String itemName;
 	private final Class<T> itemClass;
-//	private Function<List<T>, List<AbstractColumn<T, ? extends Object>>> columnCreator;
 	private final ListChangeListener<T> itemListChangeListener;
 	private boolean editable = true;
 	private boolean filterable = true;
@@ -52,7 +51,6 @@ public abstract class TableBase<T> {
 		// TableBase
 		items = FXCollections.observableArrayList();
 		columns = new ArrayList<AbstractColumn<T, ? extends Object>>();
-//		columnCreator = items -> new ArrayList<AbstractColumn<T, ? extends Object>>();
 
 		itemListChangeListener = new ListChangeListener<T>() {
 			@Override
@@ -88,7 +86,7 @@ public abstract class TableBase<T> {
 //		getFilteredItems().addListener(filteredListener);
 	}
 
-	public TableBase(Class<T> itemClass) {
+	public Table(Class<T> itemClass) {
 		this.itemClass = itemClass;
 		this.itemName = itemClass.getSimpleName();
 	}
@@ -118,11 +116,11 @@ public abstract class TableBase<T> {
 	public void updateColumns() {
 		long startTime = System.currentTimeMillis();
 		List<AbstractColumn<T, ? extends Object>> columns = createColumns(getItems());
-		System.out.println("update columns");
 		CollectionUtil.syncLists(this.columns, columns,
 				(column, newColumn) -> column.getName().equals(newColumn.getName()));
 		getColumns().stream().forEach(column -> {
 			column.setItems(getItems());
+			
 		});
 
 		if (isFilterable()) {
@@ -171,7 +169,6 @@ public abstract class TableBase<T> {
 			resetFilter();
 			return;
 		}
-		long startTime = System.currentTimeMillis();
 		filterPredicate = mappedColumnIndexes.stream()
 				.filter(i -> i < columnItemFilterPredicates.size()).map(i -> getColumns().get(i))
 				.collect(castFilter(column -> ((FilterColumn<T, ?, ?>) column)))
@@ -187,8 +184,7 @@ public abstract class TableBase<T> {
 		getFilteredItems().clear();
 		getFilteredItems().addAll(filteredItems);
 		
-		Logger.debug.println(getItemClass().getSimpleName() + " - Applied filter in "
-				+ (System.currentTimeMillis() - startTime) + " ms");
+		Logger.debug.println(getItemClass().getSimpleName());
 	}
 
 	public void setColumnItemFilterValues(int columnIndex, List<Object> values) {
@@ -207,11 +203,6 @@ public abstract class TableBase<T> {
 			columnTextFilterPredicates.set(columnIndexMapper.apply(columnIndex),
 					item -> p.matcher(getFilteredValue(item, columnIndex).toString()).find());
 	}
-
-//	public void setColumnCreator(Function<List<T>, List<AbstractColumn<T, ?>>> columnCreator) {
-//		this.columnCreator = columnCreator;
-//		updateColumns();
-//	}
 
 	public Object getColumnFilteredValue(int row, int col) {
 		List<AbstractColumn<T, ? extends Object>> columns = getFilteredColumns();
@@ -333,10 +324,6 @@ public abstract class TableBase<T> {
 	}
 
 	// Getters & Setters
-//	public Function<List<T>, List<AbstractColumn<T, ? extends Object>>> getColumnCreator() {
-//		return columnCreator;
-//	}
-
 	public boolean isFilterable() {
 		return filterable;
 	}

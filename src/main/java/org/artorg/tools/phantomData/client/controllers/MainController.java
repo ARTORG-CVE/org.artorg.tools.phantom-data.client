@@ -2,27 +2,20 @@ package org.artorg.tools.phantomData.client.controllers;
 
 import static org.artorg.tools.phantomData.client.util.FxUtil.addMenuItem;
 
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.TimerTask;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
-
-import javax.swing.Timer;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.CssGlyph;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
-import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
-import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.client.util.TableViewFactory;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
 import org.artorg.tools.phantomData.server.models.base.FileTag;
@@ -50,7 +43,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -501,14 +493,11 @@ public class MainController extends StackPane {
 	}
 
 	private ProTableView<?> createTable(Class<?> itemClass) {
-		return TableViewFactory.createInitializedTableView(itemClass, DbTable.class,
-				DbTableView.class);
+		return Main.getUIEntity(itemClass).createDbTableView();
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	private ProTreeTableView<?> createTreeTable(Class<?> itemClass) {
-		return TableViewFactory.createInitializedTreeTableView(itemClass, DbTable.class,
-				DbTreeTableView.class);
+		return Main.getUIEntity(itemClass).createDbTreeTableView();
 	}
 
 	public void openTableTab(int row, ProTableView<?> table, String name) {

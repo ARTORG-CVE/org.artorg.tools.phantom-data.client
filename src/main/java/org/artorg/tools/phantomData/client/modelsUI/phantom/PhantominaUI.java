@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
+import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
@@ -14,7 +15,6 @@ import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.models.phantom.LiteratureBase;
-import org.artorg.tools.phantomData.server.models.phantom.Manufacturing;
 import org.artorg.tools.phantomData.server.models.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.models.phantom.Special;
 
@@ -23,8 +23,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 
 public class PhantominaUI implements UIEntity<Phantomina> {
-
-	
 
 	public Class<Phantomina> getItemClass() {
 		return Phantomina.class;
@@ -39,24 +37,25 @@ public class PhantominaUI implements UIEntity<Phantomina> {
 	public List<AbstractColumn<Phantomina, ?>> createColumns(List<Phantomina> items) {
 		List<AbstractColumn<Phantomina, ?>> columns = new ArrayList<>();
 		FilterColumn<Phantomina, ?, ?> column;
-		column = new FilterColumn<>("PID", path -> path.getProductId(),
+		ColumnCreator<Phantomina, Phantomina> creator = new ColumnCreator<>(getItemClass());
+		column = creator.createFilterColumn("PID", path -> path.getProductId(),
 				(path, value) -> path.setProductId(value));
 		column.setAscendingSortComparator(
 				(p1, p2) -> Phantomina.comparePid(p1.getProductId(), p2.getProductId()));
 		columns.add(column);
-		columns.add(new FilterColumn<>("Annulus [mm]", item -> item.getAnnulusDiameter(),
-				path -> String.valueOf(path.getValue()),
-				(path, value) -> path.setValue(Double.valueOf(value))));
-		columns.add(new FilterColumn<>("Type", item -> item.getFabricationType(),
-				path -> path.getValue(), (path, value) -> path.setValue(value)));
-		columns.add(new FilterColumn<>("Literature", item -> item.getLiteratureBase(),
-				path -> path.getValue(), (path, value) -> path.setValue(value)));
-		columns.add(new FilterColumn<>("Special", item -> item.getSpecial(),
-				path -> path.getShortcut(), (path, value) -> path.setShortcut(value)));
-		ColumnUtils.createCountingColumn("Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
+		columns.add(creator.createFilterColumn("Annulus [mm]",
+				path -> String.valueOf(path.getAnnulusDiameter().getValue()),
+				(path, value) -> path.getAnnulusDiameter().setValue(Double.valueOf(value))));
+		columns.add(creator.createFilterColumn("Type", path -> path.getFabricationType().getValue(),
+				(path, value) -> path.getFabricationType().setValue(value)));
+		columns.add(creator.createFilterColumn("Literature", path -> path.getLiteratureBase().getValue(),
+				(path, value) -> path.getLiteratureBase().setValue(value)));
+		columns.add(creator.createFilterColumn("Special", path -> path.getLiteratureBase().getShortcut(),
+				(path, value) -> path.getLiteratureBase().setShortcut(value)));
+		ColumnUtils.createCountingColumn(getItemClass(), "Files", columns, item -> item.getFiles());
+		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
 //		createPropertyColumns(columns, this.getItems());
-		ColumnUtils.createPersonifiedColumns(columns);
+		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
 		return columns;
 	}
 

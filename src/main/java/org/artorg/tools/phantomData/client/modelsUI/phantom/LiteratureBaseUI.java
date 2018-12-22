@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
-import org.artorg.tools.phantomData.client.column.FilterColumn;
+import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
-import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.models.phantom.LiteratureBase;
 
 import javafx.scene.control.TextField;
@@ -32,13 +31,15 @@ public class LiteratureBaseUI implements UIEntity<LiteratureBase> {
 	@Override
 	public List<AbstractColumn<LiteratureBase, ?>> createColumns(List<LiteratureBase> items) {
 		List<AbstractColumn<LiteratureBase, ?>> columns = new ArrayList<>();
-		columns.add(new FilterColumn<>("Shortcut", path -> path.getShortcut(),
+		ColumnCreator<LiteratureBase, LiteratureBase> creator =
+				new ColumnCreator<>(getItemClass());
+		columns.add(creator.createFilterColumn("Shortcut", path -> path.getShortcut(),
 				(path, value) -> path.setShortcut((String) value)));
-		columns.add(new FilterColumn<>("Value", path -> path.getValue(),
+		columns.add(creator.createFilterColumn("Value", path -> path.getValue(),
 				(path, value) -> path.setValue((String) value)));
-		ColumnUtils.createCountingColumn("Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(columns);
+		ColumnUtils.createCountingColumn(getItemClass(), "Files", columns, item -> item.getFiles());
+		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
+		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
 		return columns;
 	}
 

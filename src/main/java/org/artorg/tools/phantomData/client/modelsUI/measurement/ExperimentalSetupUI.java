@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
-import org.artorg.tools.phantomData.client.column.FilterColumn;
+import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
-import org.artorg.tools.phantomData.server.models.base.Note;
 import org.artorg.tools.phantomData.server.models.measurement.ExperimentalSetup;
 
 import javafx.scene.control.TextField;
@@ -31,15 +30,16 @@ public class ExperimentalSetupUI implements UIEntity<ExperimentalSetup> {
 	@Override
 	public List<AbstractColumn<ExperimentalSetup, ?>> createColumns(List<ExperimentalSetup> items) {
 		List<AbstractColumn<ExperimentalSetup, ?>> columns = new ArrayList<>();
-		columns.add(new FilterColumn<>("Short name", path -> path.getShortName(),
+		ColumnCreator<ExperimentalSetup, ExperimentalSetup> creator = new ColumnCreator<>(getItemClass());
+		columns.add(creator.createFilterColumn("Short name", path -> path.getShortName(),
 				(path, value) -> path.setShortName(value)));
-		columns.add(new FilterColumn<>("Long name", path -> path.getLongName(),
+		columns.add(creator.createFilterColumn("Long name", path -> path.getLongName(),
 				(path, value) -> path.setLongName(value)));
-		columns.add(new FilterColumn<>("Description", path -> path.getDescription(),
+		columns.add(creator.createFilterColumn("Description", path -> path.getDescription(),
 				(path, value) -> path.setDescription(value)));
-		ColumnUtils.createCountingColumn("Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn("Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(columns);
+		ColumnUtils.createCountingColumn(getItemClass(), "Files", columns, item -> item.getFiles());
+		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
+		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
 		return columns;
 	}
 

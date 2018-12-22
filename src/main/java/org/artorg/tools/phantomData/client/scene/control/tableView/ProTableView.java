@@ -5,15 +5,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
-import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
-import org.artorg.tools.phantomData.client.table.TableBase;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.TableViewUtils;
 import org.artorg.tools.phantomData.server.logging.Logger;
@@ -35,7 +33,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 	private BiPredicate<AbstractColumn<T, ? extends Object>, TableColumn<T, ?>> columnAddPolicy;
 	private BiPredicate<AbstractColumn<T, ? extends Object>, TableColumn<T, ?>> columnRemovePolicy;
 	private final Class<T> itemClass;
-	private TableBase<T> table;
+	private Table<T> table;
 	private List<FilterMenuButton<T, ?>> filterMenuButtons;
 
 	{
@@ -72,6 +70,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		getFilterMenuButtons().stream().forEach(column -> {
 			column.updateNodes();
 			column.applyFilter();
+			column.refreshImage();
 		});
 	}
 	
@@ -82,7 +81,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		super.setItems(getTable().getFilteredItems());
 	}
 
-	protected ProTableView(Class<T> itemClass, TableBase<T> table) {
+	protected ProTableView(Class<T> itemClass, Table<T> table) {
 		this.itemClass = itemClass;
 		this.table = table;
 		super.setItems(FXCollections.observableArrayList());
@@ -107,10 +106,13 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 	public void updateColumns() {
 		Logger.debug.println(getItemClass().getSimpleName());
 		getTable().updateColumns();
+		
 		if (!isFilterable()) {
 			CollectionUtil.addIfAbsent(table.createColumns(getItems()),
 					super.getColumns(), columnAddPolicy,
 					(baseColumn, index) -> createTableColumn(table, index));
+			getFilterMenuButtons().stream().forEach(fmb -> fmb.updateNodes());
+			
 //
 //			CollectionUtil.removeIfAbsent(table.createColumns(getItems()),
 //					super.getColumns(), columnRemovePolicy);
@@ -161,10 +163,6 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 					filterMenuButton.get().refreshImage();
 
 				} else {
-					
-					List<?> columns1 = getColumns();
-					List<?> columns2 = getFilterMenuButtons();
-					
 					Logger.error.println("FilterMenuButton not found.");
 				}
 			} else {
@@ -172,7 +170,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 			}
 	}
 
-	protected TableColumn<T, ?> createTableColumn(TableBase<T> table, int index) {
+	protected TableColumn<T, ?> createTableColumn(Table<T> table, int index) {
 		if (!isFilterable()) {
 			TableColumn<T, Object> tableColumn =
 					new TableColumn<T, Object>(table.getColumns().get(index).getName());
@@ -294,7 +292,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		TableViewUtils.autoResizeColumns(this);
 	}
 
-	public TableBase<T> getTable() {
+	public Table<T> getTable() {
 		return table;
 	}
 

@@ -1,13 +1,9 @@
 package org.artorg.tools.phantomData.client.scene.control.tableView;
 
-import java.util.stream.Collectors;
-
 import org.artorg.tools.phantomData.client.Main;
-import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.server.logging.Logger;
 
-import javafx.application.Platform;
 import javafx.scene.control.SelectionMode;
 
 public class DbTableView<ITEM> extends ProTableView<ITEM> {
