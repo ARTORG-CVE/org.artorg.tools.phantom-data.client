@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,7 +36,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 
 public class FilterMenuButton<ITEM, R> extends MenuButton {
-	private final Node iconDefault, iconAscending, iconDescending, iconFilter;
+	private final Supplier<Node> iconDefault, iconAscending, iconDescending, iconFilter;
 	private final ButtonItemReset itemReset;
 	private final CheckBoxItemSortAscending itemAscending;
 	private final CheckBoxItemSortDescending itemDescending;
@@ -48,10 +49,10 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 	private String regex;
 
 	{
-		iconDefault = new CssGlyph("FontAwesome", FontAwesome.Glyph.ANGLE_DOWN);
-		iconAscending = new CssGlyph("FontAwesome", FontAwesome.Glyph.SORT_ALPHA_ASC);
-		iconDescending = new CssGlyph("FontAwesome", FontAwesome.Glyph.SORT_ALPHA_DESC);
-		iconFilter = new CssGlyph("FontAwesome", FontAwesome.Glyph.FILTER);
+		iconDefault = () -> new CssGlyph("FontAwesome", FontAwesome.Glyph.ANGLE_DOWN);
+		iconAscending = () -> new CssGlyph("FontAwesome", FontAwesome.Glyph.SORT_ALPHA_ASC);
+		iconDescending = () -> new CssGlyph("FontAwesome", FontAwesome.Glyph.SORT_ALPHA_DESC);
+		iconFilter = () -> new CssGlyph("FontAwesome", FontAwesome.Glyph.FILTER);
 		itemReset = new ButtonItemReset();
 		itemAscending = new CheckBoxItemSortAscending();
 		itemDescending = new CheckBoxItemSortDescending();
@@ -64,7 +65,7 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 			setRegex(itemSearch.getTextField().getText());
 			applyFilter();
 		});
-		Platform.runLater(() -> setImage(iconDefault));
+		Platform.runLater(() -> setImage(iconDefault.get()));
 	}
 
 	public Runnable getRefresher() {
@@ -226,35 +227,20 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 		});
 	}
 
-	private static Map<String, HBox> imageBoxMap;
-
-	static {
-		imageBoxMap = new HashMap<>();
-	}
-
 	public void refreshImage() {
 		HBox hBox = new HBox();
-		StringBuilder sb = new StringBuilder();
 		if (isFilterSetted()) {
-			hBox.getChildren().add(iconFilter);
-			sb.append("F");
+			hBox.getChildren().add(iconFilter.get());
 		}
 		if (itemAscending.getCheckBox().isSelected()) {
-			hBox.getChildren().add(iconAscending);
-			sb.append("A");
+			hBox.getChildren().add(iconAscending.get());
 		} else if (itemDescending.getCheckBox().isSelected()) {
-			hBox.getChildren().add(iconDescending);
-			sb.append("D");
+			hBox.getChildren().add(iconDescending.get());
 		}
 		if (hBox.getChildren().size() == 0) {
-			hBox.getChildren().add(iconDefault);
-			sb.append("S");
+			hBox.getChildren().add(iconDefault.get());
 		}
-		String key = sb.toString();
-//		if (imageBoxMap.containsKey(key)) hBox = imageBoxMap.get(key);
-//		else
-		imageBoxMap.put(key, hBox);
-
+		hBox.setPrefWidth(10.0);
 		setImage(hBox);
 	}
 

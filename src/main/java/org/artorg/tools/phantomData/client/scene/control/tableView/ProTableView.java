@@ -145,6 +145,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 	}
 
 	public void showFilterButtons() {
+		Logger.debug.println("showFilterButtons");
 		if (!isFilterable()) return;
 		for (Node n : super.lookupAll(".column-header > .label"))
 			if (n instanceof Label) {
@@ -159,6 +160,10 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 					label.setGraphic(filterMenuButton.get());
 					label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 //					label.addEventHandler(eventType, eventHandler);
+					
+					
+					
+					
 					
 					filterMenuButton.get().refreshImage();
 

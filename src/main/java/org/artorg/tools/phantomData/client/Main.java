@@ -59,6 +59,7 @@ import org.artorg.tools.phantomData.server.models.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.models.phantom.Special;
 import org.artorg.tools.phantomData.server.util.FxUtil;
 import org.reflections.Reflections;
+import org.scenicview.ScenicView;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -194,7 +195,7 @@ public class Main extends DesktopFxBootApplication {
 		stage.requestFocus();
 		stage.toFront();
 		
-		
+//		ScenicView.show(scene);
 		
 		started = true;
 	}

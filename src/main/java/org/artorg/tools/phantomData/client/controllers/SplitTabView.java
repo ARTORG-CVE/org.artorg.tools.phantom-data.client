@@ -33,6 +33,7 @@ import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTab
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.server.logging.Logger;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
 import org.artorg.tools.phantomData.server.model.Identifiable;
 import org.artorg.tools.phantomData.server.model.NameGeneratable;
@@ -210,8 +211,9 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		contextMenu.getItems().addAll(menuItem);
 		menuItem = new MenuItem("Reload");
 		menuItem.setOnAction(event -> {
-			if (tableViewSpring instanceof DbTableView)
+			if (tableViewSpring instanceof DbTableView) {
 				((DbTableView<?>) tableViewSpring).reload();
+			}
 		});
 		contextMenu.getItems().addAll(menuItem);
 
@@ -387,7 +389,23 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		}
 
 		addMenuItem(rowMenu, "Refresh", event -> {
-			tableViewSpring.refresh();
+//			tableViewSpring.refresh();
+			
+			
+			Logger.debug.println(tableViewSpring.getItemClass());
+			tableViewSpring.getTable().refresh();
+
+			if (tableViewSpring.isFilterable()) {
+				tableViewSpring.getFilterMenuButtons().forEach(filterMenuButton -> {
+					filterMenuButton.refreshImage();
+				});
+			}
+
+//			updateColumns();
+//			super.refresh();
+			
+			
+			System.out.println(":)");
 		});
 
 		addMenuItem(rowMenu, "Reload", event -> {
