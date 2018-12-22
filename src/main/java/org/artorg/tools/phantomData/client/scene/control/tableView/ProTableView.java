@@ -14,7 +14,7 @@ import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.TableViewUtils;
-import org.artorg.tools.phantomData.server.logging.Logger;
+import org.artorg.tools.phantomData.client.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -99,6 +99,12 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		Logger.debug.println(getItemClass());
 		getTable().refresh();
 
+		Platform.runLater(() -> {
+//			tableView.reload();
+			showFilterButtons();
+//			tableView.refresh();
+			});
+		
 		if (isFilterable()) {
 			getFilterMenuButtons().forEach(filterMenuButton -> {
 				filterMenuButton.refreshImage();

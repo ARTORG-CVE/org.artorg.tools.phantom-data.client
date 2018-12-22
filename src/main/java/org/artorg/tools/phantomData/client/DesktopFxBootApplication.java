@@ -7,7 +7,6 @@ import org.artorg.tools.phantomData.server.boot.ConsoleFrame;
 import org.artorg.tools.phantomData.server.boot.FxConsoleFrame;
 import org.artorg.tools.phantomData.server.boot.FxStartupProgressController;
 import org.artorg.tools.phantomData.server.boot.StartupProgressFrame;
-import org.artorg.tools.phantomData.server.logging.Logger;
 import org.artorg.tools.phantomData.server.util.FxUtil;
 
 import javafx.application.Application;

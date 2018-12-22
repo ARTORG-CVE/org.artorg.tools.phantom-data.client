@@ -143,6 +143,7 @@ public class MainController extends StackPane {
 		addSplitTabView();
 
 		getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
+		openTablePhantoms(null);
 		getOrCreate(0).openViewerTab(createScene3dTab(null));
 		getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));
 
@@ -267,12 +268,12 @@ public class MainController extends StackPane {
 
 		Menu tableMenu = new Menu("Open Table");
 		createTableMenu(tableMenu, splitTabView,
-				(view, cls) -> view.openTableTab(createTableViewTab(castClass(cls))));
+				(view, cls) -> view.openTableTab(createTableViewTab(cls)));
 		contextMenu.getItems().add(tableMenu);
 
 		Menu treeTableMenu = new Menu("Open Tree Table");
 		createTableMenu(treeTableMenu, splitTabView,
-				(view, cls) -> view.openTableTab(createTreeTableViewTab(castClass(cls))));
+				(view, cls) -> view.openTableTab(createTreeTableViewTab(cls)));
 		contextMenu.getItems().add(treeTableMenu);
 
 		addMenuItem(contextMenu, "Close", event -> {
@@ -281,11 +282,6 @@ public class MainController extends StackPane {
 		splitTabView.getSplitPane().setContextMenu(contextMenu);
 
 		splitTabViews.add(splitTabView);
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T extends DbPersistent<T, ?>> Class<T> castClass(Class<?> cls) {
-		return (Class<T>) cls;
 	}
 
 	private void createTableMenu(Menu menu, SplitTabView splitTabView,
@@ -572,12 +568,12 @@ public class MainController extends StackPane {
 
 		menu = new Menu("Table");
 		createTableMenu(menu, splitTabViews.get(0),
-				(view, cls) -> view.openTableTab(createTableViewTab(castClass(cls))));
+				(view, cls) -> view.openTableTab(createTableViewTab(cls)));
 		menuBar.getMenus().add(menu);
 
 		menu = new Menu("TreeTable");
 		createTableMenu(menu, splitTabViews.get(0),
-				(view, cls) -> view.openTableTab(createTreeTableViewTab(castClass(cls))));
+				(view, cls) -> view.openTableTab(createTreeTableViewTab(cls)));
 		menuBar.getMenus().add(menu);
 
 		menu = new Menu("Window");

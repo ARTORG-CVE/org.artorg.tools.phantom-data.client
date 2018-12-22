@@ -19,8 +19,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		<dependency.locations.enabled>false</dependency.locations.enabled>
 	</properties>
 
-
-
 	<dependencies>
 		<dependency>
 			<groupId>ch.huma</groupId>
@@ -36,7 +34,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		<dependency>
 		<groupId>ch.huma</groupId>
 	<artifactId>huma-library</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2</version>
 	</dependency>
 	
 	
@@ -44,8 +42,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         <groupId>org.controlsfx</groupId>
 								<artifactId>scenic-view</artifactId>
 								<version>1.0</version>
-        <scope>system</scope>
-        <systemPath>${basedir}/lib/scenicView.jar</systemPath>
       </dependency>
 	
 	

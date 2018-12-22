@@ -2,7 +2,6 @@ package org.artorg.tools.phantomData.client.connector;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -12,29 +11,22 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.controller.ControllerSpecDefault;
-import org.artorg.tools.phantomData.server.logging.Logger;
 import org.artorg.tools.phantomData.server.model.Identifiable;
 import org.artorg.tools.phantomData.server.model.NameGeneratable;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javafx.collections.FXCollections;

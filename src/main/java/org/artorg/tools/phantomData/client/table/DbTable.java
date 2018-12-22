@@ -6,7 +6,7 @@ import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
-import org.artorg.tools.phantomData.server.logging.Logger;
+import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.server.model.Identifiable;
 import org.artorg.tools.phantomData.server.models.base.property.IntegerProperty;
 

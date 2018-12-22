@@ -33,7 +33,7 @@ import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTab
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.logging.Logger;
+import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
 import org.artorg.tools.phantomData.server.model.Identifiable;
 import org.artorg.tools.phantomData.server.model.NameGeneratable;
@@ -180,7 +180,8 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		if (tabPane.getSelectionModel().getSelectedItem() != tab)
 			tabPane.getSelectionModel().select(tab);
 
-		if (node instanceof ProTableView) setTableTab(tab, (ProTableView<T>) node);
+		if (node instanceof ProTableView) 
+			setTableTab(tab, (ProTableView<T>) node);
 
 		if (node instanceof ProTreeTableView)
 			setTreeTableTab(tab, (ProTreeTableView<T>) node);

@@ -15,7 +15,7 @@ import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.scene.CssGlyph;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
-import org.artorg.tools.phantomData.server.logging.Logger;
+import org.artorg.tools.phantomData.client.logging.Logger;
 import org.controlsfx.glyphfont.FontAwesome;
 
 import javafx.application.Platform;
