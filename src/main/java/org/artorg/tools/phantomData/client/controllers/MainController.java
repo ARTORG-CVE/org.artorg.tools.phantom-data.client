@@ -10,6 +10,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.scene.CssGlyph;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
@@ -436,6 +437,7 @@ public class MainController extends StackPane {
 	}
 
 	void openTablePhantoms(ActionEvent event) {
+		Logger.debug.println("openTablePhantoms");
 		openTable(Phantom.class);
 	}
 

@@ -106,7 +106,7 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 				menuItem.setOnAction(event -> moveToSelected());
 				contextMenu.getItems().add(menuItem);
 				menuItem = new MenuItem("Refresh");
-				menuItem.setOnAction(event -> ((ProTableView) tableView).getTable().refresh());
+				menuItem.setOnAction(event -> ((ProTableView<?>) tableView).refresh());
 				contextMenu.getItems().add(menuItem);
 
 				row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
@@ -126,7 +126,7 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 				menuItem.setOnAction(event -> moveToSelectable());
 				contextMenu.getItems().addAll(menuItem);
 				menuItem = new MenuItem("Refresh");
-				menuItem.setOnAction(event -> ((ProTableView) tableView).getTable().refresh());
+				menuItem.setOnAction(event -> ((ProTableView<?>) tableView).refresh());
 				contextMenu.getItems().add(menuItem);
 
 				row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))

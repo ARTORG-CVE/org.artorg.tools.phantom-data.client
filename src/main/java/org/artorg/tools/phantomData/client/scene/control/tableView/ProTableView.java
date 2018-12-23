@@ -11,16 +11,20 @@ import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
+import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
+import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.TableViewUtils;
 import org.artorg.tools.phantomData.client.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
@@ -45,6 +49,8 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 
 	public ProTableView(Class<T> itemClass) {
 		this(itemClass, Main.getUIEntity(itemClass).createTableBase());
+		
+		
 		
 		getItems().clear();
 		
@@ -92,6 +98,47 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		this.table = table;
 		super.setItems(FXCollections.observableArrayList());
 		super.setItems(table.getFilteredItems());
+		
+		sceneProperty().addListener(new ChangeListener<Scene>() {
+			@Override
+			public void changed(ObservableValue<? extends Scene> observable, Scene oldValue,
+					Scene newValue) {
+				Logger.info.println("TABLE ADDED TO SCENE");
+				if (newValue != null) {
+					FxUtil.runNewSingleThreaded(() -> {
+						Platform.runLater(() -> {
+							showFilterButtons();
+						});
+						if (!System.getProperty("os.name").matches("(?i).*windows.*")) {
+							try {
+								Thread.sleep(300);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							Platform.runLater(() -> {
+								showFilterButtons();
+							});
+							try {
+								Thread.sleep(3000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							Platform.runLater(() -> {
+								showFilterButtons();
+							});
+							try {
+								Thread.sleep(10000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							Platform.runLater(() -> {
+								showFilterButtons();
+							});
+						}
+					});		
+				}
+			}
+		});
 	}
 
 	@Override
@@ -113,6 +160,54 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 
 //		updateColumns();
 		super.refresh();
+	}
+	
+	public void refresh1() {
+		Platform.runLater(() -> {
+//			tableView.reload();
+			showFilterButtons();
+//			tableView.refresh();
+			});
+	}
+	
+	public void refresh2() {
+		Platform.runLater(() -> {
+//			tableView.reload();
+			showFilterButtons();
+//			tableView.refresh();
+			});
+		
+		if (isFilterable()) {
+			getFilterMenuButtons().forEach(filterMenuButton -> {
+				filterMenuButton.refreshImage();
+			});
+		}
+	}
+	
+	public void refresh3() {
+		getTable().refresh();
+
+		Platform.runLater(() -> {
+//			tableView.reload();
+			showFilterButtons();
+//			tableView.refresh();
+			});
+		
+		if (isFilterable()) {
+			getFilterMenuButtons().forEach(filterMenuButton -> {
+				filterMenuButton.refreshImage();
+			});
+		}
+	}
+	
+	public void refresh4() {
+		getTable().refresh();
+
+		Platform.runLater(() -> {
+//			tableView.reload();
+			showFilterButtons();
+//			tableView.refresh();
+			});
 	}
 
 	public void updateColumns() {

@@ -116,6 +116,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 	}
 
 	public <T> void openTableTab(Tab tab) {
+		Logger.debug.println("openTableTab");
 		setTab(tableTabPane.getTabPane(), tab, tab.getContent());
 	}
 	
@@ -394,7 +395,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 			
 			
 			Logger.debug.println(tableViewSpring.getItemClass());
-			tableViewSpring.getTable().refresh();
+			tableViewSpring.refresh();
 
 			if (tableViewSpring.isFilterable()) {
 				tableViewSpring.getFilterMenuButtons().forEach(filterMenuButton -> {
@@ -408,11 +409,49 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 			
 			System.out.println(":)");
 		});
+		
+		
+		
+		addMenuItem(rowMenu, "Refresh 1", event -> {
+			if (tableViewSpring instanceof DbTableView)
+				((DbTableView<?>) tableViewSpring).refresh1();
+		});
+		
+		addMenuItem(rowMenu, "Refresh 2", event -> {
+			if (tableViewSpring instanceof DbTableView)
+				((DbTableView<?>) tableViewSpring).refresh2();
+		});
+		
+		addMenuItem(rowMenu, "Refresh 3", event -> {
+			if (tableViewSpring instanceof DbTableView)
+				((DbTableView<?>) tableViewSpring).refresh3();
+		});
+		
+		addMenuItem(rowMenu, "Refresh 4", event -> {
+			if (tableViewSpring instanceof DbTableView)
+				((DbTableView<?>) tableViewSpring).refresh4();
+		});
 
 		addMenuItem(rowMenu, "Reload", event -> {
 			if (tableViewSpring instanceof DbTableView)
 				((DbTableView<?>) tableViewSpring).reload();
 		});
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 
 		addMenuItem(rowMenu, "Edit item", event -> {
 			FxFactory<T> controller = createFxFactory(tableViewSpring.getItemClass());
