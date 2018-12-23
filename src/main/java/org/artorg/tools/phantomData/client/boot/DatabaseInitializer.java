@@ -45,11 +45,7 @@ public class DatabaseInitializer {
 		initLiteratureBase();
 		initSpecial();
 		initPhantoms();
-
-		System.out.println("Database initialized succesful");
-
 		UserAdmin.logout();
-
 	}
 
 	public static boolean isInitialized() {

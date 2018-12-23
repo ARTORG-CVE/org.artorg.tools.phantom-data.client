@@ -10,7 +10,6 @@ import org.artorg.tools.phantomData.client.util.Reflect;
 
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -47,14 +46,6 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 	}
 
 	public void init() {
-//		getTableView2().getItems().stream().forEach(item2 -> {
-//			List<?> doublettes = (List<?>) getTableView1().getItems().stream()
-//				.filter(item1 -> ((DbPersistent<?, ?>) item2).getId()
-//					.equals(((DbPersistent<?, ?>) item1).getId()))
-//				.collect(Collectors.toList());
-//			getTableView1().getItems().removeAll(doublettes);
-//		});
-
 		if (getTableView1().getItems().size() != 0
 				&& !splitPane.getItems().contains(getTableView1())) {
 			splitPane.getItems().add(getTableView1());
@@ -89,8 +80,8 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 
 		this.getTableView1().getColumns().add(0, addButtonCellColumn);
 		this.getTableView2().getColumns().add(0, removeButtonCellColumn);
-		((ProTableView<ITEM>) this.getTableView2()).removeHeaderRow();
-		((ProTableView<ITEM>) this.getTableView2()).showHeaderRow();
+//		((ProTableView<ITEM>) this.getTableView2()).removeHeaderRow();
+//		((ProTableView<ITEM>) this.getTableView2()).showHeaderRow();
 
 		getTableView1().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		getTableView2().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -155,51 +146,20 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 		moveToSelected(list);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void moveToSelected(Collection<ITEM> items) {
 //		getSelectableItems().removeAll(items);
-
-		((ProTableView<ITEM>) getTableView2()).getTable().getItems()
-				.addListener(new ListChangeListener<ITEM>() {
-
-					@Override
-					public void onChanged(Change<? extends ITEM> c) {
-						while (c.next()) {
-							System.out.println("items changed: addedSize " + c.getAddedSize()
-									+ ", new size " + c.getList().size());
-						}
-					}
-
-				});
-
-		((ProTableView<ITEM>) getTableView2()).getTable().getFilteredItems()
-				.addListener(new ListChangeListener<ITEM>() {
-
-					@Override
-					public void onChanged(Change<? extends ITEM> c) {
-						while (c.next()) {
-							System.out.println("filtered items changed: addedSize "
-									+ c.getAddedSize() + ", new size " + c.getList().size());
-						}
-
-					}
-
-				});
-
 		((ProTableView) getTableView1()).getTable().getItems().removeAll(items);
 		((ProTableView) getTableView1()).getTable().getFilteredItems().removeAll(items);
 		((ProTableView) getTableView1()).setItems(FXCollections.observableArrayList());
 		((ProTableView) getTableView1())
 				.setItems(((ProTableView) getTableView1()).getTable().getFilteredItems());
-//		flyingHero(((ProTableView) getTableView1()));
-//		((ProTableView)getTableView1()).applyFilter();
 //		getSelectedItems().addAll(items);
 		((ProTableView) getTableView2()).getTable().getItems().addAll(items);
 		((ProTableView) getTableView2()).getTable().getFilteredItems().addAll(items);
 		((ProTableView) getTableView2()).setItems(FXCollections.observableArrayList());
 		((ProTableView) getTableView2())
 				.setItems(((ProTableView) getTableView2()).getTable().getFilteredItems());
-		flyingHero(((ProTableView) getTableView2()));
-//		((ProTableView)getTableView2()).applyFilter();
 		if (getTableView1().getItems().size() == 0) {
 			splitPane.getItems().remove(getTableView1());
 			if (!splitPane.getItems().contains(getTableView2()))
@@ -209,7 +169,7 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 				splitPane.getItems().add(1, getTableView2());
 			splitPane.setDividerPositions(0.5f);
 		}
-		((ProTableView<?>) getTableView2()).showHeaderRow();
+//		((ProTableView<?>) getTableView2()).showHeaderRow();
 		autoResizeColumns(getTableView1());
 		autoResizeColumns(getTableView2());
 	}
@@ -220,6 +180,7 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 		moveToSelectable(list);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void moveToSelectable(Collection<ITEM> items) {
 //		getSelectedItems().removeAll(items);
 		((ProTableView) getTableView2()).getTable().getItems().removeAll(items);
@@ -227,7 +188,6 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 		((ProTableView) getTableView2()).setItems(FXCollections.observableArrayList());
 		((ProTableView) getTableView2())
 				.setItems(((ProTableView) getTableView2()).getTable().getFilteredItems());
-		flyingHero(((ProTableView) getTableView2()));
 //		getSelectableItems().addAll(items);
 		((ProTableView) getTableView1()).getTable().getItems().addAll(items);
 		((ProTableView) getTableView1()).getTable().getFilteredItems().addAll(items);
@@ -240,54 +200,15 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 		} else {
 			if (!splitPane.getItems().contains(getTableView1())) {
 				splitPane.getItems().add(0, getTableView1());
-				((ProTableView<?>) getTableView1()).showHeaderRow();
+//				((ProTableView<?>) getTableView1()).showHeaderRow();
 			}
-			((ProTableView<?>) getTableView1()).showHeaderRow();
+//			((ProTableView<?>) getTableView1()).showHeaderRow();
 			splitPane.setDividerPositions(0.5f);
-			if (getTableView2().getItems().size() < 10) if (getTableView2() instanceof ProTableView)
-				((ProTableView<?>) getTableView2()).removeHeaderRow();
+//			if (getTableView2().getItems().size() < 10) if (getTableView2() instanceof ProTableView)
+//				((ProTableView<?>) getTableView2()).removeHeaderRow();
 		}
 		autoResizeColumns(getTableView1());
 		autoResizeColumns(getTableView2());
-	}
-
-	private <U> void flyingHero(ProTableView<U> tableView) {
-		tableView.getTable().setFilterActivated(false);
-//		tableView.getTable().getColumns().stream().forEach(column -> {
-//			column.setItems(tableView.getItems());
-////			column.getItems().clear();
-////			column.getItems().addAll(getItems());
-//
-//		});
-
-//		tableView.updateColumns();
-//		tableView.getTable().refresh();
-//		tableView.autoResizeColumns();
-//
-//		tableView.getTable().getColumns().stream().forEach(column -> {
-//			column.setItems(tableView.getItems());
-////		column.getItems().clear();
-////		column.getItems().addAll(getItems());
-//
-//		});
-
-//		tableView.updateColumns();
-
-//		tableView.applyFilter();
-//		tableView.getSelectionModel().selectFirst();
-//		tableView.refresh();
-//		if (tableView.isFilterable()) {
-//			tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
-//				filterMenuButton.refreshImage();
-//			});
-//		}
-//		tableView.showFilterButtons();
-//		tableView.getFilterMenuButtons().stream().forEach(column -> {
-////			column.updateNodes();
-//			column.applyFilter();
-//			tableView.showFilterButtons();
-//		});
-//		tableView.showFilterButtons();
 	}
 
 	public void autoResizeColumns(TableView<?> tableView) {

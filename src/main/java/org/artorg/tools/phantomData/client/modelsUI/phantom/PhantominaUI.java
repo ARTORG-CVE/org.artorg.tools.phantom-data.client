@@ -42,6 +42,7 @@ public class PhantominaUI implements UIEntity<Phantomina> {
 				(path, value) -> path.setProductId(value));
 		column.setAscendingSortComparator(
 				(p1, p2) -> Phantomina.comparePid(p1.getProductId(), p2.getProductId()));
+		column.setItemsFilter(false);
 		columns.add(column);
 		columns.add(creator.createFilterColumn("Annulus [mm]",
 				path -> String.valueOf(path.getAnnulusDiameter().getValue()),

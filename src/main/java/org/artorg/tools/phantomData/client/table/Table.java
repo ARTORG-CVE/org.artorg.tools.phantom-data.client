@@ -90,27 +90,21 @@ public abstract class Table<T> {
 		this.itemClass = itemClass;
 		this.itemName = itemClass.getSimpleName();
 	}
-	
+
 	public abstract List<AbstractColumn<T, ? extends Object>> createColumns(List<T> items);
 
 	public String getTableName() {
 		return tableName;
 	}
-	
+
 	public void setTableName(String name) {
 		this.tableName = name;
 	}
-	
+
 	public void refresh() {
 		Logger.debug.println(getItemClass().getSimpleName());
 		updateColumns();
-
-		if (isFilterable()) {
-//			CollectionUtil.addIfAbsent(getFilteredItems(), getItems());
-//			CollectionUtil.removeIfAbsent(getItems(), getFilteredItems());
-
-			applyFilter();
-		}
+		if (isFilterable()) applyFilter();
 	}
 
 	public void updateColumns() {
@@ -120,7 +114,7 @@ public abstract class Table<T> {
 				(column, newColumn) -> column.getName().equals(newColumn.getName()));
 		getColumns().stream().forEach(column -> {
 			column.setItems(getItems());
-			
+
 		});
 
 		if (isFilterable()) {
@@ -143,7 +137,6 @@ public abstract class Table<T> {
 		Logger.debug.println(
 				getItemClass().getSimpleName() + " - Updated " + getFilteredColumns().size()
 						+ " column(s) in " + (System.currentTimeMillis() - startTime) + " ms");
-//		if (isFilterable()) applyFilter();
 	}
 
 	public void resetFilter() {
@@ -151,11 +144,9 @@ public abstract class Table<T> {
 		getFilteredItems().clear();
 		getFilteredItems().addAll(getItems());
 	}
-	
+
 	private boolean filterActivated = true;
-	
-	
-	
+
 	public boolean isFilterActivated() {
 		return filterActivated;
 	}
@@ -180,10 +171,10 @@ public abstract class Table<T> {
 
 		List<T> filteredItems = getItems().stream().filter(filterPredicate).sorted(sortComparator)
 				.collect(Collectors.toList());
-		
+
 		getFilteredItems().clear();
 		getFilteredItems().addAll(filteredItems);
-		
+
 		Logger.debug.println(getItemClass().getSimpleName());
 	}
 

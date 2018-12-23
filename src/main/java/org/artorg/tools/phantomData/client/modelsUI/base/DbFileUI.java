@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
+import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editors.DbFileEditFactoryController;
@@ -28,9 +29,12 @@ public class DbFileUI implements UIEntity<DbFile> {
 	public List<AbstractColumn<DbFile, ?>> createColumns(List<DbFile> items) {
 		List<AbstractColumn<DbFile, ?>> columns = new ArrayList<>();
 		ColumnCreator<DbFile, DbFile> creator = new ColumnCreator<>(getItemClass());
-		columns.add(creator.createFilterColumn("", path -> FxUtil.getFxFileIcon(path.getFile())));
-		columns.add(creator.createFilterColumn("Name", path -> path.getName(),
-				(path, value) -> path.setName(value)));
+		AbstractFilterColumn<DbFile, ?> column;
+//		columns.add(creator.createColumn("", path -> FxUtil.getFxFileIcon(path.getFile())));
+		column = creator.createFilterColumn("Name", path -> path.getName(),
+				(path, value) -> path.setName(value));
+		column.setItemsFilter(false);
+		columns.add(column);
 		columns.add(creator.createFilterColumn("Extension", path -> path.getExtension(),
 				(path, value) -> path.setExtension(value)));
 		columns.add(creator.createFilterColumn("File Tags", path -> path.getFileTags().stream()

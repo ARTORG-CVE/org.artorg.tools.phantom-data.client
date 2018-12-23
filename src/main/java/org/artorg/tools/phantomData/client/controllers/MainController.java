@@ -10,15 +10,12 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
-import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.scene.CssGlyph;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
 import org.artorg.tools.phantomData.client.util.FxUtil;
-import org.artorg.tools.phantomData.server.model.DbPersistent;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
-import org.artorg.tools.phantomData.server.models.base.FileTag;
 import org.artorg.tools.phantomData.server.models.base.Note;
 import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
@@ -144,7 +141,6 @@ public class MainController extends StackPane {
 		addSplitTabView();
 
 		getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
-		openTablePhantoms(null);
 		getOrCreate(0).openViewerTab(createScene3dTab(null));
 		getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));
 
@@ -168,11 +164,8 @@ public class MainController extends StackPane {
 
 	private void close() {
 		stage.hide();
-
 		if (Main.getBooter().isServerStartedEmbedded()) Main.getBooter().shutdownSpringServer();
-
 		Platform.exit();
-
 		System.exit(0);
 	}
 
@@ -403,10 +396,10 @@ public class MainController extends StackPane {
 
 		Tab tab = new Tab(table.getTable().getTableName());
 		tab.setContent(table);
-		
+
 		return tab;
 	}
-	
+
 	private Tab createTreeTableViewTab(Class<?> itemClass) {
 		ProTreeTableView<?> table = createTreeTable(itemClass);
 		Tab tab = new Tab(table.getTable().getTableName());
@@ -414,7 +407,7 @@ public class MainController extends StackPane {
 		tab.setText(table.getTable().getTableName());
 		return tab;
 	}
-	
+
 	private ProTreeTableView<?> createTreeTable(Class<?> itemClass) {
 		return Main.getUIEntity(itemClass).createDbTreeTableView();
 	}
@@ -432,19 +425,6 @@ public class MainController extends StackPane {
 		return splitTabViews.get(row);
 	}
 
-	void openTableFiles(ActionEvent event) {
-		openTable(DbFile.class);
-	}
-
-	void openTablePhantoms(ActionEvent event) {
-		Logger.debug.println("openTablePhantoms");
-		openTable(Phantom.class);
-	}
-
-	void openTablePhantominas(ActionEvent event) {
-		openTable(Phantomina.class);
-	}
-
 //	private Button createTabButton(String iconName) {
 //        Button button = new Button();
 //        ImageView imageView = new ImageView(new Image(IOutil.readResourceAsStream(iconName),
@@ -454,64 +434,11 @@ public class MainController extends StackPane {
 //        return button;
 //    }
 
-	void openTableSpecials(ActionEvent event) {
-		openTable(Special.class);
-	}
-
-	void openTableAnnulusDiameter(ActionEvent event) {
-		openTable(AnnulusDiameter.class);
-	}
-
-	void openTableFabricationTypes(ActionEvent event) {
-		openTable(FabricationType.class);
-	}
-
-	void openTableLiteratureBases(ActionEvent event) {
-		openTable(LiteratureBase.class);
-	}
-
-	void openTablePropertyFields(ActionEvent event) {
-		openTable(PropertyField.class);
-	}
-
-	void openTableAcademicTitles(ActionEvent event) {
-		openTable(AcademicTitle.class);
-	}
-
-	void openTablePersons(ActionEvent event) {
-		openTable(Person.class);
-	}
-
-	void openTableBooleanProperties(ActionEvent event) {
-		openTable(BooleanProperty.class);
-	}
-
-	void openTableDoubleProperties(ActionEvent event) {
-		openTable(DoubleProperty.class);
-	}
-
-	void openTableIntegerProperties(ActionEvent event) {
-		openTable(IntegerProperty.class);
-	}
-
-	void openTableStringProperties(ActionEvent event) {
-		openTable(StringProperty.class);
-	}
-
-	void openTableFileTags(ActionEvent event) {
-		openTable(FileTag.class);
-	}
-
-	void openTableMeasurement(ActionEvent event) {
-		openTable(Measurement.class);
-	}
-
 	public static String getUrlLocalhost() {
 		return urlLocalhost;
 	}
 
 	public static void setUrlLocalhost(String urlLocalhost) {
-		System.out.println("MainController: " + urlLocalhost);
 		MainController.urlLocalhost = urlLocalhost;
 	}
 

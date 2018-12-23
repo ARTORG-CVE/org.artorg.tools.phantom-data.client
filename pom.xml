@@ -30,48 +30,19 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			<artifactId>phantom-data-server</artifactId>
 			<version>0.4.1</version>
 		</dependency>
-		
+
 		<dependency>
-		<groupId>ch.huma</groupId>
-	<artifactId>huma-library</artifactId>
-	<version>0.0.2</version>
-	</dependency>
-	
-	
-	<dependency>
-        <groupId>org.controlsfx</groupId>
-								<artifactId>scenic-view</artifactId>
-								<version>1.0</version>
-      </dependency>
-	
-	
-	
-	<!-- https://mvnrepository.com/artifact/org.json/json -->
-<dependency>
-    <groupId>org.json</groupId>
-    <artifactId>json</artifactId>
-    <version>20160810</version>
-</dependency>
+			<groupId>ch.huma</groupId>
+			<artifactId>huma-library</artifactId>
+			<version>0.0.2</version>
+		</dependency>	
 
-<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
-<dependency>
-    <groupId>com.fasterxml.jackson.core</groupId>
-    <artifactId>jackson-core</artifactId>
-</dependency>
-
-	
-	
-
-
-
-<!-- https://mvnrepository.com/artifact/org.controlsfx/controlsfx -->
-<dependency>
-    <groupId>org.controlsfx</groupId>
-    <artifactId>controlsfx</artifactId>
-    <version>8.40.14</version>
-</dependency>
-
-
+		<!-- https://mvnrepository.com/artifact/org.controlsfx/controlsfx -->
+		<dependency>
+			<groupId>org.controlsfx</groupId>
+			<artifactId>controlsfx</artifactId>
+			<version>8.40.14</version>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/de.jensd/fontawesomefx -->
 		<dependency>
@@ -99,7 +70,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			<artifactId>tiwulfx</artifactId>
 			<version>2.0</version>
 		</dependency>
-
 
 		<!-- REQUIRED - Reflections f.e. getSubClass -->
 		<dependency>
@@ -130,92 +100,8 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		</dependency>
 	</dependencies>
 
-
-
-
-
 	<build> 
-	
-	
-	<pluginManagement>
-	<plugins>
-		<!--This plugin's configuration is used to store Eclipse m2e settings only. 
-			It has no influence on the Maven build itself. -->
-		<plugin>
-			<groupId>org.eclipse.m2e</groupId>
-			<artifactId>lifecycle-mapping</artifactId>
-			<version>1.0.0</version>
-			<configuration>
-				<lifecycleMappingMetadata>
-					<pluginExecutions>
-						<pluginExecution>
-							<pluginExecutionFilter>
-								<groupId>org.codehaus.mojo</groupId>
-								<artifactId>aspectj-maven-plugin</artifactId>
-								<versionRange>[1.0,)</versionRange>
-								<goals>
-									<goal>test-compile</goal>
-									<goal>compile</goal>
-								</goals>
-							</pluginExecutionFilter>
-							<action>
-								<execute />
-							</action>
-						</pluginExecution>
-						<pluginExecution>
-							<pluginExecutionFilter>
-								<groupId>
-									org.apache.maven.plugins
-								</groupId>
-								<artifactId>
-									maven-install-plugin
-								</artifactId>
-								<versionRange>
-									[2.5,)
-								</versionRange>
-								<goals>
-									<goal>install-file</goal>
-								</goals>
-							</pluginExecutionFilter>
-							<action>
-								<execute>
-									<runOnIncremental>false</runOnIncremental>
-								</execute>
-							</action>
-						</pluginExecution>
-					</pluginExecutions>
-				</lifecycleMappingMetadata>
-			</configuration>
-		</plugin>
-	</plugins>
-</pluginManagement>
-	
 		<plugins>
-		
-		
-			<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-install-plugin</artifactId>
-					<version>2.5</version>
-					<executions>
-						<execution>
-							<phase>initialize</phase>
-							<goals>
-								<goal>install-file</goal>
-							</goals>
-							<configuration>
-								<groupId>org.controlsfx</groupId>
-								<artifactId>scenic-view</artifactId>
-								<version>1.0</version>
-								<packaging>jar</packaging>
-								<file>${basedir}/lib/scenicView.jar</file>
-							</configuration>
-						</execution>
-						</executions>
-						
-					</plugin>
-						
-	
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
@@ -228,7 +114,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

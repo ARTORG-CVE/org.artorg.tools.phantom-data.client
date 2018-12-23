@@ -15,6 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
+import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.column.OptionalColumnCreator;
 import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
@@ -36,13 +37,18 @@ public class ColumnUtils {
 
 	public static <T extends AbstractPersonifiedEntity<T>> void
 			createPersonifiedColumns(Class<T> itemClass, List<AbstractColumn<T, ?>> columns) {
+
 		ColumnCreator<T, T> creator = new ColumnCreator<>(itemClass);
-		columns.add(creator.createFilterColumn("Last modified",
-				path -> format.format(path.getDateLastModified())));
+		AbstractFilterColumn<T, ?> column;
+		column = creator.createFilterColumn("Last modified",
+				path -> format.format(path.getDateLastModified()));
+		column.setItemsFilter(false);
+		columns.add(column);
 		columns.add(creator.createFilterColumn("Changed By",
 				path -> path.getChanger().getSimpleAcademicName()));
-		columns.add(
-				creator.createFilterColumn("Added", path -> format.format(path.getDateAdded())));
+		column = creator.createFilterColumn("Added", path -> format.format(path.getDateAdded()));
+		column.setItemsFilter(false);
+		columns.add(column);
 		columns.add(creator.createFilterColumn("Created By",
 				path -> path.getCreator().getSimpleAcademicName()));
 	}
@@ -60,7 +66,7 @@ public class ColumnUtils {
 				s -> Integer.valueOf(s));
 		createPropertyColumns(itemClass, columns, items,
 				container -> container.getStringProperties(), s -> s, s -> s);
-
+		
 		DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
 		Function<String, Date> stringDateFunc = s -> {
 			try {

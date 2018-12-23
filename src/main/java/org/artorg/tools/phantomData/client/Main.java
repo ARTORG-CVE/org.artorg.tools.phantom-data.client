@@ -29,7 +29,6 @@ import org.artorg.tools.phantomData.server.models.measurement.*;
 import org.artorg.tools.phantomData.server.models.phantom.*;
 import org.artorg.tools.phantomData.server.util.FxUtil;
 import org.reflections.Reflections;
-import org.scenicview.ScenicView;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -39,8 +38,7 @@ import javafx.stage.Stage;
 
 public class Main extends DesktopFxBootApplication {
 	private static ServerBooter booter;
-	private static final Reflections reflections = new Reflections(
-			"org.artorg.tools.phantomData");
+	private static final Reflections reflections = new Reflections("org.artorg.tools.phantomData");
 	private static final EntityBeanInfos beanInfos = new EntityBeanInfos(reflections);
 	private static Class<?> mainFxClass;
 	private static boolean started;
@@ -48,41 +46,41 @@ public class Main extends DesktopFxBootApplication {
 	private static Stage stage;
 	private static MainController mainController;
 	private static final Map<Class<?>, UIEntity<?>> uiEntities;
-	
+
 	static {
 		mainFxClass = null;
 		started = false;
-		
+
 		uiEntities = new HashMap<>();
 	}
-	
+
 	public static void main(String[] args) {
 		Application.launch(args);
 	}
-	
+
 	public static ServerBooter createBooter(ConsoleFrame consoleFrame,
-			StartupProgressFrame startupFrame, int nConsoleLinesServer,
-			int nConsoleLinesClient) {
+			StartupProgressFrame startupFrame, int nConsoleLinesServer, int nConsoleLinesClient) {
 		return new ServerBooter() {
-			
+
 			@Override
 			protected void uncatchedBoot(String[] args) {
 				Main.setBooter(this);
 				initBeforeServerStart(BootApplication.class, consoleFrame, startupFrame);
 				Logger.setDefaultOut(getBooter().getConsoleDiverter().getOut());
 				Logger.setDefaultErr(getBooter().getConsoleDiverter().getErr());
-				
+
 				getStartupFrame().setVisible(true);
 				getStartupFrame().setTitle("Phantom Database");
 				getStartupFrame().setProgressing(true);
 				if (isDebugConsoleMode()) getConsoleFrame().setVisible(true);
 				if (!isConnected()) {
-					getStartupFrame()
-							.setnConsoleLines(nConsoleLinesServer + nConsoleLinesClient);
+					getStartupFrame().setnConsoleLines(nConsoleLinesServer + nConsoleLinesClient);
 					setServerStartedEmbedded(true);
 					Task<Void> task = FxUtil.createTask(() -> startSpringServer(args),
 							e -> handleException(e));
-					task.setOnSucceeded(event -> Main.bootClient(this));
+					task.setOnSucceeded(event -> {
+						Main.bootClient(this);
+					});
 					task.setOnFailed(event -> finish());
 					task.setOnCancelled(event -> finish());
 					Executors.newCachedThreadPool().execute(task);
@@ -93,19 +91,27 @@ public class Main extends DesktopFxBootApplication {
 			}
 		};
 	}
-	
+
 	public static void bootClient(ServerBooter booter) {
+		System.out.println("==================== Booting PhantomData Client Application ====================");
+		Logger.info.println("Client - Connected to database at " + getBooter().getDatabasePath());
+		Logger.info.println("Client - Connected to files at " + getBooter().getFilesPath());
+		Logger.info.println("Client - Started succesful on port " + getBooter().getPort());
+		
 		Main.setMainFxClass(DesktopFxBootApplication.class);
-//		ICrudConnector.connectorGetter = itemClass -> Connectors.getConnector(itemClass);
 		CrudConnector.setUrlLocalhost(booter.getUrlLocalhost());
 		MainController.setUrlLocalhost(booter.getUrlLocalhost());
 		MainController.setUrlShutdownActuator(booter.getUrlShutdownActuator());
-		if (!DatabaseInitializer.isInitialized()) initDatabase();
-		
+		if (!DatabaseInitializer.isInitialized()) {
+			initDatabase();
+			Logger.warn.println("No data found. Initialized with sample data");
+		}
+
 		loadClientStage();
 		booter.finish();
+		
 	}
-	
+
 	public static void loadClientStage() {
 		uiEntities.put(AcademicTitle.class, new AcademicTitleUI());
 		uiEntities.put(Person.class, new PersonUI());
@@ -127,7 +133,7 @@ public class Main extends DesktopFxBootApplication {
 		uiEntities.put(Phantomina.class, new PhantominaUI());
 		uiEntities.put(Phantom.class, new PhantomUI());
 		uiEntities.put(Special.class, new SpecialUI());
-		
+
 		stage = new Stage();
 		mainController = new MainController(stage);
 		scene = new Scene(mainController);
@@ -137,90 +143,86 @@ public class Main extends DesktopFxBootApplication {
 		stage.setWidth(800);
 		stage.setHeight(500);
 		FxUtil.addIcon(stage);
-		
+
 		// speed optimization
 		Connectors.createConnectors(beanInfos.getEntityClasses());
-//		SplitTabView.searchFactoryClasses(beanInfos.getEntityClasses());
-		
-//		getBooter().getConsoleDiverter().setDefaultOut(System.out);
-//		getBooter().getConsoleDiverter().setDefaultErr(System.err);
+
 		Logger.setDefaultOut(getBooter().getConsoleDiverter().getOut());
 		Logger.setDefaultErr(getBooter().getConsoleDiverter().getErr());
-		
+
 		getBooter().getConsoleDiverter().addOutLineConsumer((consoleLines, newLine) -> {
 			Platform.runLater(() -> {
 				mainController.setStatus(newLine, true);
 			});
 		});
-		
+
 		getBooter().getConsoleDiverter().addErrLineConsumer((consoleLines, newLine) -> {
 			Platform.runLater(() -> {
 				mainController.setStatus("Exception thrown", false);
 			});
 		});
-		
+
 		stage.show();
 		stage.requestFocus();
 		stage.toFront();
-		
-		ScenicView.show(scene);
-		
+
 		started = true;
+		Logger.info.println("Client booted succesful");
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static <T> UIEntity<T> getUIEntity(Class<T> itemClass) {
 		return (UIEntity<T>) uiEntities.get(itemClass);
 	}
-	
+
 	public static Reflections getReflections() {
 		return reflections;
 	}
-	
+
 	public static ServerBooter getBooter() {
 		return booter;
 	}
-	
+
 	public static void setBooter(ServerBooter booter) {
 		Main.booter = booter;
 	}
-	
+
 	public static EntityBeanInfos getBeaninfos() {
 		return beanInfos;
 	}
-	
+
 	public static void setMainFxClass(Class<?> mainClass) {
 		if (Main.mainFxClass != null) throw new UnsupportedOperationException();
 		Main.mainFxClass = mainClass;
 	}
-	
+
 	public static Class<?> getMainFxClass() {
 		if (Main.mainFxClass == null) throw new NullPointerException();
 		return Main.mainFxClass;
 	}
-	
+
 	public static boolean isStarted() {
 		return started;
 	}
-	
+
 	public static Scene getScene() {
 		return scene;
 	}
-	
+
 	public static void setScene(Scene scene) {
 		Main.scene = scene;
 	}
-	
+
 	public static Stage getStage() {
 		return stage;
 	}
-	
+
 	public static void setStage(Stage stage) {
 		Main.stage = stage;
 	}
-	
+
 	public static MainController getMainController() {
 		return mainController;
 	}
-	
+
 }

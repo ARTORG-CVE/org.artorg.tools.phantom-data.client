@@ -19,17 +19,17 @@ public class ColumnCreator<T, S> {
 	}
 
 	// Column
-//	public <R> Column<T, S, R> createColumn(String columnName,
-//			Function<S, R> propertyToValueGetter) {
-//		return new Column<T, S, R>(itemClass, columnName, itemToPropertyGetter,
-//				propertyToValueGetter, (S s, R r) -> {});
-//	}
-//
-//	public <R> Column<T, S, R> createColumn(String columnName, Function<S, R> propertyToValueGetter,
-//			BiConsumer<S, R> propertyToValueSetter) {
-//		return new Column<T, S, R>(itemClass, columnName, itemToPropertyGetter,
-//				propertyToValueGetter, propertyToValueSetter);
-//	}
+	public <R> Column<T, S, R> createColumn(String columnName,
+			Function<S, R> propertyToValueGetter) {
+		return new Column<T, S, R>(itemClass, columnName, itemToPropertyGetter,
+				propertyToValueGetter, (S s, R r) -> {});
+	}
+
+	public <R> Column<T, S, R> createColumn(String columnName, Function<S, R> propertyToValueGetter,
+			BiConsumer<S, R> propertyToValueSetter) {
+		return new Column<T, S, R>(itemClass, columnName, itemToPropertyGetter,
+				propertyToValueGetter, propertyToValueSetter);
+	}
 
 	// FilterColumn
 	public <R> FilterColumn<T, S, R> createFilterColumn(String columnName,

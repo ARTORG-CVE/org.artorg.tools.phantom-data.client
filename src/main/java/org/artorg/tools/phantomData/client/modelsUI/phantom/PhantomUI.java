@@ -50,6 +50,7 @@ public class PhantomUI implements UIEntity<Phantom> {
 				(path, value) -> path.setProductId(value));
 		column.setAscendingSortComparator(
 				(p1, p2) -> Phantomina.comparePid(p1.getProductId(), p2.getProductId()));
+		column.setItemsFilter(false);
 		columns.add(column);
 		columns.add(creatorP.createFilterColumn("Annulus [mm]",
 				path -> String.valueOf(path.getAnnulusDiameter().getValue()),
@@ -62,8 +63,10 @@ public class PhantomUI implements UIEntity<Phantom> {
 				(path, value) -> path.getLiteratureBase().setValue(value)));
 		columns.add(creatorP.createFilterColumn("Special", path -> path.getSpecial().getShortcut(),
 				(path, value) -> path.getSpecial().setShortcut(value)));
-		columns.add(creator.createFilterColumn("Number", path -> String.valueOf(path.getNumber()),
-				(path, value) -> path.setNumber(Integer.valueOf(value))));
+		column = creator.createFilterColumn("Number", path -> String.valueOf(path.getNumber()),
+				(path, value) -> path.setNumber(Integer.valueOf(value)));
+		column.setItemsFilter(false);
+		columns.add(column);
 		columns.add(creator.createFilterColumn("Manufacturing",
 				path -> path.getManufacturing().getName(),
 				(path, value) -> path.getManufacturing().setName(value)));

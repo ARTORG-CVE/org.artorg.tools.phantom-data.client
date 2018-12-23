@@ -34,6 +34,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 
 public class FilterMenuButton<ITEM, R> extends MenuButton {
 	private final Supplier<Node> iconDefault, iconAscending, iconDescending, iconFilter;
@@ -164,7 +165,7 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 		return false;
 	}
 
-	public AbstractColumn<ITEM, ?> getColumn() {
+	public AbstractFilterColumn<ITEM, ?> getColumn() {
 		return column;
 	}
 
@@ -367,10 +368,27 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 	}
 
 	public void updateNodes() {
+		if (!getColumn().isItemsFilter()) {
+			super.getItems().removeAll(itemsFilter);
+			itemsFilter.clear();
+			MenuItem item = getItems().get(getItems().size() - 1);
+			if (item instanceof SeparatorMenuItem) getItems().remove(item);
+			return;
+		}
+		
 		List<?> values = column.getValues().stream()
 				.filter(value -> value != null && !(value.equals(""))).collect(Collectors.toList());
 		List<String> distinctValues = values.stream().distinct().map(o -> o.toString()).sorted()
 				.collect(Collectors.toList());
+		
+		if (distinctValues.size() > getColumn().getMaxFilterItems()) {
+			super.getItems().removeAll(itemsFilter);
+			itemsFilter.clear();
+			MenuItem item = getItems().get(getItems().size() - 1);
+			if (item instanceof SeparatorMenuItem) getItems().remove(item);
+			return;
+		}
+		
 		List<?> filteredValues = column.getFilteredValues().stream()
 				.filter(value -> value != null && !(value.equals(""))).collect(Collectors.toList());
 		List<String> distinctFilteredValues = filteredValues.stream().distinct()

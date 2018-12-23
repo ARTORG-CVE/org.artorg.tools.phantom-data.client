@@ -16,10 +16,14 @@ public abstract class AbstractFilterColumn<T,R> extends AbstractColumn<T, R> {
 	private Predicate<T> filterPredicate;
 	private Queue<Comparator<T>> sortComparatorQueue;
 	private ObservableList<T> filteredItems;
+	private int maxFilterItems;
+	private boolean itemsFilter;
 
 	{
 		filteredItems = FXCollections.observableArrayList();
 		resetFilter();
+		maxFilterItems = 10;
+		itemsFilter = true;
 	}
 
 	public AbstractFilterColumn(Class<T> itemClass, String columnName) {
@@ -88,5 +92,25 @@ public abstract class AbstractFilterColumn<T,R> extends AbstractColumn<T, R> {
 	public void setFilteredItems(ObservableList<T> filteredItems) {
 		this.filteredItems = filteredItems;
 	}
+
+	public int getMaxFilterItems() {
+		return maxFilterItems;
+	}
+
+	public void setMaxFilterItems(int maxFilterItems) {
+		this.maxFilterItems = maxFilterItems;
+	}
+
+	public boolean isItemsFilter() {
+		return itemsFilter;
+	}
+
+	public void setItemsFilter(boolean itemsFilter) {
+		this.itemsFilter = itemsFilter;
+	}
+	
+	
+	
+	
 
 }

@@ -17,7 +17,7 @@ public class Logger {
 	static {
 		setDefaultOut(System.out);
 		setDefaultErr(System.err);
-		setLevel(Level.DEBUG);
+		setLevel(Level.INFO);
 	}
 	
 	private static Supplier<String> createPrefixSupplier(String logType) {
@@ -47,8 +47,8 @@ public class Logger {
 		error = new huma.logging.PrintStream(System.err, createPrefixSupplier("ERROR"), Level.ERROR, () -> getLevel());
 		fatal = new huma.logging.PrintStream(System.err, createPrefixSupplier("FATAL"), Level.FATAL, () -> getLevel());
 		
-//		error.setPrintStackTrace(true);
-//		fatal.setPrintStackTrace(true);
+		error.setPrintStackTrace(true);
+		fatal.setPrintStackTrace(true);
 	}
 
 }

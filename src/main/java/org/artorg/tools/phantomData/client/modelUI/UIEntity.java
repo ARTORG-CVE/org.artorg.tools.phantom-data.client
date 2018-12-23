@@ -5,6 +5,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.beans.DbNode;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
+import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
@@ -28,6 +29,7 @@ public interface UIEntity<T> {
 	ItemEditFactoryController<T> createEditFactory();
 
 	default Table<T> createTableBase() {
+		long startTime = System.currentTimeMillis();
 		Table<T> table = new Table<T>(getItemClass()) {
 			@Override
 			public List<AbstractColumn<T, ? extends Object>> createColumns(List<T> items) {
@@ -35,10 +37,13 @@ public interface UIEntity<T> {
 			}
 		};
 		table.setTableName(getTableName());
+		Logger.debug.println(String.format("%s - TableBase created in %d ms", getItemClass().getSimpleName(),
+				System.currentTimeMillis() - startTime));
 		return table;
 	}
 
 	default DbTable<T> createDbTableBase() {
+		long startTime = System.currentTimeMillis();
 		DbTable<T> table = new DbTable<T>(getItemClass()) {
 			@Override
 			public List<AbstractColumn<T, ? extends Object>> createColumns(List<T> items) {
@@ -46,6 +51,8 @@ public interface UIEntity<T> {
 			}
 		};
 		table.setTableName(getTableName());
+		Logger.debug.println(String.format("%s - DbTable created in %d ms", getItemClass().getSimpleName(),
+				System.currentTimeMillis() - startTime));
 		return table;
 	}
 
@@ -58,10 +65,15 @@ public interface UIEntity<T> {
 				});
 			}
 		});
-		return tableView;}
+		return tableView;
+	}
 
 	default DbTableView<T> createDbTableView() {
+		long startTime = System.currentTimeMillis();
 		DbTableView<T> tableView = new DbTableView<>(getItemClass());
+		Logger.info.println(String.format("%s - Table created with %d items in %d ms",
+				getItemClass().getSimpleName(), tableView.getTable().getItems().size(),
+				System.currentTimeMillis() - startTime));
 
 //		tableView.showFilterButtons();
 //		tableView.refresh();
