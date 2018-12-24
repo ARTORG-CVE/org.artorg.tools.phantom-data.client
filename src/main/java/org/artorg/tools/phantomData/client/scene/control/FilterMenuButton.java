@@ -20,7 +20,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
@@ -118,11 +117,8 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 		this.getItems().add(itemAscending);
 		this.getItems().add(itemDescending);
 		this.getItems().add(itemSearch);
-		this.getItems().add(itemFilterAll);
 
-		this.addEventHandler(ComboBox.ON_HIDDEN, event -> applyFilter());
-		this.addEventHandler(ComboBox.ON_SHOWING, event -> updateNodes());
-
+		this.setOnMouseClicked(event -> updateNodes());
 	}
 
 	public void setRefresh(Runnable refresh) {
@@ -405,23 +401,27 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 				CollectionUtil.subList(itemsFilter, removableIndexes);
 		List<String> removableFilterItemNames =
 				nonMatchingItems.stream().map(c -> c.getText()).collect(Collectors.toList());
-		
+
 		super.getItems().removeAll(itemsFilter);
 		MenuItem item = getItems().get(getItems().size() - 1);
 		if (item instanceof SeparatorMenuItem) getItems().remove(item);
 		super.getItems().remove(itemFilterAll);
 
 		if (!(checkBoxItemsFilter.isEmpty() && nonMatchingItems.isEmpty())) {
-		itemsFilter.addAll(checkBoxItemsFilter);
-		itemsFilter.removeAll(nonMatchingItems);
+			itemsFilter.addAll(checkBoxItemsFilter);
+			itemsFilter.removeAll(nonMatchingItems);
 
-		itemsFilter
-				.sort((c1, c2) -> c1.getCheckBox().getText().compareTo(c2.getCheckBox().getText()));
+			itemsFilter.sort(
+					(c1, c2) -> c1.getCheckBox().getText().compareTo(c2.getCheckBox().getText()));
 		}
 
-		List<Integer> disableIndexes = CollectionUtil.searchLeftNotInRight(itemsFilter, distinctFilteredValues, (itemFilter,name) -> itemFilter.getCheckBox().getText().equals(name));
-		List<Integer> enableIndexes = CollectionUtil.inverseSelection(disableIndexes, itemsFilter.size());
-		List<CheckBoxItemFilter> disabledItems = CollectionUtil.subList(itemsFilter, disableIndexes);
+		List<Integer> disableIndexes =
+				CollectionUtil.searchLeftNotInRight(itemsFilter, distinctFilteredValues,
+						(itemFilter, name) -> itemFilter.getCheckBox().getText().equals(name));
+		List<Integer> enableIndexes =
+				CollectionUtil.inverseSelection(disableIndexes, itemsFilter.size());
+		List<CheckBoxItemFilter> disabledItems =
+				CollectionUtil.subList(itemsFilter, disableIndexes);
 		List<CheckBoxItemFilter> enabledItems = CollectionUtil.subList(itemsFilter, enableIndexes);
 		disabledItems.forEach(itemFilter -> itemFilter.setDisable(true));
 		enabledItems.forEach(itemFilter -> itemFilter.setDisable(false));
@@ -433,12 +433,12 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 		}
 
 		String suffix = "";
-		if (!addableFilterItemNames.isEmpty())
-			suffix = " - filter items added " +addableFilterItemNames.stream().collect(Collectors.joining(", ", "{", "}"));
+		if (!addableFilterItemNames.isEmpty()) suffix = " - filter items added "
+				+ addableFilterItemNames.stream().collect(Collectors.joining(", ", "{", "}"));
 		if (!removableFilterItemNames.isEmpty()) suffix = suffix + ", filter items removed"
 				+ removableFilterItemNames.stream().collect(Collectors.joining(", ", "{", "}"));
-		Logger.debug.println(String.format("%s - %s%s",
-				getColumn().getItemClass().getSimpleName(), getColumn().getName(), suffix));
+		Logger.debug.println(String.format("%s - %s%s", getColumn().getItemClass().getSimpleName(),
+				getColumn().getName(), suffix));
 	}
 
 	private CheckBoxItemFilter createCheckBoxItemFilter(String name) {

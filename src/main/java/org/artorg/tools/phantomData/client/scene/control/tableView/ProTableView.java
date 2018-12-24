@@ -37,7 +37,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 	private BiPredicate<AbstractColumn<T, ? extends Object>, TableColumn<T, ?>> columnRemovePolicy;
 	private final Class<T> itemClass;
 	private Table<T> table;
-	private List<FilterMenuButton<T, ?>> filterMenuButtons;
+	private final List<FilterMenuButton<T, ?>> filterMenuButtons;
 
 	{
 		columnAddPolicy = (fromColumn, toColumn) -> toColumn.getText().equals(fromColumn.getName());
@@ -54,7 +54,6 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		updateColumns();
 		autoResizeColumns();
 		
-		filterMenuButtons.forEach(filterMenuButton -> filterMenuButton.updateNodes());
 	}
 
 	protected ProTableView(Class<T> itemClass, Table<T> table) {
@@ -73,6 +72,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 					FxUtil.runNewSingleThreaded(() -> {
 						Platform.runLater(() -> {
 							showFilterButtons();
+							filterMenuButtons.forEach(filterMenuButton -> filterMenuButton.updateNodes());
 						});
 						try {
 							Thread.sleep(300);

@@ -10,9 +10,7 @@ public class DbTableView<ITEM> extends ProTableView<ITEM> {
 
 	public DbTableView(Class<ITEM> itemClass) {
 		this(itemClass, Main.getUIEntity(itemClass).createDbTableBase());
-
 		
-
 		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		getTable().readAllData();
