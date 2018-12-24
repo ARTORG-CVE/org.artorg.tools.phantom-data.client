@@ -11,6 +11,7 @@ import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryControll
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
@@ -37,9 +38,9 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE> & DbPersis
 	protected abstract void setValueToNode(Node valueNode, VALUE value);
 
 	@Override
-	public List<AbstractColumn<T, ?>> createColumns(List<T> items) {
+	public List<AbstractColumn<T, ?>> createColumns(Table<T> table, List<T> items) {
 		List<AbstractColumn<T, ?>> columns = new ArrayList<AbstractColumn<T, ?>>();
-		ColumnCreator<T, T> creator = new ColumnCreator<>(getItemClass());
+		ColumnCreator<T, T> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Type", path -> {
 			try {
 				return Class.forName(path.getPropertyField().getType()).getSimpleName();
@@ -53,7 +54,7 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE> & DbPersis
 						(path, value) -> path.getPropertyField().setName(value)));
 		columns.add(creator.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(fromString(value))));
-		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
+		ColumnUtils.createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

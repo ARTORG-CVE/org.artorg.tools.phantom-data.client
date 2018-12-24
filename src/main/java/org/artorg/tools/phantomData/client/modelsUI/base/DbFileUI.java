@@ -12,6 +12,7 @@ import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editors.DbFileEditFactoryController;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
@@ -32,9 +33,9 @@ public class DbFileUI implements UIEntity<DbFile> {
 	}
 
 	@Override
-	public List<AbstractColumn<DbFile, ?>> createColumns(List<DbFile> items) {
+	public List<AbstractColumn<DbFile, ?>> createColumns(Table<DbFile> table, List<DbFile> items) {
 		List<AbstractColumn<DbFile, ?>> columns = new ArrayList<>();
-		ColumnCreator<DbFile, DbFile> creator = new ColumnCreator<>(getItemClass());
+		ColumnCreator<DbFile, DbFile> creator = new ColumnCreator<>(table);
 		AbstractFilterColumn<DbFile, ?> column;
 		columns.add(creator.createColumn("", path -> {
 			if (path.getExtension().isEmpty()) return null;
@@ -56,8 +57,8 @@ public class DbFileUI implements UIEntity<DbFile> {
 				.map(fileTag -> fileTag.getName()).collect(Collectors.joining(", "))));
 //		columns.add(
 //				new FilterColumn<>("Phantoms", path -> String.valueOf(path.getPhantoms().size())));
-		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
+		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
+		ColumnUtils.createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

@@ -7,27 +7,25 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import org.artorg.tools.phantomData.client.table.Table;
 
 public abstract class AbstractFilterColumn<T,R> extends AbstractColumn<T, R> {
 	private Comparator<T> sortComparator;
 	private Comparator<T> ascendingSortComparator;
 	private Predicate<T> filterPredicate;
 	private Queue<Comparator<T>> sortComparatorQueue;
-	private ObservableList<T> filteredItems;
 	private int maxFilterItems;
 	private boolean itemsFilter;
 
 	{
-		filteredItems = FXCollections.observableArrayList();
 		resetFilter();
 		maxFilterItems = 10;
 		itemsFilter = true;
+		
 	}
 
-	public AbstractFilterColumn(Class<T> itemClass, String columnName) {
-		super(itemClass, columnName);
+	public AbstractFilterColumn(Table<T> table, String columnName) {
+		super(table, columnName);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -41,7 +39,7 @@ public abstract class AbstractFilterColumn<T,R> extends AbstractColumn<T, R> {
 	}
 	
 	public List<R> getFilteredValues() {
-		return getFilteredItems().stream().map(item -> get(item))
+		return getTable().getFilteredItems().stream().map(item -> get(item))
 			.collect(Collectors.toList());
 	}
 	
@@ -83,10 +81,6 @@ public abstract class AbstractFilterColumn<T,R> extends AbstractColumn<T, R> {
 
 	public void setSortComparatorQueue(Queue<Comparator<T>> sortComparatorQueue) {
 		this.sortComparatorQueue = sortComparatorQueue;
-	}
-	
-	public ObservableList<T> getFilteredItems() {
-		return filteredItems;
 	}
 
 	public int getMaxFilterItems() {

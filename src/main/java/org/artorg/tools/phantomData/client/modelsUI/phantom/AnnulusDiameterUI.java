@@ -10,6 +10,7 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
 
@@ -29,17 +30,17 @@ public class AnnulusDiameterUI implements UIEntity<AnnulusDiameter> {
 	}
 
 	@Override
-	public List<AbstractColumn<AnnulusDiameter, ?>> createColumns(List<AnnulusDiameter> items) {
+	public List<AbstractColumn<AnnulusDiameter, ?>> createColumns(Table<AnnulusDiameter> table, List<AnnulusDiameter> items) {
 		List<AbstractColumn<AnnulusDiameter, ?>> columns = new ArrayList<>();
 		ColumnCreator<AnnulusDiameter, AnnulusDiameter> creator =
-				new ColumnCreator<>(getItemClass());
+				new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Sortcut", path -> String.valueOf(path.getShortcut()),
 				(path, value) -> path.setShortcut(Integer.valueOf(value))));
 		columns.add(creator.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(Double.valueOf(value))));
-		ColumnUtils.createCountingColumn(getItemClass(), "Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
+		ColumnUtils.createCountingColumn(table, "Files", columns, item -> item.getFiles());
+		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
+		ColumnUtils.createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

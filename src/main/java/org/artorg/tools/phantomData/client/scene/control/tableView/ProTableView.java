@@ -50,9 +50,11 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		this(itemClass, Main.getUIEntity(itemClass).createTableBase());
 		getItems().clear();
 		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		getFilterMenuButtons().stream().forEach(column -> {
-			column.updateNodes();
-		});
+
+		updateColumns();
+		autoResizeColumns();
+		
+		filterMenuButtons.forEach(filterMenuButton -> filterMenuButton.updateNodes());
 	}
 
 	protected ProTableView(Class<T> itemClass, Table<T> table) {
@@ -196,11 +198,6 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 			if (baseColumn instanceof AbstractFilterColumn) {
 				AbstractFilterColumn<T, ?> filterColumn = (AbstractFilterColumn<T, ?>) baseColumn;
 				filterColumn.setSortComparatorQueue(table.getSortComparatorQueue());
-
-//				filterColumn.setItems(getItems());
-				filterColumn.getItems().clear();
-				filterColumn.getItems().addAll(getItems());
-				
 				getFilterMenuButtons().add(createFilterMenuButton(filterColumn, index));
 			}
 

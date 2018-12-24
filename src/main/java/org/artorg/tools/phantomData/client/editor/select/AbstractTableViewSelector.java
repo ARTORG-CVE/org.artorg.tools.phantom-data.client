@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.editor;
+package org.artorg.tools.phantomData.client.editor.select;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,12 +10,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
 
 public abstract class AbstractTableViewSelector<ITEM> {
-	private TableView<ITEM> tableView1;
-	private TableView<ITEM> tableView2;
+	private ProTableView<ITEM> tableView1;
+	private ProTableView<ITEM> tableView2;
 	private String name;
 
 	public abstract Class<?> getSubItemClass();
@@ -40,25 +39,13 @@ public abstract class AbstractTableViewSelector<ITEM> {
 		}
 	}
 
-//	public void setSelectableItems(Set<Object> set) {
-//		ObservableList<Object> items = FXCollections.observableArrayList();
-//		items.addAll(set);
-//		getTableView1().setItems(items);
-//	}
-
 	public ObservableList<ITEM> getSelectableItems() {
-		return ((ProTableView<ITEM>) getTableView1()).getItems();
+		return getTableView1().getTable().getItems();
 	}
 
 	public ObservableList<ITEM> getSelectedItems() {
-		return ((ProTableView<ITEM>) getTableView2()).getItems();
+		return getTableView2().getTable().getItems();
 	}
-
-//	public void setSelectedItems(Set<Object> set) {
-//		ObservableList<Object> items = FXCollections.observableArrayList();
-//		items.addAll(set);
-//		getTableView2().setItems(items);
-//	}
 
 	protected TableColumn<Object, String> createValueColumn(String columnName) {
 		TableColumn<Object, String> column = new TableColumn<Object, String>(columnName);
@@ -71,20 +58,20 @@ public abstract class AbstractTableViewSelector<ITEM> {
 		return column;
 	}
 
-	public TableView<ITEM> getTableView1() {
+	protected ProTableView<ITEM> getTableView1() {
 		return tableView1;
 	}
 	
-	public void setTableView1(TableView<ITEM> tableView1) {
-		this.tableView1 = (TableView<ITEM>) tableView1;
+	public void setTableView1(ProTableView<ITEM> tableView1) {
+		this.tableView1 = tableView1;
 	}
 
-	public TableView<ITEM> getTableView2() {
+	protected ProTableView<ITEM> getTableView2() {
 		return tableView2;
 	}
 
-	public void setTableView2(TableView<ITEM> tableView2) {
-		this.tableView2 = (TableView<ITEM>) tableView2;
+	public void setTableView2(ProTableView<ITEM> tableView2) {
+		this.tableView2 = tableView2;
 	}
 
 	public String getName() {

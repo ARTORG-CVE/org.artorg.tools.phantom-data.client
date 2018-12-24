@@ -10,6 +10,7 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
 
 import javafx.scene.control.TextField;
@@ -27,9 +28,9 @@ public class AcademicTitleUI implements UIEntity<AcademicTitle> {
 	}
 
 	@Override
-	public List<AbstractColumn<AcademicTitle, ?>> createColumns(List<AcademicTitle> items) {
+	public List<AbstractColumn<AcademicTitle, ?>> createColumns(Table<AcademicTitle> table, List<AcademicTitle> items) {
 		List<AbstractColumn<AcademicTitle, ?>> columns = new ArrayList<>();
-		ColumnCreator<AcademicTitle, AcademicTitle> creator = new ColumnCreator<>(getItemClass());
+		ColumnCreator<AcademicTitle, AcademicTitle> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Prefix", path -> path.getPrefix(),
 				(path, value) -> path.setPrefix((String) value)));
 		columns.add(creator.createFilterColumn("Prefix", path -> path.getPrefix(),

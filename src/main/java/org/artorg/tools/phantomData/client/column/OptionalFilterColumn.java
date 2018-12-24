@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
 
 public class OptionalFilterColumn<T, S, R> extends AbstractFilterColumn<T, R> {
@@ -14,10 +15,10 @@ public class OptionalFilterColumn<T, S, R> extends AbstractFilterColumn<T, R> {
 	private final BiConsumer<S, R> propertyToValueSetter;
 	private final R emptyValue;
 
-	public OptionalFilterColumn(Class<T> itemClass, String columnName, Function<T, Optional<S>> itemToPropertyGetter,
+	public OptionalFilterColumn(Table<T> table, String columnName, Function<T, Optional<S>> itemToPropertyGetter,
 			Function<S, R> propertyToValueGetter, BiConsumer<S, R> propertyToValueSetter,
 			R emtpyValue) {
-		super(itemClass, columnName);
+		super(table, columnName);
 		this.itemToPropertyGetter = item -> itemToPropertyGetter.apply(item);
 		this.propertyToValueGetter = propertyToValueGetter;
 		this.propertyToValueSetter = propertyToValueSetter;

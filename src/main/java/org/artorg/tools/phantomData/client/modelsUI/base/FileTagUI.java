@@ -10,6 +10,7 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.base.FileTag;
 
@@ -29,12 +30,12 @@ public class FileTagUI implements UIEntity<FileTag> {
 	}
 
 	@Override
-	public List<AbstractColumn<FileTag, ?>> createColumns(List<FileTag> items) {
+	public List<AbstractColumn<FileTag, ?>> createColumns(Table<FileTag> table, List<FileTag> items) {
 		List<AbstractColumn<FileTag, ?>> columns = new ArrayList<AbstractColumn<FileTag, ?>>();
-		ColumnCreator<FileTag, FileTag> creator = new ColumnCreator<>(getItemClass());
+		ColumnCreator<FileTag, FileTag> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Name", path -> path.getName(),
 				(path, value) -> path.setName(value)));
-		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
+		ColumnUtils.createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

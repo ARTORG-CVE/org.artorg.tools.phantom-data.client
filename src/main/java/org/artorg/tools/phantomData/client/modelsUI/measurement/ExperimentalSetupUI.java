@@ -10,6 +10,7 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.measurement.ExperimentalSetup;
 
@@ -28,18 +29,18 @@ public class ExperimentalSetupUI implements UIEntity<ExperimentalSetup> {
 	}
 
 	@Override
-	public List<AbstractColumn<ExperimentalSetup, ?>> createColumns(List<ExperimentalSetup> items) {
+	public List<AbstractColumn<ExperimentalSetup, ?>> createColumns(Table<ExperimentalSetup> table, List<ExperimentalSetup> items) {
 		List<AbstractColumn<ExperimentalSetup, ?>> columns = new ArrayList<>();
-		ColumnCreator<ExperimentalSetup, ExperimentalSetup> creator = new ColumnCreator<>(getItemClass());
+		ColumnCreator<ExperimentalSetup, ExperimentalSetup> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Short name", path -> path.getShortName(),
 				(path, value) -> path.setShortName(value)));
 		columns.add(creator.createFilterColumn("Long name", path -> path.getLongName(),
 				(path, value) -> path.setLongName(value)));
 		columns.add(creator.createFilterColumn("Description", path -> path.getDescription(),
 				(path, value) -> path.setDescription(value)));
-		ColumnUtils.createCountingColumn(getItemClass(), "Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
+		ColumnUtils.createCountingColumn(table, "Files", columns, item -> item.getFiles());
+		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
+		ColumnUtils.createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

@@ -17,9 +17,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
+import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.LimitedQueue;
-import org.artorg.tools.phantomData.client.logging.Logger;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -38,6 +38,7 @@ public abstract class Table<T> {
 
 	// FilterTable
 	private final ObservableList<T> filteredItems;
+	private final ObservableList<T> readOnlyFilteredItems;
 	private Predicate<T> filterPredicate;
 	private List<Predicate<T>> columnItemFilterPredicates;
 	private List<Predicate<T>> columnTextFilterPredicates;
@@ -52,16 +53,9 @@ public abstract class Table<T> {
 		items = FXCollections.observableArrayList();
 		columns = new ArrayList<AbstractColumn<T, ? extends Object>>();
 
-		itemListChangeListener = new ListChangeListener<T>() {
-			@Override
-			public void onChanged(Change<? extends T> c) {
-//				updateColumns();
-			}
-		};
-		items.addListener(itemListChangeListener);
-
 		// FilterTable
 		filteredItems = FXCollections.observableArrayList();
+		readOnlyFilteredItems = FXCollections.unmodifiableObservableList(filteredItems);
 		filterPredicate = item -> true;
 		columnItemFilterPredicates = new ArrayList<>();
 		columnTextFilterPredicates = new ArrayList<>();
@@ -72,18 +66,15 @@ public abstract class Table<T> {
 		mappedColumnIndexes = new ArrayList<>();
 		sortComparatorQueue = new LimitedQueue<>(1);
 
-//		TableBase<T> reference = this;
-//		ObservableList<T> unfilteredItems = getItems();
-
-//		ListChangeListener<T> unfilteredListener = reference.getItemListChangeListener();
-//		ListChangeListener<T> filteredListener = (ListChangeListener<T>) c -> {
-//			unfilteredItems.removeListener(unfilteredListener);
-//			while (c.next()) {
-//				if (c.wasAdded()) CollectionUtil.addIfAbsent(c.getAddedSubList(), unfilteredItems);
-//			}
-//			unfilteredItems.addListener(unfilteredListener);
-//		};
-//		getFilteredItems().addListener(filteredListener);
+		
+		itemListChangeListener = c -> {
+			while (c.next()) {
+				CollectionUtil.addIfAbsent(items, filteredItems);
+				CollectionUtil.removeIfAbsent(items, filteredItems);
+				updateColumns();
+			}
+		};
+		items.addListener(itemListChangeListener);
 	}
 
 	public Table(Class<T> itemClass) {
@@ -112,10 +103,6 @@ public abstract class Table<T> {
 		List<AbstractColumn<T, ? extends Object>> columns = createColumns(getItems());
 		CollectionUtil.syncLists(this.columns, columns,
 				(column, newColumn) -> column.getName().equals(newColumn.getName()));
-		getColumns().stream().forEach(column -> {
-			column.getItems().clear();
-			column.getItems().addAll(getItems());
-		});
 
 		if (isFilterable()) {
 			int nCols = getNcols();
@@ -128,14 +115,6 @@ public abstract class Table<T> {
 				columnTextFilterPredicates.add(item -> true);
 			}
 			columnIndexMapper = i -> mappedColumnIndexes.get(i);
-
-			getFilteredColumns().stream()
-					.collect(castFilter(column -> ((AbstractFilterColumn<T, ?>) column)))
-					.forEach(column -> {
-						column.getFilteredItems().clear();
-						column.getFilteredItems().addAll(getFilteredItems());
-							});
-
 		}
 		Logger.debug.println(
 				getItemClass().getSimpleName() + " - Updated " + getFilteredColumns().size()
@@ -172,11 +151,11 @@ public abstract class Table<T> {
 		sortComparator = sortComparatorQueue.stream().reduce((c1, c2) -> c2.thenComparing(c1))
 				.orElse((c1, c2) -> 0);
 
-		List<T> filteredItems = getItems().stream().filter(filterPredicate).sorted(sortComparator)
-				.collect(Collectors.toList());
+		List<T> newFilteredItems = getItems().stream().filter(filterPredicate)
+				.sorted(sortComparator).collect(Collectors.toList());
 
-		getFilteredItems().clear();
-		getFilteredItems().addAll(filteredItems);
+		this.filteredItems.clear();
+		this.filteredItems.addAll(newFilteredItems);
 
 		Logger.debug.println(getItemClass().getSimpleName());
 	}
@@ -334,7 +313,7 @@ public abstract class Table<T> {
 		this.editable = editable;
 	}
 
-	public ListChangeListener<T> getItemListChangeListener() {
+	protected ListChangeListener<T> getItemListChangeListener() {
 		return itemListChangeListener;
 	}
 
@@ -372,7 +351,7 @@ public abstract class Table<T> {
 	}
 
 	public ObservableList<T> getFilteredItems() {
-		return filteredItems;
+		return readOnlyFilteredItems;
 	}
 
 	public int getFilteredNrows() {

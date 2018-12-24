@@ -10,6 +10,7 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.phantom.Special;
 
@@ -29,17 +30,17 @@ public class SpecialUI implements UIEntity<Special> {
 	}
 
 	@Override
-	public List<AbstractColumn<Special, ?>> createColumns(List<Special> items) {
+	public List<AbstractColumn<Special, ?>> createColumns(Table<Special> table, List<Special> items) {
 		List<AbstractColumn<Special, ?>> columns = new ArrayList<>();
-		ColumnCreator<Special, Special> creator = new ColumnCreator<>(getItemClass());
+		ColumnCreator<Special, Special> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Shortcut", path -> path.getShortcut(),
 				(path, value) -> path.setShortcut(value)));
 		columns.add(creator.createFilterColumn("Description", path -> path.getDescription(),
 				(path, value) -> path.setDescription(value)));
-		ColumnUtils.createCountingColumn(getItemClass(), "Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
+		ColumnUtils.createCountingColumn(table, "Files", columns, item -> item.getFiles());
+		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
 //		createPropertyColumns(columns, this.getItems());
-		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
+		ColumnUtils.createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

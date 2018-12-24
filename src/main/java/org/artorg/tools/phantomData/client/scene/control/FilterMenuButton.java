@@ -2,23 +2,19 @@ package org.artorg.tools.phantomData.client.scene.control;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
+import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.scene.CssGlyph;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
-import org.artorg.tools.phantomData.client.logging.Logger;
 import org.controlsfx.glyphfont.FontAwesome;
 
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -34,7 +30,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 
 public class FilterMenuButton<ITEM, R> extends MenuButton {
 	private final Supplier<Node> iconDefault, iconAscending, iconDescending, iconFilter;
@@ -66,7 +61,6 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 			setRegex(itemSearch.getTextField().getText());
 			applyFilter();
 		});
-//		Platform.runLater(() -> setImage(iconDefault.get()));
 	}
 
 	public Runnable getRefresher() {
@@ -372,15 +366,13 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 			itemsFilter.clear();
 			MenuItem item = getItems().get(getItems().size() - 1);
 			if (item instanceof SeparatorMenuItem) getItems().remove(item);
-//			super.getItems().remove(itemFilterAll);
-			
-			Logger.debug.println("updateNodes remove1");
+			super.getItems().remove(itemFilterAll);
 			return;
 		}
 
 		List<?> allValues = column.getValues();
-		List<?> values = allValues.stream()
-				.filter(value -> value != null && !(value.equals(""))).collect(Collectors.toList());
+		List<?> values = allValues.stream().filter(value -> value != null && !(value.equals("")))
+				.collect(Collectors.toList());
 		List<String> distinctValues = values.stream().distinct().map(o -> o.toString()).sorted()
 				.collect(Collectors.toList());
 
@@ -389,8 +381,7 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 			itemsFilter.clear();
 			MenuItem item = getItems().get(getItems().size() - 1);
 			if (item instanceof SeparatorMenuItem) getItems().remove(item);
-//			super.getItems().remove(itemFilterAll);
-			Logger.debug.println("updateNodes remove2");
+			super.getItems().remove(itemFilterAll);
 			return;
 		}
 
@@ -414,41 +405,40 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 				CollectionUtil.subList(itemsFilter, removableIndexes);
 		List<String> removableFilterItemNames =
 				nonMatchingItems.stream().map(c -> c.getText()).collect(Collectors.toList());
-
-		if (checkBoxItemsFilter.isEmpty() && nonMatchingItems.isEmpty()) return;
-
+		
 		super.getItems().removeAll(itemsFilter);
 		MenuItem item = getItems().get(getItems().size() - 1);
 		if (item instanceof SeparatorMenuItem) getItems().remove(item);
-//		super.getItems().remove(itemFilterAll);
-		
+		super.getItems().remove(itemFilterAll);
+
+		if (!(checkBoxItemsFilter.isEmpty() && nonMatchingItems.isEmpty())) {
 		itemsFilter.addAll(checkBoxItemsFilter);
 		itemsFilter.removeAll(nonMatchingItems);
 
 		itemsFilter
 				.sort((c1, c2) -> c1.getCheckBox().getText().compareTo(c2.getCheckBox().getText()));
-
-		for (int i = 0; i < itemsFilter.size(); i++) {
-			if (distinctFilteredValues.contains(itemsFilter.get(i).getCheckBox().getText()))
-				itemsFilter.get(i).setDisable(false);
-			else
-				itemsFilter.get(i).setDisable(true);
 		}
-		
+
+		List<Integer> disableIndexes = CollectionUtil.searchLeftNotInRight(itemsFilter, distinctFilteredValues, (itemFilter,name) -> itemFilter.getCheckBox().getText().equals(name));
+		List<Integer> enableIndexes = CollectionUtil.inverseSelection(disableIndexes, itemsFilter.size());
+		List<CheckBoxItemFilter> disabledItems = CollectionUtil.subList(itemsFilter, disableIndexes);
+		List<CheckBoxItemFilter> enabledItems = CollectionUtil.subList(itemsFilter, enableIndexes);
+		disabledItems.forEach(itemFilter -> itemFilter.setDisable(true));
+		enabledItems.forEach(itemFilter -> itemFilter.setDisable(false));
+
 		if (!itemsFilter.isEmpty()) {
-//			getItems().add(itemFilterAll);
+			getItems().add(itemFilterAll);
 			getItems().add(new SeparatorMenuItem());
 			getItems().addAll(itemsFilter);
 		}
-		
-		String addedNames =
-				addableFilterItemNames.stream().collect(Collectors.joining(", ", "{", "}"));
-		String removedNames =
-				removableFilterItemNames.stream().collect(Collectors.joining(", ", "{", "}"));
-		Logger.debug
-				.println(String.format("%s - %s - added filter items: %s, removed filter items %s",
-						getColumn().getItemClass().getSimpleName(), getColumn().getName(),
-						addedNames, removedNames));
+
+		String suffix = "";
+		if (!addableFilterItemNames.isEmpty())
+			suffix = " - filter items added " +addableFilterItemNames.stream().collect(Collectors.joining(", ", "{", "}"));
+		if (!removableFilterItemNames.isEmpty()) suffix = suffix + ", filter items removed"
+				+ removableFilterItemNames.stream().collect(Collectors.joining(", ", "{", "}"));
+		Logger.debug.println(String.format("%s - %s%s",
+				getColumn().getItemClass().getSimpleName(), getColumn().getName(), suffix));
 	}
 
 	private CheckBoxItemFilter createCheckBoxItemFilter(String name) {

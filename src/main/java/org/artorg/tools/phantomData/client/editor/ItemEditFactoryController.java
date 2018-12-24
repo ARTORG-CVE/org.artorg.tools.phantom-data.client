@@ -17,9 +17,10 @@ import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.editor.select.AbstractTableViewSelector;
+import org.artorg.tools.phantomData.client.editor.select.TitledPaneTableViewSelector;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.client.scene.control.VGridBoxPane;
-import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.model.BackReference;
@@ -102,48 +103,36 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		selector.setSelectedChildItems(item);
 	}
 
-	private List<AbstractTableViewSelector<?>> createSelectors(T item, Class<?> itemClass) {
+	private List<AbstractTableViewSelector<?>> createSelectors(T item) {
 		List<AbstractTableViewSelector<?>> selectors = new ArrayList<>();
 		subItemClasses.forEach(subItemClass -> {
 			Set<?> selectableItems = getSelectableItems(subItemClass);
 			if (!selectableItems.isEmpty()) {
 				AbstractTableViewSelector<?> selector =
-						createSelector(item, itemClass, subItemClass, selectableItems);
+						createSelector(item, subItemClass, selectableItems);
 				if (selector != null) selectors.add(selector);
 			}
 		});
 
 		return selectors;
 	}
-
-	@SuppressWarnings("rawtypes")
-	protected AbstractTableViewSelector<?> createSelector(T item, Class<?> itemClass,
-			Class<?> subItemClass, Set<?> selectableItems) {
-		if (containsCollectionSetter(itemClass, subItemClass)) {
+	
+	protected <U> AbstractTableViewSelector<U> createSelector(T item,
+			Class<?> subItemClass, Set<U> selectableItems) {
+		if (containsCollectionSetter(subItemClass)) {
 			try {
-				AbstractTableViewSelector<Object> titledSelector =
-						new TitledPaneTableViewSelector(subItemClass);
+				TitledPaneTableViewSelector<U> titledSelector =
+						new TitledPaneTableViewSelector<U>((Class<U>)subItemClass);
 				
-//				titledSelector.getSelectableItems().addAll(selectableItems);
-				((ProTableView) (titledSelector.getTableView1())).getTable().getItems()
-						.addAll(selectableItems);
-				((ProTableView) (titledSelector.getTableView1())).getTable().getFilteredItems()
-						.addAll(selectableItems);
-
+				titledSelector.getSelectableItems().addAll(selectableItems);
 				if (item != null) {
 					Function<Object, Collection<Object>> subItemGetter =
-							getSubItemGetter(itemClass, subItemClass);
+							getSubItemGetter(subItemClass);
 					if (subItemGetter != null) {
-						Set<Object> selectedItems = subItemGetter.apply(item).stream()
-								.filter(e -> e != null).collect(Collectors.toSet());
+						Set<U> selectedItems = subItemGetter.apply(item).stream()
+								.filter(e -> e != null).map(e -> (U)e).collect(Collectors.toSet());
 						titledSelector.getSelectedItems().addAll(selectedItems);
-
-						((ProTableView) (titledSelector.getTableView2())).getTable().getItems()
-								.addAll(selectedItems);
-						((ProTableView) (titledSelector.getTableView2())).getTable()
-								.getFilteredItems().addAll(selectedItems);
 					}
-
 				}
 
 				titledSelector.init();
@@ -168,9 +157,6 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 
 				});
 
-				initTableView(((ProTableView<?>) (titledSelector.getTableView1())));
-				initTableView(((ProTableView<?>) (titledSelector.getTableView2())));
-
 				return titledSelector;
 
 			} catch (Exception e) {
@@ -179,31 +165,13 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		}
 		return null;
 	}
-
-	private <U> void initTableView(ProTableView<U> tableView) {
-		tableView.getTable().getColumns().stream().forEach(column -> {
-//			column.setItems(tableView.getItems());
-			
-			column.getItems().clear();
-			column.getItems().addAll(tableView.getItems());
-		});
-
-		tableView.updateColumns();
-		tableView.autoResizeColumns();
-
-//		tableView.getSelectionModel().selectFirst();
-
-		Platform.runLater(() -> {
-			tableView.showFilterButtons();
-		});
-	}
-
-	protected Set<?> getSelectableItems(Class<?> subItemClass) {
-		ICrudConnector<?> connector = Connectors.getConnector(subItemClass);
+	
+	protected <U> Set<U> getSelectableItems(Class<U> subItemClass) {
+		ICrudConnector<U> connector = Connectors.getConnector(subItemClass);
 		return connector.readAllAsSet();
 	}
 
-	private Function<Object, Collection<Object>> createSubItemGetter(Class<?> itemClass,
+	private Function<Object, Collection<Object>> createSubItemGetter(
 			Class<?> subItemClass) {
 		Method selectedMethod = Reflect.getMethodByGenericReturnType(itemClass, subItemClass);
 		if (selectedMethod == null) return null;
@@ -221,19 +189,19 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		return subItemGetter;
 	}
 
-	private Function<Object, Collection<Object>> getSubItemGetter(Class<?> itemClass,
+	private Function<Object, Collection<Object>> getSubItemGetter(
 			Class<?> subItemClass) {
 		Function<Object, Collection<Object>> subItemGetter = null;
 		if (subItemGetterMap.containsKey(itemClass)) {
 			if (subItemGetterMap.get(itemClass).containsKey(subItemClass))
 				subItemGetter = subItemGetterMap.get(itemClass).get(subItemClass);
 			else {
-				subItemGetter = createSubItemGetter(itemClass, subItemClass);
+				subItemGetter = createSubItemGetter(subItemClass);
 				if (subItemGetter == null) return null;
 				subItemGetterMap.get(itemClass).put(subItemClass, subItemGetter);
 			}
 		} else {
-			subItemGetter = createSubItemGetter(itemClass, subItemClass);
+			subItemGetter = createSubItemGetter(subItemClass);
 			if (subItemGetter == null) return null;
 			Map<Class<?>, Function<Object, Collection<Object>>> map = new HashMap<>();
 			map.put(subItemClass, subItemGetter);
@@ -242,7 +210,7 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		return subItemGetter;
 	}
 
-	private boolean containsCollectionSetter(Class<?> itemClass, Class<?> subItemClass) {
+	private boolean containsCollectionSetter(Class<?> subItemClass) {
 		boolean result;
 		if (containsCollectionSetterMap.containsKey(itemClass)) {
 			if (containsCollectionSetterMap.get(itemClass).containsKey(subItemClass))
@@ -295,12 +263,12 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		comboBox.getSelectionModel().selectedItemProperty().addListener(listener);
 	}
 
-	public AnchorPane create(Class<?> itemClass) {
-		return create(null, itemClass);
+	public AnchorPane create() {
+		return create(null);
 	}
 
-	public AnchorPane create(T item, Class<?> itemClass) {
-		selectors = createSelectors(item, itemClass);
+	public AnchorPane create(T item) {
+		selectors = createSelectors(item);
 		addProperties(item);
 		createRightNodes(getPropertyEntries());
 		initDefaultValues();
@@ -330,8 +298,9 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		throw new NullPointerException();
 	}
 
-	public AnchorPane edit(T item, Class<?> itemClass) {
-		selectors = createSelectors(item, itemClass);
+	@Override
+	public AnchorPane edit(T item) {
+		selectors = createSelectors(item);
 		Label label = new Label();
 		label.setText(((Identifiable<?>) item).getId().toString());
 		label.setDisable(true);

@@ -18,6 +18,7 @@ import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.column.OptionalColumnCreator;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
 import org.artorg.tools.phantomData.server.model.AbstractPropertifiedEntity;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
@@ -26,9 +27,9 @@ import javafx.collections.ObservableList;
 
 public class ColumnUtils {
 
-	public static <T, R> void createCountingColumn(Class<T> itemClass, String name,
+	public static <T, R> void createCountingColumn(Table<T> table, String name,
 			List<AbstractColumn<T, ?>> columns, Function<T, ? extends Collection<R>> listGetter) {
-		ColumnCreator<T, T> creator = new ColumnCreator<>(itemClass);
+		ColumnCreator<T, T> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn(name,
 				path -> String.valueOf(listGetter.apply(path).size())));
 	}
@@ -36,9 +37,9 @@ public class ColumnUtils {
 	private static SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
 	public static <T extends AbstractPersonifiedEntity<T>> void
-			createPersonifiedColumns(Class<T> itemClass, List<AbstractColumn<T, ?>> columns) {
+			createPersonifiedColumns(Table<T> table, List<AbstractColumn<T, ?>> columns) {
 
-		ColumnCreator<T, T> creator = new ColumnCreator<>(itemClass);
+		ColumnCreator<T, T> creator = new ColumnCreator<>(table);
 		AbstractFilterColumn<T, ?> column;
 		column = creator.createFilterColumn("Last modified",
 				path -> format.format(path.getDateLastModified()));
@@ -54,17 +55,17 @@ public class ColumnUtils {
 	}
 
 	public static <T extends AbstractPropertifiedEntity<T>> void createPropertyColumns(
-			Class<T> itemClass, List<AbstractColumn<T, ?>> columns, ObservableList<T> items) {
-		createPropertyColumns(itemClass, columns, items,
+			Table<T> table, List<AbstractColumn<T, ?>> columns, ObservableList<T> items) {
+		createPropertyColumns(table, columns, items,
 				container -> container.getBooleanProperties(), bool -> String.valueOf(bool),
 				s -> Boolean.valueOf(s));
-		createPropertyColumns(itemClass, columns, items,
+		createPropertyColumns(table, columns, items,
 				container -> container.getDoubleProperties(), bool -> String.valueOf(bool),
 				s -> Double.valueOf(s));
-		createPropertyColumns(itemClass, columns, items,
+		createPropertyColumns(table, columns, items,
 				container -> container.getIntegerProperties(), bool -> String.valueOf(bool),
 				s -> Integer.valueOf(s));
-		createPropertyColumns(itemClass, columns, items,
+		createPropertyColumns(table, columns, items,
 				container -> container.getStringProperties(), s -> s, s -> s);
 		
 		DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
@@ -76,12 +77,12 @@ public class ColumnUtils {
 			} ;
 			throw new IllegalArgumentException();
 		};
-		createPropertyColumns(itemClass, columns, items, container -> container.getDateProperties(),
+		createPropertyColumns(table, columns, items, container -> container.getDateProperties(),
 				date -> String.valueOf(date), stringDateFunc);
 	}
 
 	private static <T, P extends AbstractProperty<P, R>, R> void createPropertyColumns(
-			Class<T> itemClass, List<AbstractColumn<T, ?>> columns, ObservableList<T> items,
+			Table<T> table, List<AbstractColumn<T, ?>> columns, ObservableList<T> items,
 			Function<T, Collection<P>> propsGetter, Function<R, String> toStringFun,
 			Function<String, R> fromStringFun) {
 		Map<UUID, String> map = new HashMap<UUID, String>();
@@ -94,7 +95,7 @@ public class ColumnUtils {
 
 		map.entrySet().stream().forEach(entry -> {
 			OptionalColumnCreator<T,
-					P> creator = new OptionalColumnCreator<>(itemClass,
+					P> creator = new OptionalColumnCreator<>(table,
 							item -> propsGetter.apply(item).stream()
 									.filter(p -> p.getPropertyField().getId() == entry.getKey())
 									.findFirst());

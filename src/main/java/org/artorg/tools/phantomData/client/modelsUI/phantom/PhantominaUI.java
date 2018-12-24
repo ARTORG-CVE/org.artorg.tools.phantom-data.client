@@ -11,6 +11,7 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
@@ -34,10 +35,10 @@ public class PhantominaUI implements UIEntity<Phantomina> {
 	}
 
 	@Override
-	public List<AbstractColumn<Phantomina, ?>> createColumns(List<Phantomina> items) {
+	public List<AbstractColumn<Phantomina, ?>> createColumns(Table<Phantomina> table, List<Phantomina> items) {
 		List<AbstractColumn<Phantomina, ?>> columns = new ArrayList<>();
 		FilterColumn<Phantomina, ?, ?> column;
-		ColumnCreator<Phantomina, Phantomina> creator = new ColumnCreator<>(getItemClass());
+		ColumnCreator<Phantomina, Phantomina> creator = new ColumnCreator<>(table);
 		column = creator.createFilterColumn("PID", path -> path.getProductId(),
 				(path, value) -> path.setProductId(value));
 		column.setAscendingSortComparator(
@@ -53,10 +54,10 @@ public class PhantominaUI implements UIEntity<Phantomina> {
 				(path, value) -> path.getLiteratureBase().setValue(value)));
 		columns.add(creator.createFilterColumn("Special", path -> path.getLiteratureBase().getShortcut(),
 				(path, value) -> path.getLiteratureBase().setShortcut(value)));
-		ColumnUtils.createCountingColumn(getItemClass(), "Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
+		ColumnUtils.createCountingColumn(table, "Files", columns, item -> item.getFiles());
+		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
 //		createPropertyColumns(columns, this.getItems());
-		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
+		ColumnUtils.createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

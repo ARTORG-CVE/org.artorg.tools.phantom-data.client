@@ -10,6 +10,7 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.phantom.LiteratureBase;
 
@@ -29,17 +30,17 @@ public class LiteratureBaseUI implements UIEntity<LiteratureBase> {
 	}
 
 	@Override
-	public List<AbstractColumn<LiteratureBase, ?>> createColumns(List<LiteratureBase> items) {
+	public List<AbstractColumn<LiteratureBase, ?>> createColumns(Table<LiteratureBase> table, List<LiteratureBase> items) {
 		List<AbstractColumn<LiteratureBase, ?>> columns = new ArrayList<>();
 		ColumnCreator<LiteratureBase, LiteratureBase> creator =
-				new ColumnCreator<>(getItemClass());
+				new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Shortcut", path -> path.getShortcut(),
 				(path, value) -> path.setShortcut((String) value)));
 		columns.add(creator.createFilterColumn("Value", path -> path.getValue(),
 				(path, value) -> path.setValue((String) value)));
-		ColumnUtils.createCountingColumn(getItemClass(), "Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
+		ColumnUtils.createCountingColumn(table, "Files", columns, item -> item.getFiles());
+		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
+		ColumnUtils.createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

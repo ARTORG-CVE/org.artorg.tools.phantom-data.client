@@ -10,6 +10,7 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.base.Note;
 
@@ -30,12 +31,12 @@ public class NoteUI implements UIEntity<Note> {
 	}
 
 	@Override
-	public List<AbstractColumn<Note, ?>> createColumns(List<Note> items) {
+	public List<AbstractColumn<Note, ?>> createColumns(Table<Note> table, List<Note> items) {
 		List<AbstractColumn<Note, ?>> columns = new ArrayList<>();
-		ColumnCreator<Note, Note> creator = new ColumnCreator<>(getItemClass());
+		ColumnCreator<Note, Note> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Name", path -> path.getName(),
 				(path, value) -> path.setName(value)));
-		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
+		ColumnUtils.createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

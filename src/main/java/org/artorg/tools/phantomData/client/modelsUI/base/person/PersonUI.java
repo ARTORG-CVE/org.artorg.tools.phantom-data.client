@@ -10,6 +10,7 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
 import org.artorg.tools.phantomData.server.models.base.person.Gender;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
@@ -31,9 +32,9 @@ public class PersonUI implements UIEntity<Person> {
 	}
 
 	@Override
-	public List<AbstractColumn<Person, ?>> createColumns(List<Person> items) {
+	public List<AbstractColumn<Person, ?>> createColumns(Table<Person> table, List<Person> items) {
 		List<AbstractColumn<Person, ?>> columns = new ArrayList<>();
-		ColumnCreator<Person, Person> creator = new ColumnCreator<>(getItemClass());
+		ColumnCreator<Person, Person> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Title", item -> item.getAcademicTitle().getPrefix()));
 		columns.add(creator.createFilterColumn("Firstname", path -> path.getFirstname(),
 				(path, value) -> path.setFirstname((String) value)));

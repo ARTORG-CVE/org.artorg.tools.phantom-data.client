@@ -14,6 +14,7 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
@@ -40,12 +41,12 @@ public class PhantomUI implements UIEntity<Phantom> {
 	}
 
 	@Override
-	public List<AbstractColumn<Phantom, ?>> createColumns(List<Phantom> items) {
+	public List<AbstractColumn<Phantom, ?>> createColumns(Table<Phantom> table, List<Phantom> items) {
 		List<AbstractColumn<Phantom, ?>> columns = new ArrayList<>();
 		FilterColumn<Phantom, ?, ?> column;
-		ColumnCreator<Phantom, Phantom> creator = new ColumnCreator<>(getItemClass());
+		ColumnCreator<Phantom, Phantom> creator = new ColumnCreator<>(table);
 		ColumnCreator<Phantom, Phantomina> creatorP =
-				new ColumnCreator<>(getItemClass(), item -> item.getPhantomina());
+				new ColumnCreator<>(table, item -> item.getPhantomina());
 		column = creator.createFilterColumn("PID", path -> path.getProductId(),
 				(path, value) -> path.setProductId(value));
 		column.setAscendingSortComparator(
@@ -73,10 +74,10 @@ public class PhantomUI implements UIEntity<Phantom> {
 		columns.add(
 				creator.createFilterColumn("Thickness", path -> Float.toString(path.getThickness()),
 						(path, value) -> path.setThickness(Float.valueOf(value))));
-		ColumnUtils.createCountingColumn(getItemClass(), "Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn(getItemClass(), "Measurements", columns, item -> item.getMeasurements());
-		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
+		ColumnUtils.createCountingColumn(table, "Files", columns, item -> item.getFiles());
+		ColumnUtils.createCountingColumn(table, "Measurements", columns, item -> item.getMeasurements());
+		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
+		ColumnUtils.createPersonifiedColumns(table, columns);
 
 		column.setAscendingSortComparator(
 				(p1, p2) -> ((Integer) p1.getNumber()).compareTo((Integer) p2.getNumber()));

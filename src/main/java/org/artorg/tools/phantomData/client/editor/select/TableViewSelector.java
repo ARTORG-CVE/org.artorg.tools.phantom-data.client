@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.editor;
+package org.artorg.tools.phantomData.client.editor.select;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,7 +9,6 @@ import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 
 import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -145,21 +144,11 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 		list.add(item);
 		moveToSelected(list);
 	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	
 	public void moveToSelected(Collection<ITEM> items) {
-//		getSelectableItems().removeAll(items);
-		((ProTableView) getTableView1()).getTable().getItems().removeAll(items);
-		((ProTableView) getTableView1()).getTable().getFilteredItems().removeAll(items);
-		((ProTableView) getTableView1()).setItems(FXCollections.observableArrayList());
-		((ProTableView) getTableView1())
-				.setItems(((ProTableView) getTableView1()).getTable().getFilteredItems());
-//		getSelectedItems().addAll(items);
-		((ProTableView) getTableView2()).getTable().getItems().addAll(items);
-		((ProTableView) getTableView2()).getTable().getFilteredItems().addAll(items);
-		((ProTableView) getTableView2()).setItems(FXCollections.observableArrayList());
-		((ProTableView) getTableView2())
-				.setItems(((ProTableView) getTableView2()).getTable().getFilteredItems());
+		getTableView1().getTable().getItems().removeAll(items);
+		getTableView2().getTable().getItems().addAll(items);
+		getTableView2().getTable().applyFilter();
 		if (getTableView1().getItems().isEmpty()) {
 			splitPane.getItems().remove(getTableView1());
 			if (!splitPane.getItems().contains(getTableView2()))
@@ -186,22 +175,11 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 		list.add(item);
 		moveToSelectable(list);
 	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	
 	public void moveToSelectable(Collection<ITEM> items) {
-//		getSelectedItems().removeAll(items);
-		((ProTableView) getTableView2()).getTable().getItems().removeAll(items);
-		((ProTableView) getTableView2()).getTable().getFilteredItems().removeAll(items);
-		((ProTableView) getTableView2()).setItems(FXCollections.observableArrayList());
-		((ProTableView) getTableView2())
-				.setItems(((ProTableView) getTableView2()).getTable().getFilteredItems());
-//		getSelectableItems().addAll(items);
-		((ProTableView) getTableView1()).getTable().getItems().addAll(items);
-		((ProTableView) getTableView1()).getTable().getFilteredItems().addAll(items);
-		((ProTableView) getTableView1()).setItems(FXCollections.observableArrayList());
-		((ProTableView) getTableView1())
-				.setItems(((ProTableView) getTableView1()).getTable().getFilteredItems());
-//		flyingHero(((ProTableView) getTableView1()));
+		getTableView2().getTable().getItems().removeAll(items);
+		getTableView1().getTable().getItems().addAll(items);
+		getTableView1().getTable().applyFilter();
 		if (!splitPane.getItems().contains(getTableView1()))
 			splitPane.getItems().add(0, getTableView1());
 		if (getTableView2().getItems().isEmpty())

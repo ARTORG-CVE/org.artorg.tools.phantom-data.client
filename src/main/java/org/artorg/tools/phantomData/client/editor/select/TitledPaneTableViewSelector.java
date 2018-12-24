@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.editor;
+package org.artorg.tools.phantomData.client.editor.select;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;

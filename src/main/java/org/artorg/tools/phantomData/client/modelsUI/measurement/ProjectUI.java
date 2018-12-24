@@ -11,6 +11,7 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
 import org.artorg.tools.phantomData.server.models.measurement.Project;
@@ -31,9 +32,9 @@ public class ProjectUI implements UIEntity<Project> {
 	}
 
 	@Override
-	public List<AbstractColumn<Project, ?>> createColumns(List<Project> items) {
+	public List<AbstractColumn<Project, ?>> createColumns(Table<Project> table, List<Project> items) {
 		List<AbstractColumn<Project, ?>> columns = new ArrayList<AbstractColumn<Project, ?>>();
-		ColumnCreator<Project, Project> creator = new ColumnCreator<>(getItemClass());
+		ColumnCreator<Project, Project> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Name", path -> path.getName(),
 				(path, value) -> path.setName(value)));
 		columns.add(creator.createFilterColumn("Description", path -> path.getDescription(),
@@ -44,9 +45,9 @@ public class ProjectUI implements UIEntity<Project> {
 		columns.add(creator.createFilterColumn("Members", path -> String.valueOf(path.getMembers()
 				.stream().map(member -> member.getLastname()).collect(Collectors.joining(", ")))));
 //		ColumnUtils.createCountingColumn("Measur.", columns, item -> item.getMeasurements());
-		ColumnUtils.createCountingColumn(getItemClass(), "Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
+		ColumnUtils.createCountingColumn(table, "Files", columns, item -> item.getFiles());
+		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
+		ColumnUtils.createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

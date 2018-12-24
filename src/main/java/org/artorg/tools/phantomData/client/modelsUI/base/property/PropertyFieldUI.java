@@ -12,6 +12,7 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
@@ -38,9 +39,9 @@ public class PropertyFieldUI implements UIEntity<PropertyField> {
 	}
 
 	@Override
-	public List<AbstractColumn<PropertyField, ?>> createColumns(List<PropertyField> items) {
+	public List<AbstractColumn<PropertyField, ?>> createColumns(Table<PropertyField> table, List<PropertyField> items) {
 		List<AbstractColumn<PropertyField, ?>> columns = new ArrayList<>();
-		ColumnCreator<PropertyField, PropertyField> creator = new ColumnCreator<>(getItemClass());
+		ColumnCreator<PropertyField, PropertyField> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Type", path -> {
 			try {
 				return Class.forName(path.getType()).getSimpleName();
@@ -53,7 +54,7 @@ public class PropertyFieldUI implements UIEntity<PropertyField> {
 				(path, value) -> path.setName((String) value)));
 		columns.add(creator.createFilterColumn("Description", path -> path.getDescription(),
 				(path, value) -> path.setDescription((String) value)));
-		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
+		ColumnUtils.createPersonifiedColumns(table, columns);
 
 		return columns;
 	}

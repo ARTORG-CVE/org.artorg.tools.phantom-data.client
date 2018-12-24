@@ -11,13 +11,14 @@ import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.AbstractTableViewSelector;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.editor.select.AbstractTableViewSelector;
 import org.artorg.tools.phantomData.client.editors.DbFileEditFactoryController;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
@@ -43,9 +44,9 @@ public class MeasurementUI implements UIEntity<Measurement> {
 	}
 
 	@Override
-	public List<AbstractColumn<Measurement, ?>> createColumns(List<Measurement> items) {
+	public List<AbstractColumn<Measurement, ?>> createColumns(Table<Measurement> table, List<Measurement> items) {
 		List<AbstractColumn<Measurement, ?>> columns = new ArrayList<>();
-		ColumnCreator<Measurement, Measurement> creator = new ColumnCreator<>(getItemClass());
+		ColumnCreator<Measurement, Measurement> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Date", path -> format.format(path.getStartDate()),
 				(path, value) -> {
 					try {
@@ -58,9 +59,9 @@ public class MeasurementUI implements UIEntity<Measurement> {
 		columns.add(creator.createFilterColumn("Project", path -> path.getProject().toName()));
 		columns.add(creator.createFilterColumn("Experimental Setup",
 				path -> path.getExperimentalSetup().getShortName()));
-		ColumnUtils.createCountingColumn(getItemClass(), "Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
+		ColumnUtils.createCountingColumn(table, "Files", columns, item -> item.getFiles());
+		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
+		ColumnUtils.createPersonifiedColumns(table, columns);
 		return columns;
 	}
 
@@ -99,7 +100,7 @@ public class MeasurementUI implements UIEntity<Measurement> {
 			panes.add(generalPane);
 			setTitledPanes(panes);
 
-			fileController.create(DbFile.class);
+			fileController.create();
 		}
 
 		@Override

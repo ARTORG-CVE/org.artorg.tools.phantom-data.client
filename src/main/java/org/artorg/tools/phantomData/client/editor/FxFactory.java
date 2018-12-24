@@ -6,10 +6,10 @@ public interface FxFactory<T> {
 	
 	Node getGraphic();
 	
-	Node create(T item, Class<?> itemClass);
+	Node create(T item);
 	
-	Node edit(T item, Class<?> itemClass);
+	Node edit(T item);
 
-	Node create(Class<?> itemClass);
+	Node create();
 
 }

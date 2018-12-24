@@ -10,6 +10,7 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
 
@@ -28,17 +29,17 @@ public class FabricationTypeUI implements UIEntity<FabricationType> {
 	}
 
 	@Override
-	public List<AbstractColumn<FabricationType, ?>> createColumns(List<FabricationType> items) {
+	public List<AbstractColumn<FabricationType, ?>> createColumns(Table<FabricationType> table, List<FabricationType> items) {
 		List<AbstractColumn<FabricationType, ?>> columns = new ArrayList<>();
 		ColumnCreator<FabricationType, FabricationType> creator =
-				new ColumnCreator<>(getItemClass());
+				new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Shortcut", path -> path.getShortcut(),
 				(path, value) -> path.setShortcut(value)));
 		columns.add(creator.createFilterColumn("Value", path -> path.getValue(),
 				(path, value) -> path.setValue(value)));
-		ColumnUtils.createCountingColumn(getItemClass(), "Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn(getItemClass(), "Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(getItemClass(), columns);
+		ColumnUtils.createCountingColumn(table, "Files", columns, item -> item.getFiles());
+		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
+		ColumnUtils.createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

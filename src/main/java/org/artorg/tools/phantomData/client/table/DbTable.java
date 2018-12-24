@@ -5,7 +5,6 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.server.model.Identifiable;
 import org.artorg.tools.phantomData.server.models.base.property.IntegerProperty;
@@ -66,8 +65,10 @@ public abstract class DbTable<ITEM> extends Table<ITEM> {
 		ICrudConnector<ITEM> connector = getConnector();
 		if (connector == null) throw new NullPointerException();
 
+		getItems().removeListener(getItemListChangeListener());
 		if (connector instanceof CrudConnector) ((CrudConnector<?>) connector).reload();
 		readAllData();
+		getItems().addListener(getItemListChangeListener());
 		setListening(true);
 	}
 
@@ -86,16 +87,6 @@ public abstract class DbTable<ITEM> extends Table<ITEM> {
 
 //		CollectionUtil.syncLists(items, getItems());
 
-		getColumns().stream().forEach(column -> {
-			column.getItems().clear();
-			column.getItems().addAll(getItems());
-
-		});
-
-		if (isFilterable()) {
-			CollectionUtil.syncLists(super.getItems(), getFilteredItems());
-//			applyFilter();
-		}
 		setListening(true);
 	}
 

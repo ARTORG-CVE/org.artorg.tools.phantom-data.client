@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
 
 public class FilterColumn<T, S, R> extends AbstractFilterColumn<T, R> {
@@ -12,9 +13,9 @@ public class FilterColumn<T, S, R> extends AbstractFilterColumn<T, R> {
 	private final Function<S, R> propertyToValueGetter;
 	private final BiConsumer<S, R> propertyToValueSetter;
 	
-	public FilterColumn(Class<T> itemClass, String columnName, Function<T, S> itemToPropertyGetter,
+	public FilterColumn(Table<T> table, String columnName, Function<T, S> itemToPropertyGetter,
 			Function<S, R> propertyToValueGetter, BiConsumer<S, R> propertyToValueSetter) {
-		super(itemClass, columnName);
+		super(table, columnName);
 		this.itemToPropertyGetter = itemToPropertyGetter;
 		this.propertyToValueGetter = propertyToValueGetter;
 		this.propertyToValueSetter = propertyToValueSetter;

@@ -24,7 +24,7 @@ public interface UIEntity<T> {
 
 	String getTableName();
 
-	List<AbstractColumn<T, ? extends Object>> createColumns(List<T> items);
+	List<AbstractColumn<T, ? extends Object>> createColumns(Table<T> table, List<T> items);
 
 	ItemEditFactoryController<T> createEditFactory();
 
@@ -33,7 +33,7 @@ public interface UIEntity<T> {
 		Table<T> table = new Table<T>(getItemClass()) {
 			@Override
 			public List<AbstractColumn<T, ? extends Object>> createColumns(List<T> items) {
-				return UIEntity.this.createColumns(items);
+				return UIEntity.this.createColumns(this, items);
 			}
 		};
 		table.setTableName(getTableName());
@@ -47,7 +47,7 @@ public interface UIEntity<T> {
 		DbTable<T> table = new DbTable<T>(getItemClass()) {
 			@Override
 			public List<AbstractColumn<T, ? extends Object>> createColumns(List<T> items) {
-				return UIEntity.this.createColumns(items);
+				return UIEntity.this.createColumns(this, items);
 			}
 		};
 		table.setTableName(getTableName());

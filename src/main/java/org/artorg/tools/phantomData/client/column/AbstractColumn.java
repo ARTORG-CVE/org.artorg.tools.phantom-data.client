@@ -5,14 +5,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.client.logging.Logger;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import org.artorg.tools.phantomData.client.table.Table;
 
 public abstract class AbstractColumn<T, E> {
-	private ObservableList<T> items;
+	private final Table<T> table;
 	private boolean visible;
 	private boolean editable;
 	private boolean filterable;
@@ -27,37 +23,18 @@ public abstract class AbstractColumn<T, E> {
 		editable = true;
 		filterable = true;
 		idColumn = false;
-		items = FXCollections.observableArrayList();
-		
-		
-		items.addListener(new ListChangeListener<T>() {
-
-			@Override
-			public void onChanged(Change<? extends T> c) {
-				while(c.next()) {
-					if (c.wasRemoved()) {
-						Logger.debug.println("items removed: " +c.getAddedSize());
-					}
-					if (c.wasAdded()) {
-						Logger.debug.println("items removed: " +c.getRemovedSize());
-					}
-					
-				}
-				
-			}
-			
-		});
 	}
 	
-	public AbstractColumn(Class<T> itemClass, String columnName) {
-		this.itemClass = itemClass;
+	public AbstractColumn(Table<T> table, String columnName) {
+		this.table = table;
+		this.itemClass = table.getItemClass();
 		this.columnName = columnName;
 	}
 	
 	public abstract boolean update(T item);
 	
 	public List<E> getValues() {
-		return getItems().stream().map(item -> get(item)).collect(Collectors.toList());
+		return table.getItems().stream().map(item -> get(item)).collect(Collectors.toList());
 	}
 	
 	public E get(T item) {
@@ -73,7 +50,7 @@ public abstract class AbstractColumn<T, E> {
 	}
 	
 	public boolean contains(String value) {
-		return getItems().stream().filter(item -> get(item).equals(value))
+		return table.getItems().stream().filter(item -> get(item).equals(value))
 				.findFirst().isPresent();
 	}
 	
@@ -107,18 +84,14 @@ public abstract class AbstractColumn<T, E> {
 		this.valueSetter = valueSetter;
 	}
 	
-	public ObservableList<T> getItems() {
-		return items;
-	}
-	
-//	public void setItems(ObservableList<T> items) {
-//		this.items = items;
-//	}
-	
 	public String getName() {
 		return columnName;
 	}
 	
+	public Table<T> getTable() {
+		return table;
+	}
+
 	public boolean isVisible() {
 		return visible;
 	}

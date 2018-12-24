@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.editor.select.AbstractTableViewSelector;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 
 import javafx.scene.control.TitledPane;

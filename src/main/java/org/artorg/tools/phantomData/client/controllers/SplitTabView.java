@@ -203,7 +203,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		menuItem.setOnAction(event -> {
 			FxFactory<T> controller =
 					Main.getUIEntity(tableViewSpring.getItemClass()).createEditFactory();
-			Node node = controller.create(tableViewSpring.getItemClass());
+			Node node = controller.create();
 			addTab(itemAddEditTabPane.getTabPane(), node,
 					"Add " + tableViewSpring.getTable().getItemName());
 		});
@@ -229,7 +229,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		menuItem = new MenuItem("Add item");
 		menuItem.setOnAction(event -> {
 			FxFactory<?> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
-			Node node = controller.create(view.getItemClass());
+			Node node = controller.create();
 			addTab(itemAddEditTabPane.getTabPane(), node, "Add " + view.getTable().getItemName());
 		});
 		contextMenu.getItems().addAll(menuItem);
@@ -321,14 +321,14 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 		addMenuItem(rowMenu, "Edit item", event -> {
 			FxFactory<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
-			Node node = controller.edit(row.getItem(), view.getItemClass());
+			Node node = controller.edit(row.getItem());
 
 			addTab(itemAddEditTabPane.getTabPane(), node, "Edit " + view.getTable().getItemName());
 		});
 
 		addMenuItem(rowMenu, "Add item", event -> {
 			FxFactory<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
-			Node node = controller.create(row.getItem(), view.getItemClass());
+			Node node = controller.create(row.getItem());
 			addTab(itemAddEditTabPane.getTabPane(), node, "Add " + view.getTable().getItemName());
 		});
 
