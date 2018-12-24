@@ -125,7 +125,6 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 		this.getItems().add(itemDescending);
 		this.getItems().add(itemSearch);
 		this.getItems().add(itemFilterAll);
-		this.getItems().add(new SeparatorMenuItem());
 
 		this.addEventHandler(ComboBox.ON_HIDDEN, event -> applyFilter());
 		this.addEventHandler(ComboBox.ON_SHOWING, event -> updateNodes());
@@ -373,22 +372,28 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 			itemsFilter.clear();
 			MenuItem item = getItems().get(getItems().size() - 1);
 			if (item instanceof SeparatorMenuItem) getItems().remove(item);
+//			super.getItems().remove(itemFilterAll);
+			
+			Logger.debug.println("updateNodes remove1");
 			return;
 		}
-		
-		List<?> values = column.getValues().stream()
+
+		List<?> allValues = column.getValues();
+		List<?> values = allValues.stream()
 				.filter(value -> value != null && !(value.equals(""))).collect(Collectors.toList());
 		List<String> distinctValues = values.stream().distinct().map(o -> o.toString()).sorted()
 				.collect(Collectors.toList());
-		
+
 		if (distinctValues.size() > getColumn().getMaxFilterItems()) {
 			super.getItems().removeAll(itemsFilter);
 			itemsFilter.clear();
 			MenuItem item = getItems().get(getItems().size() - 1);
 			if (item instanceof SeparatorMenuItem) getItems().remove(item);
+//			super.getItems().remove(itemFilterAll);
+			Logger.debug.println("updateNodes remove2");
 			return;
 		}
-		
+
 		List<?> filteredValues = column.getFilteredValues().stream()
 				.filter(value -> value != null && !(value.equals(""))).collect(Collectors.toList());
 		List<String> distinctFilteredValues = filteredValues.stream().distinct()
@@ -413,6 +418,10 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 		if (checkBoxItemsFilter.isEmpty() && nonMatchingItems.isEmpty()) return;
 
 		super.getItems().removeAll(itemsFilter);
+		MenuItem item = getItems().get(getItems().size() - 1);
+		if (item instanceof SeparatorMenuItem) getItems().remove(item);
+//		super.getItems().remove(itemFilterAll);
+		
 		itemsFilter.addAll(checkBoxItemsFilter);
 		itemsFilter.removeAll(nonMatchingItems);
 
@@ -425,13 +434,13 @@ public class FilterMenuButton<ITEM, R> extends MenuButton {
 			else
 				itemsFilter.get(i).setDisable(true);
 		}
-
-		MenuItem item = getItems().get(getItems().size() - 1);
-		if (item instanceof SeparatorMenuItem) getItems().remove(item);
-		else
+		
+		if (!itemsFilter.isEmpty()) {
+//			getItems().add(itemFilterAll);
 			getItems().add(new SeparatorMenuItem());
-
-		super.getItems().addAll(itemsFilter);
+			getItems().addAll(itemsFilter);
+		}
+		
 		String addedNames =
 				addableFilterItemNames.stream().collect(Collectors.joining(", ", "{", "}"));
 		String removedNames =

@@ -20,8 +20,6 @@ import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.client.scene.control.VGridBoxPane;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
-import org.artorg.tools.phantomData.client.select.AbstractTableViewSelector;
-import org.artorg.tools.phantomData.client.select.TitledPaneTableViewSelector;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.model.BackReference;
@@ -125,18 +123,8 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 			try {
 				AbstractTableViewSelector<Object> titledSelector =
 						new TitledPaneTableViewSelector(subItemClass);
-				titledSelector.getSelectableItems().clear();
-				titledSelector.getSelectedItems().clear();
-
-				((ProTableView<?>) (titledSelector.getTableView1())).getTable().getItems().clear();
-				((ProTableView<?>) (titledSelector.getTableView1())).getTable().getFilteredItems()
-						.clear();
-				((ProTableView<?>) (titledSelector.getTableView2())).getTable().getItems().clear();
-				((ProTableView<?>) (titledSelector.getTableView2())).getTable().getFilteredItems()
-						.clear();
-
-				titledSelector.getSelectableItems().addAll(selectableItems);
-
+				
+//				titledSelector.getSelectableItems().addAll(selectableItems);
 				((ProTableView) (titledSelector.getTableView1())).getTable().getItems()
 						.addAll(selectableItems);
 				((ProTableView) (titledSelector.getTableView1())).getTable().getFilteredItems()
@@ -194,7 +182,10 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 
 	private <U> void initTableView(ProTableView<U> tableView) {
 		tableView.getTable().getColumns().stream().forEach(column -> {
-			column.setItems(tableView.getItems());
+//			column.setItems(tableView.getItems());
+			
+			column.getItems().clear();
+			column.getItems().addAll(tableView.getItems());
 		});
 
 		tableView.updateColumns();

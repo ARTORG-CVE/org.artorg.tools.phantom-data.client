@@ -113,8 +113,8 @@ public abstract class Table<T> {
 		CollectionUtil.syncLists(this.columns, columns,
 				(column, newColumn) -> column.getName().equals(newColumn.getName()));
 		getColumns().stream().forEach(column -> {
-			column.setItems(getItems());
-
+			column.getItems().clear();
+			column.getItems().addAll(getItems());
 		});
 
 		if (isFilterable()) {
@@ -131,7 +131,10 @@ public abstract class Table<T> {
 
 			getFilteredColumns().stream()
 					.collect(castFilter(column -> ((AbstractFilterColumn<T, ?>) column)))
-					.forEach(column -> column.setFilteredItems(getFilteredItems()));
+					.forEach(column -> {
+						column.getFilteredItems().clear();
+						column.getFilteredItems().addAll(getFilteredItems());
+							});
 
 		}
 		Logger.debug.println(

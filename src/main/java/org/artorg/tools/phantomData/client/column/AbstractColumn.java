@@ -5,7 +5,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.logging.Logger;
+
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 public abstract class AbstractColumn<T, E> {
@@ -25,6 +28,25 @@ public abstract class AbstractColumn<T, E> {
 		filterable = true;
 		idColumn = false;
 		items = FXCollections.observableArrayList();
+		
+		
+		items.addListener(new ListChangeListener<T>() {
+
+			@Override
+			public void onChanged(Change<? extends T> c) {
+				while(c.next()) {
+					if (c.wasRemoved()) {
+						Logger.debug.println("items removed: " +c.getAddedSize());
+					}
+					if (c.wasAdded()) {
+						Logger.debug.println("items removed: " +c.getRemovedSize());
+					}
+					
+				}
+				
+			}
+			
+		});
 	}
 	
 	public AbstractColumn(Class<T> itemClass, String columnName) {
@@ -89,9 +111,9 @@ public abstract class AbstractColumn<T, E> {
 		return items;
 	}
 	
-	public void setItems(ObservableList<T> items) {
-		this.items = items;
-	}
+//	public void setItems(ObservableList<T> items) {
+//		this.items = items;
+//	}
 	
 	public String getName() {
 		return columnName;

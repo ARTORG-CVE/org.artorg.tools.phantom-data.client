@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.select;
+package org.artorg.tools.phantomData.client.editor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -160,7 +160,7 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 		((ProTableView) getTableView2()).setItems(FXCollections.observableArrayList());
 		((ProTableView) getTableView2())
 				.setItems(((ProTableView) getTableView2()).getTable().getFilteredItems());
-		if (getTableView1().getItems().size() == 0) {
+		if (getTableView1().getItems().isEmpty()) {
 			splitPane.getItems().remove(getTableView1());
 			if (!splitPane.getItems().contains(getTableView2()))
 				splitPane.getItems().add(0, getTableView2());
@@ -169,6 +169,13 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 				splitPane.getItems().add(1, getTableView2());
 			splitPane.setDividerPositions(0.5f);
 		}
+		
+		int n = 0;
+		if (!getTableView1().getItems().isEmpty()) n++;
+		if (!getTableView2().getItems().isEmpty()) n++;
+		if (n == 1) splitPane.setDividerPositions(1.0f);
+		if (n == 2) splitPane.setDividerPositions(0.5f);
+		
 //		((ProTableView<?>) getTableView2()).showHeaderRow();
 		autoResizeColumns(getTableView1());
 		autoResizeColumns(getTableView2());
@@ -195,18 +202,17 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 		((ProTableView) getTableView1())
 				.setItems(((ProTableView) getTableView1()).getTable().getFilteredItems());
 //		flyingHero(((ProTableView) getTableView1()));
-		if (getTableView2().getItems().size() == 0) {
+		if (!splitPane.getItems().contains(getTableView1()))
+			splitPane.getItems().add(0, getTableView1());
+		if (getTableView2().getItems().isEmpty())
 			splitPane.getItems().remove(getTableView2());
-		} else {
-			if (!splitPane.getItems().contains(getTableView1())) {
-				splitPane.getItems().add(0, getTableView1());
-//				((ProTableView<?>) getTableView1()).showHeaderRow();
-			}
-//			((ProTableView<?>) getTableView1()).showHeaderRow();
-			splitPane.setDividerPositions(0.5f);
-//			if (getTableView2().getItems().size() < 10) if (getTableView2() instanceof ProTableView)
-//				((ProTableView<?>) getTableView2()).removeHeaderRow();
-		}
+
+		int n = 0;
+		if (!getTableView1().getItems().isEmpty()) n++;
+		if (!getTableView2().getItems().isEmpty()) n++;
+		if (n == 1) splitPane.setDividerPositions(1.0f);
+		if (n == 2) splitPane.setDividerPositions(0.5f);
+
 		autoResizeColumns(getTableView1());
 		autoResizeColumns(getTableView2());
 	}

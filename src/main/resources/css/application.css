@@ -16,17 +16,6 @@
  	-fx-background-color: transparent;
 }
 
-.table-view {
-	-fx-focus-color: transparent;
-	-fx-border-color: red;
-	
-    -fx-border-width: 0px 0px 0px 0px;
-
-  -fx-background-insets: 0;
-  -fx-padding: 0;
-
-}
-
 .glyph-icon{
     -fx-text-fill: -fx-text-base-color;
     -fx-fill: -fx-text-base-color;
@@ -84,20 +73,20 @@
 }
 
 
+
+
+#.table-view .column-header {
+    #-fx-background-color: transparent;
+    #-fx-border-color: transparent;
+#}
+
+
 .table-view .column-header {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
+    -fx-background-color: 	f2f2f2;
 }
 
-.table-view,
-.table-view .column-header-background,
-.table-view .column-header,
-.table-view .filler {
-    -fx-background-color: transparent;
-}
-
-.table-view .column-header,
-.table-view .column-header .filler,
-.table-view .column-header-background .filler {
-    -fx-background-color: transparent;
-}
+#.table-view .column-header,
+#.table-view .column-header .filler,
+#.table-view .column-header-background .filler {
+#    -fx-background-color: transparent;
+#}

@@ -197,7 +197,10 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 				AbstractFilterColumn<T, ?> filterColumn = (AbstractFilterColumn<T, ?>) baseColumn;
 				filterColumn.setSortComparatorQueue(table.getSortComparatorQueue());
 
-				filterColumn.setItems(getItems());
+//				filterColumn.setItems(getItems());
+				filterColumn.getItems().clear();
+				filterColumn.getItems().addAll(getItems());
+				
 				getFilterMenuButtons().add(createFilterMenuButton(filterColumn, index));
 			}
 

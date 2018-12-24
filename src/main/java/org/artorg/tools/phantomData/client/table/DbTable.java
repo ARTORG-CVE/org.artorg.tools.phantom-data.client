@@ -87,9 +87,8 @@ public abstract class DbTable<ITEM> extends Table<ITEM> {
 //		CollectionUtil.syncLists(items, getItems());
 
 		getColumns().stream().forEach(column -> {
-			column.setItems(getItems());
-//			column.getItems().clear();
-//			column.getItems().addAll(getItems());
+			column.getItems().clear();
+			column.getItems().addAll(getItems());
 
 		});
 

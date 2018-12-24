@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.select;
+package org.artorg.tools.phantomData.client.editor;
 
 import java.util.ArrayList;
 import java.util.List;

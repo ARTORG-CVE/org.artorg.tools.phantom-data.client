@@ -89,10 +89,6 @@ public abstract class AbstractFilterColumn<T,R> extends AbstractColumn<T, R> {
 		return filteredItems;
 	}
 
-	public void setFilteredItems(ObservableList<T> filteredItems) {
-		this.filteredItems = filteredItems;
-	}
-
 	public int getMaxFilterItems() {
 		return maxFilterItems;
 	}
@@ -107,10 +103,6 @@ public abstract class AbstractFilterColumn<T,R> extends AbstractColumn<T, R> {
 
 	public void setItemsFilter(boolean itemsFilter) {
 		this.itemsFilter = itemsFilter;
-	}
-	
-	
-	
-	
+	}	
 
 }

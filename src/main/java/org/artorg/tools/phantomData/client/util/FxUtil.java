@@ -29,14 +29,11 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class FxUtil extends org.artorg.tools.phantomData.server.util.FxUtil {
-	
-	
 	
 	public static void openFrame(String title, Node node) {
     	Stage stage = new Stage();
@@ -51,11 +48,6 @@ public class FxUtil extends org.artorg.tools.phantomData.server.util.FxUtil {
 		stage.setTitle(title);
 		stage.show();
     }
-	
-	
-	public static ImageView getFxFileIcon(File file) {
-		return new ImageView(getFileIcon(file));
-	}
 
 	public static Image getFileIcon(File file) {
 		final String ext = IOutil.getFileExt(file.getPath());
