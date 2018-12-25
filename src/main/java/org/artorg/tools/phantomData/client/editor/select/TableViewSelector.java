@@ -61,21 +61,15 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 		TableColumn<ITEM, Void> removeButtonCellColumn =
 				FxUtil.createButtonCellColumn("-", this::moveToSelectable);
 
-		if (this.getTableView1() instanceof ProTableView) {
-			ProTableView<ITEM> proTableView = (ProTableView<ITEM>) this.getTableView1();
-			proTableView.setColumnRemovePolicy((fromColumn, toColumn) -> {
-				if (toColumn == addButtonCellColumn) return true;
-				return toColumn.getText().equals(fromColumn.getName());
-			});
-		}
+		getTableView1().setColumnRemovePolicy((fromColumn, toColumn) -> {
+			if (toColumn == addButtonCellColumn) return true;
+			return toColumn.getText().equals(fromColumn.getName());
+		});
 
-		if (this.getTableView2() instanceof ProTableView) {
-			ProTableView<ITEM> proTableView = (ProTableView<ITEM>) this.getTableView2();
-			proTableView.setColumnRemovePolicy((fromColumn, toColumn) -> {
-				if (toColumn == removeButtonCellColumn) return true;
-				return toColumn.getText().equals(fromColumn.getName());
-			});
-		}
+		getTableView2().setColumnRemovePolicy((fromColumn, toColumn) -> {
+			if (toColumn == removeButtonCellColumn) return true;
+			return toColumn.getText().equals(fromColumn.getName());
+		});
 
 		this.getTableView1().getColumns().add(0, addButtonCellColumn);
 		this.getTableView2().getColumns().add(0, removeButtonCellColumn);
@@ -144,7 +138,7 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 		list.add(item);
 		moveToSelected(list);
 	}
-	
+
 	public void moveToSelected(Collection<ITEM> items) {
 		getTableView1().getTable().getItems().removeAll(items);
 		getTableView2().getTable().getItems().addAll(items);
@@ -158,13 +152,13 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 				splitPane.getItems().add(1, getTableView2());
 			splitPane.setDividerPositions(0.5f);
 		}
-		
+
 		int n = 0;
 		if (!getTableView1().getItems().isEmpty()) n++;
 		if (!getTableView2().getItems().isEmpty()) n++;
 		if (n == 1) splitPane.setDividerPositions(1.0f);
 		if (n == 2) splitPane.setDividerPositions(0.5f);
-		
+
 //		((ProTableView<?>) getTableView2()).showHeaderRow();
 		autoResizeColumns(getTableView1());
 		autoResizeColumns(getTableView2());
@@ -175,15 +169,14 @@ public class TableViewSelector<ITEM> extends AbstractTableViewSelector<ITEM> {
 		list.add(item);
 		moveToSelectable(list);
 	}
-	
+
 	public void moveToSelectable(Collection<ITEM> items) {
 		getTableView2().getTable().getItems().removeAll(items);
 		getTableView1().getTable().getItems().addAll(items);
 		getTableView1().getTable().applyFilter();
 		if (!splitPane.getItems().contains(getTableView1()))
 			splitPane.getItems().add(0, getTableView1());
-		if (getTableView2().getItems().isEmpty())
-			splitPane.getItems().remove(getTableView2());
+		if (getTableView2().getItems().isEmpty()) splitPane.getItems().remove(getTableView2());
 
 		int n = 0;
 		if (!getTableView1().getItems().isEmpty()) n++;

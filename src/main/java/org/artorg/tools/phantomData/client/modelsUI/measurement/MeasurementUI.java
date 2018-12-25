@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.FxFactory;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
@@ -66,7 +67,7 @@ public class MeasurementUI extends UIEntity<Measurement> {
 	}
 
 	@Override
-	public ItemEditFactoryController<Measurement> createEditFactory() {
+	public FxFactory<Measurement> createEditFactory() {
 		return new MeasurementEditFactoryController();
 	}
 

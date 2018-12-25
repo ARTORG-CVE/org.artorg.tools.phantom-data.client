@@ -30,6 +30,7 @@ import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
 import org.artorg.tools.phantomData.server.model.AbstractPropertifiedEntity;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
+import org.artorg.tools.phantomData.client.editor.FxFactory;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -44,7 +45,7 @@ public abstract class UIEntity<T> {
 
 	public abstract List<AbstractColumn<T, ? extends Object>> createColumns(Table<T> table, List<T> items);
 
-	public abstract ItemEditFactoryController<T> createEditFactory();
+	public abstract FxFactory<T> createEditFactory();
 
 	public Table<T> createTableBase() {
 		long startTime = System.currentTimeMillis();
