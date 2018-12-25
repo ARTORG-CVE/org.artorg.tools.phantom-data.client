@@ -75,6 +75,11 @@ public class FileTagUI extends UIEntity<FileTag> {
 			item.setName(message);
 		}
 
+		@Override
+		public void setDefaultTemplate() {
+			textField.setText("");
+		}
+
 	}
 
 }

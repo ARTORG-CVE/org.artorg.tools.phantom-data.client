@@ -76,6 +76,11 @@ public class NoteUI extends UIEntity<Note> {
 			item.setName(message);
 		}
 
+		@Override
+		public void setDefaultTemplate() {
+			textFieldMessage.setText("");
+		}
+
 	}
 
 }

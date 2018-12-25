@@ -49,4 +49,9 @@ public class IntegerPropertyUI extends PropertyUI<IntegerProperty,Integer> {
 		((TextField)valueNode).setText(value.toString());
 	}
 
+	@Override
+	protected Integer getDefaultValue() {
+		return 0;
+	}
+
 }

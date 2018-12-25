@@ -114,6 +114,15 @@ public class ProjectUI extends UIEntity<Project> {
 			item.setLeader(leader);
 		}
 
+		@Override
+		public void setDefaultTemplate() {
+			textFieldName.setText("");
+			textFieldDescription.setText("");
+			textFieldStartYear.setText("");
+			comboBoxPerson.getSelectionModel().clearSelection();
+			
+		}
+
 	}
 
 }

@@ -35,6 +35,8 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE> & DbPersis
 	protected abstract VALUE getValueFromNode(Node valueNode);
 
 	protected abstract void setValueToNode(Node valueNode, VALUE value);
+	
+	protected abstract VALUE getDefaultValue();
 
 	@Override
 	public List<AbstractColumn<T, ?>> createColumns(Table<T> table, List<T> items) {
@@ -104,6 +106,12 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE> & DbPersis
 
 			item.setPropertyField(propertyField);
 			item.setValue(value);
+		}
+
+		@Override
+		public void setDefaultTemplate() {
+			comboBoxPropertyField.getSelectionModel().clearSelection();
+			setValueToNode(valueNode, getDefaultValue());
 		}
 
 	}

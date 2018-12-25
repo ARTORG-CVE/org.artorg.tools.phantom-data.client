@@ -48,4 +48,9 @@ public class StringPropertyUI extends PropertyUI<StringProperty,String> {
 		((TextField)valueNode).setText(value);
 	}
 
+	@Override
+	protected String getDefaultValue() {
+		return "";
+	}
+
 }

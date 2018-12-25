@@ -80,13 +80,6 @@ public class PersonUI extends UIEntity<Person> {
 		}
 
 		@Override
-		public void initDefaultValues() {
-			super.initDefaultValues();
-			textFieldFirstname.setText("");
-			textFieldLastname.setText("");
-		}
-
-		@Override
 		public Person createItem() {
 			Gender gender = comboBoxGender.getSelectionModel().getSelectedItem();
 			AcademicTitle title = comboBoxTitle.getSelectionModel().getSelectedItem();
@@ -114,6 +107,14 @@ public class PersonUI extends UIEntity<Person> {
 			item.setAcademicTitle(title);
 			item.setFirstname(firstname);
 			item.setLastname(lastname);
+		}
+
+		@Override
+		public void setDefaultTemplate() {
+			comboBoxGender.getSelectionModel().clearSelection();
+			comboBoxTitle.getSelectionModel().clearSelection();
+			textFieldFirstname.setText("");
+			textFieldLastname.setText("");
 		}
 
 	}

@@ -47,9 +47,8 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 			Map<Class<?>, Function<Object, Collection<Object>>>> subItemGetterMap;
 	private static final Map<Class<?>, Map<Class<?>, Boolean>> containsCollectionSetterMap;
 	protected Button applyButton;
-	private List<Node> rightNodes;
+//	private List<Node> rightNodes;
 	private List<AbstractTableViewSelector<?>> selectors;
-	private AnchorPane pane;
 	private final Class<T> itemClass;
 	private ICrudConnector<T> connector;
 	private final List<Class<?>> subItemClasses;
@@ -89,8 +88,10 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 	protected abstract void setEditTemplate(T item);
 
 	public void setAddTemplate(T item) {
-//		setEditTemplate();
+		setDefaultTemplate();
 	}
+
+	public abstract void setDefaultTemplate();
 
 	protected abstract void applyChanges(T item);
 
@@ -98,7 +99,7 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 
 	protected abstract void addProperties(T item);
 
-	public abstract List<PropertyEntry> getPropertyEntries();
+//	public abstract List<PropertyEntry> getPropertyEntries();
 
 	protected void setSelectedChildItems(T item, AbstractTableViewSelector<T> selector) {
 		selector.setSelectedChildItems(item);
@@ -107,19 +108,17 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 	private List<AbstractTableViewSelector<?>> createSelectors(T item) {
 		List<AbstractTableViewSelector<?>> selectors = new ArrayList<>();
 		subItemClasses.forEach(subItemClass -> {
-			Set<?> selectableItems = getSelectableItems(subItemClass);
-			if (!selectableItems.isEmpty()) {
-				AbstractTableViewSelector<?> selector =
-						createSelector(item, subItemClass, selectableItems);
-				if (selector != null) selectors.add(selector);
-			}
+			AbstractTableViewSelector<?> selector = createSelector(item, subItemClass);
+			if (selector != null) selectors.add(selector);
 		});
 
 		return selectors;
 	}
 
-	protected <U> AbstractTableViewSelector<U> createSelector(T item, Class<?> subItemClass,
-			Set<U> selectableItems) {
+	protected <U> AbstractTableViewSelector<U> createSelector(T item, Class<?> subItemClass) {
+		Set<U> selectableItems = getSelectableItems((Class<U>) subItemClass);
+		if (selectableItems.isEmpty()) return null;
+
 		if (containsCollectionSetter(subItemClass)) {
 			try {
 				TitledPaneTableViewSelector<U> titledSelector =
@@ -171,17 +170,14 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		ICrudConnector<U> connector = Connectors.getConnector(subItemClass);
 		Set<U> items = connector.readAllAsSet();
 		if (AbstractProperty.class.isAssignableFrom(subItemClass)) {
-			items = items.stream()
-					.filter(item -> {
-						try {
-							String type = ((AbstractProperty<U, ?>)item).getPropertyField().getType();
-							Class<?> classType = Class.forName(type);
-							if (classType == getItemClass())
-								return true;
-						} catch (NullPointerException | ClassNotFoundException e) {}
-						return false;
-					})
-					.collect(Collectors.toSet());
+			items = items.stream().filter(item -> {
+				try {
+					String type = ((AbstractProperty<U, ?>) item).getPropertyField().getType();
+					Class<?> classType = Class.forName(type);
+					if (classType == getItemClass()) return true;
+				} catch (NullPointerException | ClassNotFoundException e) {}
+				return false;
+			}).collect(Collectors.toSet());
 		}
 		return items;
 	}
@@ -241,13 +237,13 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		return result;
 	}
 
-	protected void initDefaultValues() {
-		rightNodes.forEach(node -> {
-			if (node instanceof ComboBox) ((ComboBox<?>) node).getSelectionModel().clearSelection();
-			else if (node instanceof TextField) ((TextField) node).setText("");
-			else if (node instanceof CheckBox) ((CheckBox) node).setSelected(false);
-		});
-	}
+//	protected void initDefaultValues() {
+//		rightNodes.forEach(node -> {
+//			if (node instanceof ComboBox) ((ComboBox<?>) node).getSelectionModel().clearSelection();
+//			else if (node instanceof TextField) ((TextField) node).setText("");
+//			else if (node instanceof CheckBox) ((CheckBox) node).setSelected(false);
+//		});
+//	}
 
 	protected <U> void selectComboBoxItem(ComboBox<U> comboBox, U item) {
 		if (item == null) return;
@@ -283,9 +279,13 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 	public AnchorPane create(T item) {
 		selectors = createSelectors(item);
 		addProperties(item);
-		createRightNodes(getPropertyEntries());
-		initDefaultValues();
-		pane = createRootPane();
+//		createRightNodes(getPropertyEntries());
+//		initDefaultValues();
+		if (item == null) setDefaultTemplate();
+		else
+			setAddTemplate(item);
+
+		AnchorPane pane = createRootPane();
 		if (item != null) setAddTemplate(item);
 		applyButton.setOnAction(event -> {
 			FxUtil.runNewSingleThreaded(() -> createAndPersistItem());
@@ -301,7 +301,7 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 				if (selectors != null) selectors.stream().filter(selector -> selector != null)
 						.forEach(selector -> selector.setSelectedChildItems(newItem));
 				if (getConnector().create(newItem)) {
-					Platform.runLater(() -> initDefaultValues());
+					Platform.runLater(() -> setAddTemplate(newItem));
 				}
 			}
 			return newItem;
@@ -317,12 +317,12 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		Label label = new Label();
 		label.setText(((Identifiable<?>) item).getId().toString());
 		label.setDisable(true);
-		PropertyEntry idEntry = new PropertyEntry("Id", label);
-		getPropertyEntries().add(idEntry);
+//		PropertyEntry idEntry = new PropertyEntry("Id", label);
+//		getPropertyEntries().add(idEntry);
 		addProperties(item);
-		createRightNodes(getPropertyEntries());
-		initDefaultValues();
-		pane = createRootPane();
+//		createRightNodes(getPropertyEntries());
+//		initDefaultValues();
+		AnchorPane pane = createRootPane();
 		if (item != null) setEditTemplate(item);
 		applyButton.setOnAction(event -> {
 			if (!UserAdmin.isUserLoggedIn()) Main.getMainController().openLoginLogoutFrame();
@@ -349,9 +349,9 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		if (e instanceof NoUserLoggedInException) System.err.println("log in !!");
 	}
 
-	private void createRightNodes(List<PropertyEntry> entries) {
-		rightNodes = entries.stream().map(e -> e.getRightNode()).collect(Collectors.toList());
-	}
+//	private void createRightNodes(List<PropertyEntry> entries) {
+//		rightNodes = entries.stream().map(e -> e.getRightNode()).collect(Collectors.toList());
+//	}
 
 	public Class<T> getItemClass() {
 		return itemClass;
@@ -362,7 +362,7 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 	}
 
 	public Node getGraphic() {
-		return pane;
+		throw new UnsupportedOperationException();
 	}
 
 	public List<AbstractTableViewSelector<?>> getSelectors() {

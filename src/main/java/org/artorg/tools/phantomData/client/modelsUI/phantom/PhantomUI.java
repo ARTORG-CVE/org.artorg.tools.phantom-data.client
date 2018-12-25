@@ -161,13 +161,7 @@ public class PhantomUI extends UIEntity<Phantom> {
 					item -> updateId());
 			createComboBox(comboBoxManufacturing, Manufacturing.class, s -> s.getName());
 		}
-
-		@Override
-		public void initDefaultValues() {
-			super.initDefaultValues();
-			textFieldModelNumber.setText("1");
-		}
-
+		
 		@Override
 		public Phantom createItem() {
 			AnnulusDiameter annulusDiameter = comboBoxAnnulus.getSelectionModel().getSelectedItem();
@@ -238,6 +232,18 @@ public class PhantomUI extends UIEntity<Phantom> {
 			item.setNumber(number);
 			item.setManufacturing(manufacturing);
 			item.setThickness(thickness);
+		}
+
+		@Override
+		public void setDefaultTemplate() {
+			comboBoxAnnulus.getSelectionModel().clearSelection();
+			comboBoxFabricationType.getSelectionModel().clearSelection();
+			comboBoxLiterature.getSelectionModel().clearSelection();
+			comboBoxSpecials.getSelectionModel().clearSelection();
+
+			comboBoxManufacturing.getSelectionModel().clearSelection();
+			textFieldModelNumber.setText("1");
+			textFieldThickness.setText("");
 		}
 
 	}

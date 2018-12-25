@@ -34,7 +34,8 @@ public class PhantominaUI extends UIEntity<Phantomina> {
 	}
 
 	@Override
-	public List<AbstractColumn<Phantomina, ?>> createColumns(Table<Phantomina> table, List<Phantomina> items) {
+	public List<AbstractColumn<Phantomina, ?>> createColumns(Table<Phantomina> table,
+			List<Phantomina> items) {
 		List<AbstractColumn<Phantomina, ?>> columns = new ArrayList<>();
 		FilterColumn<Phantomina, ?, ?> column;
 		ColumnCreator<Phantomina, Phantomina> creator = new ColumnCreator<>(table);
@@ -49,9 +50,11 @@ public class PhantominaUI extends UIEntity<Phantomina> {
 				(path, value) -> path.getAnnulusDiameter().setValue(Double.valueOf(value))));
 		columns.add(creator.createFilterColumn("Type", path -> path.getFabricationType().getValue(),
 				(path, value) -> path.getFabricationType().setValue(value)));
-		columns.add(creator.createFilterColumn("Literature", path -> path.getLiteratureBase().getValue(),
+		columns.add(creator.createFilterColumn("Literature",
+				path -> path.getLiteratureBase().getValue(),
 				(path, value) -> path.getLiteratureBase().setValue(value)));
-		columns.add(creator.createFilterColumn("Special", path -> path.getLiteratureBase().getShortcut(),
+		columns.add(creator.createFilterColumn("Special",
+				path -> path.getLiteratureBase().getShortcut(),
 				(path, value) -> path.getLiteratureBase().setShortcut(value)));
 		createCountingColumn(table, "Files", columns, item -> item.getFiles());
 		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
@@ -145,6 +148,14 @@ public class PhantominaUI extends UIEntity<Phantomina> {
 			item.setFabricationType(fabricationType);
 			item.setLiteratureBase(literatureBase);
 			item.setSpecial(special);
+		}
+
+		@Override
+		public void setDefaultTemplate() {
+			comboBoxAnnulus.getSelectionModel().clearSelection();
+			comboBoxFabricationType.getSelectionModel().clearSelection();
+			comboBoxLiterature.getSelectionModel().clearSelection();
+			comboBoxSpecials.getSelectionModel().clearSelection();
 		}
 
 	}

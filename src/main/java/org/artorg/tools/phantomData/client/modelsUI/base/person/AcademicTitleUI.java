@@ -64,12 +64,6 @@ public class AcademicTitleUI extends UIEntity<AcademicTitle> {
 		}
 
 		@Override
-		public void initDefaultValues() {
-			textFieldPrefix.setText("");
-			textFieldPrefix.setText("");
-		}
-
-		@Override
 		public AcademicTitle createItem() {
 			String prefix = textFieldPrefix.getText();
 			String description = textFieldDescription.getText();
@@ -89,6 +83,12 @@ public class AcademicTitleUI extends UIEntity<AcademicTitle> {
 
 			item.setPrefix(prefix);
 			item.setDescription(description);
+		}
+
+		@Override
+		public void setDefaultTemplate() {
+			textFieldPrefix.setText("");
+			textFieldDescription.setText("");
 		}
 
 	}

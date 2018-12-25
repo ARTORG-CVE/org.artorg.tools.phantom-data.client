@@ -75,13 +75,7 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 				labelShortcut.setText(String.valueOf(shortcut));
 			} catch (Exception e) {}
 		}
-
-		@Override
-		public void initDefaultValues() {
-			labelShortcut.setText("0");
-			textFieldValue.setText("0.0");
-		}
-
+		
 		@Override
 		public AnnulusDiameter createItem() {
 			Integer shortcut = Integer.valueOf(labelShortcut.getText());
@@ -102,6 +96,12 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 
 			item.setShortcut(shortcut);
 			item.setValue(value);
+		}
+
+		@Override
+		public void setDefaultTemplate() {
+			textFieldValue.setText("0.0");
+			updateLabel();
 		}
 
 	}

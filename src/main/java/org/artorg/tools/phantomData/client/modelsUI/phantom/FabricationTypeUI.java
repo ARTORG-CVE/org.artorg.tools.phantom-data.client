@@ -88,6 +88,12 @@ public class FabricationTypeUI extends UIEntity<FabricationType> {
 			item.setValue(value);
 		}
 
+		@Override
+		public void setDefaultTemplate() {
+			textFieldShortcut.setText("");
+			textFieldValue.setText("");
+		}
+
 	}
 
 }

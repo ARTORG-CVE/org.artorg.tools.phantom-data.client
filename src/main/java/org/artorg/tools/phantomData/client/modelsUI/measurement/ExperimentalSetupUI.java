@@ -96,6 +96,13 @@ public class ExperimentalSetupUI extends UIEntity<ExperimentalSetup> {
 			item.setLongName(longName);
 			item.setDescription(description);
 		}
+
+		@Override
+		public void setDefaultTemplate() {
+			textFieldShortName.setText("");
+			textFieldLongName.setText("");
+			textFieldDescription.setText("");
+		}
 	}
 
 }

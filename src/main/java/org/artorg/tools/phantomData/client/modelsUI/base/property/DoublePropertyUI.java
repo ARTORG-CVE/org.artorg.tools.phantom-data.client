@@ -48,4 +48,9 @@ public class DoublePropertyUI extends PropertyUI<DoubleProperty,Double> {
 		((TextField)valueNode).setText(Double.toString(value));
 	}
 
+	@Override
+	protected Double getDefaultValue() {
+		return 0.0;
+	}
+
 }

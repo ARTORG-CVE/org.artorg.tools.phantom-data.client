@@ -105,8 +105,8 @@ public class MeasurementUI extends UIEntity<Measurement> {
 
 		@Override
 		protected void addProperties(Measurement item) {
-			super.getTitledPanes().stream().filter(p -> p instanceof TitledPropertyPane).forEach(
-					p -> super.getPropertyEntries().addAll(((TitledPropertyPane) p).getEntries()));
+//			super.getTitledPanes().stream().filter(p -> p instanceof TitledPropertyPane).forEach(
+//					p -> super.getPropertyEntries().addAll(((TitledPropertyPane) p).getEntries()));
 
 			TitledPane protocolTitledPane = new TitledPane();
 			protocolTitledPane.setContent(fileController.getTitledPanes().get(0).getContent());
@@ -166,6 +166,16 @@ public class MeasurementUI extends UIEntity<Measurement> {
 			item.setPerson(person);
 			item.setProject(project);
 			item.setExperimentalSetup(setup);
+		}
+
+		@Override
+		public void setDefaultTemplate() {
+			LocalDate localDate =
+					new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			datePicker.setValue(localDate);
+			comboBoxPerson.getSelectionModel().clearSelection();
+			comboBoxProject.getSelectionModel().clearSelection();
+			comboBoxSetup.getSelectionModel().clearSelection();
 		}
 	}
 }

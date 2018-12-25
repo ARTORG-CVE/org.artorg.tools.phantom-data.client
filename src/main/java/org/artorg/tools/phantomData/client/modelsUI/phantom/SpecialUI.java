@@ -87,6 +87,12 @@ public class SpecialUI extends UIEntity<Special> {
 			item.setDescription(description);
 		}
 
+		@Override
+		public void setDefaultTemplate() {
+			textFieldShortcut.setText("");
+			textFieldDescription.setText("");
+		}
+
 	}
 
 }

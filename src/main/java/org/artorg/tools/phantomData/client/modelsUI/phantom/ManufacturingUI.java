@@ -86,6 +86,12 @@ public class ManufacturingUI extends UIEntity<Manufacturing> {
 			item.setName(name);
 			item.setDescription(description);
 		}
+
+		@Override
+		public void setDefaultTemplate() {
+			textFieldName.setText("");
+			textFieldDescription.setText("");
+		}
 	}
 
 }

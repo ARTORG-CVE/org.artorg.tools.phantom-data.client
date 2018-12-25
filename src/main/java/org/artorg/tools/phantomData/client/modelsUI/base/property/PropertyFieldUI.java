@@ -138,6 +138,15 @@ public class PropertyFieldUI extends UIEntity<PropertyField> {
 			item.setType(type);
 		}
 
+		@Override
+		public void setDefaultTemplate() {
+			textFielName.setText("");
+			textFieldDescription.setText("");
+			parentItemPane.getChildren().clear();
+			FxUtil.addToPane(parentItemPane, textFieldParentItemClass);
+			textFieldParentItemClass.setText("");
+		}
+
 	}
 
 }

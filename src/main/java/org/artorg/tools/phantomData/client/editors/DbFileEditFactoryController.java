@@ -97,4 +97,14 @@ public class DbFileEditFactoryController extends GroupedItemEditFactoryControlle
 		item.setExtension(extension);
 	}
 
+	@Override
+	public void setDefaultTemplate() {
+		textFieldPath.setText("");
+		textFieldPath.setDisable(true);
+		textFieldName.setText("");
+		textFieldName.setDisable(false);
+		textFieldExtension.setText("");
+		textFieldExtension.setDisable(false);
+	}
+
 }

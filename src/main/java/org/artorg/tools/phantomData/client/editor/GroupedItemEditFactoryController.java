@@ -15,17 +15,17 @@ import javafx.scene.layout.VBox;
 public abstract class GroupedItemEditFactoryController<T>
 		extends ItemEditFactoryController<T> {
 	private List<TitledPane> titledPanes;
-	private List<PropertyEntry> entries;
+//	private List<PropertyEntry> entries;
 
 	{
 		titledPanes = new ArrayList<TitledPane>();
-		entries = new ArrayList<PropertyEntry>();
+//		entries = new ArrayList<PropertyEntry>();
 	}
 
 	@Override
 	protected void addProperties(T item) {
-		titledPanes.stream().filter(p -> p instanceof TitledPropertyPane)
-				.forEach(p -> entries.addAll(((TitledPropertyPane) p).getEntries()));
+//		titledPanes.stream().filter(p -> p instanceof TitledPropertyPane)
+//				.forEach(p -> entries.addAll(((TitledPropertyPane) p).getEntries()));
 
 		List<AbstractTableViewSelector<?>> selectors = this.getSelectors();
 		titledPanes.addAll(selectors.stream().map(selector -> {
@@ -39,10 +39,10 @@ public abstract class GroupedItemEditFactoryController<T>
 
 	}
 
-	@Override
-	public List<PropertyEntry> getPropertyEntries() {
-		return entries;
-	}
+//	@Override
+//	public List<PropertyEntry> getPropertyEntries() {
+//		return entries;
+//	}
 
 	@Override
 	protected AnchorPane createRootPane() {

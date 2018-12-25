@@ -48,4 +48,9 @@ public class BooleanPropertyUI extends PropertyUI<BooleanProperty, Boolean> {
 		((CheckBox) valueNode).setSelected(value);
 	}
 
+	@Override
+	protected Boolean getDefaultValue() {
+		return false;
+	}
+
 }

@@ -89,6 +89,12 @@ public class LiteratureBaseUI extends UIEntity<LiteratureBase> {
 			item.setValue(value);
 		}
 
+		@Override
+		public void setDefaultTemplate() {
+			textFieldShortcut.setText("");
+			textFieldValue.setText("");
+		}
+
 	}
 
 }
