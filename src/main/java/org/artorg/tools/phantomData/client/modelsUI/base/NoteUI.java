@@ -11,13 +11,12 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
-import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.base.Note;
 
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
-public class NoteUI implements UIEntity<Note> {
+public class NoteUI extends UIEntity<Note> {
 
 
 
@@ -36,7 +35,7 @@ public class NoteUI implements UIEntity<Note> {
 		ColumnCreator<Note, Note> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Name", path -> path.getName(),
 				(path, value) -> path.setName(value)));
-		ColumnUtils.createPersonifiedColumns(table, columns);
+		createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

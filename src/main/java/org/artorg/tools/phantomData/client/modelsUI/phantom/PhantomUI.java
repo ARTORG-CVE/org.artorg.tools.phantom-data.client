@@ -15,7 +15,6 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
-import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.models.phantom.LiteratureBase;
@@ -29,7 +28,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
-public class PhantomUI implements UIEntity<Phantom> {
+public class PhantomUI extends UIEntity<Phantom> {
 
 	public Class<Phantom> getItemClass() {
 		return Phantom.class;
@@ -74,10 +73,11 @@ public class PhantomUI implements UIEntity<Phantom> {
 		columns.add(
 				creator.createFilterColumn("Thickness", path -> Float.toString(path.getThickness()),
 						(path, value) -> path.setThickness(Float.valueOf(value))));
-		ColumnUtils.createCountingColumn(table, "Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn(table, "Measurements", columns, item -> item.getMeasurements());
-		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(table, columns);
+		createCountingColumn(table, "Files", columns, item -> item.getFiles());
+		createCountingColumn(table, "Measurements", columns, item -> item.getMeasurements());
+		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
+		createPropertyColumns(table, columns, items);
+		createPersonifiedColumns(table, columns);
 
 		column.setAscendingSortComparator(
 				(p1, p2) -> ((Integer) p1.getNumber()).compareTo((Integer) p2.getNumber()));

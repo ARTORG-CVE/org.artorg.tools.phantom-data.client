@@ -12,7 +12,6 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
-import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
 import org.artorg.tools.phantomData.server.models.measurement.Project;
 
@@ -20,7 +19,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
-public class ProjectUI implements UIEntity<Project> {
+public class ProjectUI extends UIEntity<Project> {
 
 	public Class<Project> getItemClass() {
 		return Project.class;
@@ -44,10 +43,10 @@ public class ProjectUI implements UIEntity<Project> {
 		columns.add(creator.createFilterColumn("Leader", path -> path.getLeader().toName()));
 		columns.add(creator.createFilterColumn("Members", path -> String.valueOf(path.getMembers()
 				.stream().map(member -> member.getLastname()).collect(Collectors.joining(", ")))));
-//		ColumnUtils.createCountingColumn("Measur.", columns, item -> item.getMeasurements());
-		ColumnUtils.createCountingColumn(table, "Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(table, columns);
+		createCountingColumn(table, "Files", columns, item -> item.getFiles());
+		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
+		createPropertyColumns(table, columns, items);
+		createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

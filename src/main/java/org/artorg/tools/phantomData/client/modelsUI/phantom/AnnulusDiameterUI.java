@@ -11,14 +11,13 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
-import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
-public class AnnulusDiameterUI implements UIEntity<AnnulusDiameter> {
+public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 
 	public Class<AnnulusDiameter> getItemClass() {
 		return AnnulusDiameter.class;
@@ -38,9 +37,10 @@ public class AnnulusDiameterUI implements UIEntity<AnnulusDiameter> {
 				(path, value) -> path.setShortcut(Integer.valueOf(value))));
 		columns.add(creator.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(Double.valueOf(value))));
-		ColumnUtils.createCountingColumn(table, "Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(table, columns);
+		createCountingColumn(table, "Files", columns, item -> item.getFiles());
+		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
+		createPropertyColumns(table, columns, items);
+		createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

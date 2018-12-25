@@ -11,13 +11,12 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
-import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.phantom.LiteratureBase;
 
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
-public class LiteratureBaseUI implements UIEntity<LiteratureBase> {
+public class LiteratureBaseUI extends UIEntity<LiteratureBase> {
 
 
 	public Class<LiteratureBase> getItemClass() {
@@ -38,9 +37,10 @@ public class LiteratureBaseUI implements UIEntity<LiteratureBase> {
 				(path, value) -> path.setShortcut((String) value)));
 		columns.add(creator.createFilterColumn("Value", path -> path.getValue(),
 				(path, value) -> path.setValue((String) value)));
-		ColumnUtils.createCountingColumn(table, "Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(table, columns);
+		createCountingColumn(table, "Files", columns, item -> item.getFiles());
+		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
+		createPropertyColumns(table, columns, items);
+		createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

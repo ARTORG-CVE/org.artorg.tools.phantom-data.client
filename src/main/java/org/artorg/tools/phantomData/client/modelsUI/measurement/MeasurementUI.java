@@ -19,7 +19,6 @@ import org.artorg.tools.phantomData.client.editor.select.AbstractTableViewSelect
 import org.artorg.tools.phantomData.client.editors.DbFileEditFactoryController;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
-import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
 import org.artorg.tools.phantomData.server.models.measurement.ExperimentalSetup;
@@ -30,7 +29,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TitledPane;
 
-public class MeasurementUI implements UIEntity<Measurement> {
+public class MeasurementUI extends UIEntity<Measurement> {
 
 	public Class<Measurement> getItemClass() {
 		return Measurement.class;
@@ -59,9 +58,10 @@ public class MeasurementUI implements UIEntity<Measurement> {
 		columns.add(creator.createFilterColumn("Project", path -> path.getProject().toName()));
 		columns.add(creator.createFilterColumn("Experimental Setup",
 				path -> path.getExperimentalSetup().getShortName()));
-		ColumnUtils.createCountingColumn(table, "Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(table, columns);
+		createCountingColumn(table, "Files", columns, item -> item.getFiles());
+		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
+		createPropertyColumns(table, columns, items);
+		createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

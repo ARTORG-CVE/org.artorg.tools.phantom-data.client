@@ -13,7 +13,6 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
-import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 
@@ -27,7 +26,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 
-public class PropertyFieldUI implements UIEntity<PropertyField> {
+public class PropertyFieldUI extends UIEntity<PropertyField> {
 
 	public Class<PropertyField> getItemClass() {
 		return PropertyField.class;
@@ -54,7 +53,7 @@ public class PropertyFieldUI implements UIEntity<PropertyField> {
 				(path, value) -> path.setName((String) value)));
 		columns.add(creator.createFilterColumn("Description", path -> path.getDescription(),
 				(path, value) -> path.setDescription((String) value)));
-		ColumnUtils.createPersonifiedColumns(table, columns);
+		createPersonifiedColumns(table, columns);
 
 		return columns;
 	}

@@ -23,6 +23,7 @@ import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.client.scene.control.VGridBoxPane;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
+import org.artorg.tools.phantomData.server.model.AbstractProperty;
 import org.artorg.tools.phantomData.server.model.BackReference;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
 import org.artorg.tools.phantomData.server.model.Identifiable;
@@ -116,21 +117,21 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 
 		return selectors;
 	}
-	
-	protected <U> AbstractTableViewSelector<U> createSelector(T item,
-			Class<?> subItemClass, Set<U> selectableItems) {
+
+	protected <U> AbstractTableViewSelector<U> createSelector(T item, Class<?> subItemClass,
+			Set<U> selectableItems) {
 		if (containsCollectionSetter(subItemClass)) {
 			try {
 				TitledPaneTableViewSelector<U> titledSelector =
-						new TitledPaneTableViewSelector<U>((Class<U>)subItemClass);
-				
+						new TitledPaneTableViewSelector<U>((Class<U>) subItemClass);
+
 				titledSelector.getSelectableItems().addAll(selectableItems);
 				if (item != null) {
 					Function<Object, Collection<Object>> subItemGetter =
 							getSubItemGetter(subItemClass);
 					if (subItemGetter != null) {
 						Set<U> selectedItems = subItemGetter.apply(item).stream()
-								.filter(e -> e != null).map(e -> (U)e).collect(Collectors.toSet());
+								.filter(e -> e != null).map(e -> (U) e).collect(Collectors.toSet());
 						titledSelector.getSelectedItems().addAll(selectedItems);
 					}
 				}
@@ -165,14 +166,27 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		}
 		return null;
 	}
-	
+
 	protected <U> Set<U> getSelectableItems(Class<U> subItemClass) {
 		ICrudConnector<U> connector = Connectors.getConnector(subItemClass);
-		return connector.readAllAsSet();
+		Set<U> items = connector.readAllAsSet();
+		if (AbstractProperty.class.isAssignableFrom(subItemClass)) {
+			items = items.stream()
+					.filter(item -> {
+						try {
+							String type = ((AbstractProperty<U, ?>)item).getPropertyField().getType();
+							Class<?> classType = Class.forName(type);
+							if (classType == getItemClass())
+								return true;
+						} catch (NullPointerException | ClassNotFoundException e) {}
+						return false;
+					})
+					.collect(Collectors.toSet());
+		}
+		return items;
 	}
 
-	private Function<Object, Collection<Object>> createSubItemGetter(
-			Class<?> subItemClass) {
+	private Function<Object, Collection<Object>> createSubItemGetter(Class<?> subItemClass) {
 		Method selectedMethod = Reflect.getMethodByGenericReturnType(itemClass, subItemClass);
 		if (selectedMethod == null) return null;
 		Function<Object, Collection<Object>> subItemGetter;
@@ -189,8 +203,7 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		return subItemGetter;
 	}
 
-	private Function<Object, Collection<Object>> getSubItemGetter(
-			Class<?> subItemClass) {
+	private Function<Object, Collection<Object>> getSubItemGetter(Class<?> subItemClass) {
 		Function<Object, Collection<Object>> subItemGetter = null;
 		if (subItemGetterMap.containsKey(itemClass)) {
 			if (subItemGetterMap.get(itemClass).containsKey(subItemClass))

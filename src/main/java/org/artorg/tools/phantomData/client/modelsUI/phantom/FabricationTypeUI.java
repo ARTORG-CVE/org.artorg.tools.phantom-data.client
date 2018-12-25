@@ -11,13 +11,12 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
-import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
 
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
-public class FabricationTypeUI implements UIEntity<FabricationType> {
+public class FabricationTypeUI extends UIEntity<FabricationType> {
 
 	public Class<FabricationType> getItemClass() {
 		return FabricationType.class;
@@ -37,9 +36,10 @@ public class FabricationTypeUI implements UIEntity<FabricationType> {
 				(path, value) -> path.setShortcut(value)));
 		columns.add(creator.createFilterColumn("Value", path -> path.getValue(),
 				(path, value) -> path.setValue(value)));
-		ColumnUtils.createCountingColumn(table, "Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(table, columns);
+		createCountingColumn(table, "Files", columns, item -> item.getFiles());
+		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
+		createPropertyColumns(table, columns, items);
+		createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

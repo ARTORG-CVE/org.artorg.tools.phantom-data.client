@@ -12,7 +12,6 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
-import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.models.phantom.LiteratureBase;
@@ -23,7 +22,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 
-public class PhantominaUI implements UIEntity<Phantomina> {
+public class PhantominaUI extends UIEntity<Phantomina> {
 
 	public Class<Phantomina> getItemClass() {
 		return Phantomina.class;
@@ -54,10 +53,10 @@ public class PhantominaUI implements UIEntity<Phantomina> {
 				(path, value) -> path.getLiteratureBase().setValue(value)));
 		columns.add(creator.createFilterColumn("Special", path -> path.getLiteratureBase().getShortcut(),
 				(path, value) -> path.getLiteratureBase().setShortcut(value)));
-		ColumnUtils.createCountingColumn(table, "Files", columns, item -> item.getFiles());
-		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
-//		createPropertyColumns(columns, this.getItems());
-		ColumnUtils.createPersonifiedColumns(table, columns);
+		createCountingColumn(table, "Files", columns, item -> item.getFiles());
+		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
+		createPropertyColumns(table, columns, items);
+		createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

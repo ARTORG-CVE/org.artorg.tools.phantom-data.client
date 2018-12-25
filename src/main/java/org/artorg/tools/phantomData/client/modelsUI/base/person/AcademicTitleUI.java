@@ -16,7 +16,7 @@ import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
-public class AcademicTitleUI implements UIEntity<AcademicTitle> {
+public class AcademicTitleUI extends UIEntity<AcademicTitle> {
 
 	public Class<AcademicTitle> getItemClass() {
 		return AcademicTitle.class;

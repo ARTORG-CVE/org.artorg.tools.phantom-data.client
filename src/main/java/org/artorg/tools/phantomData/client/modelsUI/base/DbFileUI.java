@@ -13,14 +13,13 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editors.DbFileEditFactoryController;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
-import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-public class DbFileUI implements UIEntity<DbFile> {
+public class DbFileUI extends UIEntity<DbFile> {
 	private static final Map<String, Image> iconMap = new HashMap<>();
 
 	public Class<DbFile> getItemClass() {
@@ -57,8 +56,8 @@ public class DbFileUI implements UIEntity<DbFile> {
 				.map(fileTag -> fileTag.getName()).collect(Collectors.joining(", "))));
 //		columns.add(
 //				new FilterColumn<>("Phantoms", path -> String.valueOf(path.getPhantoms().size())));
-		ColumnUtils.createCountingColumn(table, "Notes", columns, item -> item.getNotes());
-		ColumnUtils.createPersonifiedColumns(table, columns);
+		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
+		createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

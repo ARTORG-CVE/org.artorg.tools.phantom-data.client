@@ -20,7 +20,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
 
-public class PersonUI implements UIEntity<Person> {
+public class PersonUI extends UIEntity<Person> {
 
 	public Class<Person> getItemClass() {
 		return Person.class;

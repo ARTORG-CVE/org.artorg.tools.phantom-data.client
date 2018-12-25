@@ -11,13 +11,12 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
-import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.server.models.base.FileTag;
 
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 
-public class FileTagUI implements UIEntity<FileTag> {
+public class FileTagUI extends UIEntity<FileTag> {
 
 
 	public Class<FileTag> getItemClass() {
@@ -35,7 +34,7 @@ public class FileTagUI implements UIEntity<FileTag> {
 		ColumnCreator<FileTag, FileTag> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Name", path -> path.getName(),
 				(path, value) -> path.setName(value)));
-		ColumnUtils.createPersonifiedColumns(table, columns);
+		createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

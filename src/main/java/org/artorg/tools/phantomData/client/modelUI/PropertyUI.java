@@ -12,7 +12,6 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.table.Table;
-import org.artorg.tools.phantomData.client.util.ColumnUtils;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
@@ -23,7 +22,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TitledPane;
 
 public abstract class PropertyUI<T extends AbstractProperty<T, VALUE> & DbPersistent<T, UUID>,
-		VALUE extends Comparable<VALUE>> implements UIEntity<T> {
+		VALUE extends Comparable<VALUE>> extends UIEntity<T> {
 
 	protected abstract String toString(VALUE value);
 
@@ -54,7 +53,7 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE> & DbPersis
 						(path, value) -> path.getPropertyField().setName(value)));
 		columns.add(creator.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(fromString(value))));
-		ColumnUtils.createPersonifiedColumns(table, columns);
+		createPersonifiedColumns(table, columns);
 		return columns;
 	}
 
