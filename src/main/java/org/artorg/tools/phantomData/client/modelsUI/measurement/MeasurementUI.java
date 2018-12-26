@@ -17,6 +17,7 @@ import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.editor.select.AbstractTableViewSelector;
+import org.artorg.tools.phantomData.client.editor2.PropertyNodeCreator;
 import org.artorg.tools.phantomData.client.editors.DbFileEditFactoryController;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
@@ -25,10 +26,13 @@ import org.artorg.tools.phantomData.server.models.base.person.Person;
 import org.artorg.tools.phantomData.server.models.measurement.ExperimentalSetup;
 import org.artorg.tools.phantomData.server.models.measurement.Measurement;
 import org.artorg.tools.phantomData.server.models.measurement.Project;
+import org.artorg.tools.phantomData.server.util.FxUtil;
 
+import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.AnchorPane;
 
 public class MeasurementUI extends UIEntity<Measurement> {
 
@@ -44,7 +48,8 @@ public class MeasurementUI extends UIEntity<Measurement> {
 	}
 
 	@Override
-	public List<AbstractColumn<Measurement, ?>> createColumns(Table<Measurement> table, List<Measurement> items) {
+	public List<AbstractColumn<Measurement, ?>> createColumns(Table<Measurement> table,
+			List<Measurement> items) {
 		List<AbstractColumn<Measurement, ?>> columns = new ArrayList<>();
 		ColumnCreator<Measurement, Measurement> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Date", path -> format.format(path.getStartDate()),
@@ -68,7 +73,27 @@ public class MeasurementUI extends UIEntity<Measurement> {
 
 	@Override
 	public FxFactory<Measurement> createEditFactory() {
-		return new MeasurementEditFactoryController();
+//		return new MeasurementEditFactoryController();
+		return new PropertyNodeCreator<Measurement>(getItemClass()) {
+			private AnchorPane pane = new AnchorPane();
+
+			{
+				List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
+
+				generalProperties.add(new PropertyEntry("Test",
+						createComboBox(Project.class, (item, value) -> item.setProject(value),
+								item -> item.getProject(), p -> p.getName()).getNode()));
+				TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+				FxUtil.addToPane(pane, generalPane);
+			}
+
+			@Override
+			public Node getGraphic() {
+				return pane;
+			}
+
+		};
+
 	}
 
 	private class MeasurementEditFactoryController

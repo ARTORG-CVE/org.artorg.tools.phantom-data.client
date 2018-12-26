@@ -25,8 +25,6 @@ public abstract class AbstractTableViewSelector<ITEM> {
 
 	public abstract Node getGraphic();
 
-	public abstract void init();
-
 	public void setSelectedChildItems(Object item) {
 		List<Object> items = new ArrayList<>();
 
