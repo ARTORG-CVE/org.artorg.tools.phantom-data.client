@@ -5,17 +5,19 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
-import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
+import org.artorg.tools.phantomData.client.editor.FxFactory;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.editor2.ItemEditor;
+import org.artorg.tools.phantomData.client.editor2.PropertyNode;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
+import org.artorg.tools.phantomData.server.util.FxUtil;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
+import javafx.scene.layout.VBox;
 
 public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 
@@ -29,13 +31,16 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 	}
 
 	@Override
-	public List<AbstractColumn<AnnulusDiameter, ?>> createColumns(Table<AnnulusDiameter> table, List<AnnulusDiameter> items) {
+	public List<AbstractColumn<AnnulusDiameter, ?>>
+		createColumns(Table<AnnulusDiameter> table, List<AnnulusDiameter> items) {
 		List<AbstractColumn<AnnulusDiameter, ?>> columns = new ArrayList<>();
 		ColumnCreator<AnnulusDiameter, AnnulusDiameter> creator =
-				new ColumnCreator<>(table);
-		columns.add(creator.createFilterColumn("Sortcut", path -> String.valueOf(path.getShortcut()),
-				(path, value) -> path.setShortcut(Integer.valueOf(value))));
-		columns.add(creator.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
+			new ColumnCreator<>(table);
+		columns.add(creator.createFilterColumn("Sortcut",
+			path -> String.valueOf(path.getShortcut()),
+			(path, value) -> path.setShortcut(Integer.valueOf(value))));
+		columns.add(
+			creator.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(Double.valueOf(value))));
 		createCountingColumn(table, "Files", columns, item -> item.getFiles());
 		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
@@ -45,65 +50,34 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 	}
 
 	@Override
-	public ItemEditFactoryController<AnnulusDiameter> createEditFactory() {
-		return new AnnulusDiameterEditFactoryController();
-	}
+	public FxFactory<AnnulusDiameter> createEditFactory() {
+		ItemEditor<AnnulusDiameter> creator = new ItemEditor<>(getItemClass());
+		VBox vBox = new VBox();
+		PropertyNode<AnnulusDiameter, ?> propertyNode;
 
-	private class AnnulusDiameterEditFactoryController
-			extends GroupedItemEditFactoryController<AnnulusDiameter> {
-		private Label labelShortcut;
-		private TextField textFieldValue;
-
-		{
-			labelShortcut = new Label();
-			textFieldValue = new TextField();
-			labelShortcut.setDisable(true);
-
-			List<TitledPane> panes = new ArrayList<TitledPane>();
-			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-			generalProperties.add(new PropertyEntry("Shortcut [mm]", labelShortcut));
-			generalProperties
-					.add(new PropertyEntry("Diameter [mm]", textFieldValue, () -> updateLabel()));
-			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-			panes.add(generalPane);
-			setTitledPanes(panes);
-		}
-
-		private void updateLabel() {
+		List<PropertyEntry> generalProperties = new ArrayList<>();
+		Label labelShortcut = new Label();
+		TextField textFieldValue = new TextField();
+		textFieldValue.textProperty().addListener((observable, oldValue, newValue) -> {
 			try {
-				Integer shortcut = Double.valueOf(textFieldValue.getText()).intValue();
+				Integer shortcut = Double.valueOf(newValue).intValue();
 				labelShortcut.setText(String.valueOf(shortcut));
 			} catch (Exception e) {}
-		}
-		
-		@Override
-		public AnnulusDiameter createItem() {
-			Integer shortcut = Integer.valueOf(labelShortcut.getText());
-			Double value = Double.valueOf(textFieldValue.getText());
-			return new AnnulusDiameter(shortcut, value);
-		}
+		});
 
-		@Override
-		protected void setEditTemplate(AnnulusDiameter item) {
-			textFieldValue.setText(Double.toString(item.getValue()));
-			updateLabel();
-		}
+		generalProperties.add(new PropertyEntry("Shortcut", labelShortcut));
+		propertyNode = creator.createTextField(textFieldValue,
+			(item, value) -> item.setValue(Double.valueOf(value)),
+			item -> Double.toString(item.getValue()));
+		generalProperties.add(new PropertyEntry("Diameter [mm]", propertyNode.getNode()));
+		TitledPropertyPane generalPane =
+			new TitledPropertyPane(generalProperties, "General");
+		vBox.getChildren().add(generalPane);
 
-		@Override
-		protected void applyChanges(AnnulusDiameter item) {
-			Integer shortcut = Integer.valueOf(labelShortcut.getText());
-			Double value = Double.valueOf(textFieldValue.getText());
+		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
 
-			item.setShortcut(shortcut);
-			item.setValue(value);
-		}
-
-		@Override
-		public void setDefaultTemplate() {
-			textFieldValue.setText("0.0");
-			updateLabel();
-		}
-
+		FxUtil.addToPane(creator, vBox);
+		return creator;
 	}
 
 }

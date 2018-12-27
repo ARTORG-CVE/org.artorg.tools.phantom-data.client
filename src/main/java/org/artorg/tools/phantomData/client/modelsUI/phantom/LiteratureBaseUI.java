@@ -5,16 +5,17 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
-import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
+import org.artorg.tools.phantomData.client.editor.FxFactory;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.editor2.ItemEditor;
+import org.artorg.tools.phantomData.client.editor2.PropertyNode;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.phantom.LiteratureBase;
+import org.artorg.tools.phantomData.server.util.FxUtil;
 
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
+import javafx.scene.layout.VBox;
 
 public class LiteratureBaseUI extends UIEntity<LiteratureBase> {
 
@@ -45,56 +46,26 @@ public class LiteratureBaseUI extends UIEntity<LiteratureBase> {
 	}
 
 	@Override
-	public ItemEditFactoryController<LiteratureBase> createEditFactory() {
-		return new LiteratureBaseEditFactoryController();
-	}
+	public FxFactory<LiteratureBase> createEditFactory() {
+		ItemEditor<LiteratureBase> creator = new ItemEditor<>(getItemClass());
+		VBox vBox = new VBox();
+		PropertyNode<LiteratureBase, ?> propertyNode;
 
-	private class LiteratureBaseEditFactoryController
-			extends GroupedItemEditFactoryController<LiteratureBase> {
-		private TextField textFieldShortcut;
-		private TextField textFieldValue;
+		List<PropertyEntry> generalProperties = new ArrayList<>();
+		propertyNode = creator.createTextField((item, value) -> item.setShortcut(value),
+			item -> item.getShortcut());
+		generalProperties.add(new PropertyEntry("Shortcut", propertyNode.getNode()));
+		propertyNode = creator.createTextField((item, value) -> item.setValue(value),
+			item -> item.getValue());
+		generalProperties.add(new PropertyEntry("Name", propertyNode.getNode()));
+		TitledPropertyPane generalPane =
+			new TitledPropertyPane(generalProperties, "General");
+		vBox.getChildren().add(generalPane);
 
-		{
-			textFieldShortcut = new TextField();
-			textFieldValue = new TextField();
+		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
 
-			List<TitledPane> panes = new ArrayList<TitledPane>();
-			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-			generalProperties.add(new PropertyEntry("Shortcut", textFieldShortcut));
-			generalProperties.add(new PropertyEntry("Name", textFieldValue));
-			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-			panes.add(generalPane);
-			setTitledPanes(panes);
-		}
-
-		@Override
-		protected void setEditTemplate(LiteratureBase item) {
-			textFieldShortcut.setText(item.getShortcut());
-			textFieldValue.setText(item.getValue());
-		}
-
-		@Override
-		public LiteratureBase createItem() {
-			String shortcut = textFieldShortcut.getText();
-			String value = textFieldValue.getText();
-			return new LiteratureBase(shortcut, value);
-		}
-
-		@Override
-		protected void applyChanges(LiteratureBase item) {
-			String shortcut = textFieldShortcut.getText();
-			String value = textFieldValue.getText();
-
-			item.setShortcut(shortcut);
-			item.setValue(value);
-		}
-
-		@Override
-		public void setDefaultTemplate() {
-			textFieldShortcut.setText("");
-			textFieldValue.setText("");
-		}
-
+		FxUtil.addToPane(creator, vBox);
+		return creator;
 	}
 
 }

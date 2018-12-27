@@ -20,8 +20,9 @@ import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 
-public abstract class PropertyUI<T extends AbstractProperty<T, VALUE> & DbPersistent<T, UUID>,
-		VALUE extends Comparable<VALUE>> extends UIEntity<T> {
+public abstract class PropertyUI<
+	T extends AbstractProperty<T, VALUE> & DbPersistent<T, UUID>,
+	VALUE extends Comparable<VALUE>> extends UIEntity<T> {
 
 	protected abstract String toString(VALUE value);
 
@@ -49,10 +50,11 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE> & DbPersis
 			}
 			return path.getPropertyField().getType();
 		}, (path, value) -> {}));
+		columns.add(creator.createFilterColumn("Field Name",
+			path -> path.getPropertyField().getName(),
+			(path, value) -> path.getPropertyField().setName(value)));
 		columns.add(
-				creator.createFilterColumn("Field Name", path -> path.getPropertyField().getName(),
-						(path, value) -> path.getPropertyField().setName(value)));
-		columns.add(creator.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
+			creator.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(fromString(value))));
 		createPersonifiedColumns(table, columns);
 		return columns;
@@ -62,20 +64,23 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE> & DbPersis
 	public FxFactory<T> createEditFactory() {
 		ItemEditor<T> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
-		PropertyNode<T> propertyNode;
+		PropertyNode<T, ?> propertyNode;
 
 		List<PropertyEntry> generalProperties = new ArrayList<>();
 		propertyNode = creator.createComboBox(PropertyField.class).of(
-				(item, value) -> item.setPropertyField(value), item -> item.getPropertyField(),
-				p -> p.getName());
-		generalProperties.add(new PropertyEntry("Property Field", propertyNode.getNode()));
+			(item, value) -> item.setPropertyField(value),
+			item -> item.getPropertyField(), p -> p.getName());
+		generalProperties
+			.add(new PropertyEntry("Property Field", propertyNode.getNode()));
 
 		Node node = createValueNode();
 		propertyNode = creator.createNode((item, value) -> item.setValue(value),
-				item -> item.getValue(), item -> getDefaultValue(), getDefaultValue(), node,
-				value -> setValueToNode(node, value), () -> getValueFromNode(node));
+			item -> item.getValue(), item -> getDefaultValue(), node,
+			value -> setValueToNode(node, value),
+			() -> getValueFromNode(node), () -> setValueToNode(node, getDefaultValue()));
 		generalProperties.add(new PropertyEntry("Value", propertyNode.getNode()));
-		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		TitledPropertyPane generalPane =
+			new TitledPropertyPane(generalProperties, "General");
 		vBox.getChildren().add(generalPane);
 
 		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));

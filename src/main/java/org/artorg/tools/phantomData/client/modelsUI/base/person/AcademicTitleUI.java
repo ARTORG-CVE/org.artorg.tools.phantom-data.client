@@ -43,7 +43,7 @@ public class AcademicTitleUI extends UIEntity<AcademicTitle> {
 	public FxFactory<AcademicTitle> createEditFactory() {
 		ItemEditor<AcademicTitle> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
-		PropertyNode<AcademicTitle> propertyNode;
+		PropertyNode<AcademicTitle,?> propertyNode;
 		
 		List<PropertyEntry> generalProperties = new ArrayList<>();
 		propertyNode = creator.createTextField((item,value) -> item.setPrefix(value), item -> item.getPrefix());

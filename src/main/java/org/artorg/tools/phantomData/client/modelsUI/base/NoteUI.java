@@ -5,16 +5,22 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.FxFactory;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.editor2.ItemEditor;
+import org.artorg.tools.phantomData.client.editor2.PropertyNode;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
+import org.artorg.tools.phantomData.server.models.base.FileTag;
 import org.artorg.tools.phantomData.server.models.base.Note;
+import org.artorg.tools.phantomData.server.util.FxUtil;
 
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.VBox;
 
 public class NoteUI extends UIEntity<Note> {
 
@@ -40,47 +46,21 @@ public class NoteUI extends UIEntity<Note> {
 	}
 
 	@Override
-	public ItemEditFactoryController<Note> createEditFactory() {
-		return new NoteEditFactoryController();
-	}
-
-	private class NoteEditFactoryController extends GroupedItemEditFactoryController<Note> {
-		private TextField textFieldMessage;
-
-		{
-			textFieldMessage = new TextField();
-
-			List<TitledPane> panes = new ArrayList<TitledPane>();
-			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-			generalProperties.add(new PropertyEntry("Message", textFieldMessage));
-			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-			panes.add(generalPane);
-			setTitledPanes(panes);
-		}
-
-		@Override
-		public Note createItem() {
-			String note = textFieldMessage.getText();
-			return new Note(note);
-		}
-
-		@Override
-		protected void setEditTemplate(Note item) {
-			textFieldMessage.setText(item.getName());
-		}
-
-		@Override
-		protected void applyChanges(Note item) {
-			String message = textFieldMessage.getText();
-
-			item.setName(message);
-		}
-
-		@Override
-		public void setDefaultTemplate() {
-			textFieldMessage.setText("");
-		}
-
+	public FxFactory<Note> createEditFactory() {
+		ItemEditor<Note> creator = new ItemEditor<>(getItemClass());
+		VBox vBox = new VBox();
+		PropertyNode<Note,?> propertyNode;
+		
+		List<PropertyEntry> generalProperties = new ArrayList<>();
+		propertyNode = creator.createTextField((item,value) -> item.setName(value), item -> item.getName());
+		generalProperties.add(new PropertyEntry("Message", propertyNode.getNode()));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		vBox.getChildren().add(generalPane);
+		
+		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
+		
+		FxUtil.addToPane(creator, vBox);
+		return creator;
 	}
 
 }

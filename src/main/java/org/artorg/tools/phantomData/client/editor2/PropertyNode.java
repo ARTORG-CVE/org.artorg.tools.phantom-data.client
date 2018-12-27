@@ -1,96 +1,138 @@
 package org.artorg.tools.phantomData.client.editor2;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javafx.scene.Node;
 
-public abstract class PropertyNode<T> {
+public abstract class PropertyNode<T,U> {
 	private final Class<T> itemClass;
-	private Consumer<T> consumerNodeToEntity;
-	private Consumer<T> consumerEntityToNodeEdit;
-	private Consumer<T> consumerEntityToNodeAdd;
-	private Runnable runnableSetDefault;
+//	private final Class<?> valueClass;
+	private BiConsumer<T,U> valueToEntitySetter;
+	private Function<T,U> entityToValueEditGetter;
+	private Function<T,U> entityToValueAddGetter;
+	private Consumer<U> valueToNodeSetter;
+	private Supplier<U> nodeToValueGetter;
+	private Runnable defaultSetterRunnable;
 	private Node node;
 
 	public PropertyNode(Class<T> itemClass, Node node) {
 		this.itemClass = itemClass;
-		this.consumerNodeToEntity = item -> nodeToEntityImpl(item);
-		this.consumerEntityToNodeEdit = item -> entityToNodeEditImpl(item);
-		this.consumerEntityToNodeAdd = item -> entityToNodeAddImpl(item);
-		this.runnableSetDefault = () -> setDefaultImpl();
+//		this.valueClass = valueClass;
 		this.node = node;
+		valueToEntitySetter = this::valueToEntitySetterImpl;
+		entityToValueEditGetter = this::entityToValueEditGetterImpl;
+		entityToValueAddGetter = this::entityToValueAddGetterImpl;
+		valueToNodeSetter = this::valueToNodeSetterImpl;
+		nodeToValueGetter = this::nodeToValueGetterImpl;
+		defaultSetterRunnable = this::defaultSetterRunnableImpl;
 	}
 	
-	protected abstract void nodeToEntityImpl(T item);
+	protected abstract U entityToValueEditGetterImpl(T item);
 	
-	protected abstract void entityToNodeEditImpl(T item);
+	protected abstract U entityToValueAddGetterImpl(T item);
 	
-	protected abstract void entityToNodeAddImpl(T item);
+	protected abstract void valueToEntitySetterImpl(T item, U value);
 	
-	protected abstract void setDefaultImpl();
+	protected abstract U nodeToValueGetterImpl();
+	
+	protected abstract void valueToNodeSetterImpl(U value);
+	
+	protected abstract void defaultSetterRunnableImpl();
+	
+	public PropertyNode<T,U> addNodeListener(Runnable rc) {
+		setValueToNodeSetter(getValueToNodeSetter().andThen(u -> rc.run()));
+		return this;
+	}
+	
 	
 	public final void nodeToEntity(T item) {
-		if (getConsumerNodeToEntity() != null)
-			getConsumerNodeToEntity().accept(item);
+		valueToEntitySetter.accept(item, nodeToValueGetter.get());
 	}
 	
 	public final void entityToNodeEdit(T item) {
-		if (getConsumerEntityToNodeEdit() != null)
-			getConsumerEntityToNodeEdit().accept(item);
+		valueToNodeSetter.accept(entityToValueEditGetter.apply(item));
 	}
 	
 	public final void entityToNodeAdd(T item) {
-		if (getConsumerEntityToNodeAdd() != null)
-			getConsumerEntityToNodeAdd().accept(item);
+		valueToNodeSetter.accept(entityToValueAddGetter.apply(item));
 	}
 	
 	public final void setDefault() {
-		if (getRunnableSetDefault() != null)
-			getRunnableSetDefault().run();
+		defaultSetterRunnable.run();
+	}
+
+	public BiConsumer<T, U> getValueToEntitySetter() {
+		return valueToEntitySetter;
+	}
+
+	public PropertyNode<T,U> setValueToEntitySetter(BiConsumer<T, U> valueToEntitySetter) {
+		this.valueToEntitySetter = valueToEntitySetter;
+		return this;
+	}
+
+	public Function<T, U> getEntityToValueEditGetter() {
+		return entityToValueEditGetter;
+	}
+
+	public PropertyNode<T,U> setEntityToValueEditGetter(Function<T, U> entityToValueEditGetter) {
+		this.entityToValueEditGetter = entityToValueEditGetter;
+		return this;
+	}
+
+	public Function<T, U> getEntityToValueAddGetter() {
+		return entityToValueAddGetter;
+	}
+
+	public PropertyNode<T,U> setEntityToValueAddGetter(Function<T, U> entityToValueAddGetter) {
+		this.entityToValueAddGetter = entityToValueAddGetter;
+		return this;
+	}
+
+	public Consumer<U> getValueToNodeSetter() {
+		return valueToNodeSetter;
+	}
+
+	public PropertyNode<T,U> setValueToNodeSetter(Consumer<U> valueToNodeSetter) {
+		this.valueToNodeSetter = valueToNodeSetter;
+		return this;
+	}
+
+	public Supplier<U> getNodeToValueGetter() {
+		return nodeToValueGetter;
+	}
+
+	public PropertyNode<T,U> setNodeToValueGetter(Supplier<U> nodeToValueGetter) {
+		this.nodeToValueGetter = nodeToValueGetter;
+		return this;
+	}
+
+	public Runnable getDefaultSetterRunnable() {
+		return defaultSetterRunnable;
+	}
+
+	public PropertyNode<T,U> setDefaultSetterRunnable(Runnable defaultSetterRunnable) {
+		this.defaultSetterRunnable = defaultSetterRunnable;
+		return this;
 	}
 
 	public Node getNode() {
 		return node;
 	}
-	
-	public void setNode(Node node) {
+
+	public PropertyNode<T,U> setNode(Node node) {
 		this.node = node;
+		return this;
 	}
 
 	public Class<T> getItemClass() {
 		return itemClass;
 	}
 
-	public Consumer<T> getConsumerNodeToEntity() {
-		return consumerNodeToEntity;
-	}
-
-	public void setConsumerNodeToEntity(Consumer<T> consumerNodeToEntity) {
-		this.consumerNodeToEntity = consumerNodeToEntity;
-	}
-
-	public Consumer<T> getConsumerEntityToNodeEdit() {
-		return consumerEntityToNodeEdit;
-	}
-
-	public void setConsumerEntityToNodeEdit(Consumer<T> consumerEntityToNodeEdit) {
-		this.consumerEntityToNodeEdit = consumerEntityToNodeEdit;
-	}
-
-	public Consumer<T> getConsumerEntityToNodeAdd() {
-		return consumerEntityToNodeAdd;
-	}
-
-	public void setConsumerEntityToNodeAdd(Consumer<T> consumerEntityToNodeAdd) {
-		this.consumerEntityToNodeAdd = consumerEntityToNodeAdd;
-	}
-
-	public Runnable getRunnableSetDefault() {
-		return runnableSetDefault;
-	}
-
-	public void setRunnableSetDefault(Runnable runnableSetDefault) {
-		this.runnableSetDefault = runnableSetDefault;
-	}
+//	public Class<?> getValueClass() {
+//		return valueClass;
+//	}
 
 }

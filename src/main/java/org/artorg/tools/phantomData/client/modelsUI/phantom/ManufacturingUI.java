@@ -5,16 +5,17 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
-import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
+import org.artorg.tools.phantomData.client.editor.FxFactory;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.editor2.ItemEditor;
+import org.artorg.tools.phantomData.client.editor2.PropertyNode;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.phantom.Manufacturing;
+import org.artorg.tools.phantomData.server.util.FxUtil;
 
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
+import javafx.scene.layout.VBox;
 
 public class ManufacturingUI extends UIEntity<Manufacturing> {
 
@@ -43,55 +44,26 @@ public class ManufacturingUI extends UIEntity<Manufacturing> {
 	}
 
 	@Override
-	public ItemEditFactoryController<Manufacturing> createEditFactory() {
-		return new ManufacturingEditFactoryController();
-	}
+	public FxFactory<Manufacturing> createEditFactory() {
+		ItemEditor<Manufacturing> creator = new ItemEditor<>(getItemClass());
+		VBox vBox = new VBox();
+		PropertyNode<Manufacturing, ?> propertyNode;
 
-	private class ManufacturingEditFactoryController
-			extends GroupedItemEditFactoryController<Manufacturing> {
-		private final TextField textFieldName;
-		private final TextField textFieldDescription;
+		List<PropertyEntry> generalProperties = new ArrayList<>();
+		propertyNode = creator.createTextField((item, value) -> item.setName(value),
+			item -> item.getName());
+		generalProperties.add(new PropertyEntry("Shortcut", propertyNode.getNode()));
+		propertyNode = creator.createTextField((item, value) -> item.setDescription(value),
+			item -> item.getDescription());
+		generalProperties.add(new PropertyEntry("Description", propertyNode.getNode()));
+		TitledPropertyPane generalPane =
+			new TitledPropertyPane(generalProperties, "General");
+		vBox.getChildren().add(generalPane);
 
-		{
-			textFieldName = new TextField();
-			textFieldDescription = new TextField();
+		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
 
-			List<TitledPane> panes = new ArrayList<TitledPane>();
-			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-			generalProperties.add(new PropertyEntry("Name", textFieldName));
-			generalProperties.add(new PropertyEntry("Description", textFieldDescription));
-			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-			panes.add(generalPane);
-			setTitledPanes(panes);
-		}
-
-		@Override
-		public Manufacturing createItem() {
-			String name = textFieldName.getText();
-			String description = textFieldDescription.getText();
-			return new Manufacturing(name, description);
-		}
-
-		@Override
-		protected void setEditTemplate(Manufacturing item) {
-			textFieldName.setText(item.getName());
-			textFieldDescription.setText(item.getDescription());
-		}
-
-		@Override
-		protected void applyChanges(Manufacturing item) {
-			String name = textFieldName.getText();
-			String description = textFieldDescription.getText();
-
-			item.setName(name);
-			item.setDescription(description);
-		}
-
-		@Override
-		public void setDefaultTemplate() {
-			textFieldName.setText("");
-			textFieldDescription.setText("");
-		}
+		FxUtil.addToPane(creator, vBox);
+		return creator;
 	}
 
 }

@@ -64,7 +64,7 @@ public class MeasurementUI extends UIEntity<Measurement> {
 	public FxFactory<Measurement> createEditFactory() {
 		ItemEditor<Measurement> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
-		PropertyNode<Measurement> propertyNode;
+		PropertyNode<Measurement,?> propertyNode;
 		
 		List<PropertyEntry> generalProperties = new ArrayList<>();
 		propertyNode = creator.createDatePicker((item, value) -> item.setStartDate(value),
@@ -84,11 +84,11 @@ public class MeasurementUI extends UIEntity<Measurement> {
 		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 		vBox.getChildren().add(generalPane);
 
-		PropertyNode<Measurement> selector;
-		selector = creator.createSelector(DbFile.class).titled("Protocol Files",
+		PropertyNode<Measurement,?> selector;
+		selector = creator.createSelector(DbFile.class).titled("Protocol Files", item -> item.getFiles(),
 				(item, files) -> item.setFiles((List<DbFile>) files));
 		vBox.getChildren().add(selector.getNode());
-		selector = creator.createSelector(DbFile.class).titled("Files",
+		selector = creator.createSelector(DbFile.class).titled("Files", item -> item.getFiles(),
 				(item, files) -> item.setFiles((List<DbFile>) files));
 		vBox.getChildren().add(selector.getNode());
 

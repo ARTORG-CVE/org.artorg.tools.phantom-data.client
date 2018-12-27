@@ -54,7 +54,7 @@ public class PersonUI extends UIEntity<Person> {
 	public FxFactory<Person> createEditFactory() {
 		ItemEditor<Person> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
-		PropertyNode<Person> propertyNode;
+		PropertyNode<Person,?> propertyNode;
 
 		List<PropertyEntry> generalProperties = new ArrayList<>();
 		propertyNode = creator.createComboBox(Gender.class).of(

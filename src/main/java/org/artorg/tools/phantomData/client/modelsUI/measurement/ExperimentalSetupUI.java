@@ -5,16 +5,24 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.FxFactory;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.editor2.ItemEditor;
+import org.artorg.tools.phantomData.client.editor2.PropertyNode;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
+import org.artorg.tools.phantomData.server.models.base.DbFile;
+import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
 import org.artorg.tools.phantomData.server.models.measurement.ExperimentalSetup;
+import org.artorg.tools.phantomData.server.models.measurement.Measurement;
+import org.artorg.tools.phantomData.server.util.FxUtil;
 
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.VBox;
 
 public class ExperimentalSetupUI extends UIEntity<ExperimentalSetup> {
 
@@ -45,64 +53,30 @@ public class ExperimentalSetupUI extends UIEntity<ExperimentalSetup> {
 	}
 
 	@Override
-	public ItemEditFactoryController<ExperimentalSetup> createEditFactory() {
-		return new ExperimentalSetupEditFactoryController();
-	}
-
-	private class ExperimentalSetupEditFactoryController
-			extends GroupedItemEditFactoryController<ExperimentalSetup> {
-
-		private final TextField textFieldShortName;
-		private final TextField textFieldLongName;
-		private final TextField textFieldDescription;
-
-		{
-			textFieldShortName = new TextField();
-			textFieldLongName = new TextField();
-			textFieldDescription = new TextField();
-
-			List<TitledPane> panes = new ArrayList<TitledPane>();
-			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-			generalProperties.add(new PropertyEntry("Short name", textFieldShortName));
-			generalProperties.add(new PropertyEntry("Long name", textFieldLongName));
-			generalProperties.add(new PropertyEntry("Description", textFieldDescription));
-			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-			panes.add(generalPane);
-			setTitledPanes(panes);
-		}
-
-		@Override
-		public ExperimentalSetup createItem() {
-			String shortName = textFieldShortName.getText();
-			String longName = textFieldLongName.getText();
-			String description = textFieldDescription.getText();
-			return new ExperimentalSetup(shortName, longName, description);
-		}
-
-		@Override
-		protected void setEditTemplate(ExperimentalSetup item) {
-			textFieldShortName.setText(item.getShortName());
-			textFieldLongName.setText(item.getLongName());
-			textFieldDescription.setText(item.getDescription());
-		}
-
-		@Override
-		protected void applyChanges(ExperimentalSetup item) {
-			String shortName = textFieldShortName.getText();
-			String longName = textFieldLongName.getText();
-			String description = textFieldDescription.getText();
-
-			item.setShortName(shortName);
-			item.setLongName(longName);
-			item.setDescription(description);
-		}
-
-		@Override
-		public void setDefaultTemplate() {
-			textFieldShortName.setText("");
-			textFieldLongName.setText("");
-			textFieldDescription.setText("");
-		}
+	public FxFactory<ExperimentalSetup> createEditFactory() {
+		ItemEditor<ExperimentalSetup> creator = new ItemEditor<>(getItemClass());
+		VBox vBox = new VBox();
+		PropertyNode<ExperimentalSetup,?> propertyNode;
+		
+		List<PropertyEntry> generalProperties = new ArrayList<>();
+		propertyNode = creator.createTextField((item,value) -> item.setShortName(value), item -> item.getShortName());
+		generalProperties.add(new PropertyEntry("Short name", propertyNode.getNode()));
+		propertyNode = creator.createTextField((item,value) -> item.setLongName(value), item -> item.getLongName());
+		generalProperties.add(new PropertyEntry("Long name", propertyNode.getNode()));
+		propertyNode = creator.createTextField((item,value) -> item.setDescription(value), item -> item.getDescription());
+		generalProperties.add(new PropertyEntry("Description", propertyNode.getNode()));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		vBox.getChildren().add(generalPane);
+		
+		PropertyNode<ExperimentalSetup,?> selector;
+		selector = creator.createSelector(DbFile.class).titled("Files", item -> item.getFiles(),
+			(item, files) -> item.setFiles((List<DbFile>) files));
+		vBox.getChildren().add(selector.getNode());
+		
+		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
+		
+		FxUtil.addToPane(creator, vBox);
+		return creator;
 	}
 
 }

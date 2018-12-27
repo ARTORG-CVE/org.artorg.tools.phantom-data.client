@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +21,9 @@ import org.artorg.tools.phantomData.server.model.Identifiable;
 public class DbTableViewSelector<F, U> extends TableViewSelector<U> {
 
 	private static final Map<Class<?>,
-			Map<Class<?>, Function<Object, Collection<Object>>>> subItemGetterMap;
-	private static final Map<Class<?>, Map<Class<?>, Boolean>> containsCollectionSetterMap;
+		Map<Class<?>, Function<Object, Collection<Object>>>> subItemGetterMap;
+	private static final Map<Class<?>,
+		Map<Class<?>, Boolean>> containsCollectionSetterMap;
 	private final Class<F> parentItemClass;
 	private final Class<U> subItemClass;
 
@@ -38,26 +40,32 @@ public class DbTableViewSelector<F, U> extends TableViewSelector<U> {
 
 	}
 
-	@SuppressWarnings("unchecked")
-	public void setItem(F item) {
-		List<U> selectableItems = getSelectableItems(parentItemClass, (Class<U>) subItemClass);
-		List<U> selectedItems = new ArrayList<U>();
-		if (item != null) {
-			Function<Object, Collection<Object>> subItemGetter = getSubItemGetter(parentItemClass, subItemClass);
-			if (subItemGetter != null) {
-				selectedItems = subItemGetter.apply(item).stream().filter(e -> e != null)
-						.map(e -> (U) e).collect(Collectors.toList());
-				List<Integer> removableIndexes = CollectionUtil.searchLeftInRight(selectableItems,
-						selectedItems, (l, r) -> ((Identifiable<?>) l).getId()
-								.equals(((Identifiable<?>) r).getId()));
-				selectedItems = CollectionUtil.subList(selectableItems, removableIndexes);
-				selectableItems.removeAll(selectedItems);
+	public void setItems(Collection<U> selectedItems) {
+		List<U> selectableItems =
+			getSelectableItems(parentItemClass, (Class<U>) subItemClass);
+		List<U> selectedItems2 = selectedItems.stream().collect(Collectors.toList());
 
-			}
-		}
-
+		List<Integer> selectableItemsIndexes = CollectionUtil.searchLeftInRight(
+			selectableItems, selectedItems2, (l, r) -> ((Identifiable<?>) l).getId()
+				.equals(((Identifiable<?>) r).getId()));
+		selectedItems2 = CollectionUtil.subList(selectableItems, selectableItemsIndexes);
+		selectableItems.removeAll(selectedItems);
 		setSelectableItems(selectableItems);
 		setSelectedItems(selectedItems);
+	}
+
+	@SuppressWarnings("unchecked")
+	public void setItem(F item) {
+		if (item == null) setItems(Collections.emptyList());
+
+		Function<Object, Collection<Object>> subItemGetter =
+			getSubItemGetter(parentItemClass, subItemClass);
+		if (subItemGetter != null) {
+			setItems(subItemGetter.apply(item).stream().filter(e -> e != null)
+				.map(e -> (U) e).collect(Collectors.toList()));
+		} else {
+			throw new RuntimeException();
+		}
 
 //				TitledPane titledPane =
 //						((TitledPane) ((TitledPaneTableViewSelector<?>) titledSelector)
@@ -85,13 +93,14 @@ public class DbTableViewSelector<F, U> extends TableViewSelector<U> {
 
 	@SuppressWarnings("unchecked")
 	public static <F, U> List<U> getSelectableItems(Class<F> parentItemClass,
-			Class<U> subItemClass) {
+		Class<U> subItemClass) {
 		ICrudConnector<U> connector = Connectors.getConnector(subItemClass);
 		List<U> items = connector.readAllAsList();
 		if (AbstractProperty.class.isAssignableFrom(subItemClass)) {
 			items = items.stream().filter(item -> {
 				try {
-					String type = ((AbstractProperty<U, ?>) item).getPropertyField().getType();
+					String type =
+						((AbstractProperty<U, ?>) item).getPropertyField().getType();
 					Class<?> classType = Class.forName(type);
 					if (classType == parentItemClass) return true;
 				} catch (NullPointerException | ClassNotFoundException e) {}
@@ -102,8 +111,10 @@ public class DbTableViewSelector<F, U> extends TableViewSelector<U> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Function<Object, Collection<Object>> createSubItemGetter(Class<?> parentItemClass, Class<?> subItemClass) {
-		Method selectedMethod = Reflect.getMethodByGenericReturnType(parentItemClass, subItemClass);
+	private static Function<Object, Collection<Object>>
+		createSubItemGetter(Class<?> parentItemClass, Class<?> subItemClass) {
+		Method selectedMethod =
+			Reflect.getMethodByGenericReturnType(parentItemClass, subItemClass);
 		if (selectedMethod == null) return null;
 		Function<Object, Collection<Object>> subItemGetter;
 		subItemGetter = i -> {
@@ -111,7 +122,7 @@ public class DbTableViewSelector<F, U> extends TableViewSelector<U> {
 			try {
 				return (Collection<Object>) (selectedMethod.invoke(i));
 			} catch (IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException e) {
+				| InvocationTargetException e) {
 				e.printStackTrace();
 			}
 			return null;
@@ -119,7 +130,8 @@ public class DbTableViewSelector<F, U> extends TableViewSelector<U> {
 		return subItemGetter;
 	}
 
-	private static Function<Object, Collection<Object>> getSubItemGetter(Class<?> parentItemClass, Class<?> subItemClass) {
+	private static Function<Object, Collection<Object>>
+		getSubItemGetter(Class<?> parentItemClass, Class<?> subItemClass) {
 		Function<Object, Collection<Object>> subItemGetter = null;
 		if (subItemGetterMap.containsKey(parentItemClass)) {
 			if (subItemGetterMap.get(parentItemClass).containsKey(subItemClass))
@@ -139,14 +151,18 @@ public class DbTableViewSelector<F, U> extends TableViewSelector<U> {
 		return subItemGetter;
 	}
 
-	public static boolean containsCollectionSetter(Class<?> parentItemClass, Class<?> subItemClass) {
+	public static boolean containsCollectionSetter(Class<?> parentItemClass,
+		Class<?> subItemClass) {
 		boolean result;
 		if (containsCollectionSetterMap.containsKey(parentItemClass)) {
-			if (containsCollectionSetterMap.get(parentItemClass).containsKey(subItemClass))
-				result = containsCollectionSetterMap.get(parentItemClass).get(subItemClass);
+			if (containsCollectionSetterMap.get(parentItemClass)
+				.containsKey(subItemClass))
+				result =
+					containsCollectionSetterMap.get(parentItemClass).get(subItemClass);
 			else {
 				result = Reflect.containsCollectionSetter(parentItemClass, subItemClass);
-				containsCollectionSetterMap.get(parentItemClass).put(subItemClass, result);
+				containsCollectionSetterMap.get(parentItemClass).put(subItemClass,
+					result);
 			}
 		} else {
 			result = Reflect.containsCollectionSetter(parentItemClass, subItemClass);
