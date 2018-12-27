@@ -20,7 +20,7 @@ public abstract class DbTable<ITEM> extends Table<ITEM> {
 		connector = Connectors.getConnector(getItemClass());
 		listener = change -> {
 			applyChanges(change, getItems());
-			if (isFilterable()) applyChanges(change, getFilteredItems());
+//			if (isFilterable()) applyChanges(change, getFilteredItems());
 		};
 	}
 
@@ -44,11 +44,23 @@ public abstract class DbTable<ITEM> extends Table<ITEM> {
 		int i = getIndex(items, change.getKey());
 		if (change.wasAdded()) {
 			if (change.wasRemoved()) {
+				try {
 				if (i < items.size()) items.set(i, change.getValueAdded());
+				} catch (UnsupportedOperationException e) {
+					e.printStackTrace();
+				}
 			} else if (i == items.size()) {
 				items.add(change.getValueAdded());
 			}
-		} else if (i < items.size()) items.remove(i);
+		} else if (i < items.size()){
+			 try {
+				 items.remove(change.getValueRemoved());
+				 
+//			items.remove(i);
+			 } catch (UnsupportedOperationException e) {
+				 e.printStackTrace();
+			 }
+		}
 	}
 
 	private <T> int getIndex(List<T> items, String id) {

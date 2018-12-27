@@ -1,23 +1,32 @@
 package org.artorg.tools.phantomData.client.modelsUI.base;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
-import org.artorg.tools.phantomData.client.editors.DbFileEditFactoryController;
+import org.artorg.tools.phantomData.client.editor.FxFactory;
+import org.artorg.tools.phantomData.client.editor.PropertyEntry;
+import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.editor2.ItemEditor;
+import org.artorg.tools.phantomData.client.editor2.PropertyNode;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
 
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 
 public class DbFileUI extends UIEntity<DbFile> {
 	private static final Map<String, Image> iconMap = new HashMap<>();
@@ -62,8 +71,59 @@ public class DbFileUI extends UIEntity<DbFile> {
 	}
 
 	@Override
-	public ItemEditFactoryController<DbFile> createEditFactory() {
-		return new DbFileEditFactoryController();
+	public FxFactory<DbFile> createEditFactory() {
+		ItemEditor<DbFile> creator = new ItemEditor<>(getItemClass());
+		VBox vBox = new VBox();
+		PropertyNode<DbFile> propertyNode;
+		
+		List<PropertyEntry> generalProperties = new ArrayList<>();
+		TextField textFieldPath = new TextField();
+		TextField textFieldName = new TextField();
+		TextField textFieldExtension = new TextField();
+		Button buttonFileChooser = new Button("Browse");
+		buttonFileChooser.setOnAction(event -> {
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Open source file");
+			File file = null;
+			try {
+				file = fileChooser.showOpenDialog(Main.getStage());
+			} catch (NullPointerException e) {}
+			if (file != null) {
+				textFieldPath.setText(file.getAbsolutePath());
+				String[] splits = splitOffFileExtension(file.getName());
+				textFieldName.setText(splits[0]);
+				textFieldExtension.setText(splits[1]);
+				textFieldPath.setDisable(false);
+				textFieldName.setDisable(false);
+				textFieldExtension.setDisable(false);
+			}
+		});
+		
+		generalProperties.add(new PropertyEntry("Choose File", buttonFileChooser));
+		propertyNode = creator.createTextField(textFieldPath, (item,value) -> {}, item -> item.getFile().getPath());
+		generalProperties.add(new PropertyEntry("Path", propertyNode.getNode()));
+		propertyNode = creator.createTextField(textFieldName, (item,value) -> item.setName(value), item -> item.getName());
+		generalProperties.add(new PropertyEntry("Name", propertyNode.getNode()));
+		propertyNode = creator.createTextField(textFieldExtension, (item,value) -> item.setExtension(value), item -> item.getExtension());
+		generalProperties.add(new PropertyEntry("Extension", propertyNode.getNode()));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		vBox.getChildren().add(generalPane);
+		
+		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
+		
+		FxUtil.addToPane(creator, vBox);
+		return creator;
+		
+		
+//		return new DbFileEditFactoryController();
+	}
+	
+	private String[] splitOffFileExtension(String name) {
+		int index = name.lastIndexOf('.');
+		String[] splits = new String[2];
+		splits[0] = name.substring(0, index);
+		splits[1] = name.substring(index + 1, name.length());
+		return splits;
 	}
 
 }

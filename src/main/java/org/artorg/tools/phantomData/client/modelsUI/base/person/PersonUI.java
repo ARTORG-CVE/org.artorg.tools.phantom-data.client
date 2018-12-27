@@ -5,20 +5,24 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.FxFactory;
 import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.editor2.ItemEditor;
+import org.artorg.tools.phantomData.client.editor2.PropertyNode;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
 import org.artorg.tools.phantomData.server.models.base.person.Gender;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
+import org.artorg.tools.phantomData.server.util.FxUtil;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
-
+import javafx.scene.layout.VBox;
 
 public class PersonUI extends UIEntity<Person> {
 
@@ -35,7 +39,8 @@ public class PersonUI extends UIEntity<Person> {
 	public List<AbstractColumn<Person, ?>> createColumns(Table<Person> table, List<Person> items) {
 		List<AbstractColumn<Person, ?>> columns = new ArrayList<>();
 		ColumnCreator<Person, Person> creator = new ColumnCreator<>(table);
-		columns.add(creator.createFilterColumn("Title", item -> item.getAcademicTitle().getPrefix()));
+		columns.add(
+				creator.createFilterColumn("Title", item -> item.getAcademicTitle().getPrefix()));
 		columns.add(creator.createFilterColumn("Firstname", path -> path.getFirstname(),
 				(path, value) -> path.setFirstname((String) value)));
 		columns.add(creator.createFilterColumn("Lastname", path -> path.getLastname(),
@@ -46,76 +51,32 @@ public class PersonUI extends UIEntity<Person> {
 	}
 
 	@Override
-	public ItemEditFactoryController<Person> createEditFactory() {
-		return new PersonEditFactoryController();
-	}
+	public FxFactory<Person> createEditFactory() {
+		ItemEditor<Person> creator = new ItemEditor<>(getItemClass());
+		VBox vBox = new VBox();
+		PropertyNode<Person> propertyNode;
 
-	private class PersonEditFactoryController extends GroupedItemEditFactoryController<Person> {
-		private ComboBox<Gender> comboBoxGender;
-		private ComboBox<AcademicTitle> comboBoxTitle;
-		private TextField textFieldFirstname;
-		private TextField textFieldLastname;
+		List<PropertyEntry> generalProperties = new ArrayList<>();
+		propertyNode = creator.createComboBox(Gender.class).of(
+				(item, value) -> item.setGender(value), item -> item.getGender(), g -> g.getName());
+		generalProperties.add(new PropertyEntry("Gender", propertyNode.getNode()));
+		propertyNode = creator.createComboBox(AcademicTitle.class).of(
+				(item, value) -> item.setAcademicTitle(value), item -> item.getAcademicTitle(),
+				g -> g.getPrefix());
+		generalProperties.add(new PropertyEntry("Academic Title", propertyNode.getNode()));
+		propertyNode = creator.createTextField((item, value) -> item.setFirstname(value),
+				item -> item.getFirstname());
+		generalProperties.add(new PropertyEntry("Firstname", propertyNode.getNode()));
+		propertyNode = creator.createTextField((item, value) -> item.setLastname(value),
+				item -> item.getLastname());
+		generalProperties.add(new PropertyEntry("Lastname", propertyNode.getNode()));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		vBox.getChildren().add(generalPane);
 
-		{
-			comboBoxGender = new ComboBox<Gender>();
-			comboBoxTitle = new ComboBox<AcademicTitle>();
-			textFieldFirstname = new TextField();
-			textFieldLastname = new TextField();
+		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
 
-			List<TitledPane> panes = new ArrayList<TitledPane>();
-			createComboBoxes();
-			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-			generalProperties.add(new PropertyEntry("Male/Female", comboBoxGender));
-			generalProperties.add(new PropertyEntry("Title", comboBoxTitle));
-			generalProperties.add(new PropertyEntry("Firstname", textFieldFirstname));
-			generalProperties.add(new PropertyEntry("Lastname", textFieldLastname));
-			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-			panes.add(generalPane);
-			setTitledPanes(panes);
-		}
-
-		private void createComboBoxes() {
-			createComboBox(comboBoxGender, Gender.class, g -> g.getName());
-			createComboBox(comboBoxTitle, AcademicTitle.class, t -> t.getPrefix());
-		}
-
-		@Override
-		public Person createItem() {
-			Gender gender = comboBoxGender.getSelectionModel().getSelectedItem();
-			AcademicTitle title = comboBoxTitle.getSelectionModel().getSelectedItem();
-			String firstname = textFieldFirstname.getText();
-			String lastname = textFieldLastname.getText();
-			return new Person(title, firstname, lastname, gender);
-		}
-
-		@Override
-		protected void setEditTemplate(Person item) {
-			super.selectComboBoxItem(comboBoxGender, item.getGender());
-			super.selectComboBoxItem(comboBoxTitle, item.getAcademicTitle());
-			textFieldFirstname.setText(item.getFirstname());
-			textFieldLastname.setText(item.getLastname());
-		}
-
-		@Override
-		protected void applyChanges(Person item) {
-			Gender gender = comboBoxGender.getSelectionModel().getSelectedItem();
-			AcademicTitle title = comboBoxTitle.getSelectionModel().getSelectedItem();
-			String firstname = textFieldFirstname.getText();
-			String lastname = textFieldLastname.getText();
-
-			item.setGender(gender);
-			item.setAcademicTitle(title);
-			item.setFirstname(firstname);
-			item.setLastname(lastname);
-		}
-
-		@Override
-		public void setDefaultTemplate() {
-			comboBoxGender.getSelectionModel().clearSelection();
-			comboBoxTitle.getSelectionModel().clearSelection();
-			textFieldFirstname.setText("");
-			textFieldLastname.setText("");
-		}
+		FxUtil.addToPane(creator, vBox);
+		return creator;
 
 	}
 

@@ -19,15 +19,10 @@ public class TitledPaneTableViewSelector<T> extends TableViewSelector<T> {
 		this.setName(super.getName());
 		
 		AnchorPane pane = new AnchorPane();
-		FxUtil.addToPane(pane, super.getGraphic());
+		FxUtil.addToPane(pane, this);
 		titledPane.setContent(pane);
 		titledPane.setExpanded(false);
 		
-	}
-	
-	@Override
-	public Node getGraphic() {
-		return titledPane;
 	}
 	
 	@Override

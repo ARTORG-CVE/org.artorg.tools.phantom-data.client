@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.client.editor.select.AbstractTableViewSelector;
+import org.artorg.tools.phantomData.client.editor.select.TableViewSelector;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 
 import javafx.scene.control.TitledPane;
@@ -27,12 +27,12 @@ public abstract class GroupedItemEditFactoryController<T>
 //		titledPanes.stream().filter(p -> p instanceof TitledPropertyPane)
 //				.forEach(p -> entries.addAll(((TitledPropertyPane) p).getEntries()));
 
-		List<AbstractTableViewSelector<?>> selectors = this.getSelectors();
+		List<TableViewSelector<?>> selectors = this.getSelectors();
 		titledPanes.addAll(selectors.stream().map(selector -> {
-			if (selector.getGraphic() instanceof TitledPane)
-				return (TitledPane) selector.getGraphic();
+//			if (selector.getGraphic() instanceof TitledPane)
+//				return (TitledPane) selector.getGraphic();
 			TitledPane titledPane = new TitledPane();
-			titledPane.setContent(selector.getGraphic());
+			titledPane.setContent(selector);
 			titledPane.setText(selector.getSubItemClass().getSimpleName());
 			return titledPane;
 		}).collect(Collectors.toList()));

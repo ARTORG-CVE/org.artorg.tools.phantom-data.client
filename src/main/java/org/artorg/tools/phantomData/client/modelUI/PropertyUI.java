@@ -6,11 +6,11 @@ import java.util.UUID;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.connector.Connectors;
-import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
-import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
+import org.artorg.tools.phantomData.client.editor.FxFactory;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.editor2.ItemEditor;
+import org.artorg.tools.phantomData.client.editor2.PropertyNode;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
@@ -18,8 +18,7 @@ import org.artorg.tools.phantomData.server.model.DbPersistent;
 import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TitledPane;
+import javafx.scene.layout.VBox;
 
 public abstract class PropertyUI<T extends AbstractProperty<T, VALUE> & DbPersistent<T, UUID>,
 		VALUE extends Comparable<VALUE>> extends UIEntity<T> {
@@ -35,7 +34,7 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE> & DbPersis
 	protected abstract VALUE getValueFromNode(Node valueNode);
 
 	protected abstract void setValueToNode(Node valueNode, VALUE value);
-	
+
 	protected abstract VALUE getDefaultValue();
 
 	@Override
@@ -60,59 +59,29 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE> & DbPersis
 	}
 
 	@Override
-	public ItemEditFactoryController<T> createEditFactory() {
-		return new PropertyEditFactoryController();
-	}
+	public FxFactory<T> createEditFactory() {
+		ItemEditor<T> creator = new ItemEditor<>(getItemClass());
+		VBox vBox = new VBox();
+		PropertyNode<T> propertyNode;
 
-	public class PropertyEditFactoryController extends GroupedItemEditFactoryController<T> {
-		private ComboBox<PropertyField> comboBoxPropertyField;
-		private Node valueNode;
+		List<PropertyEntry> generalProperties = new ArrayList<>();
+		propertyNode = creator.createComboBox(PropertyField.class).of(
+				(item, value) -> item.setPropertyField(value), item -> item.getPropertyField(),
+				p -> p.getName());
+		generalProperties.add(new PropertyEntry("Property Field", propertyNode.getNode()));
 
-		{
-			comboBoxPropertyField = new ComboBox<PropertyField>();
-			valueNode = createValueNode();
+		Node node = createValueNode();
+		propertyNode = creator.createNode((item, value) -> item.setValue(value),
+				item -> item.getValue(), item -> getDefaultValue(), getDefaultValue(), node,
+				value -> setValueToNode(node, value), () -> getValueFromNode(node));
+		generalProperties.add(new PropertyEntry("Value", propertyNode.getNode()));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		vBox.getChildren().add(generalPane);
 
-			List<TitledPane> panes = new ArrayList<TitledPane>();
-			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-			FxUtil.createDbComboBox(comboBoxPropertyField,
-					Connectors.getConnector(PropertyField.class), d -> String.valueOf(d.getName()));
-			generalProperties.add(new PropertyEntry("Property Field", comboBoxPropertyField));
-			generalProperties.add(new PropertyEntry("Value", valueNode));
-			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-			panes.add(generalPane);
-			setTitledPanes(panes);
-		}
+		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
 
-		@Override
-		public T createItem() {
-			PropertyField propertyField =
-					comboBoxPropertyField.getSelectionModel().getSelectedItem();
-
-			VALUE value = getValueFromNode(valueNode);
-			return createProperty(propertyField, value);
-		}
-
-		@Override
-		protected void setEditTemplate(T item) {
-			super.selectComboBoxItem(comboBoxPropertyField, item.getPropertyField());
-			setValueToNode(valueNode, item.getValue());
-		}
-
-		@Override
-		protected void applyChanges(T item) {
-			PropertyField propertyField =
-					comboBoxPropertyField.getSelectionModel().getSelectedItem();
-			VALUE value = getValueFromNode(valueNode);
-
-			item.setPropertyField(propertyField);
-			item.setValue(value);
-		}
-
-		@Override
-		public void setDefaultTemplate() {
-			comboBoxPropertyField.getSelectionModel().clearSelection();
-			setValueToNode(valueNode, getDefaultValue());
-		}
+		FxUtil.addToPane(creator, vBox);
+		return creator;
 
 	}
 

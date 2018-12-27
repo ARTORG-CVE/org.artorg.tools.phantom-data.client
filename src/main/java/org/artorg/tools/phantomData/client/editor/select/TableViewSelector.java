@@ -7,10 +7,11 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.client.util.Reflect;
 
 import javafx.beans.binding.Bindings;
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
-import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
@@ -21,13 +22,16 @@ import javafx.scene.control.TableView;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
-public class TableViewSelector<T> extends AbstractTableViewSelector<T> {
+public class TableViewSelector<T> extends SplitPane {
 	private SplitPane splitPane;
 	private int height;
 	private final Class<?> subItemClass;
+	private ProTableView<T> tableView1;
+	private ProTableView<T> tableView2;
+	private String name;
 
 	{
-		splitPane = new SplitPane();
+		splitPane = this;
 		splitPane.setOrientation(Orientation.VERTICAL);
 		height = 2000;
 		splitPane.setPrefHeight(height);
@@ -36,7 +40,7 @@ public class TableViewSelector<T> extends AbstractTableViewSelector<T> {
 
 	public TableViewSelector(Class<T> subItemClass) {
 		this.subItemClass = subItemClass;
-		super.setName(subItemClass.getSimpleName());
+		setName(subItemClass.getSimpleName());
 		
 		setTableView1(Main.getUIEntity(subItemClass).createProTableView());
 		setTableView2(Main.getUIEntity(subItemClass).createProTableView());
@@ -113,6 +117,29 @@ public class TableViewSelector<T> extends AbstractTableViewSelector<T> {
 			};
 		});
 	}
+	
+	public void setSelectedChildItems(Object item) {
+		List<Object> items = new ArrayList<>();
+
+		if (items != null) {
+			items.addAll(getSelectedItems());
+
+			Class<?> paramTypeClass = items.getClass();
+
+			Reflect.invokeGenericSetter(item, paramTypeClass, getSubItemClass(), items);
+		}
+	}
+	
+//	protected TableColumn<Object, String> createValueColumn(String columnName) {
+//		TableColumn<Object, String> column = new TableColumn<Object, String>(columnName);
+//		column.setSortable(false);
+//
+//		column.setCellFactory(TextFieldTableCell.forTableColumn());
+//		column.setCellValueFactory(
+//			cellData -> new SimpleStringProperty(cellData.getValue().toString()));
+//
+//		return column;
+//	}
 	
 	public void setSelectedItems(Collection<T> items) {
 		getSelectedItems().clear();
@@ -210,15 +237,41 @@ public class TableViewSelector<T> extends AbstractTableViewSelector<T> {
 			column.setPrefWidth(max);
 		});
 	}
-
-	@Override
-	public Node getGraphic() {
-		return splitPane;
+	
+	public ObservableList<T> getSelectableItems() {
+		return getTableView1().getTable().getItems();
 	}
 
-	@Override
+	public ObservableList<T> getSelectedItems() {
+		return getTableView2().getTable().getItems();
+	}
+	
 	public Class<?> getSubItemClass() {
 		return subItemClass;
+	}
+	
+	protected ProTableView<T> getTableView1() {
+		return tableView1;
+	}
+	
+	public void setTableView1(ProTableView<T> tableView1) {
+		this.tableView1 = tableView1;
+	}
+
+	protected ProTableView<T> getTableView2() {
+		return tableView2;
+	}
+
+	public void setTableView2(ProTableView<T> tableView2) {
+		this.tableView2 = tableView2;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

@@ -5,16 +5,17 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
-import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
+import org.artorg.tools.phantomData.client.editor.FxFactory;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.editor2.ItemEditor;
+import org.artorg.tools.phantomData.client.editor2.PropertyNode;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
+import org.artorg.tools.phantomData.server.util.FxUtil;
 
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
+import javafx.scene.layout.VBox;
 
 public class AcademicTitleUI extends UIEntity<AcademicTitle> {
 
@@ -33,64 +34,29 @@ public class AcademicTitleUI extends UIEntity<AcademicTitle> {
 		ColumnCreator<AcademicTitle, AcademicTitle> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Prefix", path -> path.getPrefix(),
 				(path, value) -> path.setPrefix((String) value)));
-		columns.add(creator.createFilterColumn("Prefix", path -> path.getPrefix(),
-				(path, value) -> path.setPrefix((String) value)));
 		columns.add(creator.createFilterColumn("Descirption", path -> path.getDescription(),
 				(path, value) -> path.setDescription((String) value)));
 		return columns;
 	}
 
 	@Override
-	public ItemEditFactoryController<AcademicTitle> createEditFactory() {
-		return new AcademicTitleEditFactoryController();
-	}
-
-	private class AcademicTitleEditFactoryController
-			extends GroupedItemEditFactoryController<AcademicTitle> {
-		private TextField textFieldPrefix;
-		private TextField textFieldDescription;
-
-		{
-			textFieldPrefix = new TextField();
-			textFieldDescription = new TextField();
-
-			List<TitledPane> panes = new ArrayList<TitledPane>();
-			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-			generalProperties.add(new PropertyEntry("prefix", textFieldPrefix));
-			generalProperties.add(new PropertyEntry("description", textFieldDescription));
-			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-			panes.add(generalPane);
-			setTitledPanes(panes);
-		}
-
-		@Override
-		public AcademicTitle createItem() {
-			String prefix = textFieldPrefix.getText();
-			String description = textFieldDescription.getText();
-			return new AcademicTitle(prefix, description);
-		}
-
-		@Override
-		protected void setEditTemplate(AcademicTitle item) {
-			textFieldPrefix.setText(item.getPrefix());
-			textFieldDescription.setText(item.getDescription());
-		}
-
-		@Override
-		protected void applyChanges(AcademicTitle item) {
-			String prefix = textFieldPrefix.getText();
-			String description = textFieldDescription.getText();
-
-			item.setPrefix(prefix);
-			item.setDescription(description);
-		}
-
-		@Override
-		public void setDefaultTemplate() {
-			textFieldPrefix.setText("");
-			textFieldDescription.setText("");
-		}
-
+	public FxFactory<AcademicTitle> createEditFactory() {
+		ItemEditor<AcademicTitle> creator = new ItemEditor<>(getItemClass());
+		VBox vBox = new VBox();
+		PropertyNode<AcademicTitle> propertyNode;
+		
+		List<PropertyEntry> generalProperties = new ArrayList<>();
+		propertyNode = creator.createTextField((item,value) -> item.setPrefix(value), item -> item.getPrefix());
+		generalProperties.add(new PropertyEntry("Prefix", propertyNode.getNode()));
+		propertyNode = creator.createTextField((item,value) -> item.setDescription(value), item -> item.getDescription());
+		generalProperties.add(new PropertyEntry("Description", propertyNode.getNode()));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		vBox.getChildren().add(generalPane);
+		
+		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
+		
+		FxUtil.addToPane(creator, vBox);
+		return creator;
 	}
 
 }

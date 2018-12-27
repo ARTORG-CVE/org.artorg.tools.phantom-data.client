@@ -13,8 +13,8 @@ import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.editor.select.AbstractTableViewSelector;
 import org.artorg.tools.phantomData.client.editor.select.DbTableViewSelector;
+import org.artorg.tools.phantomData.client.editor.select.TableViewSelector;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.client.scene.control.VGridBoxPane;
 import org.artorg.tools.phantomData.client.util.FxUtil;
@@ -25,6 +25,7 @@ import org.artorg.tools.phantomData.server.model.Identifiable;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -32,10 +33,10 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 
 @SuppressWarnings("unchecked")
-public abstract class ItemEditFactoryController<T> extends VGridBoxPane implements FxFactory<T> {
+public abstract class ItemEditFactoryController<T>  implements FxFactory<T> {
 	private static final Map<Class<?>, List<Class<?>>> subItemClassesMap;
 	protected Button applyButton;
-	private List<AbstractTableViewSelector<?>> selectors;
+	private List<TableViewSelector<?>> selectors;
 	private final Class<T> itemClass;
 	private ICrudConnector<T> connector;
 	private final List<Class<?>> subItemClasses;
@@ -45,8 +46,8 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 	}
 
 	{
-		super.addColumn(80.0);
-		super.addColumn(180.0);
+//		super.addColumn(80.0);
+//		super.addColumn(180.0);
 		applyButton = new Button("Apply");
 	}
 
@@ -86,21 +87,34 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 
 //	public abstract List<PropertyEntry> getPropertyEntries();
 
-	protected void setSelectedChildItems(T item, AbstractTableViewSelector<T> selector) {
+	
+	public AnchorPane createButtonPane(Button button) {
+		button.setPrefHeight(25.0);
+		button.setMaxWidth(Double.MAX_VALUE);
+		AnchorPane buttonPane = new AnchorPane();
+		buttonPane.setPrefHeight(button.getPrefHeight() + 20);
+		buttonPane.setMaxHeight(buttonPane.getPrefHeight());
+		buttonPane.setPadding(new Insets(5, 10, 5, 10));
+		buttonPane.getChildren().add(button);
+		FxUtil.setAnchorZero(button);
+		return buttonPane;
+	}
+	
+	protected void setSelectedChildItems(T item, TableViewSelector<T> selector) {
 		selector.setSelectedChildItems(item);
 	}
 
-	private List<AbstractTableViewSelector<?>> createSelectors(T item) {
-		List<AbstractTableViewSelector<?>> selectors = new ArrayList<>();
+	private List<TableViewSelector<?>> createSelectors(T item) {
+		List<TableViewSelector<?>> selectors = new ArrayList<>();
 		subItemClasses.forEach(subItemClass -> {
-			AbstractTableViewSelector<?> selector = createSelector(item, subItemClass);
+			TableViewSelector<?> selector = createSelector(item, subItemClass);
 			if (selector != null) selectors.add(selector);
 		});
 
 		return selectors;
 	}
 
-	protected <U> AbstractTableViewSelector<U> createSelector(T item, Class<?> subItemClass) {
+	protected <U> TableViewSelector<U> createSelector(T item, Class<?> subItemClass) {
 		List<U> selectableItems =
 				DbTableViewSelector.getSelectableItems(getItemClass(), (Class<U>) subItemClass);
 		if (selectableItems.isEmpty()) return null;
@@ -194,9 +208,9 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 	@Override
 	public AnchorPane edit(T item) {
 		selectors = createSelectors(item);
-		Label label = new Label();
-		label.setText(((Identifiable<?>) item).getId().toString());
-		label.setDisable(true);
+//		Label label = new Label();
+//		label.setText(((Identifiable<?>) item).getId().toString());
+//		label.setDisable(true);
 //		PropertyEntry idEntry = new PropertyEntry("Id", label);
 //		getPropertyEntries().add(idEntry);
 		addProperties(item);
@@ -245,7 +259,7 @@ public abstract class ItemEditFactoryController<T> extends VGridBoxPane implemen
 		throw new UnsupportedOperationException();
 	}
 
-	public List<AbstractTableViewSelector<?>> getSelectors() {
+	public List<TableViewSelector<?>> getSelectors() {
 		return selectors;
 	}
 

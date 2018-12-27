@@ -2,23 +2,16 @@ package org.artorg.tools.phantomData.client.modelsUI.measurement;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.FxFactory;
-import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
-import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.editor.select.AbstractTableViewSelector;
-import org.artorg.tools.phantomData.client.editor2.PropertyNodeCreator;
-import org.artorg.tools.phantomData.client.editors.DbFileEditFactoryController;
+import org.artorg.tools.phantomData.client.editor2.ItemEditor;
+import org.artorg.tools.phantomData.client.editor2.PropertyNode;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
@@ -28,11 +21,7 @@ import org.artorg.tools.phantomData.server.models.measurement.Measurement;
 import org.artorg.tools.phantomData.server.models.measurement.Project;
 import org.artorg.tools.phantomData.server.util.FxUtil;
 
-import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 
 public class MeasurementUI extends UIEntity<Measurement> {
 
@@ -73,135 +62,40 @@ public class MeasurementUI extends UIEntity<Measurement> {
 
 	@Override
 	public FxFactory<Measurement> createEditFactory() {
-//		return new MeasurementEditFactoryController();
-		return new PropertyNodeCreator<Measurement>(getItemClass()) {
-			private AnchorPane pane = new AnchorPane();
+		ItemEditor<Measurement> creator = new ItemEditor<>(getItemClass());
+		VBox vBox = new VBox();
+		PropertyNode<Measurement> propertyNode;
+		
+		List<PropertyEntry> generalProperties = new ArrayList<>();
+		propertyNode = creator.createDatePicker((item, value) -> item.setStartDate(value),
+				item -> item.getStartDate());
+		generalProperties.add(new PropertyEntry("Start Date", propertyNode.getNode()));
+		propertyNode = creator.createComboBox(Person.class).of(
+				(item, value) -> item.setPerson(value), item -> item.getPerson(), p -> p.getName());
+		generalProperties.add(new PropertyEntry("Person", propertyNode.getNode()));
+		propertyNode =
+				creator.createComboBox(Project.class).of((item, value) -> item.setProject(value),
+						item -> item.getProject(), p -> p.getName());
+		generalProperties.add(new PropertyEntry("Project", propertyNode.getNode()));
+		propertyNode = creator.createComboBox(ExperimentalSetup.class).of(
+				(item, value) -> item.setExperimentalSetup(value),
+				item -> item.getExperimentalSetup(), p -> p.getShortName());
+		generalProperties.add(new PropertyEntry("Experimental Setup", propertyNode.getNode()));
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		vBox.getChildren().add(generalPane);
 
-			{
-				List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
+		PropertyNode<Measurement> selector;
+		selector = creator.createSelector(DbFile.class).titled("Protocol Files",
+				(item, files) -> item.setFiles((List<DbFile>) files));
+		vBox.getChildren().add(selector.getNode());
+		selector = creator.createSelector(DbFile.class).titled("Files",
+				(item, files) -> item.setFiles((List<DbFile>) files));
+		vBox.getChildren().add(selector.getNode());
 
-				generalProperties.add(new PropertyEntry("Test",
-						createComboBox(Project.class, (item, value) -> item.setProject(value),
-								item -> item.getProject(), p -> p.getName()).getNode()));
-				TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-				FxUtil.addToPane(pane, generalPane);
-			}
+		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
 
-			@Override
-			public Node getGraphic() {
-				return pane;
-			}
-
-		};
-
+		FxUtil.addToPane(creator, vBox);
+		return creator;
 	}
 
-	private class MeasurementEditFactoryController
-			extends GroupedItemEditFactoryController<Measurement> {
-		private ComboBox<Person> comboBoxPerson;
-		private ComboBox<Project> comboBoxProject;
-		private ComboBox<ExperimentalSetup> comboBoxSetup;
-
-		private DatePicker datePicker;
-		private DbFileEditFactoryController fileController;
-
-		{
-			comboBoxPerson = new ComboBox<Person>();
-			comboBoxProject = new ComboBox<Project>();
-			comboBoxSetup = new ComboBox<ExperimentalSetup>();
-			datePicker = new DatePicker();
-			datePicker.setValue(LocalDate.now());
-
-			fileController = new DbFileEditFactoryController();
-
-			List<TitledPane> panes = new ArrayList<TitledPane>();
-			createComboBoxes();
-			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-			generalProperties.add(new PropertyEntry("Date", datePicker));
-			generalProperties.add(new PropertyEntry("Person", comboBoxPerson));
-			generalProperties.add(new PropertyEntry("Project", comboBoxProject));
-			generalProperties.add(new PropertyEntry("Experimental Setup", comboBoxSetup));
-
-			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-			panes.add(generalPane);
-			setTitledPanes(panes);
-
-			fileController.create();
-		}
-
-		@Override
-		protected void addProperties(Measurement item) {
-//			super.getTitledPanes().stream().filter(p -> p instanceof TitledPropertyPane).forEach(
-//					p -> super.getPropertyEntries().addAll(((TitledPropertyPane) p).getEntries()));
-
-			TitledPane protocolTitledPane = new TitledPane();
-			protocolTitledPane.setContent(fileController.getTitledPanes().get(0).getContent());
-			protocolTitledPane.setText("Protocol File");
-
-			super.getTitledPanes().add(protocolTitledPane);
-
-			List<AbstractTableViewSelector<?>> selectors = this.getSelectors();
-			super.getTitledPanes().addAll(selectors.stream().map(selector -> {
-				if (selector.getGraphic() instanceof TitledPane)
-					return (TitledPane) selector.getGraphic();
-				TitledPane titledPane = new TitledPane();
-				titledPane.setContent(selector.getGraphic());
-				titledPane.setText(selector.getSubItemClass().getSimpleName());
-				return titledPane;
-			}).collect(Collectors.toList()));
-
-		}
-
-		private void createComboBoxes() {
-			createComboBox(comboBoxPerson, Person.class, item -> item.getSimpleAcademicName());
-			createComboBox(comboBoxProject, Project.class, item -> item.getName());
-			createComboBox(comboBoxSetup, ExperimentalSetup.class, item -> item.getLongName());
-		}
-
-		@Override
-		protected void setEditTemplate(Measurement item) {
-			LocalDate localDate =
-					item.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			datePicker.setValue(localDate);
-			super.selectComboBoxItem(comboBoxPerson, item.getPerson());
-			super.selectComboBoxItem(comboBoxProject, item.getProject());
-			super.selectComboBoxItem(comboBoxSetup, item.getExperimentalSetup());
-		}
-
-		@Override
-		public Measurement createItem() {
-			Date startDate = Date
-					.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
-			Person person = comboBoxPerson.getSelectionModel().getSelectedItem();
-			Project project = comboBoxProject.getSelectionModel().getSelectedItem();
-			ExperimentalSetup setup = comboBoxSetup.getSelectionModel().getSelectedItem();
-			DbFile protocolFile = fileController.createAndPersistItem();
-
-			return new Measurement(startDate, person, project, setup, protocolFile);
-		}
-
-		@Override
-		protected void applyChanges(Measurement item) {
-			Date startDate = Date
-					.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
-			Person person = comboBoxPerson.getSelectionModel().getSelectedItem();
-			Project project = comboBoxProject.getSelectionModel().getSelectedItem();
-			ExperimentalSetup setup = comboBoxSetup.getSelectionModel().getSelectedItem();
-
-			item.setStartDate(startDate);
-			item.setPerson(person);
-			item.setProject(project);
-			item.setExperimentalSetup(setup);
-		}
-
-		@Override
-		public void setDefaultTemplate() {
-			LocalDate localDate =
-					new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			datePicker.setValue(localDate);
-			comboBoxPerson.getSelectionModel().clearSelection();
-			comboBoxProject.getSelectionModel().clearSelection();
-			comboBoxSetup.getSelectionModel().clearSelection();
-		}
-	}
 }

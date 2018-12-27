@@ -6,20 +6,19 @@ import javafx.scene.Node;
 
 public abstract class PropertyNode<T> {
 	private final Class<T> itemClass;
-	private final Node node;
 	private Consumer<T> consumerNodeToEntity;
 	private Consumer<T> consumerEntityToNodeEdit;
 	private Consumer<T> consumerEntityToNodeAdd;
 	private Runnable runnableSetDefault;
+	private Node node;
 
 	public PropertyNode(Class<T> itemClass, Node node) {
 		this.itemClass = itemClass;
+		this.consumerNodeToEntity = item -> nodeToEntityImpl(item);
+		this.consumerEntityToNodeEdit = item -> entityToNodeEditImpl(item);
+		this.consumerEntityToNodeAdd = item -> entityToNodeAddImpl(item);
+		this.runnableSetDefault = () -> setDefaultImpl();
 		this.node = node;
-		
-		consumerNodeToEntity = item -> nodeToEntityImpl(item);
-		consumerEntityToNodeEdit = item -> entityToNodeEditImpl(item);
-		consumerEntityToNodeAdd = item -> entityToNodeAddImpl(item);
-		runnableSetDefault = () -> setDefaultImpl();
 	}
 	
 	protected abstract void nodeToEntityImpl(T item);
@@ -49,17 +48,14 @@ public abstract class PropertyNode<T> {
 		if (getRunnableSetDefault() != null)
 			getRunnableSetDefault().run();
 	}
-	
-	
-	public void applyChange(T from, T to) {
-		
-	}
 
 	public Node getNode() {
 		return node;
 	}
-
 	
+	public void setNode(Node node) {
+		this.node = node;
+	}
 
 	public Class<T> getItemClass() {
 		return itemClass;
