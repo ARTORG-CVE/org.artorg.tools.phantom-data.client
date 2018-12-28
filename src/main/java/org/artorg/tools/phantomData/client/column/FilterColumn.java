@@ -45,7 +45,7 @@ public class FilterColumn<T, S, R> extends AbstractFilterColumn<T, R> {
 	public boolean update(T item) {
 		S sub = itemToPropertyGetter.apply(item);
 		ICrudConnector<S> connector =
-				Connectors.getConnector(((DbPersistent<S, ?>) sub).getItemClass());
+				Connectors.get(((DbPersistent<S, ?>) sub).getItemClass());
 		return connector.update(sub);
 	}
 

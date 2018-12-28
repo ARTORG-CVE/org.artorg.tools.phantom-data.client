@@ -54,7 +54,7 @@ public class OptionalFilterColumn<T, S, R> extends AbstractFilterColumn<T, R> {
 		if (!optional.isPresent()) return false;
 		S sub = optional.get();
 		ICrudConnector<S> connector =
-				Connectors.getConnector(((DbPersistent<S, ?>) sub).getItemClass());
+				Connectors.get(((DbPersistent<S, ?>) sub).getItemClass());
 		return connector.update(sub);
 	}
 

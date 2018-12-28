@@ -336,7 +336,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 			if (!UserAdmin.isUserLoggedIn()) Main.getMainController().openLoginLogoutFrame();
 			else {
 				ICrudConnector<T> connector =
-						(ICrudConnector<T>) Connectors.getConnector(view.getItemClass());
+						(ICrudConnector<T>) Connectors.get(view.getItemClass());
 				if (connector.deleteById(((Identifiable<?>) row.getItem()).getId()))
 					view.getItems().remove(row.getItem());
 			}

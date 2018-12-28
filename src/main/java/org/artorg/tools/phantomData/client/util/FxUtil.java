@@ -3,16 +3,11 @@ package org.artorg.tools.phantomData.client.util;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-
-import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
@@ -115,13 +110,8 @@ public class FxUtil extends org.artorg.tools.phantomData.server.util.FxUtil {
 
 		return column;
 	}
-
-	public static <T> void createDbComboBox(ComboBox<T> comboBox,
-			ICrudConnector<T> connector, Function<T, String> mapper) {
-		List<T> items = connector.readAllAsStream().distinct().collect(Collectors.toList());
-//		items.add(0, null);
-		comboBox.setItems(FXCollections.observableList(items));
-		comboBox.getSelectionModel().selectFirst();
+	
+	public static <T> void setComboBoxCellFactory(ComboBox<T> comboBox, Function<T,String> mapper) {
 		Callback<ListView<T>, ListCell<T>> cellFactory = FxUtil.createComboBoxCellFactory(mapper);
 		comboBox.setButtonCell(cellFactory.call(null));
 		comboBox.setCellFactory(cellFactory);

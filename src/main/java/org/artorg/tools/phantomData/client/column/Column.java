@@ -41,7 +41,7 @@ public class Column<T, S, R> extends AbstractColumn<T, R> {
 	public boolean update(T item) {
 		S path = itemToPropertyGetter.apply(item);
 		ICrudConnector<S> connector =
-				Connectors.getConnector(((DbPersistent<S, ?>) path).getItemClass());
+				Connectors.get(((DbPersistent<S, ?>) path).getItemClass());
 		return connector.update(path);
 	}
 

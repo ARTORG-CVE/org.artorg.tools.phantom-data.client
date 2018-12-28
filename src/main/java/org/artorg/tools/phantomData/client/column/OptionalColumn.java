@@ -55,7 +55,7 @@ public class OptionalColumn<T, S, R> extends AbstractColumn<T, R> {
 		if (!optional.isPresent()) return false;
 		S sub = optional.get();
 		ICrudConnector<S> connector =
-				Connectors.getConnector(((DbPersistent<S, ?>) sub).getItemClass());
+				Connectors.get(((DbPersistent<S, ?>) sub).getItemClass());
 		return connector.update(sub);
 	}
 

@@ -14,7 +14,6 @@ import javafx.scene.control.Label;
 public abstract class PropertyNode<T,U> {
 	private final Class<T> itemClass;
 	private final Node controlNode;
-//	private final Class<?> valueClass;
 	private BiConsumer<T,U> valueToEntitySetter;
 	private Function<T,U> entityToValueEditGetter;
 	private Function<T,U> entityToValueAddGetter;
@@ -25,7 +24,6 @@ public abstract class PropertyNode<T,U> {
 
 	public PropertyNode(Class<T> itemClass, Node controlNode) {
 		this.itemClass = itemClass;
-//		this.valueClass = valueClass;
 		this.controlNode = controlNode;
 		this.parentNode = controlNode;
 		valueToEntitySetter = this::valueToEntitySetterImpl;
@@ -48,13 +46,8 @@ public abstract class PropertyNode<T,U> {
 	
 	protected abstract void defaultSetterRunnableImpl();
 	
-//	public PropertyNode<T,U> addNodeListener(Runnable rc) {
-//		setValueToNodeSetter(getValueToNodeSetter().andThen(u -> rc.run()));
-//		return this;
-//	}
-	
 	public boolean addLabeled(String labelName, List<PropertyEntry> entries) {
-		return toPropertyEntry(labelName).addOn(entries);
+		return entries.add(toPropertyEntry(labelName));
 	}
 	
 	public PropertyEntry toPropertyEntry(String labelName) {

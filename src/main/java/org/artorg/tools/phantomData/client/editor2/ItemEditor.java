@@ -11,6 +11,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
@@ -21,6 +22,7 @@ import org.artorg.tools.phantomData.server.model.Identifiable;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -47,11 +49,26 @@ public class ItemEditor<T> extends AnchorPane implements FxFactory<T> {
 
 	public ItemEditor(Class<T> itemClass) {
 		this.itemClass = itemClass;
-		this.connector = (ICrudConnector<T>) Connectors.getConnector(itemClass);
+		this.connector = (ICrudConnector<T>) Connectors.get(itemClass);
 	}
+	
+	public void onCreateInit() {}
+	
+	public void onCreateBeforePost(T item) {}
+	
+	public void onCreatePostSuccessful(T item) {}
+	
+	
+	public void onEditInit(T item) {}
+	
+	public void onEditBeforePut(T item) {}
+	
+	public void onEditPutSuccessful(T item) {}
+	
 
 	@Override
-	public Node create(T item) {
+	public final Node create(T item) {
+		onCreateInit();
 		applyButton.setOnAction(event -> {
 			FxUtil.runNewSingleThreaded(() -> {
 				T item2 = item;
@@ -65,7 +82,9 @@ public class ItemEditor<T> extends AnchorPane implements FxFactory<T> {
 				final T item3 = item2;
 				nodes.stream().forEach(node -> node.nodeToEntity(item3));
 				try {
+					onCreateBeforePost(item3);
 					if (getConnector().create(item3)) {
+						onCreatePostSuccessful(item3);
 						Platform.runLater(
 								() -> nodes.stream().forEach(node -> node.entityToNodeAdd(item3)));
 					}
@@ -80,10 +99,13 @@ public class ItemEditor<T> extends AnchorPane implements FxFactory<T> {
 	}
 
 	@Override
-	public Node edit(T item) {
+	public final Node edit(T item) {
+		onEditInit(item);
 		applyButton.setOnAction(event -> {
 			nodes.stream().forEach(node -> node.nodeToEntity(item));
-			getConnector().update(item);
+			onEditBeforePut(item);
+			if (getConnector().update(item))
+				onEditPutSuccessful(item);
 		});
 		applyButton.setText("Save");
 		nodes.stream().forEach(node -> node.entityToNodeEdit(item));
@@ -91,7 +113,7 @@ public class ItemEditor<T> extends AnchorPane implements FxFactory<T> {
 	}
 
 	@Override
-	public Node create() {
+	public final Node create() {
 		return create(null);
 	}
 
@@ -107,28 +129,68 @@ public class ItemEditor<T> extends AnchorPane implements FxFactory<T> {
 		return buttonPane;
 	}
 
-	public PropertyNode<T, ?> createTextField(BiConsumer<T, String> setter,
+	public StringPropertyNode createTextField(BiConsumer<T, String> setter,
 			Function<T, String> getter) {
-		return createTextField(setter, getter, item -> "", "");
-	}
-
-	public PropertyNode<T, ?> createTextField(BiConsumer<T, String> setter,
-			Function<T, String> getter, Function<T, String> getterAdd, String defaultValue) {
 		TextField node = new TextField();
-		return createTextField(node, setter, getter, getterAdd, defaultValue);
-
+		return createTextField(node, getter, setter);
 	}
 
-	public PropertyNode<T, String> createTextField(TextField node, BiConsumer<T, String> setter,
-			Function<T, String> getter) {
-		return createTextField(node, setter, getter, item -> "", "");
+	public StringPropertyNode createTextField(TextField node, Function<T, String> getter,
+			BiConsumer<T, String> setter) {
+		StringPropertyNode propertyNode = new StringPropertyNode(itemClass, node) {
+
+			@Override
+			protected void defaultSetterRunnableImpl() {
+				node.setText("");
+			}
+
+			@Override
+			protected String entityToValueEditGetterImpl(T item) {
+				return getter.apply(item);
+			}
+
+			@Override
+			protected String entityToValueAddGetterImpl(T item) {
+				return "";
+			}
+
+			@Override
+			protected void valueToEntitySetterImpl(T item, String value) {
+				setter.accept(item, value);
+			}
+
+			@Override
+			protected String nodeToValueGetterImpl() {
+				return node.getText();
+			}
+
+			@Override
+			protected void valueToNodeSetterImpl(String value) {
+				node.setText(value);
+			}
+		};
+		nodes.add(propertyNode);
+		return propertyNode;
 	}
 
-	public PropertyNode<T, String> createTextField(TextField node,
-			BiConsumer<T, String> valueToEntitySetter, Function<T, String> entityToValueEditGetter,
-			Function<T, String> entityToValueAddGetter, String defaultValue) {
-		return createNode(valueToEntitySetter, entityToValueEditGetter, entityToValueAddGetter,
-				node, (value) -> node.setText(value), () -> node.getText(), () -> node.setText(""));
+	public abstract class StringPropertyNode extends PropertyNode<T, String> {
+		private final TextField controlNode;
+
+		public StringPropertyNode(Class<T> itemClass, TextField controlNode) {
+			super(itemClass, controlNode);
+			this.controlNode = controlNode;
+		}
+
+		public StringPropertyNode setDefaultValue(String defaultValue) {
+			setDefaultSetterRunnable(() -> controlNode.setText(defaultValue));
+			return this;
+		}
+
+		@Override
+		public TextField getControlNode() {
+			return controlNode;
+		}
+
 	}
 
 	public PropertyNode<T, Boolean> createCheckBox(BiConsumer<T, Boolean> setter,
@@ -177,53 +239,66 @@ public class ItemEditor<T> extends AnchorPane implements FxFactory<T> {
 			this.controlNode = new ComboBox<U>();
 		}
 
-		@SuppressWarnings("unchecked")
-		public PropertyNode<T, U> of(BiConsumer<T, String> valueToEntitySetter,
-				Function<T, String> entityToValueEditGetter) {
-			return of((BiConsumer<T, U>) valueToEntitySetter,
-					(Function<T, U>) entityToValueEditGetter, item -> null, s -> (String) s);
+		public abstract class ComboBoxPropertyNode extends PropertyNode<T, U> {
+			private final ComboBox<U> controlNode;
+
+			public ComboBoxPropertyNode(Class<T> itemClass, ComboBox<U> controlNode) {
+				super(itemClass, controlNode);
+				this.controlNode = controlNode;
+			}
+
+			public ComboBoxPropertyNode setMapper(Function<U, String> mapper) {
+				Callback<ListView<U>, ListCell<U>> cellFactory =
+						FxUtil.createComboBoxCellFactory(mapper);
+				controlNode.setButtonCell(cellFactory.call(null));
+				controlNode.setCellFactory(cellFactory);
+				return this;
+			}
+
+			public ComboBoxPropertyNode addSelectListener(ChangeListener<? super U> listener) {
+				getControlNode().getSelectionModel().selectedItemProperty()
+						.addListener(listener);
+				return this;
+			}
+
+			@Override
+			public ComboBox<U> getControlNode() {
+				return controlNode;
+			}
+
 		}
 
-		public PropertyNode<T, U> of(BiConsumer<T, U> valueToEntitySetter,
-				Function<T, U> entityToValueEditGetter, Function<U, String> mapper) {
-			return of(valueToEntitySetter, entityToValueEditGetter, item -> null, mapper);
-		}
+		public ComboBoxPropertyNode of(Function<T, U> getter, BiConsumer<T, U> setter) {
+			createDbComboBox(controlNode, subItemClass, o -> o.toString());
 
-		public PropertyNode<T, U> of(BiConsumer<T, U> valueToEntitySetter,
-				Function<T, U> entityToValueEditGetter, Function<T, U> entityToValueAddGetter,
-				Function<U, String> mapper) {
-			createComboBox(controlNode, subItemClass, mapper);
-			PropertyNode<T, U> propertyNode = new PropertyNode<T, U>(itemClass, controlNode) {
+			ComboBoxPropertyNode propertyNode = new ComboBoxPropertyNode(itemClass, controlNode) {
 
 				@Override
 				protected U entityToValueEditGetterImpl(T item) {
-					return entityToValueEditGetter.apply(item);
+					return getter.apply(item);
 				}
 
 				@Override
 				protected U entityToValueAddGetterImpl(T item) {
 					((ComboBox<U>) getControlNode()).getSelectionModel().clearSelection();
-					return entityToValueAddGetter.apply(item);
+					return null;
 				}
 
 				@Override
 				protected void valueToEntitySetterImpl(T item, U value) {
-					valueToEntitySetter.accept(item, value);
+					setter.accept(item, value);
 				}
 
-				@SuppressWarnings("unchecked")
 				@Override
 				protected U nodeToValueGetterImpl() {
 					return ((ComboBox<U>) getControlNode()).getSelectionModel().getSelectedItem();
 				}
 
-				@SuppressWarnings("unchecked")
 				@Override
 				protected void valueToNodeSetterImpl(U value) {
 					selectComboBoxItem(((ComboBox<U>) getControlNode()), value);
 				}
 
-				@SuppressWarnings("unchecked")
 				@Override
 				protected void defaultSetterRunnableImpl() {
 					((ComboBox<U>) getControlNode()).getSelectionModel().clearSelection();
@@ -240,23 +315,13 @@ public class ItemEditor<T> extends AnchorPane implements FxFactory<T> {
 		}
 
 	}
-
-	private <U> void createComboBox(ComboBox<U> comboBox, Class<U> itemClass,
+	
+	public static <U> void createDbComboBox(ComboBox<U> comboBox, Class<U> itemClass,
 			Function<U, String> mapper) {
-		createComboBox(comboBox, itemClass, mapper, item -> {});
-	}
-
-	protected <U> void createComboBox(ComboBox<U> comboBox, Class<U> itemClass,
-			Function<U, String> mapper, Consumer<U> selectedItemChangedConsumer) {
-		ICrudConnector<U> connector = (ICrudConnector<U>) Connectors.getConnector(itemClass);
-		FxUtil.createDbComboBox(comboBox, connector, mapper);
-
-		ChangeListener<U> listener = (observable, oldValue, newValue) -> {
-			try {
-				selectedItemChangedConsumer.accept(newValue);
-			} catch (Exception e) {}
-		};
-		comboBox.getSelectionModel().selectedItemProperty().addListener(listener);
+		ICrudConnector<U> connector = (ICrudConnector<U>) Connectors.get(itemClass);
+		List<U> items = connector.readAllAsStream().distinct().collect(Collectors.toList());
+		comboBox.setItems(FXCollections.observableList(items));
+		FxUtil.setComboBoxCellFactory(comboBox, mapper);
 	}
 
 	protected <U> void selectComboBoxItem(ComboBox<U> comboBox, U item) {

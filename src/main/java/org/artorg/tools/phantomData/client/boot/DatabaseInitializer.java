@@ -12,31 +12,31 @@ import org.artorg.tools.phantomData.server.models.phantom.*;
 
 public class DatabaseInitializer {
 	private static ICrudConnector<Gender> genderConn =
-		Connectors.getConnector(Gender.class);
+		Connectors.get(Gender.class);
 	private static ICrudConnector<AcademicTitle> academicTitleConn =
-		Connectors.getConnector(AcademicTitle.class);
+		Connectors.get(AcademicTitle.class);
 	private static ICrudConnector<Person> personConn =
-		Connectors.getConnector(Person.class);
+		Connectors.get(Person.class);
 	private static ICrudConnector<AnnulusDiameter> adConn =
-		Connectors.getConnector(AnnulusDiameter.class);
+		Connectors.get(AnnulusDiameter.class);
 	private static ICrudConnector<FabricationType> fTypeConn =
-		Connectors.getConnector(FabricationType.class);
+		Connectors.get(FabricationType.class);
 	private static ICrudConnector<LiteratureBase> litBaseConn =
-		Connectors.getConnector(LiteratureBase.class);
+		Connectors.get(LiteratureBase.class);
 	private static ICrudConnector<PropertyField> fieldConn =
-		Connectors.getConnector(PropertyField.class);
+		Connectors.get(PropertyField.class);
 	private static ICrudConnector<BooleanProperty> boolPropConn =
-		Connectors.getConnector(BooleanProperty.class);
+		Connectors.get(BooleanProperty.class);
 	private static ICrudConnector<IntegerProperty> intPropConn =
-		Connectors.getConnector(IntegerProperty.class);
+		Connectors.get(IntegerProperty.class);
 	private static ICrudConnector<Special> specConn =
-		Connectors.getConnector(Special.class);
+		Connectors.get(Special.class);
 	private static ICrudConnector<Phantomina> phantominaConn =
-		Connectors.getConnector(Phantomina.class);
+		Connectors.get(Phantomina.class);
 	private static ICrudConnector<Phantom> phantomConn =
-		Connectors.getConnector(Phantom.class);
+		Connectors.get(Phantom.class);
 	private static ICrudConnector<Manufacturing> manufactConn =
-			Connectors.getConnector(Manufacturing.class);
+			Connectors.get(Manufacturing.class);
 
 	public static void initDatabase() {
 		initPerson();
@@ -59,8 +59,8 @@ public class DatabaseInitializer {
 
 	private static void initPerson() {
 		ICrudConnector<AcademicTitle> academicTitleConnInit =
-			Connectors.getConnector(AcademicTitle.class);
-		ICrudConnector<Person> personConnInit = Connectors.getConnector(Person.class);
+			Connectors.get(AcademicTitle.class);
+		ICrudConnector<Person> personConnInit = Connectors.get(Person.class);
 		Gender male = new Gender("Male");
 		Gender female = new Gender("Female");
 		genderConn.create(new Gender[] {male, female});

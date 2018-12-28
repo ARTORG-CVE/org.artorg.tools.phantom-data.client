@@ -22,7 +22,7 @@ public class Connectors {
 	}
 	
 	public static <T>
-		ICrudConnector<T> getConnector(Class<T> itemClass) {
+		ICrudConnector<T> get(Class<T> itemClass) {
 		if (itemClass == Person.class || itemClass == Gender.class || itemClass == AcademicTitle.class)
 			return (ICrudConnector<T>) getOrCreateUnpersonified(itemClass);
 		return (ICrudConnector<T>) getOrCreatePersonified(itemClass);
@@ -30,7 +30,7 @@ public class Connectors {
 	
 	@SuppressWarnings("unchecked")
 	public static void createConnectors(Collection<Class<?>> itemClasses) {
-		itemClasses.forEach(itemClass -> Connectors.getConnector((Class<DbPersistent<?,?>>)itemClass));
+		itemClasses.forEach(itemClass -> Connectors.get((Class<DbPersistent<?,?>>)itemClass));
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

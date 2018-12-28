@@ -10,7 +10,6 @@ import org.artorg.tools.phantomData.client.editor.FxFactory;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.editor2.ItemEditor;
-import org.artorg.tools.phantomData.client.editor2.PropertyNode;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
@@ -20,9 +19,8 @@ import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 
-public abstract class PropertyUI<
-	T extends AbstractProperty<T, VALUE> & DbPersistent<T, UUID>,
-	VALUE extends Comparable<VALUE>> extends UIEntity<T> {
+public abstract class PropertyUI<T extends AbstractProperty<T, VALUE> & DbPersistent<T, UUID>,
+		VALUE extends Comparable<VALUE>> extends UIEntity<T> {
 
 	protected abstract String toString(VALUE value);
 
@@ -50,11 +48,10 @@ public abstract class PropertyUI<
 			}
 			return path.getPropertyField().getType();
 		}, (path, value) -> {}));
-		columns.add(creator.createFilterColumn("Field Name",
-			path -> path.getPropertyField().getName(),
-			(path, value) -> path.getPropertyField().setName(value)));
 		columns.add(
-			creator.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
+				creator.createFilterColumn("Field Name", path -> path.getPropertyField().getName(),
+						(path, value) -> path.getPropertyField().setName(value)));
+		columns.add(creator.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(fromString(value))));
 		createPersonifiedColumns(table, columns);
 		return columns;
@@ -66,18 +63,16 @@ public abstract class PropertyUI<
 		VBox vBox = new VBox();
 
 		List<PropertyEntry> entries = new ArrayList<>();
-		creator.createComboBox(PropertyField.class).of(
-			(item, value) -> item.setPropertyField(value),
-			item -> item.getPropertyField(), p -> p.getName()).addLabeled("Property field", entries);
-		
+		creator.createComboBox(PropertyField.class)
+				.of(item -> item.getPropertyField(), (item, value) -> item.setPropertyField(value))
+				.setMapper(p -> p.getName()).addLabeled("Property field", entries);
 
 		Node node = createValueNode();
-		creator.createNode((item, value) -> item.setValue(value),
-			item -> item.getValue(), item -> getDefaultValue(), node,
-			value -> setValueToNode(node, value),
-			() -> getValueFromNode(node), () -> setValueToNode(node, getDefaultValue())).addLabeled("Value", entries);
-		TitledPropertyPane generalPane =
-			new TitledPropertyPane(entries, "General");
+		creator.createNode((item, value) -> item.setValue(value), item -> item.getValue(),
+				item -> getDefaultValue(), node, value -> setValueToNode(node, value),
+				() -> getValueFromNode(node), () -> setValueToNode(node, getDefaultValue()))
+				.addLabeled("Value", entries);
+		TitledPropertyPane generalPane = new TitledPropertyPane(entries, "General");
 		vBox.getChildren().add(generalPane);
 
 		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));

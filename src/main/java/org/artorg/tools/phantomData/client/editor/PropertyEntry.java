@@ -1,7 +1,5 @@
 package org.artorg.tools.phantomData.client.editor;
 
-import java.util.List;
-
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
@@ -25,10 +23,6 @@ public class PropertyEntry {
 	public PropertyEntry(Node leftNode, Node rightNode) {
 		this.setLeftNode(leftNode);
 		this.rightNode = rightNode;
-	}
-	
-	public boolean addOn(List<PropertyEntry> list) {
-		return list.add(this);
 	}
 
 	public Node getLeftNode() {

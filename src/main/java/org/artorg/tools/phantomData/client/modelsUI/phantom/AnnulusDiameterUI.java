@@ -9,7 +9,6 @@ import org.artorg.tools.phantomData.client.editor.FxFactory;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.editor2.ItemEditor;
-import org.artorg.tools.phantomData.client.editor2.PropertyNode;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
@@ -51,7 +50,6 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 	public FxFactory<AnnulusDiameter> createEditFactory() {
 		ItemEditor<AnnulusDiameter> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
-		PropertyNode<AnnulusDiameter, ?> propertyNode;
 
 		List<PropertyEntry> generalProperties = new ArrayList<>();
 		Label labelShortcut = new Label();
@@ -65,8 +63,8 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 
 		generalProperties.add(new PropertyEntry("Shortcut", labelShortcut));
 		creator.createTextField(textFieldValue,
-				(item, value) -> item.setValue(Double.valueOf(value)),
-				item -> Double.toString(item.getValue()))
+				item -> Double.toString(item.getValue()),
+				(item, value) -> item.setValue(Double.valueOf(value)))
 				.addLabeled("Diameter [mm]", generalProperties);
 		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 		vBox.getChildren().add(generalPane);

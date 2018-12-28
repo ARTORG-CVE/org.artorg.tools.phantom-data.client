@@ -16,7 +16,7 @@ public class UserAdmin {
 	private static ICrudConnector<Person> personConnector;
 
 	static {
-		personConnector = Connectors.getConnector(Person.class);
+		personConnector = Connectors.get(Person.class);
 		PersonifiedCrudConnector.setUserSupplier(() -> getUser());
 	}
 

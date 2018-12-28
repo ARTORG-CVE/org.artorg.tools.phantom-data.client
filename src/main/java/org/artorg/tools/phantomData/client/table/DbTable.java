@@ -17,7 +17,7 @@ public abstract class DbTable<ITEM> extends Table<ITEM> {
 	private final MapChangeListener<String, ITEM> listener;
 
 	{
-		connector = Connectors.getConnector(getItemClass());
+		connector = Connectors.get(getItemClass());
 		listener = change -> {
 			applyChanges(change, getItems());
 //			if (isFilterable()) applyChanges(change, getFilteredItems());

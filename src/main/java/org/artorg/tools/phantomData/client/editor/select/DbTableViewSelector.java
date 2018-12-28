@@ -94,7 +94,7 @@ public class DbTableViewSelector<F, U> extends TableViewSelector<U> {
 	@SuppressWarnings("unchecked")
 	public static <F, U> List<U> getSelectableItems(Class<F> parentItemClass,
 		Class<U> subItemClass) {
-		ICrudConnector<U> connector = Connectors.getConnector(subItemClass);
+		ICrudConnector<U> connector = Connectors.get(subItemClass);
 		List<U> items = connector.readAllAsList();
 		if (AbstractProperty.class.isAssignableFrom(subItemClass)) {
 			items = items.stream().filter(item -> {

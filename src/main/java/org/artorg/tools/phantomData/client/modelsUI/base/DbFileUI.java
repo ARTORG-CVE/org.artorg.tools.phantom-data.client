@@ -15,14 +15,11 @@ import org.artorg.tools.phantomData.client.editor.FxFactory;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.editor2.ItemEditor;
-import org.artorg.tools.phantomData.client.editor2.PropertyNode;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
 
-import javafx.application.Platform;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -79,35 +76,9 @@ public class DbFileUI extends UIEntity<DbFile> {
 		TextField textFieldFilePath = new TextField();
 		ItemEditor<DbFile> creator = new ItemEditor<DbFile>(getItemClass()) {
 			@Override
-			public Node create(DbFile item) {
-				getApplyButton().setOnAction(event -> {
-					FxUtil.runNewSingleThreaded(() -> {
-						DbFile item2 = item;
-						if (item2 == null) {
-							try {
-								item2 = getItemClass().newInstance();
-							} catch (InstantiationException | IllegalAccessException e) {
-								e.printStackTrace();
-							}
-						}
-						final DbFile item3 = item2;
-						getNodes().stream().forEach(node -> node.nodeToEntity(item3));
-						try {
-							if (getConnector().create(item3)) {
-								item3.putFile(new File(textFieldFilePath.getText()));
-								Platform.runLater(() -> getNodes().stream()
-									.forEach(node -> node.entityToNodeAdd(item3)));
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					});
-				});
-				getApplyButton().setText("Create");
-
-				return getGraphic();
+			public void onCreatePostSuccessful(DbFile item) {
+				item.putFile(new File(textFieldFilePath.getText()));
 			}
-
 		};
 		VBox vBox = new VBox();
 
@@ -135,13 +106,13 @@ public class DbFileUI extends UIEntity<DbFile> {
 		});
 
 		entries.add(new PropertyEntry("Choose File", buttonFileChooser));
-		creator.createTextField(textFieldFilePath, (item, value) -> {},
-			item -> item.getFile().getPath()).addLabeled("File path", entries);
+		creator.createTextField(textFieldFilePath, item -> item.getFile().getPath(),
+			(item, value) -> {}).addLabeled("File path", entries);
 		creator.createTextField(textFieldName,
-			(item, value) -> item.setName(value), item -> item.getName()).addLabeled("Name", entries);
+			item -> item.getName(), (item, value) -> item.setName(value)).addLabeled("Name", entries);
 		creator
 			.createTextField(textFieldExtension,
-				(item, value) -> item.setExtension(value), item -> item.getExtension())
+				item -> item.getExtension(), (item, value) -> item.setExtension(value))
 			.setValueToNodeSetter(s -> textFieldExtension.setText(s.toLowerCase())).addLabeled("Extension", entries);
 		TitledPropertyPane generalPane =
 			new TitledPropertyPane(entries, "General");

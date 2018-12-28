@@ -210,47 +210,6 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 
 	public boolean updateDb(T t) {
 		try {
-//			HttpHeaders headers = new HttpHeaders();
-//			headers.setContentType(MediaType.APPLICATION_JSON);
-//			final HttpEntity<T> entity = new HttpEntity<T>(t ,
-//			        headers);
-//			JSONObject jsonObject = null;
-//			
-//			String url = createUrl(getAnnoStringUpdate());
-//			try {
-//			    RestTemplate restTemplate = new RestTemplate();
-//			    ResponseEntity<String> responseEntity = restTemplate.exchange(
-//			            url, HttpMethod.PUT, entity,
-//			            String.class);
-//
-//			    if (responseEntity.getStatusCode() == HttpStatus.CREATED) {
-//			        try {
-//			            jsonObject = new JSONObject(responseEntity.getBody());
-//			        } catch (JSONException e) {
-//			            throw new RuntimeException("JSONException occurred");
-//			        }
-//			    }
-//			  } catch (Exception e) {
-//				  e.printStackTrace();
-//			    } 
-
-			
-//			
-//			RestTemplate restTemplate = new RestTemplate();
-//			List<HttpMessageConverter<?>> messageConverters =
-//					new ArrayList<HttpMessageConverter<?>>();
-//			// Add the Jackson Message converter
-//			MappingJackson2HttpMessageConverter converter =
-//					new MappingJackson2HttpMessageConverter();
-//			// Note: here we are making this converter to process any kind of response,
-//			// not only application/*json, which is the default behaviour
-//			converter.setSupportedMediaTypes(Arrays.asList(MediaType.ALL));
-//			messageConverters.add(converter);
-//			restTemplate.setMessageConverters(messageConverters);
-//			HttpHeaders headers = new HttpHeaders();
-//			headers.setContentType(MediaType.ALL);
-			
-			
 			HttpHeaders headers = createHttpHeaders();
 			RestTemplate restTemplate = new RestTemplate();
 			String url = createUrl(getAnnoStringUpdate());

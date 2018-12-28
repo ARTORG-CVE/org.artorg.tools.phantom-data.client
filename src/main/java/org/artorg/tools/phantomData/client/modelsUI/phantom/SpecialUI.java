@@ -5,19 +5,18 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.GroupedItemEditFactoryController;
-import org.artorg.tools.phantomData.client.editor.ItemEditFactoryController;
+import org.artorg.tools.phantomData.client.editor.FxFactory;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.editor2.ItemEditor;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.phantom.Special;
+import org.artorg.tools.phantomData.server.util.FxUtil;
 
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
+import javafx.scene.layout.VBox;
 
 public class SpecialUI extends UIEntity<Special> {
-	
 
 	public Class<Special> getItemClass() {
 		return Special.class;
@@ -44,55 +43,23 @@ public class SpecialUI extends UIEntity<Special> {
 	}
 
 	@Override
-	public ItemEditFactoryController<Special> createEditFactory() {
-		return new SpecialEditFactoryController();
-	}
+	public FxFactory<Special> createEditFactory() {
+		ItemEditor<Special> creator = new ItemEditor<>(getItemClass());
+		VBox vBox = new VBox();
 
-	private class SpecialEditFactoryController extends GroupedItemEditFactoryController<Special> {
-		private final TextField textFieldShortcut;
-		private final TextField textFieldDescription;
+		List<PropertyEntry> entries = new ArrayList<>();
+		creator.createTextField((item, value) -> item.setShortcut(value),
+			item -> item.getShortcut()).addLabeled("Shortcut", entries);
+		creator.createTextField((item, value) -> item.setDescription(value),
+			item -> item.getDescription()).addLabeled("Description", entries);
+		TitledPropertyPane generalPane =
+			new TitledPropertyPane(entries, "General");
+		vBox.getChildren().add(generalPane);
 
-		{
-			textFieldShortcut = new TextField();
-			textFieldDescription = new TextField();
+		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
 
-			List<TitledPane> panes = new ArrayList<TitledPane>();
-			List<PropertyEntry> generalProperties = new ArrayList<PropertyEntry>();
-			generalProperties.add(new PropertyEntry("Shortcut", textFieldShortcut));
-			generalProperties.add(new PropertyEntry("Description", textFieldDescription));
-			TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
-			panes.add(generalPane);
-			setTitledPanes(panes);
-		}
-
-		@Override
-		public Special createItem() {
-			String shortcut = textFieldShortcut.getText();
-			String description = textFieldDescription.getText();
-			return new Special(shortcut, description);
-		}
-
-		@Override
-		protected void setEditTemplate(Special item) {
-			textFieldShortcut.setText(item.getShortcut());
-			textFieldDescription.setText(item.getDescription());
-		}
-
-		@Override
-		protected void applyChanges(Special item) {
-			String shortcut = textFieldShortcut.getText();
-			String description = textFieldDescription.getText();
-
-			item.setShortcut(shortcut);
-			item.setDescription(description);
-		}
-
-		@Override
-		public void setDefaultTemplate() {
-			textFieldShortcut.setText("");
-			textFieldDescription.setText("");
-		}
-
+		FxUtil.addToPane(creator, vBox);
+		return creator;
 	}
 
 }
