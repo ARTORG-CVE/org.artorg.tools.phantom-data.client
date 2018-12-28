@@ -54,22 +54,17 @@ public class PersonUI extends UIEntity<Person> {
 	public FxFactory<Person> createEditFactory() {
 		ItemEditor<Person> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
-		PropertyNode<Person,?> propertyNode;
 
 		List<PropertyEntry> generalProperties = new ArrayList<>();
-		propertyNode = creator.createComboBox(Gender.class).of(
-				(item, value) -> item.setGender(value), item -> item.getGender(), g -> g.getName());
-		generalProperties.add(new PropertyEntry("Gender", propertyNode.getNode()));
-		propertyNode = creator.createComboBox(AcademicTitle.class).of(
+		creator.createComboBox(Gender.class).of(
+				(item, value) -> item.setGender(value), item -> item.getGender(), g -> g.getName()).addLabeled("Gender", generalProperties);
+		creator.createComboBox(AcademicTitle.class).of(
 				(item, value) -> item.setAcademicTitle(value), item -> item.getAcademicTitle(),
-				g -> g.getPrefix());
-		generalProperties.add(new PropertyEntry("Academic Title", propertyNode.getNode()));
-		propertyNode = creator.createTextField((item, value) -> item.setFirstname(value),
-				item -> item.getFirstname());
-		generalProperties.add(new PropertyEntry("Firstname", propertyNode.getNode()));
-		propertyNode = creator.createTextField((item, value) -> item.setLastname(value),
-				item -> item.getLastname());
-		generalProperties.add(new PropertyEntry("Lastname", propertyNode.getNode()));
+				g -> g.getPrefix()).addLabeled("Academic Title", generalProperties);
+		creator.createTextField((item, value) -> item.setFirstname(value),
+				item -> item.getFirstname()).addLabeled("Firstname", generalProperties);
+		creator.createTextField((item, value) -> item.setLastname(value),
+				item -> item.getLastname()).addLabeled("Lastname", generalProperties);
 		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 		vBox.getChildren().add(generalPane);
 

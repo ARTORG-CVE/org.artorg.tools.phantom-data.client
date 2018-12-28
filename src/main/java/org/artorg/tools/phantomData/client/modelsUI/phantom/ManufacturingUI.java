@@ -47,15 +47,12 @@ public class ManufacturingUI extends UIEntity<Manufacturing> {
 	public FxFactory<Manufacturing> createEditFactory() {
 		ItemEditor<Manufacturing> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
-		PropertyNode<Manufacturing, ?> propertyNode;
 
 		List<PropertyEntry> generalProperties = new ArrayList<>();
-		propertyNode = creator.createTextField((item, value) -> item.setName(value),
-			item -> item.getName());
-		generalProperties.add(new PropertyEntry("Shortcut", propertyNode.getNode()));
-		propertyNode = creator.createTextField((item, value) -> item.setDescription(value),
-			item -> item.getDescription());
-		generalProperties.add(new PropertyEntry("Description", propertyNode.getNode()));
+		creator.createTextField((item, value) -> item.setName(value),
+			item -> item.getName()).addLabeled("Shortcut", generalProperties);
+		creator.createTextField((item, value) -> item.setDescription(value),
+			item -> item.getDescription()).addLabeled("Description", generalProperties);
 		TitledPropertyPane generalPane =
 			new TitledPropertyPane(generalProperties, "General");
 		vBox.getChildren().add(generalPane);

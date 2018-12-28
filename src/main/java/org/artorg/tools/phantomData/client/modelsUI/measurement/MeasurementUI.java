@@ -64,33 +64,27 @@ public class MeasurementUI extends UIEntity<Measurement> {
 	public FxFactory<Measurement> createEditFactory() {
 		ItemEditor<Measurement> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
-		PropertyNode<Measurement,?> propertyNode;
 		
 		List<PropertyEntry> generalProperties = new ArrayList<>();
-		propertyNode = creator.createDatePicker((item, value) -> item.setStartDate(value),
-				item -> item.getStartDate());
-		generalProperties.add(new PropertyEntry("Start Date", propertyNode.getNode()));
-		propertyNode = creator.createComboBox(Person.class).of(
-				(item, value) -> item.setPerson(value), item -> item.getPerson(), p -> p.getName());
-		generalProperties.add(new PropertyEntry("Person", propertyNode.getNode()));
-		propertyNode =
-				creator.createComboBox(Project.class).of((item, value) -> item.setProject(value),
-						item -> item.getProject(), p -> p.getName());
-		generalProperties.add(new PropertyEntry("Project", propertyNode.getNode()));
-		propertyNode = creator.createComboBox(ExperimentalSetup.class).of(
+		creator.createDatePicker((item, value) -> item.setStartDate(value),
+				item -> item.getStartDate()).addLabeled("Start date", generalProperties);
+		creator.createComboBox(Person.class).of(
+				(item, value) -> item.setPerson(value), item -> item.getPerson(), p -> p.getName()).addLabeled("Person", generalProperties);
+		creator.createComboBox(Project.class).of((item, value) -> item.setProject(value),
+						item -> item.getProject(), p -> p.getName()).addLabeled("Project", generalProperties);
+		creator.createComboBox(ExperimentalSetup.class).of(
 				(item, value) -> item.setExperimentalSetup(value),
-				item -> item.getExperimentalSetup(), p -> p.getShortName());
-		generalProperties.add(new PropertyEntry("Experimental Setup", propertyNode.getNode()));
+				item -> item.getExperimentalSetup(), p -> p.getShortName()).addLabeled("Experimental Setup", generalProperties);
 		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 		vBox.getChildren().add(generalPane);
 
 		PropertyNode<Measurement,?> selector;
 		selector = creator.createSelector(DbFile.class).titled("Protocol Files", item -> item.getFiles(),
 				(item, files) -> item.setFiles((List<DbFile>) files));
-		vBox.getChildren().add(selector.getNode());
+		vBox.getChildren().add(selector.getParentNode());
 		selector = creator.createSelector(DbFile.class).titled("Files", item -> item.getFiles(),
 				(item, files) -> item.setFiles((List<DbFile>) files));
-		vBox.getChildren().add(selector.getNode());
+		vBox.getChildren().add(selector.getParentNode());
 
 		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
 

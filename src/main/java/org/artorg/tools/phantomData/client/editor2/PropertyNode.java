@@ -1,14 +1,19 @@
 package org.artorg.tools.phantomData.client.editor2;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.artorg.tools.phantomData.client.editor.PropertyEntry;
+
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 
 public abstract class PropertyNode<T,U> {
 	private final Class<T> itemClass;
+	private final Node controlNode;
 //	private final Class<?> valueClass;
 	private BiConsumer<T,U> valueToEntitySetter;
 	private Function<T,U> entityToValueEditGetter;
@@ -16,12 +21,13 @@ public abstract class PropertyNode<T,U> {
 	private Consumer<U> valueToNodeSetter;
 	private Supplier<U> nodeToValueGetter;
 	private Runnable defaultSetterRunnable;
-	private Node node;
+	private Node parentNode;
 
-	public PropertyNode(Class<T> itemClass, Node node) {
+	public PropertyNode(Class<T> itemClass, Node controlNode) {
 		this.itemClass = itemClass;
 //		this.valueClass = valueClass;
-		this.node = node;
+		this.controlNode = controlNode;
+		this.parentNode = controlNode;
 		valueToEntitySetter = this::valueToEntitySetterImpl;
 		entityToValueEditGetter = this::entityToValueEditGetterImpl;
 		entityToValueAddGetter = this::entityToValueAddGetterImpl;
@@ -42,9 +48,21 @@ public abstract class PropertyNode<T,U> {
 	
 	protected abstract void defaultSetterRunnableImpl();
 	
-	public PropertyNode<T,U> addNodeListener(Runnable rc) {
-		setValueToNodeSetter(getValueToNodeSetter().andThen(u -> rc.run()));
-		return this;
+//	public PropertyNode<T,U> addNodeListener(Runnable rc) {
+//		setValueToNodeSetter(getValueToNodeSetter().andThen(u -> rc.run()));
+//		return this;
+//	}
+	
+	public boolean addLabeled(String labelName, List<PropertyEntry> entries) {
+		return toPropertyEntry(labelName).addOn(entries);
+	}
+	
+	public PropertyEntry toPropertyEntry(String labelName) {
+		return toPropertyEntry(new Label(labelName));
+	}
+	
+	public PropertyEntry toPropertyEntry(Label label) {
+		return new PropertyEntry(label, this.getParentNode());
 	}
 	
 	
@@ -118,13 +136,19 @@ public abstract class PropertyNode<T,U> {
 		return this;
 	}
 
-	public Node getNode() {
-		return node;
+	public Node getParentNode() {
+		return this.parentNode;
 	}
 
-	public PropertyNode<T,U> setNode(Node node) {
-		this.node = node;
+	public PropertyNode<T,U> setParentNode(Node node) {
+		this.parentNode = node;
 		return this;
+	}
+	
+	
+
+	public Node getControlNode() {
+		return controlNode;
 	}
 
 	public Class<T> getItemClass() {

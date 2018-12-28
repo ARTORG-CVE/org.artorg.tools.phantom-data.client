@@ -110,9 +110,8 @@ public class DbFileUI extends UIEntity<DbFile> {
 
 		};
 		VBox vBox = new VBox();
-		PropertyNode<DbFile, ?> propertyNode;
 
-		List<PropertyEntry> generalProperties = new ArrayList<>();
+		List<PropertyEntry> entries = new ArrayList<>();
 
 		TextField textFieldName = new TextField();
 		TextField textFieldExtension = new TextField();
@@ -135,20 +134,17 @@ public class DbFileUI extends UIEntity<DbFile> {
 			}
 		});
 
-		generalProperties.add(new PropertyEntry("Choose File", buttonFileChooser));
-		propertyNode = creator.createTextField(textFieldFilePath, (item, value) -> {},
-			item -> item.getFile().getPath());
-		generalProperties.add(new PropertyEntry("File Path", propertyNode.getNode()));
-		propertyNode = creator.createTextField(textFieldName,
-			(item, value) -> item.setName(value), item -> item.getName());
-		generalProperties.add(new PropertyEntry("Name", propertyNode.getNode()));
-		propertyNode = creator
+		entries.add(new PropertyEntry("Choose File", buttonFileChooser));
+		creator.createTextField(textFieldFilePath, (item, value) -> {},
+			item -> item.getFile().getPath()).addLabeled("File path", entries);
+		creator.createTextField(textFieldName,
+			(item, value) -> item.setName(value), item -> item.getName()).addLabeled("Name", entries);
+		creator
 			.createTextField(textFieldExtension,
 				(item, value) -> item.setExtension(value), item -> item.getExtension())
-			.setValueToNodeSetter(s -> textFieldExtension.setText(s.toLowerCase()));
-		generalProperties.add(new PropertyEntry("Extension", propertyNode.getNode()));
+			.setValueToNodeSetter(s -> textFieldExtension.setText(s.toLowerCase())).addLabeled("Extension", entries);
 		TitledPropertyPane generalPane =
-			new TitledPropertyPane(generalProperties, "General");
+			new TitledPropertyPane(entries, "General");
 		vBox.getChildren().add(generalPane);
 
 		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));

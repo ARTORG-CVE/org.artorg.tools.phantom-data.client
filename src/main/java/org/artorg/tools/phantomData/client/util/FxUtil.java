@@ -119,6 +119,7 @@ public class FxUtil extends org.artorg.tools.phantomData.server.util.FxUtil {
 	public static <T> void createDbComboBox(ComboBox<T> comboBox,
 			ICrudConnector<T> connector, Function<T, String> mapper) {
 		List<T> items = connector.readAllAsStream().distinct().collect(Collectors.toList());
+//		items.add(0, null);
 		comboBox.setItems(FXCollections.observableList(items));
 		comboBox.getSelectionModel().selectFirst();
 		Callback<ListView<T>, ListCell<T>> cellFactory = FxUtil.createComboBoxCellFactory(mapper);

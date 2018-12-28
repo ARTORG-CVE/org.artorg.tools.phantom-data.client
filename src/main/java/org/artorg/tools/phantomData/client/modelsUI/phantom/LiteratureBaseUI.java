@@ -49,15 +49,12 @@ public class LiteratureBaseUI extends UIEntity<LiteratureBase> {
 	public FxFactory<LiteratureBase> createEditFactory() {
 		ItemEditor<LiteratureBase> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
-		PropertyNode<LiteratureBase, ?> propertyNode;
 
 		List<PropertyEntry> generalProperties = new ArrayList<>();
-		propertyNode = creator.createTextField((item, value) -> item.setShortcut(value),
-			item -> item.getShortcut());
-		generalProperties.add(new PropertyEntry("Shortcut", propertyNode.getNode()));
-		propertyNode = creator.createTextField((item, value) -> item.setValue(value),
-			item -> item.getValue());
-		generalProperties.add(new PropertyEntry("Name", propertyNode.getNode()));
+		creator.createTextField((item, value) -> item.setShortcut(value),
+			item -> item.getShortcut()).addLabeled("Shortcut", generalProperties);
+		creator.createTextField((item, value) -> item.setValue(value),
+			item -> item.getValue()).addLabeled("Name", generalProperties);
 		TitledPropertyPane generalPane =
 			new TitledPropertyPane(generalProperties, "General");
 		vBox.getChildren().add(generalPane);

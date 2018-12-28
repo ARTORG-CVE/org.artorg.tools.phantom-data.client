@@ -24,8 +24,6 @@ import javafx.scene.layout.VBox;
 
 public class NoteUI extends UIEntity<Note> {
 
-
-
 	public Class<Note> getItemClass() {
 		return Note.class;
 	}
@@ -49,16 +47,15 @@ public class NoteUI extends UIEntity<Note> {
 	public FxFactory<Note> createEditFactory() {
 		ItemEditor<Note> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
-		PropertyNode<Note,?> propertyNode;
-		
-		List<PropertyEntry> generalProperties = new ArrayList<>();
-		propertyNode = creator.createTextField((item,value) -> item.setName(value), item -> item.getName());
-		generalProperties.add(new PropertyEntry("Message", propertyNode.getNode()));
-		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+
+		List<PropertyEntry> entries = new ArrayList<>();
+		creator.createTextField((item, value) -> item.setName(value), item -> item.getName())
+				.addLabeled("Message", entries);
+		TitledPropertyPane generalPane = new TitledPropertyPane(entries, "General");
 		vBox.getChildren().add(generalPane);
-		
+
 		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
-		
+
 		FxUtil.addToPane(creator, vBox);
 		return creator;
 	}

@@ -65,25 +65,20 @@ public class ProjectUI extends UIEntity<Project> {
 	public FxFactory<Project> createEditFactory() {
 		ItemEditor<Project> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
-		PropertyNode<Project, ?> propertyNode;
 
-		List<PropertyEntry> generalProperties = new ArrayList<>();
-		propertyNode = creator.createTextField((item, value) -> item.setName(value),
-			item -> item.getName());
-		generalProperties.add(new PropertyEntry("Prefix", propertyNode.getNode()));
-		propertyNode = creator.createTextField(
-			(item, value) -> item.setDescription(value), item -> item.getDescription());
-		generalProperties.add(new PropertyEntry("Description", propertyNode.getNode()));
-		propertyNode = creator.createTextField(
+		List<PropertyEntry> entries = new ArrayList<>();
+		creator.createTextField((item, value) -> item.setName(value),
+			item -> item.getName()).addLabeled("Prefix", entries);
+		creator.createTextField(
+			(item, value) -> item.setDescription(value), item -> item.getDescription()).addLabeled("Description", entries);
+		creator.createTextField(
 			(item, value) -> item.setStartYear(Short.valueOf((value))),
-			item -> Short.toString(item.getStartYear()));
-		generalProperties.add(new PropertyEntry("Description", propertyNode.getNode()));
-		propertyNode = creator.createComboBox(Person.class).of(
+			item -> Short.toString(item.getStartYear())).addLabeled("Description", entries);
+		creator.createComboBox(Person.class).of(
 			(item, value) -> item.setLeader(value), item -> item.getLeader(),
-			l -> l.getSimpleAcademicName());
-		generalProperties.add(new PropertyEntry("Leader", propertyNode.getNode()));
+			l -> l.getSimpleAcademicName()).addLabeled("Leader", entries);
 		TitledPropertyPane generalPane =
-			new TitledPropertyPane(generalProperties, "General");
+			new TitledPropertyPane(entries, "General");
 		vBox.getChildren().add(generalPane);
 
 		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));

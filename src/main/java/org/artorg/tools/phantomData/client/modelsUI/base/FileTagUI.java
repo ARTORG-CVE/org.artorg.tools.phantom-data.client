@@ -24,7 +24,6 @@ import javafx.scene.layout.VBox;
 
 public class FileTagUI extends UIEntity<FileTag> {
 
-
 	public Class<FileTag> getItemClass() {
 		return FileTag.class;
 	}
@@ -35,7 +34,8 @@ public class FileTagUI extends UIEntity<FileTag> {
 	}
 
 	@Override
-	public List<AbstractColumn<FileTag, ?>> createColumns(Table<FileTag> table, List<FileTag> items) {
+	public List<AbstractColumn<FileTag, ?>> createColumns(Table<FileTag> table,
+			List<FileTag> items) {
 		List<AbstractColumn<FileTag, ?>> columns = new ArrayList<AbstractColumn<FileTag, ?>>();
 		ColumnCreator<FileTag, FileTag> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Name", path -> path.getName(),
@@ -47,22 +47,21 @@ public class FileTagUI extends UIEntity<FileTag> {
 	@Override
 	public FxFactory<FileTag> createEditFactory() {
 //		return new FileTagEditFactoryController();
-		
+
 		ItemEditor<FileTag> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
-		PropertyNode<FileTag,?> propertyNode;
-		
-		List<PropertyEntry> generalProperties = new ArrayList<>();
-		propertyNode = creator.createTextField((item,value) -> item.setName(value), item -> item.getName());
-		generalProperties.add(new PropertyEntry("Name", propertyNode.getNode()));
-		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+
+		List<PropertyEntry> entries = new ArrayList<>();
+		creator.createTextField((item, value) -> item.setName(value), item -> item.getName())
+				.addLabeled("Name", entries);
+		TitledPropertyPane generalPane = new TitledPropertyPane(entries, "General");
 		vBox.getChildren().add(generalPane);
-		
+
 		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
-		
+
 		FxUtil.addToPane(creator, vBox);
 		return creator;
-		
+
 	}
 
 }

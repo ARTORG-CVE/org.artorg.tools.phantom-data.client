@@ -31,16 +31,14 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 	}
 
 	@Override
-	public List<AbstractColumn<AnnulusDiameter, ?>>
-		createColumns(Table<AnnulusDiameter> table, List<AnnulusDiameter> items) {
+	public List<AbstractColumn<AnnulusDiameter, ?>> createColumns(Table<AnnulusDiameter> table,
+			List<AnnulusDiameter> items) {
 		List<AbstractColumn<AnnulusDiameter, ?>> columns = new ArrayList<>();
-		ColumnCreator<AnnulusDiameter, AnnulusDiameter> creator =
-			new ColumnCreator<>(table);
-		columns.add(creator.createFilterColumn("Sortcut",
-			path -> String.valueOf(path.getShortcut()),
-			(path, value) -> path.setShortcut(Integer.valueOf(value))));
+		ColumnCreator<AnnulusDiameter, AnnulusDiameter> creator = new ColumnCreator<>(table);
 		columns.add(
-			creator.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
+				creator.createFilterColumn("Sortcut", path -> String.valueOf(path.getShortcut()),
+						(path, value) -> path.setShortcut(Integer.valueOf(value))));
+		columns.add(creator.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(Double.valueOf(value))));
 		createCountingColumn(table, "Files", columns, item -> item.getFiles());
 		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
@@ -66,12 +64,11 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 		});
 
 		generalProperties.add(new PropertyEntry("Shortcut", labelShortcut));
-		propertyNode = creator.createTextField(textFieldValue,
-			(item, value) -> item.setValue(Double.valueOf(value)),
-			item -> Double.toString(item.getValue()));
-		generalProperties.add(new PropertyEntry("Diameter [mm]", propertyNode.getNode()));
-		TitledPropertyPane generalPane =
-			new TitledPropertyPane(generalProperties, "General");
+		creator.createTextField(textFieldValue,
+				(item, value) -> item.setValue(Double.valueOf(value)),
+				item -> Double.toString(item.getValue()))
+				.addLabeled("Diameter [mm]", generalProperties);
+		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
 		vBox.getChildren().add(generalPane);
 
 		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));

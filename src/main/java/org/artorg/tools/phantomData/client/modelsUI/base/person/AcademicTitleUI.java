@@ -29,7 +29,8 @@ public class AcademicTitleUI extends UIEntity<AcademicTitle> {
 	}
 
 	@Override
-	public List<AbstractColumn<AcademicTitle, ?>> createColumns(Table<AcademicTitle> table, List<AcademicTitle> items) {
+	public List<AbstractColumn<AcademicTitle, ?>> createColumns(Table<AcademicTitle> table,
+			List<AcademicTitle> items) {
 		List<AbstractColumn<AcademicTitle, ?>> columns = new ArrayList<>();
 		ColumnCreator<AcademicTitle, AcademicTitle> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Prefix", path -> path.getPrefix(),
@@ -43,18 +44,17 @@ public class AcademicTitleUI extends UIEntity<AcademicTitle> {
 	public FxFactory<AcademicTitle> createEditFactory() {
 		ItemEditor<AcademicTitle> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
-		PropertyNode<AcademicTitle,?> propertyNode;
-		
-		List<PropertyEntry> generalProperties = new ArrayList<>();
-		propertyNode = creator.createTextField((item,value) -> item.setPrefix(value), item -> item.getPrefix());
-		generalProperties.add(new PropertyEntry("Prefix", propertyNode.getNode()));
-		propertyNode = creator.createTextField((item,value) -> item.setDescription(value), item -> item.getDescription());
-		generalProperties.add(new PropertyEntry("Description", propertyNode.getNode()));
-		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+
+		List<PropertyEntry> entries = new ArrayList<>();
+		creator.createTextField((item, value) -> item.setPrefix(value), item -> item.getPrefix())
+				.addLabeled("Prefix", entries);
+		creator.createTextField((item, value) -> item.setDescription(value),
+				item -> item.getDescription()).addLabeled("Description", entries);
+		TitledPropertyPane generalPane = new TitledPropertyPane(entries, "General");
 		vBox.getChildren().add(generalPane);
-		
+
 		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
-		
+
 		FxUtil.addToPane(creator, vBox);
 		return creator;
 	}

@@ -58,20 +58,17 @@ public class ExperimentalSetupUI extends UIEntity<ExperimentalSetup> {
 		VBox vBox = new VBox();
 		PropertyNode<ExperimentalSetup,?> propertyNode;
 		
-		List<PropertyEntry> generalProperties = new ArrayList<>();
-		propertyNode = creator.createTextField((item,value) -> item.setShortName(value), item -> item.getShortName());
-		generalProperties.add(new PropertyEntry("Short name", propertyNode.getNode()));
-		propertyNode = creator.createTextField((item,value) -> item.setLongName(value), item -> item.getLongName());
-		generalProperties.add(new PropertyEntry("Long name", propertyNode.getNode()));
-		propertyNode = creator.createTextField((item,value) -> item.setDescription(value), item -> item.getDescription());
-		generalProperties.add(new PropertyEntry("Description", propertyNode.getNode()));
-		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		List<PropertyEntry> entries = new ArrayList<>();
+		creator.createTextField((item,value) -> item.setShortName(value), item -> item.getShortName()).addLabeled("Short name", entries);
+		creator.createTextField((item,value) -> item.setLongName(value), item -> item.getLongName()).addLabeled("Long name", entries);
+		creator.createTextField((item,value) -> item.setDescription(value), item -> item.getDescription()).addLabeled("Description", entries);
+		TitledPropertyPane generalPane = new TitledPropertyPane(entries, "General");
 		vBox.getChildren().add(generalPane);
 		
 		PropertyNode<ExperimentalSetup,?> selector;
 		selector = creator.createSelector(DbFile.class).titled("Files", item -> item.getFiles(),
 			(item, files) -> item.setFiles((List<DbFile>) files));
-		vBox.getChildren().add(selector.getNode());
+		vBox.getChildren().add(selector.getParentNode());
 		
 		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
 		

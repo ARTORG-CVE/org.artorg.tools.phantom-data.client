@@ -64,23 +64,20 @@ public abstract class PropertyUI<
 	public FxFactory<T> createEditFactory() {
 		ItemEditor<T> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
-		PropertyNode<T, ?> propertyNode;
 
-		List<PropertyEntry> generalProperties = new ArrayList<>();
-		propertyNode = creator.createComboBox(PropertyField.class).of(
+		List<PropertyEntry> entries = new ArrayList<>();
+		creator.createComboBox(PropertyField.class).of(
 			(item, value) -> item.setPropertyField(value),
-			item -> item.getPropertyField(), p -> p.getName());
-		generalProperties
-			.add(new PropertyEntry("Property Field", propertyNode.getNode()));
+			item -> item.getPropertyField(), p -> p.getName()).addLabeled("Property field", entries);
+		
 
 		Node node = createValueNode();
-		propertyNode = creator.createNode((item, value) -> item.setValue(value),
+		creator.createNode((item, value) -> item.setValue(value),
 			item -> item.getValue(), item -> getDefaultValue(), node,
 			value -> setValueToNode(node, value),
-			() -> getValueFromNode(node), () -> setValueToNode(node, getDefaultValue()));
-		generalProperties.add(new PropertyEntry("Value", propertyNode.getNode()));
+			() -> getValueFromNode(node), () -> setValueToNode(node, getDefaultValue())).addLabeled("Value", entries);
 		TitledPropertyPane generalPane =
-			new TitledPropertyPane(generalProperties, "General");
+			new TitledPropertyPane(entries, "General");
 		vBox.getChildren().add(generalPane);
 
 		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
