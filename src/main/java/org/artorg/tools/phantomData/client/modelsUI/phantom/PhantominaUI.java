@@ -6,11 +6,9 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
-import org.artorg.tools.phantomData.client.editor.FxFactory;
+import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
-import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.editor2.ItemEditor;
-import org.artorg.tools.phantomData.client.editor2.PropertyNode;
+import org.artorg.tools.phantomData.client.editor.PropertyNode;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
@@ -23,6 +21,7 @@ import org.artorg.tools.phantomData.server.util.FxUtil;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 
 public class PhantominaUI extends UIEntity<Phantomina> {
@@ -67,7 +66,7 @@ public class PhantominaUI extends UIEntity<Phantomina> {
 	}
 
 	@Override
-	public FxFactory<Phantomina> createEditFactory() {
+	public ItemEditor<Phantomina> createEditFactory() {
 		ItemEditor<Phantomina> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
 		List<PropertyEntry> entries = new ArrayList<>();
@@ -111,7 +110,7 @@ public class PhantominaUI extends UIEntity<Phantomina> {
 		comboBoxSpecial.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> updateId.run());
 
-		TitledPropertyPane generalPane = new TitledPropertyPane(entries, "General");
+		TitledPane generalPane = creator.createTitledPane(entries, "General");
 		vBox.getChildren().add(generalPane);
 
 		PropertyNode<Phantomina, ?> selector;

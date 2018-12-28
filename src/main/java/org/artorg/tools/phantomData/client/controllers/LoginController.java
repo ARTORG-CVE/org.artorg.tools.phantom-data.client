@@ -1,7 +1,7 @@
 package org.artorg.tools.phantomData.client.controllers;
 
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
-import org.artorg.tools.phantomData.client.editor2.ItemEditor;
+import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.scene.control.VGridBoxPane;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
 

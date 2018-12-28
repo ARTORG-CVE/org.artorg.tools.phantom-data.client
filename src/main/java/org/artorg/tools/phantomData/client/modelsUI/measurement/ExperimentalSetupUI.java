@@ -5,17 +5,16 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.FxFactory;
+import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
-import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.editor2.ItemEditor;
-import org.artorg.tools.phantomData.client.editor2.PropertyNode;
+import org.artorg.tools.phantomData.client.editor.PropertyNode;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
 import org.artorg.tools.phantomData.server.models.measurement.ExperimentalSetup;
 import org.artorg.tools.phantomData.server.util.FxUtil;
 
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 
 public class ExperimentalSetupUI extends UIEntity<ExperimentalSetup> {
@@ -47,7 +46,7 @@ public class ExperimentalSetupUI extends UIEntity<ExperimentalSetup> {
 	}
 
 	@Override
-	public FxFactory<ExperimentalSetup> createEditFactory() {
+	public ItemEditor<ExperimentalSetup> createEditFactory() {
 		ItemEditor<ExperimentalSetup> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
 		
@@ -55,7 +54,7 @@ public class ExperimentalSetupUI extends UIEntity<ExperimentalSetup> {
 		creator.createTextField((item,value) -> item.setShortName(value), item -> item.getShortName()).addLabeled("Short name", entries);
 		creator.createTextField((item,value) -> item.setLongName(value), item -> item.getLongName()).addLabeled("Long name", entries);
 		creator.createTextField((item,value) -> item.setDescription(value), item -> item.getDescription()).addLabeled("Description", entries);
-		TitledPropertyPane generalPane = new TitledPropertyPane(entries, "General");
+		TitledPane generalPane = creator.createTitledPane(entries, "General");
 		vBox.getChildren().add(generalPane);
 		
 		PropertyNode<ExperimentalSetup,?> selector;

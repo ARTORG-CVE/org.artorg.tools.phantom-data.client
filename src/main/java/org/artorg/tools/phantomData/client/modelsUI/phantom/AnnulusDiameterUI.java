@@ -5,10 +5,8 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.FxFactory;
+import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
-import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.editor2.ItemEditor;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
@@ -16,6 +14,7 @@ import org.artorg.tools.phantomData.server.util.FxUtil;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 
 public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
@@ -47,7 +46,7 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 	}
 
 	@Override
-	public FxFactory<AnnulusDiameter> createEditFactory() {
+	public ItemEditor<AnnulusDiameter> createEditFactory() {
 		ItemEditor<AnnulusDiameter> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
 
@@ -66,7 +65,7 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 				item -> Double.toString(item.getValue()),
 				(item, value) -> item.setValue(Double.valueOf(value)))
 				.addLabeled("Diameter [mm]", generalProperties);
-		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		TitledPane generalPane = creator.createTitledPane(generalProperties, "General");
 		vBox.getChildren().add(generalPane);
 
 		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));

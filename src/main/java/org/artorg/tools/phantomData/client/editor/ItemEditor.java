@@ -1,4 +1,4 @@
-package org.artorg.tools.phantomData.client.editor2;
+package org.artorg.tools.phantomData.client.editor;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.editor.FxFactory;
-import org.artorg.tools.phantomData.client.editor.select.DbTableViewSelector;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.Identifiable;
 
@@ -36,7 +34,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 
-public class ItemEditor<T> extends AnchorPane implements FxFactory<T> {
+public class ItemEditor<T> extends AnchorPane {
 	private final Class<T> itemClass;
 	private final Button applyButton;
 	private final ICrudConnector<T> connector;
@@ -65,9 +63,7 @@ public class ItemEditor<T> extends AnchorPane implements FxFactory<T> {
 	
 	public void onEditPutSuccessful(T item) {}
 	
-
-	@Override
-	public final Node create(T item) {
+	public final void create(T item) {
 		onCreateInit();
 		applyButton.setOnAction(event -> {
 			FxUtil.runNewSingleThreaded(() -> {
@@ -95,11 +91,9 @@ public class ItemEditor<T> extends AnchorPane implements FxFactory<T> {
 		});
 		applyButton.setText("Create");
 		nodes.stream().forEach(node -> node.entityToNodeAdd(item));
-		return getGraphic();
 	}
-
-	@Override
-	public final Node edit(T item) {
+	
+	public final void edit(T item) {
 		onEditInit(item);
 		applyButton.setOnAction(event -> {
 			nodes.stream().forEach(node -> node.nodeToEntity(item));
@@ -109,14 +103,20 @@ public class ItemEditor<T> extends AnchorPane implements FxFactory<T> {
 		});
 		applyButton.setText("Save");
 		nodes.stream().forEach(node -> node.entityToNodeEdit(item));
-		return getGraphic();
+	}
+	
+	public final void create() {
+		create(null);
 	}
 
-	@Override
-	public final Node create() {
-		return create(null);
+	public TitledPane createTitledPane(List<PropertyEntry> entries, String title) {
+		TitledPane titledPane = new TitledPane();
+		PropertyGridPane gridPane = new PropertyGridPane(entries);
+		titledPane.setText(title);
+    	titledPane.setContent(gridPane);
+    	return titledPane;
 	}
-
+	
 	public AnchorPane createButtonPane(Button button) {
 		button.setPrefHeight(25.0);
 		button.setMaxWidth(Double.MAX_VALUE);
@@ -477,11 +477,6 @@ public class ItemEditor<T> extends AnchorPane implements FxFactory<T> {
 
 	public List<PropertyNode<T, ?>> getNodes() {
 		return nodes;
-	}
-
-	@Override
-	public Node getGraphic() {
-		return this;
 	}
 
 }

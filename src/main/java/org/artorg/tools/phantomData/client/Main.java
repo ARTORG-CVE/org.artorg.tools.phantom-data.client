@@ -4,9 +4,12 @@ import static org.artorg.tools.phantomData.client.boot.DatabaseInitializer.initD
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.client.beans.EntityBeanInfos;
+import javax.persistence.Entity;
+
 import org.artorg.tools.phantomData.client.boot.DatabaseInitializer;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
@@ -21,6 +24,7 @@ import org.artorg.tools.phantomData.server.BootApplication;
 import org.artorg.tools.phantomData.server.boot.ConsoleFrame;
 import org.artorg.tools.phantomData.server.boot.ServerBooter;
 import org.artorg.tools.phantomData.server.boot.StartupProgressFrame;
+import org.artorg.tools.phantomData.server.model.DbPersistent;
 import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.server.models.base.*;
 import org.artorg.tools.phantomData.server.models.base.person.*;
@@ -39,19 +43,25 @@ import javafx.stage.Stage;
 public class Main extends DesktopFxBootApplication {
 	private static ServerBooter booter;
 	private static final Reflections reflections = new Reflections("org.artorg.tools.phantomData");
-	private static final EntityBeanInfos beanInfos = new EntityBeanInfos(reflections);
 	private static Class<?> mainFxClass;
 	private static boolean started;
 	private static Scene scene;
 	private static Stage stage;
 	private static MainController mainController;
+	private static final Set<Class<?>> entityClasses;
 	private static final Map<Class<?>, UIEntity<?>> uiEntities;
 
 	static {
 		mainFxClass = null;
 		started = false;
 
+		entityClasses = reflections.getSubTypesOf(DbPersistent.class).stream()
+				.filter(c -> c.isAnnotationPresent(Entity.class))
+				.collect(Collectors.toSet());
+		
 		uiEntities = new HashMap<>();
+		
+		
 	}
 
 	public static void main(String[] args) {
@@ -145,7 +155,7 @@ public class Main extends DesktopFxBootApplication {
 		FxUtil.addIcon(stage);
 
 		// speed optimization
-		Connectors.createConnectors(beanInfos.getEntityClasses());
+		Connectors.createConnectors(getEntityClasses());
 
 		Logger.setDefaultOut(getBooter().getConsoleDiverter().getOut());
 		Logger.setDefaultErr(getBooter().getConsoleDiverter().getErr());
@@ -187,10 +197,6 @@ public class Main extends DesktopFxBootApplication {
 		Main.booter = booter;
 	}
 
-	public static EntityBeanInfos getBeaninfos() {
-		return beanInfos;
-	}
-
 	public static void setMainFxClass(Class<?> mainClass) {
 		if (Main.mainFxClass != null) throw new UnsupportedOperationException();
 		Main.mainFxClass = mainClass;
@@ -223,6 +229,10 @@ public class Main extends DesktopFxBootApplication {
 
 	public static MainController getMainController() {
 		return mainController;
+	}
+	
+	public static Set<Class<?>> getEntityClasses() {
+		return entityClasses;
 	}
 
 }

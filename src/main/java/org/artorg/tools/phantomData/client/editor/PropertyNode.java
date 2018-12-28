@@ -1,12 +1,10 @@
-package org.artorg.tools.phantomData.client.editor2;
+package org.artorg.tools.phantomData.client.editor;
 
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -137,8 +135,6 @@ public abstract class PropertyNode<T,U> {
 		this.parentNode = node;
 		return this;
 	}
-	
-	
 
 	public Node getControlNode() {
 		return controlNode;
@@ -147,9 +143,5 @@ public abstract class PropertyNode<T,U> {
 	public Class<T> getItemClass() {
 		return itemClass;
 	}
-
-//	public Class<?> getValueClass() {
-//		return valueClass;
-//	}
 
 }

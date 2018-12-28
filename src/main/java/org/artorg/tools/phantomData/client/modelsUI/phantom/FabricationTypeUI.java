@@ -5,15 +5,14 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.FxFactory;
+import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
-import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.editor2.ItemEditor;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.util.FxUtil;
 
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 
 public class FabricationTypeUI extends UIEntity<FabricationType> {
@@ -45,7 +44,7 @@ public class FabricationTypeUI extends UIEntity<FabricationType> {
 	}
 
 	@Override
-	public FxFactory<FabricationType> createEditFactory() {
+	public ItemEditor<FabricationType> createEditFactory() {
 		ItemEditor<FabricationType> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
 
@@ -54,8 +53,7 @@ public class FabricationTypeUI extends UIEntity<FabricationType> {
 			item -> item.getShortcut()).addLabeled("Shortcut", entries);
 		creator.createTextField((item, value) -> item.setValue(value),
 			item -> item.getValue()).addLabeled("Name", entries);
-		TitledPropertyPane generalPane =
-			new TitledPropertyPane(entries, "General");
+		TitledPane generalPane = creator.createTitledPane(entries, "General");
 		vBox.getChildren().add(generalPane);
 
 		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));

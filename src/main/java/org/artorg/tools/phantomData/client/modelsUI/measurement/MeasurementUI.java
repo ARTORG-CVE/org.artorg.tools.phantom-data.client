@@ -7,11 +7,9 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.FxFactory;
+import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
-import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.editor2.ItemEditor;
-import org.artorg.tools.phantomData.client.editor2.PropertyNode;
+import org.artorg.tools.phantomData.client.editor.PropertyNode;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
@@ -21,6 +19,7 @@ import org.artorg.tools.phantomData.server.models.measurement.Measurement;
 import org.artorg.tools.phantomData.server.models.measurement.Project;
 import org.artorg.tools.phantomData.server.util.FxUtil;
 
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 
 public class MeasurementUI extends UIEntity<Measurement> {
@@ -61,7 +60,7 @@ public class MeasurementUI extends UIEntity<Measurement> {
 	}
 
 	@Override
-	public FxFactory<Measurement> createEditFactory() {
+	public ItemEditor<Measurement> createEditFactory() {
 		ItemEditor<Measurement> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
 
@@ -79,7 +78,7 @@ public class MeasurementUI extends UIEntity<Measurement> {
 						(item, value) -> item.setExperimentalSetup(value))
 				.setMapper(p -> p.getShortName())
 				.addLabeled("Experimental Setup", generalProperties);
-		TitledPropertyPane generalPane = new TitledPropertyPane(generalProperties, "General");
+		TitledPane generalPane = creator.createTitledPane(generalProperties, "General");
 		vBox.getChildren().add(generalPane);
 
 		PropertyNode<Measurement, ?> selector;

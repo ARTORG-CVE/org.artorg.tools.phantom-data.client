@@ -1,13 +1,13 @@
 package org.artorg.tools.phantomData.client.scene.control.treeTableView;
 
-import org.artorg.tools.phantomData.client.beans.DbNode;
+import org.artorg.tools.phantomData.client.beans.NamedTreeItem;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.text.Text;
 
-public class DbTreeTableColumn extends TreeTableColumn<DbNode, String> {
+public class DbTreeTableColumn extends TreeTableColumn<NamedTreeItem, String> {
 	private double minAutosizeWidth = 0.0;
 	private double prefAutosizeWidth = 0.0;
 	private double maxAutosizeWidth = Double.MAX_VALUE;

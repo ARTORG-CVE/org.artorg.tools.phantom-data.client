@@ -8,11 +8,9 @@ import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.editor.FxFactory;
+import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
-import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.editor2.ItemEditor;
-import org.artorg.tools.phantomData.client.editor2.PropertyNode;
+import org.artorg.tools.phantomData.client.editor.PropertyNode;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.FxUtil;
@@ -28,6 +26,7 @@ import org.artorg.tools.phantomData.server.models.phantom.Special;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 
 public class PhantomUI extends UIEntity<Phantom> {
@@ -88,7 +87,7 @@ public class PhantomUI extends UIEntity<Phantom> {
 	}
 
 	@Override
-	public FxFactory<Phantom> createEditFactory() {
+	public ItemEditor<Phantom> createEditFactory() {
 		ItemEditor<Phantom> creator = new ItemEditor<Phantom>(getItemClass()) {
 
 			@Override
@@ -161,7 +160,7 @@ public class PhantomUI extends UIEntity<Phantom> {
 		comboBoxSpecial.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> updateId.run());
 
-		TitledPropertyPane generalPane = new TitledPropertyPane(entries, "General");
+		TitledPane generalPane = creator.createTitledPane(entries, "General");
 		vBox.getChildren().add(generalPane);
 
 		PropertyNode<Phantom, ?> selector;

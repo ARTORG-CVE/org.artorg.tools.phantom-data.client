@@ -6,10 +6,8 @@ import java.util.UUID;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.FxFactory;
+import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
-import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
-import org.artorg.tools.phantomData.client.editor2.ItemEditor;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
@@ -17,6 +15,7 @@ import org.artorg.tools.phantomData.server.model.DbPersistent;
 import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 
 import javafx.scene.Node;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 
 public abstract class PropertyUI<T extends AbstractProperty<T, VALUE> & DbPersistent<T, UUID>,
@@ -58,7 +57,7 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE> & DbPersis
 	}
 
 	@Override
-	public FxFactory<T> createEditFactory() {
+	public ItemEditor<T> createEditFactory() {
 		ItemEditor<T> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
 
@@ -72,7 +71,7 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE> & DbPersis
 				item -> getDefaultValue(), node, value -> setValueToNode(node, value),
 				() -> getValueFromNode(node), () -> setValueToNode(node, getDefaultValue()))
 				.addLabeled("Value", entries);
-		TitledPropertyPane generalPane = new TitledPropertyPane(entries, "General");
+		TitledPane generalPane = creator.createTitledPane(entries, "General");
 		vBox.getChildren().add(generalPane);
 
 		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));

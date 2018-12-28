@@ -13,7 +13,7 @@ import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.CssGlyph;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
-import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
+import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
 import org.artorg.tools.phantomData.server.models.base.Note;
@@ -401,15 +401,11 @@ public class MainController extends StackPane {
 	}
 
 	private Tab createTreeTableViewTab(Class<?> itemClass) {
-		ProTreeTableView<?> table = createTreeTable(itemClass);
+		DbTreeTableView<?> table = Main.getUIEntity(itemClass).createProTreeTableView();
 		Tab tab = new Tab(table.getTable().getTableName());
 		tab.setContent(table);
 		tab.setText(table.getTable().getTableName());
 		return tab;
-	}
-
-	private ProTreeTableView<?> createTreeTable(Class<?> itemClass) {
-		return Main.getUIEntity(itemClass).createDbTreeTableView();
 	}
 
 	public void openTableTab(int row, ProTableView<?> table, String name) {

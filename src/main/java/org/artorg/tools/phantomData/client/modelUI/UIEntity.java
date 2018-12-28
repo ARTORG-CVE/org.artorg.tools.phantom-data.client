@@ -14,22 +14,22 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.client.beans.DbNode;
+import org.artorg.tools.phantomData.client.beans.NamedTreeItem;
+import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.column.OptionalColumnCreator;
+import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
-import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
 import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
 import org.artorg.tools.phantomData.server.model.AbstractPropertifiedEntity;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
-import org.artorg.tools.phantomData.client.editor.FxFactory;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -37,6 +37,11 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 
 public abstract class UIEntity<T> {
+	private final EntityBeanInfo<T> entityBeanInfo;
+	
+	{
+		entityBeanInfo = new EntityBeanInfo<>(getItemClass());
+	}
 
 	public abstract Class<T> getItemClass();
 
@@ -44,7 +49,7 @@ public abstract class UIEntity<T> {
 
 	public abstract List<AbstractColumn<T, ? extends Object>> createColumns(Table<T> table, List<T> items);
 
-	public abstract FxFactory<T> createEditFactory();
+	public abstract ItemEditor<T> createEditFactory();
 
 	public Table<T> createTableBase() {
 		long startTime = System.currentTimeMillis();
@@ -113,7 +118,7 @@ public abstract class UIEntity<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public ProTableView<T> createProTableView(List<TreeItem<DbNode>> treeItems) {
+	public ProTableView<T> createProTableView(List<TreeItem<NamedTreeItem>> treeItems) {
 		ProTableView<T> tableView = new ProTableView<>(getItemClass());
 		ObservableList<T> items = FXCollections.observableArrayList();
 		for (int i = 0; i < treeItems.size(); i++)
@@ -130,7 +135,7 @@ public abstract class UIEntity<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public DbTableView<T> createDbTableView(List<TreeItem<DbNode>> treeItems) {
+	public DbTableView<T> createDbTableView(List<TreeItem<NamedTreeItem>> treeItems) {
 		DbTableView<T> tableView = new DbTableView<>(getItemClass());
 		ObservableList<T> items = FXCollections.observableArrayList();
 		for (int i = 0; i < treeItems.size(); i++)
@@ -146,16 +151,15 @@ public abstract class UIEntity<T> {
 		return tableView;
 	}
 
-	public ProTreeTableView<T> createProTreeTableView(List<T> items) {
-		ProTreeTableView<T> treeTableView = new ProTreeTableView<>(getItemClass());
-		treeTableView.setItems(items);
+	
+	public DbTreeTableView<T> createProTreeTableView() {
+		DbTreeTableView<T> treeTableView = new DbTreeTableView<>(getItemClass());
 		return treeTableView;
 	}
-
-	public DbTreeTableView<T> createDbTreeTableView() {
+	
+	public DbTreeTableView<T> createProTreeTableView(List<T> items) {
 		DbTreeTableView<T> treeTableView = new DbTreeTableView<>(getItemClass());
-		treeTableView.reload();
-		treeTableView.initTable();
+		treeTableView.setItems(items);
 		return treeTableView;
 	}
 	
@@ -236,6 +240,10 @@ public abstract class UIEntity<T> {
 					(path, value) -> path.setValue(fromStringFun.apply((String) value)), ""));
 		});
 
+	}
+
+	public EntityBeanInfo<T> getEntityBeanInfo() {
+		return entityBeanInfo;
 	}
 
 }

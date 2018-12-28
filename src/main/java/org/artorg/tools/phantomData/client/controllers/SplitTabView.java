@@ -18,11 +18,11 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
-import org.artorg.tools.phantomData.client.beans.DbNode;
+import org.artorg.tools.phantomData.client.beans.NamedTreeItem;
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.editor.FxFactory;
+import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.SmartSplitTabPane;
@@ -30,7 +30,6 @@ import org.artorg.tools.phantomData.client.scene.control.SmartTabPane;
 import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
-import org.artorg.tools.phantomData.client.scene.control.treeTableView.ProTreeTableView;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
@@ -120,9 +119,8 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 	private <T> void changeToTreeTableView(ProTableView<T> tableView) {
 		List<T> items = tableView.getSelectionModel().getSelectedItems();
-		ProTreeTableView<T> treeTableView =
-				Main.getUIEntity(tableView.getItemClass()).createDbTreeTableView();
-		treeTableView.setItems(items);
+		DbTreeTableView<T> treeTableView =
+				Main.getUIEntity(tableView.getItemClass()).createProTreeTableView(items);
 		Tab tab;
 		tab = findTabByContent(tableTabPane.getTabPane(), tableView);
 		if (controlDown) tab = new Tab(tab.getText());
@@ -131,9 +129,8 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 	private <T> void openTreeTableViewBelow(ProTableView<T> tableView) {
 		List<T> items = tableView.getSelectionModel().getSelectedItems();
-		ProTreeTableView<T> treeTableView =
-				Main.getUIEntity(tableView.getItemClass()).createDbTreeTableView();
-		treeTableView.setItems(items);
+		DbTreeTableView<T> treeTableView =
+				Main.getUIEntity(tableView.getItemClass()).createProTreeTableView(items);
 
 		SplitTabView splitTabView = twinGetter.apply(index + 1);
 
@@ -145,12 +142,12 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		setTab(splitTabView.tableTabPane.getTabPane(), tab, treeTableView);
 	}
 
-	private <T> void changeToTableView(ProTreeTableView<T> tableView) {
+	private <T> void changeToTableView(DbTreeTableView<T> tableView) {
 //		ProTableView<T> treeTableView = (ProTableView<T>)TableViewFactory.createTableView(
 //			tableView.getItemClass(), DbTable.class, DbTableView.class,
 //			tableView.getSelectionModel().getSelectedItems());
 
-		List<TreeItem<DbNode>> treeItems = tableView.getSelectionModel().getSelectedItems();
+		List<TreeItem<NamedTreeItem>> treeItems = tableView.getSelectionModel().getSelectedItems();
 		ProTableView<T> treeTableView =
 				Main.getUIEntity(tableView.getItemClass()).createDbTableView(treeItems);
 
@@ -178,7 +175,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 		if (node instanceof ProTableView) setTableTab(tab, (ProTableView<T>) node);
 
-		if (node instanceof ProTreeTableView) setTreeTableTab(tab, (ProTreeTableView<T>) node);
+		if (node instanceof DbTreeTableView) setTreeTableTab(tab, (DbTreeTableView<T>) node);
 	}
 
 	private <T> void setTableTab(Tab tab, ProTableView<T> tableViewSpring) {
@@ -201,10 +198,10 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 		menuItem = new MenuItem("Add item");
 		menuItem.setOnAction(event -> {
-			FxFactory<T> controller =
+			ItemEditor<T> controller =
 					Main.getUIEntity(tableViewSpring.getItemClass()).createEditFactory();
-			Node node = controller.create();
-			addTab(itemAddEditTabPane.getTabPane(), node,
+			controller.create();
+			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Add " + tableViewSpring.getTable().getItemName());
 		});
 		contextMenu.getItems().addAll(menuItem);
@@ -220,7 +217,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 	}
 
-	private <T> void setTreeTableTab(Tab tab, ProTreeTableView<T> view) {
+	private <T> void setTreeTableTab(Tab tab, DbTreeTableView<T> view) {
 		view.setRowFactory(tableView -> createTreeTableViewContext(view, tableView));
 
 		ContextMenu contextMenu = new ContextMenu();
@@ -228,16 +225,15 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 		menuItem = new MenuItem("Add item");
 		menuItem.setOnAction(event -> {
-			FxFactory<?> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
-			Node node = controller.create();
-			addTab(itemAddEditTabPane.getTabPane(), node, "Add " + view.getTable().getItemName());
+			ItemEditor<?> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
+			controller.create();
+			addTab(itemAddEditTabPane.getTabPane(), controller,
+					"Add " + view.getTable().getItemName());
 		});
 		contextMenu.getItems().addAll(menuItem);
 
 		menuItem = new MenuItem("Reload");
-		menuItem.setOnAction(event -> {
-			if (view instanceof DbTreeTableView) ((DbTreeTableView<?>) view).reload();
-		});
+		menuItem.setOnAction(event -> view.reload());
 		contextMenu.getItems().addAll(menuItem);
 
 		view.setContextMenu(contextMenu);
@@ -320,16 +316,18 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		});
 
 		addMenuItem(rowMenu, "Edit item", event -> {
-			FxFactory<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
-			Node node = controller.edit(row.getItem());
+			ItemEditor<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
+			controller.edit(row.getItem());
 
-			addTab(itemAddEditTabPane.getTabPane(), node, "Edit " + view.getTable().getItemName());
+			addTab(itemAddEditTabPane.getTabPane(), controller,
+					"Edit " + view.getTable().getItemName());
 		});
 
 		addMenuItem(rowMenu, "Add item", event -> {
-			FxFactory<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
-			Node node = controller.create(row.getItem());
-			addTab(itemAddEditTabPane.getTabPane(), node, "Add " + view.getTable().getItemName());
+			ItemEditor<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
+			controller.create(row.getItem());
+			addTab(itemAddEditTabPane.getTabPane(), controller,
+					"Add " + view.getTable().getItemName());
 		});
 
 		addMenuItem(rowMenu, "Delete", event -> {
@@ -429,7 +427,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 	@SuppressWarnings("unchecked")
 	private <T, U> U getValue(T item, String name) {
-		EntityBeanInfo beanInfo = Main.getBeaninfos().getEntityBeanInfo(item.getClass());
+		EntityBeanInfo<T> beanInfo = Main.getUIEntity((Class<T>)item.getClass()).getEntityBeanInfo();
 		List<PropertyDescriptor> descriptors = beanInfo.getAllPropertyDescriptors().stream()
 				.filter(d -> d.getName().equals("files")).collect(Collectors.toList());
 
@@ -446,18 +444,16 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		return value;
 	}
 
-	private <T> TreeTableRow<DbNode> createTreeTableViewContext(ProTreeTableView<T> view,
-			TreeTableView<DbNode> tableView) {
-		final TreeTableRow<DbNode> row = new TreeTableRow<DbNode>();
+	private <T> TreeTableRow<NamedTreeItem> createTreeTableViewContext(DbTreeTableView<T> view,
+			TreeTableView<NamedTreeItem> tableView) {
+		final TreeTableRow<NamedTreeItem> row = new TreeTableRow<NamedTreeItem>();
 		final ContextMenu rowMenu = new ContextMenu();
 
 		addMenuItem(rowMenu, "Show Table View", event -> {
 			changeToTableView(view);
 		});
 
-		addMenuItem(rowMenu, "Reload", event -> {
-			if (view instanceof DbTreeTableView) ((DbTreeTableView<?>) view).reload();
-		});
+		addMenuItem(rowMenu, "Reload", event -> view.reload());
 
 		// only display context menu for non-null items:
 		row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
