@@ -40,6 +40,7 @@ public class ItemEditor<T> extends AnchorPane {
 	private final Button applyButton;
 	private final ICrudConnector<T> connector;
 	private final List<PropertyNode<T, ?>> nodes;
+	private T item;
 
 	{
 		nodes = new ArrayList<>();
@@ -51,7 +52,7 @@ public class ItemEditor<T> extends AnchorPane {
 		this.connector = (ICrudConnector<T>) Connectors.get(itemClass);
 	}
 
-	public void onCreateInit() {}
+	public void onCreateInit(T item) {}
 
 	public void onCreateBeforePost(T item) {}
 
@@ -65,8 +66,9 @@ public class ItemEditor<T> extends AnchorPane {
 
 	public void onEditPutSuccessful(T item) {}
 
-	public final void create(T item) {
-		onCreateInit();
+	public final void createItem(T item) {
+		this.item = item;
+		onCreateInit(item);
 		applyButton.setOnAction(event -> {
 			FxUtil.runNewSingleThreaded(() -> {
 				T item2 = item;
@@ -82,6 +84,7 @@ public class ItemEditor<T> extends AnchorPane {
 				try {
 					onCreateBeforePost(item3);
 					if (getConnector().create(item3)) {
+						this.item = item3;
 						onCreatePostSuccessful(item3);
 						Platform.runLater(
 								() -> nodes.stream().forEach(node -> node.entityToNodeAdd(item3)));
@@ -95,20 +98,35 @@ public class ItemEditor<T> extends AnchorPane {
 		nodes.stream().forEach(node -> node.entityToNodeAdd(item));
 	}
 
-	public final void edit(T item) {
+	public final void editItem(T item) {
+		this.item = item;
 		onEditInit(item);
 		applyButton.setOnAction(event -> {
 			onEditBeforApplyChanges(item);
 			nodes.stream().forEach(node -> node.nodeToEntity(item));
 			onEditBeforePut(item);
-			if (getConnector().update(item)) onEditPutSuccessful(item);
+			if (getConnector().update(item)) {
+				this.item = item;
+				onEditPutSuccessful(item);
+			}
 		});
 		applyButton.setText("Save");
 		nodes.stream().forEach(node -> node.entityToNodeEdit(item));
 	}
 
-	public final void create() {
-		create(null);
+	public final void createItem() {
+		createItem(null);
+	}
+
+	public <U> void addNodes(ItemEditor<U> subEditor) {
+		Collection<PropertyNode<T,?>> list = subEditor.getNodes().stream()
+				.map(propertyNode -> propertyNode.map(itemClass, item -> subEditor.getItem()))
+				.collect(Collectors.toList());
+		nodes.addAll(list);
+	}
+
+	public void add(PropertyNode<T, ?> propertyNode) {
+		nodes.add(propertyNode);
 	}
 
 	public TitledPane createTitledPane(List<PropertyEntry> entries, String title) {
@@ -178,7 +196,7 @@ public class ItemEditor<T> extends AnchorPane {
 		private final Node controlNode;
 		private final Function<Node, String> getter;
 		private final BiConsumer<Node, String> setter;
-		
+
 		public StringPropertyNode(Class<T> itemClass, Node controlNode,
 				Function<Node, String> getter, BiConsumer<Node, String> setter) {
 			super(itemClass, controlNode);
@@ -191,10 +209,10 @@ public class ItemEditor<T> extends AnchorPane {
 			setDefaultSetterRunnable(() -> setter.accept(controlNode, defaultValue));
 			return this;
 		}
-		
+
 		@Override
 		protected void defaultSetterRunnableImpl() {
-			setter.accept(controlNode,"");
+			setter.accept(controlNode, "");
 		}
 
 		@Override
@@ -289,7 +307,9 @@ public class ItemEditor<T> extends AnchorPane {
 		}
 
 		public ComboBoxPropertyNode of(Function<T, U> getter, BiConsumer<T, U> setter) {
-			createDbComboBox(controlNode, subItemClass, o -> o.toString());
+			List<U> items = Connectors.get(subItemClass).readAllAsList();
+			controlNode.setItems(FXCollections.observableList(items));
+			FxUtil.setComboBoxCellFactory(controlNode, o -> o.toString());
 
 			ComboBoxPropertyNode propertyNode = new ComboBoxPropertyNode(itemClass, controlNode) {
 
@@ -334,14 +354,6 @@ public class ItemEditor<T> extends AnchorPane {
 			return propertyNode;
 		}
 
-	}
-
-	public static <U> void createDbComboBox(ComboBox<U> comboBox, Class<U> itemClass,
-			Function<U, String> mapper) {
-		ICrudConnector<U> connector = (ICrudConnector<U>) Connectors.get(itemClass);
-		List<U> items = connector.readAllAsStream().distinct().collect(Collectors.toList());
-		comboBox.setItems(FXCollections.observableList(items));
-		FxUtil.setComboBoxCellFactory(comboBox, mapper);
 	}
 
 	protected <U> void selectComboBoxItem(ComboBox<U> comboBox, U item) {
@@ -497,6 +509,10 @@ public class ItemEditor<T> extends AnchorPane {
 
 	public List<PropertyNode<T, ?>> getNodes() {
 		return nodes;
+	}
+
+	public T getItem() {
+		return item;
 	}
 
 }

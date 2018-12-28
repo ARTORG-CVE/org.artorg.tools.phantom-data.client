@@ -200,7 +200,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		menuItem.setOnAction(event -> {
 			ItemEditor<T> controller =
 					Main.getUIEntity(tableViewSpring.getItemClass()).createEditFactory();
-			controller.create();
+			controller.createItem();
 			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Add " + tableViewSpring.getTable().getItemName());
 		});
@@ -226,7 +226,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		menuItem = new MenuItem("Add item");
 		menuItem.setOnAction(event -> {
 			ItemEditor<?> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
-			controller.create();
+			controller.createItem();
 			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Add " + view.getTable().getItemName());
 		});
@@ -317,7 +317,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 		addMenuItem(rowMenu, "Edit item", event -> {
 			ItemEditor<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
-			controller.edit(row.getItem());
+			controller.editItem(row.getItem());
 
 			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Edit " + view.getTable().getItemName());
@@ -325,7 +325,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 		addMenuItem(rowMenu, "Add item", event -> {
 			ItemEditor<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
-			controller.create(row.getItem());
+			controller.createItem(row.getItem());
 			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Add " + view.getTable().getItemName());
 		});

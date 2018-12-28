@@ -17,13 +17,13 @@ import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
 import org.artorg.tools.phantomData.server.model.Identifiable;
 
-public class DbTableViewSelector<F, U> extends TableViewSelector<U> {
+public class DbTableViewSelector<T, U> extends TableViewSelector<U> {
 
 	private static final Map<Class<?>,
 		Map<Class<?>, Function<Object, Collection<Object>>>> subItemGetterMap;
 	private static final Map<Class<?>,
 		Map<Class<?>, Boolean>> containsCollectionSetterMap;
-	private final Class<F> parentItemClass;
+	private final Class<T> parentItemClass;
 	private final Class<U> subItemClass;
 
 	static {
@@ -32,7 +32,7 @@ public class DbTableViewSelector<F, U> extends TableViewSelector<U> {
 		containsCollectionSetterMap = new HashMap<>();
 	}
 
-	public DbTableViewSelector(Class<F> parentItemClass, Class<U> subItemClass) {
+	public DbTableViewSelector(Class<T> parentItemClass, Class<U> subItemClass) {
 		super(subItemClass);
 		this.parentItemClass = parentItemClass;
 		this.subItemClass = subItemClass;
@@ -54,7 +54,7 @@ public class DbTableViewSelector<F, U> extends TableViewSelector<U> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void setItem(F item) {
+	public void setItem(T item) {
 		if (item == null) setItems(Collections.emptyList());
 
 		Function<Object, Collection<Object>> subItemGetter =
@@ -91,7 +91,7 @@ public class DbTableViewSelector<F, U> extends TableViewSelector<U> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <F, U> List<U> getSelectableItems(Class<F> parentItemClass,
+	public static <T, U> List<U> getSelectableItems(Class<T> parentItemClass,
 		Class<U> subItemClass) {
 		ICrudConnector<U> connector = Connectors.get(subItemClass);
 		List<U> items = connector.readAllAsList();

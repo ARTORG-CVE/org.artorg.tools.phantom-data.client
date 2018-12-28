@@ -44,6 +44,43 @@ public abstract class PropertyNode<T,U> {
 	
 	protected abstract void defaultSetterRunnableImpl();
 	
+	
+	public <P> PropertyNode<P,U> map(Class<P> itemClass, Function<P,T> mapper) {
+		PropertyNode<T,U> propertyNode = this;
+		return new PropertyNode<P,U>(itemClass, propertyNode.getControlNode()) {
+
+			@Override
+			protected U entityToValueEditGetterImpl(P item) {
+				 return propertyNode.getEntityToValueEditGetter().apply(mapper.apply(item));
+			}
+
+			@Override
+			protected U entityToValueAddGetterImpl(P item) {
+				return propertyNode.getEntityToValueAddGetter().apply(mapper.apply(item));
+			}
+
+			@Override
+			protected void valueToEntitySetterImpl(P item, U value) {
+				propertyNode.getValueToEntitySetter().accept(mapper.apply(item), value);
+			}
+
+			@Override
+			protected U nodeToValueGetterImpl() {
+				return propertyNode.getNodeToValueGetter().get();
+			}
+
+			@Override
+			protected void valueToNodeSetterImpl(U value) {
+				propertyNode.getValueToNodeSetter().accept(value);
+			}
+
+			@Override
+			protected void defaultSetterRunnableImpl() {
+				propertyNode.getDefaultSetterRunnable().run();
+			}
+		};
+	}
+	
 	public boolean addLabeled(String labelName, List<PropertyEntry> entries) {
 		return entries.add(toPropertyEntry(labelName));
 	}

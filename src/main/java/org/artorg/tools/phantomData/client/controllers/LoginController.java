@@ -1,10 +1,14 @@
 package org.artorg.tools.phantomData.client.controllers;
 
+import java.util.Collection;
+
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
-import org.artorg.tools.phantomData.client.editor.ItemEditor;
+import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.scene.control.VGridBoxPane;
+import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
 
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -28,7 +32,10 @@ public class LoginController extends VGridBoxPane {
 		super.addColumn(180.0);
 
 		personChoiceBox.setMaxWidth(Double.MAX_VALUE);
-		ItemEditor.createDbComboBox(personChoiceBox, Person.class, p -> p.getAcademicName());
+		Collection<Person> persons =  Connectors.get(Person.class).readAllAsSet();
+		personChoiceBox.setItems(FXCollections.observableArrayList(persons));
+		FxUtil.setComboBoxCellFactory(personChoiceBox, p -> p.getAcademicName());
+		
 		pwdField.setText("123456789");
 
 		addRow("Users", personChoiceBox);
