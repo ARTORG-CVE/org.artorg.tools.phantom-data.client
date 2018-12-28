@@ -27,6 +27,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -49,20 +50,21 @@ public class ItemEditor<T> extends AnchorPane {
 		this.itemClass = itemClass;
 		this.connector = (ICrudConnector<T>) Connectors.get(itemClass);
 	}
-	
+
 	public void onCreateInit() {}
-	
+
 	public void onCreateBeforePost(T item) {}
-	
+
 	public void onCreatePostSuccessful(T item) {}
-	
-	
+
 	public void onEditInit(T item) {}
-	
+
+	public void onEditBeforApplyChanges(T item) {}
+
 	public void onEditBeforePut(T item) {}
-	
+
 	public void onEditPutSuccessful(T item) {}
-	
+
 	public final void create(T item) {
 		onCreateInit();
 		applyButton.setOnAction(event -> {
@@ -92,19 +94,19 @@ public class ItemEditor<T> extends AnchorPane {
 		applyButton.setText("Create");
 		nodes.stream().forEach(node -> node.entityToNodeAdd(item));
 	}
-	
+
 	public final void edit(T item) {
 		onEditInit(item);
 		applyButton.setOnAction(event -> {
+			onEditBeforApplyChanges(item);
 			nodes.stream().forEach(node -> node.nodeToEntity(item));
 			onEditBeforePut(item);
-			if (getConnector().update(item))
-				onEditPutSuccessful(item);
+			if (getConnector().update(item)) onEditPutSuccessful(item);
 		});
 		applyButton.setText("Save");
 		nodes.stream().forEach(node -> node.entityToNodeEdit(item));
 	}
-	
+
 	public final void create() {
 		create(null);
 	}
@@ -113,10 +115,10 @@ public class ItemEditor<T> extends AnchorPane {
 		TitledPane titledPane = new TitledPane();
 		PropertyGridPane gridPane = new PropertyGridPane(entries);
 		titledPane.setText(title);
-    	titledPane.setContent(gridPane);
-    	return titledPane;
+		titledPane.setContent(gridPane);
+		return titledPane;
 	}
-	
+
 	public AnchorPane createButtonPane(Button button) {
 		button.setPrefHeight(25.0);
 		button.setMaxWidth(Double.MAX_VALUE);
@@ -129,20 +131,16 @@ public class ItemEditor<T> extends AnchorPane {
 		return buttonPane;
 	}
 
-	public StringPropertyNode createTextField(BiConsumer<T, String> setter,
-			Function<T, String> getter) {
+	public StringPropertyNode createTextField(Function<T, String> getter,
+			BiConsumer<T, String> setter) {
 		TextField node = new TextField();
 		return createTextField(node, getter, setter);
 	}
 
-	public StringPropertyNode createTextField(TextField node, Function<T, String> getter,
+	public StringPropertyNode createLabel(Label label, Function<T, String> getter,
 			BiConsumer<T, String> setter) {
-		StringPropertyNode propertyNode = new StringPropertyNode(itemClass, node) {
-
-			@Override
-			protected void defaultSetterRunnableImpl() {
-				node.setText("");
-			}
+		StringPropertyNode propertyNode = new StringPropertyNode(itemClass, label,
+				node -> ((Label) node).getText(), (node, value) -> ((Label) node).setText(value)) {
 
 			@Override
 			protected String entityToValueEditGetterImpl(T item) {
@@ -150,23 +148,26 @@ public class ItemEditor<T> extends AnchorPane {
 			}
 
 			@Override
-			protected String entityToValueAddGetterImpl(T item) {
-				return "";
+			protected void valueToEntitySetterImpl(T item, String value) {
+				setter.accept(item, value);
+			}
+		};
+		nodes.add(propertyNode);
+		return propertyNode;
+	}
+
+	public StringPropertyNode createTextField(TextField textField, Function<T, String> getter,
+			BiConsumer<T, String> setter) {
+		StringPropertyNode propertyNode = new StringPropertyNode(itemClass, textField,
+				node -> ((TextField) node).getText(), (node, s) -> ((TextField) node).setText(s)) {
+			@Override
+			protected String entityToValueEditGetterImpl(T item) {
+				return getter.apply(item);
 			}
 
 			@Override
 			protected void valueToEntitySetterImpl(T item, String value) {
 				setter.accept(item, value);
-			}
-
-			@Override
-			protected String nodeToValueGetterImpl() {
-				return node.getText();
-			}
-
-			@Override
-			protected void valueToNodeSetterImpl(String value) {
-				node.setText(value);
 			}
 		};
 		nodes.add(propertyNode);
@@ -174,21 +175,41 @@ public class ItemEditor<T> extends AnchorPane {
 	}
 
 	public abstract class StringPropertyNode extends PropertyNode<T, String> {
-		private final TextField controlNode;
-
-		public StringPropertyNode(Class<T> itemClass, TextField controlNode) {
+		private final Node controlNode;
+		private final Function<Node, String> getter;
+		private final BiConsumer<Node, String> setter;
+		
+		public StringPropertyNode(Class<T> itemClass, Node controlNode,
+				Function<Node, String> getter, BiConsumer<Node, String> setter) {
 			super(itemClass, controlNode);
 			this.controlNode = controlNode;
+			this.getter = getter;
+			this.setter = setter;
 		}
 
 		public StringPropertyNode setDefaultValue(String defaultValue) {
-			setDefaultSetterRunnable(() -> controlNode.setText(defaultValue));
+			setDefaultSetterRunnable(() -> setter.accept(controlNode, defaultValue));
 			return this;
+		}
+		
+		@Override
+		protected void defaultSetterRunnableImpl() {
+			setter.accept(controlNode,"");
 		}
 
 		@Override
-		public TextField getControlNode() {
-			return controlNode;
+		protected String entityToValueAddGetterImpl(T item) {
+			return "";
+		}
+
+		@Override
+		protected String nodeToValueGetterImpl() {
+			return getter.apply(controlNode);
+		}
+
+		@Override
+		protected void valueToNodeSetterImpl(String value) {
+			setter.accept(controlNode, value);
 		}
 
 	}
@@ -256,8 +277,7 @@ public class ItemEditor<T> extends AnchorPane {
 			}
 
 			public ComboBoxPropertyNode addSelectListener(ChangeListener<? super U> listener) {
-				getControlNode().getSelectionModel().selectedItemProperty()
-						.addListener(listener);
+				getControlNode().getSelectionModel().selectedItemProperty().addListener(listener);
 				return this;
 			}
 
@@ -315,7 +335,7 @@ public class ItemEditor<T> extends AnchorPane {
 		}
 
 	}
-	
+
 	public static <U> void createDbComboBox(ComboBox<U> comboBox, Class<U> itemClass,
 			Function<U, String> mapper) {
 		ICrudConnector<U> connector = (ICrudConnector<U>) Connectors.get(itemClass);

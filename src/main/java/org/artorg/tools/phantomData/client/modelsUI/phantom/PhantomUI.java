@@ -23,6 +23,8 @@ import org.artorg.tools.phantomData.server.models.phantom.Phantom;
 import org.artorg.tools.phantomData.server.models.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.models.phantom.Special;
 
+import com.google.common.base.Supplier;
+
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -88,6 +90,33 @@ public class PhantomUI extends UIEntity<Phantom> {
 
 	@Override
 	public ItemEditor<Phantom> createEditFactory() {
+		VBox vBox = new VBox();
+		List<PropertyEntry> entries = new ArrayList<>();
+		Label labelIdValue = new Label("id");
+		ComboBox<AnnulusDiameter> comboBoxAnnulusDiameter = new ComboBox<>();
+		ComboBox<FabricationType> comboBoxFabricationType = new ComboBox<>();
+		ComboBox<LiteratureBase> comboBoxLiteratureBase = new ComboBox<>();
+		ComboBox<Special> comboBoxSpecial = new ComboBox<>();
+		TextField textFieldNumber = new TextField();
+
+		Supplier<String> phantominaPidSupplier = () -> {
+			return Phantomina.createProductId(
+					comboBoxAnnulusDiameter.getSelectionModel().getSelectedItem(),
+					comboBoxFabricationType.getSelectionModel().getSelectedItem(),
+					comboBoxLiteratureBase.getSelectionModel().getSelectedItem(),
+					comboBoxSpecial.getSelectionModel().getSelectedItem());
+		};
+		Supplier<String> idSupplier = () -> {
+			String sNumber = textFieldNumber.getText();
+			int number;
+			if (sNumber.isEmpty()) number = 0;
+			else
+				number = Integer.valueOf(sNumber);
+			String phantominaProductId = phantominaPidSupplier.get();
+			return Phantom.createProductId(phantominaProductId, number);
+		};
+		Runnable updateId = () -> labelIdValue.setText(idSupplier.get());
+
 		ItemEditor<Phantom> creator = new ItemEditor<Phantom>(getItemClass()) {
 
 			@Override
@@ -97,18 +126,22 @@ public class PhantomUI extends UIEntity<Phantom> {
 			}
 
 			@Override
-			public void onEditInit(Phantom item) {
-				throw new UnsupportedOperationException();
+			public void onEditBeforApplyChanges(Phantom item) {
+				ICrudConnector<Phantomina> connector = Connectors.get(Phantomina.class);
+				List<Phantomina> phantominas = connector.readAllAsList();
+				String pid = phantominaPidSupplier.get();
+				if (!phantominas.stream().filter(p -> p.getProductId().equals(pid)).findFirst()
+						.isPresent()) {
+					Phantomina phantomina = new Phantomina(
+							comboBoxAnnulusDiameter.getSelectionModel().getSelectedItem(),
+							comboBoxFabricationType.getSelectionModel().getSelectedItem(),
+							comboBoxLiteratureBase.getSelectionModel().getSelectedItem(),
+							comboBoxSpecial.getSelectionModel().getSelectedItem());
+					connector.create(phantomina);
+					item.setPhantomina(phantomina);
+				}
 			}
 		};
-		VBox vBox = new VBox();
-		List<PropertyEntry> entries = new ArrayList<>();
-		Label labelIdValue = new Label("id");
-		ComboBox<AnnulusDiameter> comboBoxAnnulusDiameter = new ComboBox<>();
-		ComboBox<FabricationType> comboBoxFabricationType = new ComboBox<>();
-		ComboBox<LiteratureBase> comboBoxLiteratureBase = new ComboBox<>();
-		ComboBox<Special> comboBoxSpecial = new ComboBox<>();
-		TextField textFieldNumber = new TextField();
 
 		entries.add(new PropertyEntry("PID", labelIdValue));
 		creator.createComboBox(AnnulusDiameter.class, comboBoxAnnulusDiameter)
@@ -134,23 +167,10 @@ public class PhantomUI extends UIEntity<Phantom> {
 		creator.createComboBox(Manufacturing.class)
 				.of(item -> item.getManufacturing(), (item, value) -> item.setManufacturing(value))
 				.setMapper(m -> m.getName()).addLabeled("Manufacturing", entries);
-		creator.createTextField((item, value) -> item.setThickness(Float.valueOf(value)),
-				item -> Float.toString(item.getThickness()))
+		creator.createTextField(item -> Float.toString(item.getThickness()),
+				(item, value) -> item.setThickness(Float.valueOf(value)))
 				.addLabeled("Nominal thickness", entries);
 
-		Runnable updateId = () -> {
-			String sNumber = textFieldNumber.getText();
-			int number;
-			if (sNumber.isEmpty()) number = 0;
-			else
-				number = Integer.valueOf(sNumber);
-			String phantominaProductId = Phantomina.createProductId(
-					comboBoxAnnulusDiameter.getSelectionModel().getSelectedItem(),
-					comboBoxFabricationType.getSelectionModel().getSelectedItem(),
-					comboBoxLiteratureBase.getSelectionModel().getSelectedItem(),
-					comboBoxSpecial.getSelectionModel().getSelectedItem());
-			labelIdValue.setText(Phantom.createProductId(phantominaProductId, number));
-		};
 		comboBoxAnnulusDiameter.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> updateId.run());
 		comboBoxFabricationType.getSelectionModel().selectedItemProperty()

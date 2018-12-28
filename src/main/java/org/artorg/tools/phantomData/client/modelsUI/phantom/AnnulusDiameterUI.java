@@ -50,7 +50,6 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 		ItemEditor<AnnulusDiameter> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
 
-		List<PropertyEntry> generalProperties = new ArrayList<>();
 		Label labelShortcut = new Label();
 		TextField textFieldValue = new TextField();
 		textFieldValue.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -60,12 +59,14 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 			} catch (Exception e) {}
 		});
 
-		generalProperties.add(new PropertyEntry("Shortcut", labelShortcut));
-		creator.createTextField(textFieldValue,
-				item -> Double.toString(item.getValue()),
+		List<PropertyEntry> entries = new ArrayList<>();
+		creator.createLabel(labelShortcut, item -> Integer.toString(item.getShortcut()),
+				(item, value) -> item.setShortcut(Integer.valueOf(value)))
+				.addLabeled("Shortcut", entries);
+		creator.createTextField(textFieldValue, item -> Double.toString(item.getValue()),
 				(item, value) -> item.setValue(Double.valueOf(value)))
-				.addLabeled("Diameter [mm]", generalProperties);
-		TitledPane generalPane = creator.createTitledPane(generalProperties, "General");
+				.addLabeled("Diameter [mm]", entries);
+		TitledPane generalPane = creator.createTitledPane(entries, "General");
 		vBox.getChildren().add(generalPane);
 
 		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));

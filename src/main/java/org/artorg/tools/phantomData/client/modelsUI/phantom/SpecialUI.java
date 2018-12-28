@@ -47,10 +47,10 @@ public class SpecialUI extends UIEntity<Special> {
 		VBox vBox = new VBox();
 
 		List<PropertyEntry> entries = new ArrayList<>();
-		creator.createTextField((item, value) -> item.setShortcut(value),
-			item -> item.getShortcut()).addLabeled("Shortcut", entries);
-		creator.createTextField((item, value) -> item.setDescription(value),
-			item -> item.getDescription()).addLabeled("Description", entries);
+		creator.createTextField(item -> item.getShortcut(),
+			(item, value) -> item.setShortcut(value)).addLabeled("Shortcut", entries);
+		creator.createTextField(item -> item.getDescription(),
+			(item, value) -> item.setDescription(value)).addLabeled("Description", entries);
 		TitledPane generalPane = creator.createTitledPane(entries, "General");
 		vBox.getChildren().add(generalPane);
 

@@ -48,9 +48,9 @@ public class LiteratureBaseUI extends UIEntity<LiteratureBase> {
 		VBox vBox = new VBox();
 
 		List<PropertyEntry> generalProperties = new ArrayList<>();
-		creator.createTextField((item, value) -> item.setShortcut(value),
-				item -> item.getShortcut()).addLabeled("Shortcut", generalProperties);
-		creator.createTextField((item, value) -> item.setValue(value), item -> item.getValue())
+		creator.createTextField(item -> item.getShortcut(),
+				(item, value) -> item.setShortcut(value)).addLabeled("Shortcut", generalProperties);
+		creator.createTextField(item -> item.getValue(), (item, value) -> item.setValue(value))
 				.addLabeled("Name", generalProperties);
 		TitledPane generalPane = creator.createTitledPane(generalProperties, "General");
 		vBox.getChildren().add(generalPane);

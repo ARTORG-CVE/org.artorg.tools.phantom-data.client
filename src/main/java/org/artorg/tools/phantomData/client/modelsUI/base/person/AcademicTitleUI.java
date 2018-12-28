@@ -44,10 +44,10 @@ public class AcademicTitleUI extends UIEntity<AcademicTitle> {
 		VBox vBox = new VBox();
 
 		List<PropertyEntry> entries = new ArrayList<>();
-		creator.createTextField((item, value) -> item.setPrefix(value), item -> item.getPrefix())
+		creator.createTextField(item -> item.getPrefix(), (item, value) -> item.setPrefix(value))
 				.addLabeled("Prefix", entries);
-		creator.createTextField((item, value) -> item.setDescription(value),
-				item -> item.getDescription()).addLabeled("Description", entries);
+		creator.createTextField(item -> item.getDescription(),
+				(item, value) -> item.setDescription(value)).addLabeled("Description", entries);
 		TitledPane generalPane = creator.createTitledPane(entries, "General");
 		vBox.getChildren().add(generalPane);
 

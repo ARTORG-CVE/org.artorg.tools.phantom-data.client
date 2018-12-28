@@ -82,10 +82,10 @@ public class PropertyFieldUI extends UIEntity<PropertyField> {
 		FxUtil.setComboBoxCellFactory(comboBoxType, (Class<?> c) -> c.getSimpleName());
 
 		List<PropertyEntry> entries = new ArrayList<>();
-		creator.createTextField((item, value) -> item.setName(value), item -> item.getName())
+		creator.createTextField(item -> item.getName(), (item, value) -> item.setName(value))
 				.addLabeled("Name", entries);
-		creator.createTextField((item, value) -> item.setDescription(value),
-				item -> item.getDescription()).addLabeled("Description", entries);
+		creator.createTextField(item -> item.getDescription(),
+				(item, value) -> item.setDescription(value)).addLabeled("Description", entries);
 		entries.add(new PropertyEntry("Type", typePane));
 		TitledPane generalPane = creator.createTitledPane(entries, "General");
 		vBox.getChildren().add(generalPane);

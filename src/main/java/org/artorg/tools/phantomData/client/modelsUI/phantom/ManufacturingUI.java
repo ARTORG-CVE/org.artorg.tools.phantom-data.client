@@ -48,10 +48,10 @@ public class ManufacturingUI extends UIEntity<Manufacturing> {
 		VBox vBox = new VBox();
 
 		List<PropertyEntry> generalProperties = new ArrayList<>();
-		creator.createTextField((item, value) -> item.setName(value), item -> item.getName())
+		creator.createTextField(item -> item.getName(), (item, value) -> item.setName(value))
 				.addLabeled("Shortcut", generalProperties);
-		creator.createTextField((item, value) -> item.setDescription(value),
-				item -> item.getDescription()).addLabeled("Description", generalProperties);
+		creator.createTextField(item -> item.getDescription(),
+				(item, value) -> item.setDescription(value)).addLabeled("Description", generalProperties);
 		TitledPane generalPane = creator.createTitledPane(generalProperties, "General");
 		vBox.getChildren().add(generalPane);
 

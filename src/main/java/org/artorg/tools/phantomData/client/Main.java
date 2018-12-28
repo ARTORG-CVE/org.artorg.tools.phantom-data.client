@@ -56,12 +56,8 @@ public class Main extends DesktopFxBootApplication {
 		started = false;
 
 		entityClasses = reflections.getSubTypesOf(DbPersistent.class).stream()
-				.filter(c -> c.isAnnotationPresent(Entity.class))
-				.collect(Collectors.toSet());
-		
+				.filter(c -> c.isAnnotationPresent(Entity.class)).collect(Collectors.toSet());
 		uiEntities = new HashMap<>();
-		
-		
 	}
 
 	public static void main(String[] args) {
@@ -103,11 +99,12 @@ public class Main extends DesktopFxBootApplication {
 	}
 
 	public static void bootClient(ServerBooter booter) {
-		System.out.println("==================== Booting PhantomData Client Application ====================");
+		System.out.println(
+				"==================== Booting PhantomData Client Application ====================");
 		Logger.info.println("Client - Connected to database at " + getBooter().getDatabasePath());
 		Logger.info.println("Client - Connected to files at " + getBooter().getFilesPath());
 		Logger.info.println("Client - Started succesful on port " + getBooter().getPort());
-		
+
 		Main.setMainFxClass(DesktopFxBootApplication.class);
 		CrudConnector.setUrlLocalhost(booter.getUrlLocalhost());
 		MainController.setUrlLocalhost(booter.getUrlLocalhost());
@@ -119,7 +116,7 @@ public class Main extends DesktopFxBootApplication {
 
 		loadClientStage();
 		booter.finish();
-		
+
 	}
 
 	public static void loadClientStage() {
@@ -159,6 +156,10 @@ public class Main extends DesktopFxBootApplication {
 
 		Logger.setDefaultOut(getBooter().getConsoleDiverter().getOut());
 		Logger.setDefaultErr(getBooter().getConsoleDiverter().getErr());
+		Platform.runLater(() -> {
+			Logger.setDefaultOut(getBooter().getConsoleDiverter().getOut());
+			Logger.setDefaultErr(getBooter().getConsoleDiverter().getErr());
+		});
 
 		getBooter().getConsoleDiverter().addOutLineConsumer((consoleLines, newLine) -> {
 			Platform.runLater(() -> {
@@ -230,7 +231,7 @@ public class Main extends DesktopFxBootApplication {
 	public static MainController getMainController() {
 		return mainController;
 	}
-	
+
 	public static Set<Class<?>> getEntityClasses() {
 		return entityClasses;
 	}

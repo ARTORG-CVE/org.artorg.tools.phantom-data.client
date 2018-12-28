@@ -55,10 +55,10 @@ public class PersonUI extends UIEntity<Person> {
 		creator.createComboBox(AcademicTitle.class)
 				.of(item -> item.getAcademicTitle(), (item, value) -> item.setAcademicTitle(value))
 				.setMapper(a -> a.getPrefix()).addLabeled("Academic Title", generalProperties);
-		creator.createTextField((item, value) -> item.setFirstname(value),
-				item -> item.getFirstname()).addLabeled("Firstname", generalProperties);
-		creator.createTextField((item, value) -> item.setLastname(value),
-				item -> item.getLastname()).addLabeled("Lastname", generalProperties);
+		creator.createTextField(item -> item.getFirstname(),
+				(item, value) -> item.setFirstname(value)).addLabeled("Firstname", generalProperties);
+		creator.createTextField(item -> item.getLastname(),
+				(item, value) -> item.setLastname(value)).addLabeled("Lastname", generalProperties);
 		TitledPane generalPane = creator.createTitledPane(generalProperties, "General");
 		vBox.getChildren().add(generalPane);
 

@@ -51,9 +51,9 @@ public class ExperimentalSetupUI extends UIEntity<ExperimentalSetup> {
 		VBox vBox = new VBox();
 		
 		List<PropertyEntry> entries = new ArrayList<>();
-		creator.createTextField((item,value) -> item.setShortName(value), item -> item.getShortName()).addLabeled("Short name", entries);
-		creator.createTextField((item,value) -> item.setLongName(value), item -> item.getLongName()).addLabeled("Long name", entries);
-		creator.createTextField((item,value) -> item.setDescription(value), item -> item.getDescription()).addLabeled("Description", entries);
+		creator.createTextField(item -> item.getShortName(), (item,value) -> item.setShortName(value)).addLabeled("Short name", entries);
+		creator.createTextField(item -> item.getLongName(), (item,value) -> item.setLongName(value)).addLabeled("Long name", entries);
+		creator.createTextField(item -> item.getDescription(), (item,value) -> item.setDescription(value)).addLabeled("Description", entries);
 		TitledPane generalPane = creator.createTitledPane(entries, "General");
 		vBox.getChildren().add(generalPane);
 		

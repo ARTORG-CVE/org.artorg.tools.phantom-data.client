@@ -56,12 +56,12 @@ public class ProjectUI extends UIEntity<Project> {
 		VBox vBox = new VBox();
 
 		List<PropertyEntry> entries = new ArrayList<>();
-		creator.createTextField((item, value) -> item.setName(value), item -> item.getName())
+		creator.createTextField(item -> item.getName(), (item, value) -> item.setName(value))
 				.addLabeled("Prefix", entries);
-		creator.createTextField((item, value) -> item.setDescription(value),
-				item -> item.getDescription()).addLabeled("Description", entries);
-		creator.createTextField((item, value) -> item.setStartYear(Short.valueOf((value))),
-				item -> Short.toString(item.getStartYear())).addLabeled("Description", entries);
+		creator.createTextField(item -> item.getDescription(),
+				(item, value) -> item.setDescription(value)).addLabeled("Description", entries);
+		creator.createTextField(item -> Short.toString(item.getStartYear()),
+				(item, value) -> item.setStartYear(Short.valueOf((value)))).addLabeled("Description", entries);
 		creator.createComboBox(Person.class)
 				.of(item -> item.getLeader(), (item, value) -> item.setLeader(value))
 				.setMapper(l -> l.getSimpleAcademicName()).addLabeled("Leader", entries);

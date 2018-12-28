@@ -43,7 +43,7 @@ public class FileTagUI extends UIEntity<FileTag> {
 		VBox vBox = new VBox();
 
 		List<PropertyEntry> entries = new ArrayList<>();
-		creator.createTextField((item, value) -> item.setName(value), item -> item.getName())
+		creator.createTextField(item -> item.getName(), (item, value) -> item.setName(value))
 				.addLabeled("Name", entries);
 		TitledPane generalPane = creator.createTitledPane(entries, "General");
 		vBox.getChildren().add(generalPane);
