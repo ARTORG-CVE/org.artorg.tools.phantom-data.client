@@ -63,7 +63,7 @@ public class PropertyFieldUI extends UIEntity<PropertyField> {
 
 		ItemEditor<PropertyField> creator = new ItemEditor<PropertyField>(getItemClass()) {
 			@Override
-			public void onCreateInit() {
+			public void onCreateInit(PropertyField item) {
 				typePane.getChildren().clear();
 				FxUtil.addToPane(typePane, comboBoxType);
 			}

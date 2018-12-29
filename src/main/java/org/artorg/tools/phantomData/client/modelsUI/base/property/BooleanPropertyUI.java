@@ -19,37 +19,37 @@ public class BooleanPropertyUI extends PropertyUI<BooleanProperty, Boolean> {
 	}
 
 	@Override
-	protected String toString(Boolean value) {
+	public String toString(Boolean value) {
 		return value.toString();
 	}
 
 	@Override
-	protected Boolean fromString(String s) {
+	public Boolean fromString(String s) {
 		return Boolean.valueOf(s);
 	}
 
 	@Override
-	protected BooleanProperty createProperty(PropertyField propertyField, Boolean value) {
+	public BooleanProperty createProperty(PropertyField propertyField, Boolean value) {
 		return new BooleanProperty(propertyField, value);
 	}
 
 	@Override
-	protected Node createValueNode() {
+	public Node createValueNode() {
 		return new CheckBox();
 	}
 
 	@Override
-	protected Boolean getValueFromNode(Node valueNode) {
+	public Boolean getValueFromNode(Node valueNode) {
 		return ((CheckBox) valueNode).isSelected();
 	}
 
 	@Override
-	protected void setValueToNode(Node valueNode, Boolean value) {
+	public void setValueToNode(Node valueNode, Boolean value) {
 		((CheckBox) valueNode).setSelected(value);
 	}
 
 	@Override
-	protected Boolean getDefaultValue() {
+	public Boolean getDefaultValue() {
 		return false;
 	}
 

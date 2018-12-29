@@ -20,37 +20,37 @@ public class IntegerPropertyUI extends PropertyUI<IntegerProperty,Integer> {
 	}
 
 	@Override
-	protected String toString(Integer value) {
+	public String toString(Integer value) {
 		return value.toString();
 	}
 
 	@Override
-	protected Integer fromString(String s) {
+	public Integer fromString(String s) {
 		return Integer.valueOf(s);
 	}
 
 	@Override
-	protected IntegerProperty createProperty(PropertyField propertyField, Integer value) {
+	public IntegerProperty createProperty(PropertyField propertyField, Integer value) {
 		return new IntegerProperty(propertyField, value);
 	}
 
 	@Override
-	protected Node createValueNode() {
+	public Node createValueNode() {
 		return new TextField();
 	}
 
 	@Override
-	protected Integer getValueFromNode(Node valueNode) {
+	public Integer getValueFromNode(Node valueNode) {
 		return Integer.valueOf(((TextField)valueNode).getText()); 
 	}
 
 	@Override
-	protected void setValueToNode(Node valueNode, Integer value) {
+	public void setValueToNode(Node valueNode, Integer value) {
 		((TextField)valueNode).setText(value.toString());
 	}
 
 	@Override
-	protected Integer getDefaultValue() {
+	public Integer getDefaultValue() {
 		return 0;
 	}
 

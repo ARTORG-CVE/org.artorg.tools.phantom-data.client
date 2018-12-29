@@ -19,37 +19,37 @@ public class DoublePropertyUI extends PropertyUI<DoubleProperty,Double> {
 	}
 
 	@Override
-	protected String toString(Double value) {
+	public String toString(Double value) {
 		return value.toString();
 	}
 
 	@Override
-	protected Double fromString(String s) {
+	public Double fromString(String s) {
 		return Double.valueOf(s);
 	}
 
 	@Override
-	protected DoubleProperty createProperty(PropertyField propertyField, Double value) {
+	public DoubleProperty createProperty(PropertyField propertyField, Double value) {
 		return new DoubleProperty(propertyField, value);
 	}
 
 	@Override
-	protected Node createValueNode() {
+	public Node createValueNode() {
 		return new TextField();
 	}
 
 	@Override
-	protected Double getValueFromNode(Node valueNode) {
+	public Double getValueFromNode(Node valueNode) {
 		return Double.valueOf(((TextField)valueNode).getText());
 	}
 
 	@Override
-	protected void setValueToNode(Node valueNode, Double value) {
+	public void setValueToNode(Node valueNode, Double value) {
 		((TextField)valueNode).setText(Double.toString(value));
 	}
 
 	@Override
-	protected Double getDefaultValue() {
+	public Double getDefaultValue() {
 		return 0.0;
 	}
 

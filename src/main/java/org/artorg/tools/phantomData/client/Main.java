@@ -2,7 +2,9 @@ package org.artorg.tools.phantomData.client;
 
 import static org.artorg.tools.phantomData.client.boot.DatabaseInitializer.initDatabase;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -10,11 +12,14 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
 
+import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
 import org.artorg.tools.phantomData.client.boot.DatabaseInitializer;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.controllers.MainController;
+import org.artorg.tools.phantomData.client.modelUI.PropertyUI;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.modelsUI.PersonifiedUI;
 import org.artorg.tools.phantomData.client.modelsUI.base.*;
 import org.artorg.tools.phantomData.client.modelsUI.base.person.*;
 import org.artorg.tools.phantomData.client.modelsUI.base.property.*;
@@ -24,6 +29,8 @@ import org.artorg.tools.phantomData.server.BootApplication;
 import org.artorg.tools.phantomData.server.boot.ConsoleFrame;
 import org.artorg.tools.phantomData.server.boot.ServerBooter;
 import org.artorg.tools.phantomData.server.boot.StartupProgressFrame;
+import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
+import org.artorg.tools.phantomData.server.model.AbstractProperty;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
 import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.server.models.base.*;
@@ -50,6 +57,7 @@ public class Main extends DesktopFxBootApplication {
 	private static MainController mainController;
 	private static final Set<Class<?>> entityClasses;
 	private static final Map<Class<?>, UIEntity<?>> uiEntities;
+//	private static final List<EntityBeanInfo<?>> entityBeanInfos;
 
 	static {
 		mainFxClass = null;
@@ -58,6 +66,7 @@ public class Main extends DesktopFxBootApplication {
 		entityClasses = reflections.getSubTypesOf(DbPersistent.class).stream()
 				.filter(c -> c.isAnnotationPresent(Entity.class)).collect(Collectors.toSet());
 		uiEntities = new HashMap<>();
+//		entityBeanInfos = new ArrayList<>();
 	}
 
 	public static void main(String[] args) {
@@ -140,6 +149,14 @@ public class Main extends DesktopFxBootApplication {
 		uiEntities.put(Phantomina.class, new PhantominaUI());
 		uiEntities.put(Phantom.class, new PhantomUI());
 		uiEntities.put(Special.class, new SpecialUI());
+		uiEntities.put(AbstractProperty.class, new PropertiesUI());
+		uiEntities.put(AbstractPersonifiedEntity.class, new PersonifiedUI());
+		
+//		getEntityClasses().stream().forEach(itemClass -> {
+//			entityBeanInfos.add(new EntityBeanInfo(itemClass));
+//		});
+		
+		
 
 		stage = new Stage();
 		mainController = new MainController(stage);
@@ -184,6 +201,11 @@ public class Main extends DesktopFxBootApplication {
 	@SuppressWarnings("unchecked")
 	public static <T> UIEntity<T> getUIEntity(Class<T> itemClass) {
 		return (UIEntity<T>) uiEntities.get(itemClass);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T extends AbstractProperty<T,V>, V> PropertyUI<T,V> getPropertyUIEntity(Class<T> propertyClass) {
+		return  (PropertyUI<T, V>) uiEntities.get(propertyClass);
 	}
 
 	public static Reflections getReflections() {

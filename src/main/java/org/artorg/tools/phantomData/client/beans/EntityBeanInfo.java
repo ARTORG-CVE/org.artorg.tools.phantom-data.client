@@ -16,13 +16,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.persistence.Entity;
+import javax.persistence.MappedSuperclass;
 
 import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
-import org.artorg.tools.phantomData.server.model.AbstractPropertifiedEntity;
 
 public class EntityBeanInfo<T> {
 	private static final EntityBeanInfo<?> abstractPersonifiedEntityBeanInfo;
-//	private static final EntityBeanInfo abstractBaseEntityBeanInfo;
 	private final Class<T> entityClass;
 	private final List<PropertyDescriptor> allPropertyDescriptors;
 	private final List<PropertyDescriptor> notPersonifiedPropertyDescriptors;
@@ -31,19 +30,16 @@ public class EntityBeanInfo<T> {
 	private final Function<T, List<PropertyDescriptor>> propertiesDescriptors;
 
 	private final Map<Class<?>, Map<String, Function<Object, Object>>> getterFunctionsMap;
-	private final Map<Class<?>,
-		Map<String, BiConsumer<Object, Object>>> setterFunctionsMap;
+	private final Map<Class<?>, Map<String, BiConsumer<Object, Object>>> setterFunctionsMap;
 
 	static {
-		abstractPersonifiedEntityBeanInfo =
-			new EntityBeanInfo<>(AbstractPersonifiedEntity.class);
-//		abstractBaseEntityBeanInfo = new EntityBeanInfo(AbstractBaseEntity.class);
+		abstractPersonifiedEntityBeanInfo = new EntityBeanInfo<>(AbstractPersonifiedEntity.class);
 	}
-	
+
 	public EntityBeanInfo(Class<T> entityClass) {
-		if (!entityClass.isAnnotationPresent(Entity.class))
-			if (entityClass != AbstractPropertifiedEntity.class && entityClass != AbstractPersonifiedEntity.class)
-				throw new IllegalArgumentException();
+		if (!(entityClass.isAnnotationPresent(Entity.class)
+				|| entityClass.isAnnotationPresent(MappedSuperclass.class)))
+			throw new IllegalArgumentException();
 		this.entityClass = entityClass;
 
 		BeanInfo beanInfo = null;
@@ -54,50 +50,48 @@ public class EntityBeanInfo<T> {
 		}
 
 		allPropertyDescriptors = Arrays.asList(beanInfo.getPropertyDescriptors()).stream()
-			.collect(Collectors.toList());
+				.collect(Collectors.toList());
 
 		if (entityClass == AbstractPersonifiedEntity.class)
 			notPersonifiedPropertyDescriptors = new ArrayList<PropertyDescriptor>();
 		else {
 			notPersonifiedPropertyDescriptors = allPropertyDescriptors.stream().filter(d -> {
 				return !(abstractPersonifiedEntityBeanInfo.allPropertyDescriptors.stream()
-					.filter(bd -> bd == d).findFirst().isPresent());
+						.filter(bd -> bd == d).findFirst().isPresent());
 			}).collect(Collectors.toList());
 		}
 
 		entityDescriptors = bean -> notPersonifiedPropertyDescriptors.stream()
-			.filter(d -> d.getPropertyType().isAnnotationPresent(Entity.class))
-			.filter(d -> getValue(d, bean) != null).collect(Collectors.toList());
+				.filter(d -> d.getPropertyType().isAnnotationPresent(Entity.class))
+				.filter(d -> getValue(d, bean) != null).collect(Collectors.toList());
 
 		entityCollectionDescriptors = bean -> notPersonifiedPropertyDescriptors.stream()
-			.filter(d -> !d.getPropertyType().isAnnotationPresent(Entity.class))
-			.filter(d -> Collection.class.isAssignableFrom(d.getPropertyType()))
-			.filter(d -> {
-				Object value = getValue(d, bean);
-				if (value == null) return false; 
-				Collection<?> coll = (Collection<?>)value;
-				if (coll.isEmpty()) return false;
-				return coll.stream().findFirst()
-					.get().getClass().isAnnotationPresent(Entity.class);
-			})
-			.collect(Collectors.toList());
+				.filter(d -> !d.getPropertyType().isAnnotationPresent(Entity.class))
+				.filter(d -> Collection.class.isAssignableFrom(d.getPropertyType())).filter(d -> {
+					Object value = getValue(d, bean);
+					if (value == null) return false;
+					Collection<?> coll = (Collection<?>) value;
+					if (coll.isEmpty()) return false;
+					return coll.stream().findFirst().get().getClass()
+							.isAnnotationPresent(Entity.class);
+				}).collect(Collectors.toList());
 
 		propertiesDescriptors = bean -> notPersonifiedPropertyDescriptors.stream()
-			.filter(d -> !d.getPropertyType().isAnnotationPresent(Entity.class))
-			.filter(d -> !Collection.class.isAssignableFrom(d.getPropertyType()))
-			.filter(d -> getValue(d, bean) != null).collect(Collectors.toList());
+				.filter(d -> !d.getPropertyType().isAnnotationPresent(Entity.class))
+				.filter(d -> !Collection.class.isAssignableFrom(d.getPropertyType()))
+				.filter(d -> getValue(d, bean) != null).collect(Collectors.toList());
 
 		getterFunctionsMap = notPersonifiedPropertyDescriptors.stream()
-			.collect(Collectors.groupingBy((PropertyDescriptor d) -> d.getPropertyType(),
-				Collectors.toMap(d -> d.getName(), d -> {
-					return bean -> getValue(d, bean);
-				})));
+				.collect(Collectors.groupingBy((PropertyDescriptor d) -> d.getPropertyType(),
+						Collectors.toMap(d -> d.getName(), d -> {
+							return bean -> getValue(d, bean);
+						})));
 
 		setterFunctionsMap = notPersonifiedPropertyDescriptors.stream()
-			.collect(Collectors.groupingBy((PropertyDescriptor d) -> d.getPropertyType(),
-				Collectors.toMap(d -> d.getName(), d -> {
-					return (bean, value) -> d.createPropertyEditor(bean).setValue(value);
-				})));
+				.collect(Collectors.groupingBy((PropertyDescriptor d) -> d.getPropertyType(),
+						Collectors.toMap(d -> d.getName(), d -> {
+							return (bean, value) -> d.createPropertyEditor(bean).setValue(value);
+						})));
 	}
 
 	public Stream<NamedTreeItem> getNamedEntityValuesAsStream(T bean) {
@@ -107,7 +101,7 @@ public class EntityBeanInfo<T> {
 			return new NamedTreeItem(value, d.getName(), "EntityValueAsStream");
 		}).filter(property -> property != null);
 	}
-	
+
 	public Stream<NamedTreeItem> getNamedEntityCollectionValuesAsStream(T bean) {
 		return entityCollectionDescriptors.apply(bean).stream().map(d -> {
 			Object value = EntityBeanInfo.getValue(d, bean);
@@ -135,8 +129,7 @@ public class EntityBeanInfo<T> {
 	public static Object getValue(PropertyDescriptor descriptor, Object bean) {
 		try {
 			return descriptor.getReadMethod().invoke(bean);
-		} catch (IllegalAccessException | IllegalArgumentException
-			| InvocationTargetException e) {
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 		throw new IllegalArgumentException();
@@ -151,7 +144,7 @@ public class EntityBeanInfo<T> {
 	public Stream<Collection<Object>> getEntityCollectionsAsStream(T bean) {
 		if (bean == null) return Stream.<Collection<Object>>empty();
 		return entityCollectionDescriptors.apply(bean).stream()
-			.map(d -> ((Collection<Object>) getValue(d, bean)));
+				.map(d -> ((Collection<Object>) getValue(d, bean)));
 	}
 
 	public Stream<Object> getPropertiesAsStream(T bean) {

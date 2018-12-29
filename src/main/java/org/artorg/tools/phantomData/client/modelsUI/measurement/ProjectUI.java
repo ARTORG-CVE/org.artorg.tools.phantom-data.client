@@ -61,7 +61,7 @@ public class ProjectUI extends UIEntity<Project> {
 		creator.createTextField(item -> item.getDescription(),
 				(item, value) -> item.setDescription(value)).addLabeled("Description", entries);
 		creator.createTextField(item -> Short.toString(item.getStartYear()),
-				(item, value) -> item.setStartYear(Short.valueOf((value)))).addLabeled("Description", entries);
+				(item, value) -> item.setStartYear(Short.valueOf((value)))).addLabeled("Start year", entries);
 		creator.createComboBox(Person.class)
 				.of(item -> item.getLeader(), (item, value) -> item.setLeader(value))
 				.setMapper(l -> l.getSimpleAcademicName()).addLabeled("Leader", entries);

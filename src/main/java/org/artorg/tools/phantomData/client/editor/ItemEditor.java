@@ -15,14 +15,17 @@ import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.exceptions.InvalidUIInputException;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.Identifiable;
 
+import huma.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -32,6 +35,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 
@@ -54,6 +58,8 @@ public class ItemEditor<T> extends AnchorPane {
 
 	public void onCreateInit(T item) {}
 
+	public void onCreateBeforeApplyChanges(T item) throws InvalidUIInputException {}
+
 	public void onCreateBeforePost(T item) {}
 
 	public void onCreatePostSuccessful(T item) {}
@@ -70,6 +76,7 @@ public class ItemEditor<T> extends AnchorPane {
 		this.item = item;
 		onCreateInit(item);
 		applyButton.setOnAction(event -> {
+			if (nodes.isEmpty()) return;
 			FxUtil.runNewSingleThreaded(() -> {
 				T item2 = item;
 				if (item2 == null) {
@@ -80,9 +87,24 @@ public class ItemEditor<T> extends AnchorPane {
 					}
 				}
 				final T item3 = item2;
-				nodes.stream().forEach(node -> node.nodeToEntity(item3));
 				try {
-					onCreateBeforePost(item3);
+					onCreateBeforeApplyChanges(item3);
+				} catch (InvalidUIInputException e) {
+					Logger.warn.println(String.format("Can't create %s: %s",
+							item3.getClass().getSimpleName(), e.getMessage()));
+					Platform.runLater(() -> {
+						Alert alert = new Alert(AlertType.WARNING);
+						alert.setTitle("Create " + item3.getClass().getSimpleName());
+						alert.setContentText(String.format("Can't create %s:\n%s",
+								item3.getClass().getSimpleName(), e.getMessage()));
+						alert.showAndWait();
+					});
+					return;
+				}
+				nodes.stream().forEach(node -> node.nodeToEntity(item3));
+				onCreateBeforePost(item3);
+				try {
+
 					if (getConnector().create(item3)) {
 						this.item = item3;
 						onCreatePostSuccessful(item3);
@@ -93,6 +115,7 @@ public class ItemEditor<T> extends AnchorPane {
 					e.printStackTrace();
 				}
 			});
+
 		});
 		applyButton.setText("Create");
 		nodes.stream().forEach(node -> node.entityToNodeAdd(item));
@@ -102,6 +125,7 @@ public class ItemEditor<T> extends AnchorPane {
 		this.item = item;
 		onEditInit(item);
 		applyButton.setOnAction(event -> {
+			if (nodes.isEmpty()) return;
 			onEditBeforApplyChanges(item);
 			nodes.stream().forEach(node -> node.nodeToEntity(item));
 			onEditBeforePut(item);
@@ -119,7 +143,7 @@ public class ItemEditor<T> extends AnchorPane {
 	}
 
 	public <U> void addNodes(ItemEditor<U> subEditor) {
-		Collection<PropertyNode<T,?>> list = subEditor.getNodes().stream()
+		Collection<PropertyNode<T, ?>> list = subEditor.getNodes().stream()
 				.map(propertyNode -> propertyNode.map(itemClass, item -> subEditor.getItem()))
 				.collect(Collectors.toList());
 		nodes.addAll(list);
@@ -135,6 +159,10 @@ public class ItemEditor<T> extends AnchorPane {
 		titledPane.setText(title);
 		titledPane.setContent(gridPane);
 		return titledPane;
+	}
+
+	public PropertyGridPane createUntitledPane(List<PropertyEntry> entries) {
+		return new PropertyGridPane(entries);
 	}
 
 	public AnchorPane createButtonPane(Button button) {

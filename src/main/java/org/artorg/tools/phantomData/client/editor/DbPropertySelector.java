@@ -12,17 +12,26 @@ import java.util.function.Function;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.modelUI.PropertyUI;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
+import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
 import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TitledPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
 public abstract class DbPropertySelector<T, P extends AbstractProperty<P, V>, V>
-		extends ItemEditor<T> {
+		extends VBox {
 	private final Class<T> parentItemClass;
 	private final Class<P> propertyClass;
+	private ProTableView<P> tableView;
+	private Button applyButton;
 
 	public abstract PropertyNode<P, V> getValuePropertyNode();
 
@@ -31,95 +40,71 @@ public abstract class DbPropertySelector<T, P extends AbstractProperty<P, V>, V>
 	public abstract void setProperties(T item, Collection<P> properties);
 
 	public DbPropertySelector(Class<T> parentItemClass, Class<P> propertyClass) {
-		super(parentItemClass);
 		this.parentItemClass = parentItemClass;
 		this.propertyClass = propertyClass;
-
-		List<PropertyEntry> entries = new ArrayList<>();
-
-		ComboBox<PropertyField> comboBoxPropertyField = new ComboBox<>();
-
-		ItemEditor<P> propertyEditor = new ItemEditor<>(propertyClass);
-
-		propertyEditor.createComboBox(PropertyField.class, comboBoxPropertyField)
-				.of(item -> item.getPropertyField(), (item, value) -> item.setPropertyField(value))
-				.addLabeled("Property field", entries);
-		PropertyNode<P, V> valuePropertyNode = getValuePropertyNode();
-		valuePropertyNode.addLabeled("Value", entries);
-
-		ICrudConnector<P> propertyConnector = Connectors.get(propertyClass);
-
-		List<P> addableItems = new ArrayList<>();
-		List<P> changedItems = new ArrayList<>();
-		List<P> removableItems = new ArrayList<>();
-
-		ProTableView<P> table = Main.getUIEntity(propertyClass).createProTableView();
-
-		AbstractProperty<P, V> property = null;
-		UUID id = property.getId();
-		PropertyNode<T, P> tableEditNode = new PropertyNode<T, P>(parentItemClass, table) {
-
+		
+		ItemEditor<P> propertyEditor = new ItemEditor<P>(propertyClass) {
 			@Override
-			protected P entityToValueEditGetterImpl(T item) {
-				return getProperties(item).stream().filter(p -> p.getId().equals(id)).findFirst()
-						.orElse(null);
+			public void onCreatePostSuccessful(P item) {
+				tableView.getTable().getItems().add(item);
 			}
-
-			@Override
-			protected P entityToValueAddGetterImpl(T item) {
-				return null;
-			}
-
-			@Override
-			protected void valueToEntitySetterImpl(T item, P newProperty) {
-				Collection<P> properties = getProperties(item);
-				UUID id = newProperty.getId();
-				Optional<P> persistedProperty = findElement(properties, id);
-				if (addableItems.contains(newProperty)) {
-					if (persistedProperty.isPresent())
-						throw new RuntimeException();
-					properties.add(newProperty);
-				} else if (removableItems.contains(newProperty)) {
-					if (!persistedProperty.isPresent())
-						throw new RuntimeException();
-					properties.remove(persistedProperty.get());
-				} else if (changedItems.contains(newProperty)) {
-					if (!persistedProperty.isPresent()) 
-						throw new RuntimeException();
-					if (persistedProperty.get() != newProperty) {
-						properties.remove(persistedProperty.get());
-						properties.add(newProperty);
-					}
-				}
-			}
-
-			@Override
-			protected P nodeToValueGetterImpl() {
-				Optional<P> p = findElement(table.getTable().getItems(), id);
-				if (!p.isPresent())
-					throw new RuntimeException();
-				return p.get();
-			}
-
-			@Override
-			protected void valueToNodeSetterImpl(P value) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			protected void defaultSetterRunnableImpl() {
-				// TODO Auto-generated method stub
-
-			}
-
 		};
+		PropertyUI<P,V> propertyUI = Main.getPropertyUIEntity(propertyClass);
+		
+		List<PropertyEntry> entries = new ArrayList<>();
+		propertyEditor.createComboBox(PropertyField.class)
+				.of(item -> item.getPropertyField(), (item, value) -> item.setPropertyField(value))
+				.setMapper(p -> p.getName()).addLabeled("Property field", entries);
+		
+		Node node = propertyUI.createValueNode();
+		propertyEditor.createNode((item, value) -> item.setValue(value), item -> item.getValue(),
+				item -> propertyUI.getDefaultValue(), node, value -> propertyUI.setValueToNode(node, value),
+				() -> propertyUI.getValueFromNode(node), () -> propertyUI.setValueToNode(node, propertyUI.getDefaultValue()))
+				.addLabeled("Value", entries);
+		this.getChildren().add(propertyEditor.createUntitledPane(entries));
+		
+		applyButton = new Button("Apply");
+		
+		this.getChildren().add(createButtonPane(applyButton));
+		
+		
+		
+		
+		
+		ProTableView<P> table = Main.getUIEntity(propertyClass).createProTableView();
+		this.getChildren().add(table);
 
-		PropertyNode<T, Collection<P>> selector =
-				createSelector(propertyClass).of(this::getProperties, this::setProperties);
+	}
+	
+	private void create() {
+		createItem(null);
+	}
+	
+	private void createItem(P item) {
+		
+		
+		applyButton.setText("Create");
+	}
 
-		addNodes(propertyEditor);
-
+	private void editItem(P item) {
+		
+	}
+	
+	
+	
+	
+	
+	
+	public AnchorPane createButtonPane(Button button) {
+		button.setPrefHeight(25.0);
+		button.setMaxWidth(Double.MAX_VALUE);
+		AnchorPane buttonPane = new AnchorPane();
+		buttonPane.setPrefHeight(button.getPrefHeight() + 20);
+		buttonPane.setMaxHeight(buttonPane.getPrefHeight());
+		buttonPane.setPadding(new Insets(5, 10, 5, 10));
+		buttonPane.getChildren().add(button);
+		FxUtil.setAnchorZero(button);
+		return buttonPane;
 	}
 
 	private Optional<P> findElement(Collection<P> properties, UUID id) {

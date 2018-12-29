@@ -112,11 +112,6 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 		map.clear();
 		itemList.stream()
 				.forEach(item -> map.put(((Identifiable<?>) item).getId().toString(), item));
-//		List<String> dbKeys = itemList.stream().map(item -> item.getId().toString())
-//			.collect(Collectors.toList());
-//		List<String> removableKeys = map.keySet().stream()
-//			.filter(key -> !dbKeys.contains(key)).collect(Collectors.toList());
-//		removableKeys.stream().forEach(key -> map.remove(key));
 	}
 
 	@Override

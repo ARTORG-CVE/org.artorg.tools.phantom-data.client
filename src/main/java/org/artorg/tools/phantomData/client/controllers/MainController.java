@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.function.BiConsumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
@@ -15,8 +17,9 @@ import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
+import org.artorg.tools.phantomData.server.model.AbstractProperty;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
-import org.artorg.tools.phantomData.server.models.base.Note;
 import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
 import org.artorg.tools.phantomData.server.models.base.property.BooleanProperty;
@@ -36,6 +39,7 @@ import org.artorg.tools.phantomData.server.models.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.models.phantom.Special;
 import org.controlsfx.glyphfont.FontAwesome;
 
+import huma.logging.Level;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -287,70 +291,99 @@ public class MainController extends StackPane {
 		addMenuItem(menu, "Measurement", event -> {
 			tableFactoryCreator.accept(splitTabView, Measurement.class);
 		});
-		addMenuItem(menu, "Experimental Setups", event -> {
-			tableFactoryCreator.accept(splitTabView, ExperimentalSetup.class);
-		});
-		addMenuItem(menu, "Project", event -> {
-			tableFactoryCreator.accept(splitTabView, Project.class);
-		});
-		menu.getItems().add(new SeparatorMenuItem());
-		addMenuItem(menu, "Files", event -> {
+		addMenuItem(menu, "File", event -> {
 			tableFactoryCreator.accept(splitTabView, DbFile.class);
 		});
+		addMenuItem(menu, "Property Field", event -> {
+			tableFactoryCreator.accept(splitTabView, PropertyField.class);
+		});
+
 		menu.getItems().add(new SeparatorMenuItem());
-		addMenuItem(menu, "Persons", event -> {
-			tableFactoryCreator.accept(splitTabView, Person.class);
-		});
-		addMenuItem(menu, "Academic Titles", event -> {
-			tableFactoryCreator.accept(splitTabView, AcademicTitle.class);
-		});
-		addMenuItem(menu, "Note", event -> {
-			tableFactoryCreator.accept(splitTabView, Note.class);
-		});
-		menu.getItems().add(new SeparatorMenuItem());
+
 		{
-			Menu subMenu = new Menu("Phantominas");
-			addMenuItem(subMenu, "Manufacturings", event -> {
-				tableFactoryCreator.accept(splitTabView, Manufacturing.class);
+			Menu subMenu = new Menu("Phantom");
+			addMenuItem(subMenu, "Phantom", event -> {
+				tableFactoryCreator.accept(splitTabView, Phantom.class);
 			});
-			addMenuItem(subMenu, "Phantominas", event -> {
+			addMenuItem(subMenu, "Phantomina", event -> {
 				tableFactoryCreator.accept(splitTabView, Phantomina.class);
 			});
 			subMenu.getItems().add(new SeparatorMenuItem());
-			addMenuItem(subMenu, "Annulus Diameters", event -> {
+			addMenuItem(subMenu, "Annulus Diameter", event -> {
 				tableFactoryCreator.accept(splitTabView, AnnulusDiameter.class);
 			});
-			addMenuItem(subMenu, "Fabrication Types", event -> {
+			addMenuItem(subMenu, "Fabrication Type", event -> {
 				tableFactoryCreator.accept(splitTabView, FabricationType.class);
 			});
-			addMenuItem(subMenu, "Literature Bases", event -> {
+			addMenuItem(subMenu, "Literature Base", event -> {
 				tableFactoryCreator.accept(splitTabView, LiteratureBase.class);
 			});
 			addMenuItem(subMenu, "Special", event -> {
 				tableFactoryCreator.accept(splitTabView, Special.class);
 			});
+			subMenu.getItems().add(new SeparatorMenuItem());
+			addMenuItem(subMenu, "Manufacturing", event -> {
+				tableFactoryCreator.accept(splitTabView, Manufacturing.class);
+			});
 			menu.getItems().add(subMenu);
 		}
+
+		{
+			Menu subMenu = new Menu("Measurement");
+			addMenuItem(subMenu, "Measurement", event -> {
+				tableFactoryCreator.accept(splitTabView, Measurement.class);
+			});
+			subMenu.getItems().add(new SeparatorMenuItem());
+			addMenuItem(subMenu, "Project", event -> {
+				tableFactoryCreator.accept(splitTabView, Project.class);
+			});
+			addMenuItem(subMenu, "Experimental Setup", event -> {
+				tableFactoryCreator.accept(splitTabView, ExperimentalSetup.class);
+			});
+			menu.getItems().add(subMenu);
+		}
+
+		{
+			Menu subMenu = new Menu("Person");
+			addMenuItem(subMenu, "Person", event -> {
+				tableFactoryCreator.accept(splitTabView, Person.class);
+			});
+			subMenu.getItems().add(new SeparatorMenuItem());
+			addMenuItem(subMenu, "Academic Title", event -> {
+				tableFactoryCreator.accept(splitTabView, AcademicTitle.class);
+			});
+			menu.getItems().add(subMenu);
+		}
+
 		{
 			Menu subMenu = new Menu("Properties");
+			addMenuItem(subMenu, "Properties", event -> {
+				tableFactoryCreator.accept(splitTabView, AbstractProperty.class);
+			});
 			addMenuItem(subMenu, "Property Fields", event -> {
 				tableFactoryCreator.accept(splitTabView, PropertyField.class);
 			});
 			subMenu.getItems().add(new SeparatorMenuItem());
-			addMenuItem(subMenu, "Boolean Properties", event -> {
+			addMenuItem(subMenu, "Boolean Property", event -> {
 				tableFactoryCreator.accept(splitTabView, BooleanProperty.class);
 			});
-			addMenuItem(subMenu, "Integer Properties", event -> {
+			addMenuItem(subMenu, "Integer Property", event -> {
 				tableFactoryCreator.accept(splitTabView, IntegerProperty.class);
 			});
-			addMenuItem(subMenu, "Double Properties", event -> {
+			addMenuItem(subMenu, "Double Property", event -> {
 				tableFactoryCreator.accept(splitTabView, DoubleProperty.class);
 			});
-			addMenuItem(subMenu, "String Properties", event -> {
+			addMenuItem(subMenu, "String Property", event -> {
 				tableFactoryCreator.accept(splitTabView, StringProperty.class);
 			});
 			menu.getItems().add(subMenu);
 		}
+
+		menu.getItems().add(new SeparatorMenuItem());
+
+		addMenuItem(menu, "All...", event -> {
+			tableFactoryCreator.accept(splitTabView, AbstractPersonifiedEntity.class);
+		});
 	}
 
 	void openPerspectiveComparePhantoms(ActionEvent event) {
@@ -519,12 +552,68 @@ public class MainController extends StackPane {
 	}
 
 	public void setStatus(String text, boolean status) {
-		if (!text.contains("DEBUG")) {
+		final Pattern pattern1 = Pattern.compile(
+				"(\\d+-\\d+-\\d+)\\W*(\\d+.?\\d+.?\\d+)\\W+(\\d+)ms\\W*(\\w*)\\W*(.*)(org.artorg.*)");
+		final Pattern pattern2 = Pattern.compile(
+				"(\\d+-\\d+-\\d+)\\W*(\\d+.?\\d+.?\\d+)\\W+(\\d+)ms\\W*(\\w*)\\W*(.*)");
+		Matcher matcher = pattern1.matcher(text);
+		String logLevel = null;
+		
+		if (matcher.find()) {
+//			String date = matcher.group(1);
+			String time = matcher.group(2);
+			String millis = matcher.group(3);
+			logLevel = matcher.group(4);
+			String message = matcher.group(5);
+//			String trace = matcher.group(6);
+			text = String.format("%s, %ms, %s : %s", time, millis, logLevel, message);
+		} else {
+			Matcher matcher2 = pattern2.matcher(text);
+			if (matcher2.find()) {
+//				String date = matcher.group(1);
+				String time = matcher2.group(2);
+				String millis = matcher2.group(3);
+				logLevel = matcher2.group(4);
+				String message = matcher2.group(5);
+				text = String.format("%s, %sms, %s : %s", time, millis, logLevel, message);
+			}
+		}
+		Level level = null;
+
+		if (logLevel != null) {
+			if (logLevel.equals("DEBUG")) level = Level.DEBUG;
+			else if (logLevel.equals("INFO")) level = Level.INFO;
+			else if (logLevel.equals("WARN")) level = Level.WARN;
+			else if (logLevel.equals("ERROR")) level = Level.ERROR;
+			else if (logLevel.equals("FATAL")) level = Level.FATAL;
+			else
+				level = null;
+		}
+
+		if (logLevel == null) {
+			if (text.contains("DEBUG")) level = Level.DEBUG;
+			else if (text.contains("INFO")) level = Level.INFO;
+			else if (text.contains("WARN")) level = Level.WARN;
+			else if (text.contains("ERROR")) level = Level.ERROR;
+			else if (text.contains("FATAL")) level = Level.FATAL;
+		}
+
+		if (level == null) {
 			statusLabel.setText(text);
 			if (status) coloredStatusBox.setFill(Color.GREEN);
 			else
 				coloredStatusBox.setFill(Color.RED);
+			return;
 		}
+
+		statusLabel.setText(text);
+		if (!status) coloredStatusBox.setFill(Color.RED);
+
+		else if (level == Level.ERROR || level == Level.FATAL) {
+			coloredStatusBox.setFill(Color.RED);
+		} else if (level == Level.WARN) coloredStatusBox.setFill(Color.ORANGE);
+		else
+			coloredStatusBox.setFill(Color.GREEN);
 	}
 
 }

@@ -2,7 +2,6 @@ package org.artorg.tools.phantomData.client.modelUI;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
@@ -11,29 +10,28 @@ import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
-import org.artorg.tools.phantomData.server.model.DbPersistent;
 import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 
 import javafx.scene.Node;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 
-public abstract class PropertyUI<T extends AbstractProperty<T, VALUE> & DbPersistent<T, UUID>,
-		VALUE extends Comparable<VALUE>> extends UIEntity<T> {
+public abstract class PropertyUI<T extends AbstractProperty<T, VALUE>,
+		VALUE> extends UIEntity<T> {
 
-	protected abstract String toString(VALUE value);
+	public abstract String toString(VALUE value);
 
-	protected abstract VALUE fromString(String s);
+	public abstract VALUE fromString(String s);
 
-	protected abstract T createProperty(PropertyField propertyField, VALUE value);
+	public abstract T createProperty(PropertyField propertyField, VALUE value);
 
-	protected abstract Node createValueNode();
+	public abstract Node createValueNode();
 
-	protected abstract VALUE getValueFromNode(Node valueNode);
+	public abstract VALUE getValueFromNode(Node valueNode);
 
-	protected abstract void setValueToNode(Node valueNode, VALUE value);
+	public abstract void setValueToNode(Node valueNode, VALUE value);
 
-	protected abstract VALUE getDefaultValue();
+	public abstract VALUE getDefaultValue();
 
 	@Override
 	public List<AbstractColumn<T, ?>> createColumns(Table<T> table, List<T> items) {

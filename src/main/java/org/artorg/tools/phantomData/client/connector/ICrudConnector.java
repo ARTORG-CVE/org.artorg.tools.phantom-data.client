@@ -10,6 +10,8 @@ import java.util.stream.Stream;
 import org.artorg.tools.phantomData.client.util.StreamUtils;
 import org.artorg.tools.phantomData.server.model.Identifiable;
 
+import javafx.collections.MapChangeListener;
+
 public interface ICrudConnector<T> {
 	
 	boolean create(T t);
@@ -25,6 +27,12 @@ public interface ICrudConnector<T> {
 	<ID, V> T readByAttribute(V attribute, String annString);
 	
 	<ID> Boolean existById(ID id);
+	
+	void reload();
+	
+	void addListener(MapChangeListener<String, T> listener);
+
+	void removeListener(MapChangeListener<String, T> listener);
 	
 	default boolean create(List<T> t) {
 		return StreamUtils.forEach(this::create, t);

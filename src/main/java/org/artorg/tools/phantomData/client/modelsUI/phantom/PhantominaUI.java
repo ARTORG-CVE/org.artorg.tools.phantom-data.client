@@ -6,9 +6,12 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
+import org.artorg.tools.phantomData.client.connector.Connectors;
+import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.editor.PropertyNode;
+import org.artorg.tools.phantomData.client.exceptions.InvalidUIInputException;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
@@ -18,6 +21,8 @@ import org.artorg.tools.phantomData.server.models.phantom.LiteratureBase;
 import org.artorg.tools.phantomData.server.models.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.models.phantom.Special;
 import org.artorg.tools.phantomData.server.util.FxUtil;
+
+import com.google.common.base.Supplier;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -67,7 +72,6 @@ public class PhantominaUI extends UIEntity<Phantomina> {
 
 	@Override
 	public ItemEditor<Phantomina> createEditFactory() {
-		ItemEditor<Phantomina> creator = new ItemEditor<>(getItemClass());
 		VBox vBox = new VBox();
 		List<PropertyEntry> entries = new ArrayList<>();
 		Label labelIdValue = new Label("id");
@@ -75,6 +79,32 @@ public class PhantominaUI extends UIEntity<Phantomina> {
 		ComboBox<FabricationType> comboBoxFabricationType = new ComboBox<>();
 		ComboBox<LiteratureBase> comboBoxLiteratureBase = new ComboBox<>();
 		ComboBox<Special> comboBoxSpecial = new ComboBox<>();
+
+		Supplier<String> pidGetter = () -> {
+			return Phantomina.createProductId(
+					comboBoxAnnulusDiameter.getSelectionModel().getSelectedItem(),
+					comboBoxFabricationType.getSelectionModel().getSelectedItem(),
+					comboBoxLiteratureBase.getSelectionModel().getSelectedItem(),
+					comboBoxSpecial.getSelectionModel().getSelectedItem());
+		};
+		Runnable updateId = () -> {
+			labelIdValue.setText(pidGetter.get());
+		};
+
+		ItemEditor<Phantomina> creator = new ItemEditor<Phantomina>(getItemClass()) {
+
+			@Override
+			public void onCreateBeforeApplyChanges(Phantomina item) throws InvalidUIInputException {
+				ICrudConnector<Phantomina> connector = Connectors.get(Phantomina.class);
+				List<Phantomina> phantominas = connector.readAllAsList();
+				String pid = pidGetter.get();
+				if (phantominas.stream().filter(p -> p.getProductId().equals(pid)).findFirst()
+						.isPresent())
+					throw new InvalidUIInputException(
+							String.format("Phantomina with product id %s exists already", pid));
+			}
+
+		};
 
 		entries.add(new PropertyEntry("PID", labelIdValue));
 		creator.createComboBox(AnnulusDiameter.class, comboBoxAnnulusDiameter)
@@ -85,22 +115,18 @@ public class PhantominaUI extends UIEntity<Phantomina> {
 		creator.createComboBox(FabricationType.class, comboBoxFabricationType)
 				.of(item -> item.getFabricationType(),
 						(item, value) -> item.setFabricationType(value))
-				.setMapper(f -> f.getValue()).addLabeled("Fabrication type", entries);
+				.setMapper(f -> String.format("(%s) %s", f.getShortcut(), f.getValue()))
+				.addLabeled("Fabrication type", entries);
 		creator.createComboBox(LiteratureBase.class, comboBoxLiteratureBase)
 				.of(item -> item.getLiteratureBase(),
 						(item, value) -> item.setLiteratureBase(value))
-				.setMapper(l -> l.getValue()).addLabeled("Literature type", entries);
+				.setMapper(f -> String.format("(%s) %s", f.getShortcut(), f.getValue()))
+				.addLabeled("Literature type", entries);
 		creator.createComboBox(Special.class, comboBoxSpecial)
 				.of(item -> item.getSpecial(), (item, value) -> item.setSpecial(value))
-				.setMapper(s -> s.getShortcut()).addLabeled("Special", entries);
+				.setMapper(s -> String.format("%s: %s", s.getShortcut(), s.getDescription()))
+				.addLabeled("Special", entries);
 
-		Runnable updateId = () -> {
-			labelIdValue.setText(Phantomina.createProductId(
-					comboBoxAnnulusDiameter.getSelectionModel().getSelectedItem(),
-					comboBoxFabricationType.getSelectionModel().getSelectedItem(),
-					comboBoxLiteratureBase.getSelectionModel().getSelectedItem(),
-					comboBoxSpecial.getSelectionModel().getSelectedItem()));
-		};
 		comboBoxAnnulusDiameter.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> updateId.run());
 		comboBoxFabricationType.getSelectionModel().selectedItemProperty()

@@ -19,37 +19,37 @@ public class StringPropertyUI extends PropertyUI<StringProperty,String> {
 	}
 
 	@Override
-	protected String toString(String value) {
+	public String toString(String value) {
 		return value;
 	}
 
 	@Override
-	protected String fromString(String s) {
+	public String fromString(String s) {
 		return s;
 	}
 
 	@Override
-	protected StringProperty createProperty(PropertyField propertyField, String value) {
+	public StringProperty createProperty(PropertyField propertyField, String value) {
 		return new StringProperty(propertyField, value);
 	}
 
 	@Override
-	protected Node createValueNode() {
+	public Node createValueNode() {
 		return new TextField();
 	}
 
 	@Override
-	protected String getValueFromNode(Node valueNode) {
+	public String getValueFromNode(Node valueNode) {
 		return ((TextField)valueNode).getText();
 	}
 
 	@Override
-	protected void setValueToNode(Node valueNode, String value) {
+	public void setValueToNode(Node valueNode, String value) {
 		((TextField)valueNode).setText(value);
 	}
 
 	@Override
-	protected String getDefaultValue() {
+	public String getDefaultValue() {
 		return "";
 	}
 

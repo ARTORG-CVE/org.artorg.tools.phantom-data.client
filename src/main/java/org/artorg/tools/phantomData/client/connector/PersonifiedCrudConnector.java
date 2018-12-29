@@ -1,12 +1,12 @@
 package org.artorg.tools.phantomData.client.connector;
 
+import java.util.Date;
 import java.util.function.Supplier;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
-import org.artorg.tools.phantomData.server.model.AbstractPropertifiedEntity;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
 
 import javafx.application.Platform;
@@ -30,13 +30,13 @@ public class PersonifiedCrudConnector<T> extends CrudConnector<T> {
 			});
 			return false;
 		}
-		return create(t, getUser());
-	}
-	
-	private boolean create(T t, Person p) {
-		if (t instanceof AbstractPersonifiedEntity) {
-			((AbstractPersonifiedEntity<?>)t).setCreator(p);
-			((AbstractPersonifiedEntity<?>)t).setChanger(p);
+		Person user = getUser();
+		if (AbstractPersonifiedEntity.class.isAssignableFrom(t.getClass())) {
+			AbstractPersonifiedEntity<?> item = ((AbstractPersonifiedEntity<?>)t);
+			item.setCreator(user);
+			item.setDateAdded(new Date());
+			item.setChanger(user);
+			item.setDateLastModified(new Date());
 		}
 		return super.create(t);
 	}
@@ -49,27 +49,17 @@ public class PersonifiedCrudConnector<T> extends CrudConnector<T> {
 			});
 			return false;
 		}
-		return update(t, getUser());
-	}
-	
-	private boolean update(T t, Person p) {
-		if (t instanceof AbstractPropertifiedEntity)
-			((AbstractPropertifiedEntity<?>)t).changed(p);
+		Person user = getUser();
+		if (AbstractPersonifiedEntity.class.isAssignableFrom(t.getClass())) {
+			AbstractPersonifiedEntity<?> item = ((AbstractPersonifiedEntity<?>)t);
+			item.setChanger(user);
+			item.setDateLastModified(new Date());
+		}
 		return super.update(t);
 	}
 	
 	@Override
 	public <ID> boolean deleteById(ID id) {
-		if (!UserAdmin.isUserLoggedIn()) {
-			Platform.runLater(() -> {
-			Main.getMainController().openLoginLogoutFrame();
-			});
-			return false;
-		}
-		return deleteById(id, getUser());
-	}
-	
-	public <ID> boolean deleteById(ID id, Person p) {
 		if (!UserAdmin.isUserLoggedIn()) {
 			Platform.runLater(() -> {
 			Main.getMainController().openLoginLogoutFrame();

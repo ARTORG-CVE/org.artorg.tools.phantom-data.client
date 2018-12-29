@@ -3,7 +3,6 @@ package org.artorg.tools.phantomData.client.table;
 import java.util.List;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
-import org.artorg.tools.phantomData.client.connector.CrudConnector;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.server.model.Identifiable;
@@ -35,9 +34,9 @@ public abstract class DbTable<ITEM> extends Table<ITEM> {
 	}
 
 	private void setListening(boolean b) {
-		if (b) ((CrudConnector<ITEM>) connector).addListener(listener);
+		if (b) connector.addListener(listener);
 		else
-			((CrudConnector<ITEM>) connector).removeListener(listener);
+			 connector.removeListener(listener);
 	}
 
 	private void applyChanges(Change<? extends String, ? extends ITEM> change, List<ITEM> items) {
@@ -78,7 +77,7 @@ public abstract class DbTable<ITEM> extends Table<ITEM> {
 		if (connector == null) throw new NullPointerException();
 
 		getItems().removeListener(getItemListChangeListener());
-		if (connector instanceof CrudConnector) ((CrudConnector<?>) connector).reload();
+		connector.reload();
 		readAllData();
 		getItems().addListener(getItemListChangeListener());
 		setListening(true);

@@ -317,6 +317,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 		addMenuItem(rowMenu, "Edit item", event -> {
 			ItemEditor<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
+			if (controller == null) return;
 			controller.editItem(row.getItem());
 
 			addTab(itemAddEditTabPane.getTabPane(), controller,
