@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.exceptions.DeleteException;
+import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
+import org.artorg.tools.phantomData.client.exceptions.PostException;
+import org.artorg.tools.phantomData.client.exceptions.PutException;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 
 import javafx.collections.MapChangeListener;
@@ -33,7 +37,7 @@ public class WrapperConnector<T> implements ICrudConnector<T> {
 	}
 
 	@Override
-	public boolean create(T t) {
+	public boolean create(T t) throws NoUserLoggedInException, PostException {
 		return getConnector(t.getClass()).create(t);
 	}
 
@@ -46,12 +50,12 @@ public class WrapperConnector<T> implements ICrudConnector<T> {
 	}
 
 	@Override
-	public boolean update(T t) {
+	public boolean update(T t) throws NoUserLoggedInException, PutException {
 		return getConnector(t.getClass()).update(t);
 	}
 
 	@Override
-	public <ID> boolean deleteById(ID id) {
+	public <ID> boolean deleteById(ID id) throws NoUserLoggedInException, DeleteException {
 		for (ICrudConnector<?> connector : getConnectors())
 			if (connector.existById(id)) return connector.deleteById(id);
 		return false;
@@ -100,6 +104,11 @@ public class WrapperConnector<T> implements ICrudConnector<T> {
 	public void removeListener(MapChangeListener<String, T> listener) {
 		for (ICrudConnector connector : getConnectors())
 			connector.removeListener(listener);
+	}
+
+	@Override
+	public Class<T> getItemClass() {
+		return superClass;
 	}
 
 }

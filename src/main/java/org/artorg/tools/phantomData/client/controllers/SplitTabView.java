@@ -17,12 +17,13 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.artorg.tools.phantomData.client.Main;
-import org.artorg.tools.phantomData.client.admin.UserAdmin;
-import org.artorg.tools.phantomData.client.beans.NamedTreeItem;
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
+import org.artorg.tools.phantomData.client.beans.NamedTreeItem;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
+import org.artorg.tools.phantomData.client.exceptions.DeleteException;
+import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.SmartSplitTabPane;
@@ -200,7 +201,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		menuItem.setOnAction(event -> {
 			ItemEditor<T> controller =
 					Main.getUIEntity(tableViewSpring.getItemClass()).createEditFactory();
-			controller.createItem();
+			controller.showCreateMode();
 			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Add " + tableViewSpring.getTable().getItemName());
 		});
@@ -226,7 +227,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		menuItem = new MenuItem("Add item");
 		menuItem.setOnAction(event -> {
 			ItemEditor<?> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
-			controller.createItem();
+			controller.showCreateMode();
 			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Add " + view.getTable().getItemName());
 		});
@@ -252,7 +253,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 				FxUtil.runNewSingleThreaded(() -> {
 					selectedDbFiles.stream().forEach(dbFile -> {
-						File srcFile = dbFile.getFile();
+						File srcFile = dbFile.createFile();
 						try {
 							Desktop.getDesktop().open(srcFile);
 						} catch (IOException e) {
@@ -279,7 +280,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 				if (targetDir != null) {
 					FxUtil.runNewSingleThreaded(() -> {
 						selectedDbFiles.stream().forEach(dbFile -> {
-							File srcFile = dbFile.getFile();
+							File srcFile = dbFile.createFile();
 							File destFile = Paths
 									.get(targetDir.getPath(),
 											dbFile.getName() + "." + dbFile.getExtension())
@@ -297,7 +298,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 			row.setOnMouseClicked(event -> {
 				if (event.getClickCount() > 1) {
 					FxUtil.runNewSingleThreaded(() -> {
-						File srcFile = ((DbFile) row.getItem()).getFile();
+						File srcFile = ((DbFile) row.getItem()).createFile();
 						try {
 							Desktop.getDesktop().open(srcFile);
 						} catch (IOException e) {
@@ -318,7 +319,12 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		addMenuItem(rowMenu, "Edit item", event -> {
 			ItemEditor<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
 			if (controller == null) return;
-			controller.editItem(row.getItem());
+				controller.showEditMode(row.getItem());
+//			} catch (PutException e) {
+//				Logger.warn.println(e.getMessage());
+//				e.showAlert();
+//				return;
+//			}
 
 			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Edit " + view.getTable().getItemName());
@@ -326,19 +332,24 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 		addMenuItem(rowMenu, "Add item", event -> {
 			ItemEditor<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
-			controller.createItem(row.getItem());
+			controller.showCreateMode(row.getItem());
 			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Add " + view.getTable().getItemName());
 		});
 
 		addMenuItem(rowMenu, "Delete", event -> {
-			if (!UserAdmin.isUserLoggedIn()) Main.getMainController().openLoginLogoutFrame();
-			else {
 				ICrudConnector<T> connector =
 						(ICrudConnector<T>) Connectors.get(view.getItemClass());
-				if (connector.deleteById(((Identifiable<?>) row.getItem()).getId()))
-					view.getItems().remove(row.getItem());
-			}
+				try {
+					if (connector.deleteById(((Identifiable<?>) row.getItem()).getId()))
+						view.getItems().remove(row.getItem());
+				} catch (NoUserLoggedInException e) {
+					Logger.warn.println(e.getMessage());
+					e.showAlert();
+				} catch (DeleteException e) {
+					Logger.warn.println(e.getMessage());
+					e.showAlert();
+				}
 		});
 
 		addMenuItem(rowMenu, "Open 3d Viewer", event -> {
@@ -389,7 +400,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 	private <T> File get3dFile(T item) {
 		if (item instanceof DbFile) {
 			if (((DbFile) item).getExtension().equalsIgnoreCase("stl"))
-				return ((DbFile) item).getFile();
+				return ((DbFile) item).createFile();
 			else
 				return null;
 		}
@@ -398,7 +409,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		if (files != null && !files.isEmpty()) {
 			Optional<DbFile> optionalFile = files.stream()
 					.filter(dbFile -> dbFile.getExtension().equalsIgnoreCase("stl")).findFirst();
-			if (optionalFile.isPresent()) return optionalFile.get().getFile();
+			if (optionalFile.isPresent()) return optionalFile.get().createFile();
 		}
 		return null;
 	}
@@ -428,7 +439,8 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 	@SuppressWarnings("unchecked")
 	private <T, U> U getValue(T item, String name) {
-		EntityBeanInfo<T> beanInfo = Main.getUIEntity((Class<T>)item.getClass()).getEntityBeanInfo();
+		EntityBeanInfo<T> beanInfo =
+				Main.getUIEntity((Class<T>) item.getClass()).getEntityBeanInfo();
 		List<PropertyDescriptor> descriptors = beanInfo.getAllPropertyDescriptors().stream()
 				.filter(d -> d.getName().equals("files")).collect(Collectors.toList());
 

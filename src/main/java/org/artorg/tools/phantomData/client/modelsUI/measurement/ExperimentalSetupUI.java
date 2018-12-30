@@ -5,17 +5,12 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
-import org.artorg.tools.phantomData.client.editor.PropertyEntry;
-import org.artorg.tools.phantomData.client.editor.PropertyNode;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
 import org.artorg.tools.phantomData.server.models.measurement.ExperimentalSetup;
-import org.artorg.tools.phantomData.server.util.FxUtil;
-
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.VBox;
 
 public class ExperimentalSetupUI extends UIEntity<ExperimentalSetup> {
 
@@ -29,7 +24,8 @@ public class ExperimentalSetupUI extends UIEntity<ExperimentalSetup> {
 	}
 
 	@Override
-	public List<AbstractColumn<ExperimentalSetup, ?>> createColumns(Table<ExperimentalSetup> table, List<ExperimentalSetup> items) {
+	public List<AbstractColumn<ExperimentalSetup, ?>> createColumns(Table<ExperimentalSetup> table,
+			List<ExperimentalSetup> items) {
 		List<AbstractColumn<ExperimentalSetup, ?>> columns = new ArrayList<>();
 		ColumnCreator<ExperimentalSetup, ExperimentalSetup> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Short name", path -> path.getShortName(),
@@ -47,24 +43,27 @@ public class ExperimentalSetupUI extends UIEntity<ExperimentalSetup> {
 
 	@Override
 	public ItemEditor<ExperimentalSetup> createEditFactory() {
-		ItemEditor<ExperimentalSetup> creator = new ItemEditor<>(getItemClass());
-		VBox vBox = new VBox();
-		
-		List<PropertyEntry> entries = new ArrayList<>();
-		creator.createTextField(item -> item.getShortName(), (item,value) -> item.setShortName(value)).addLabeled("Short name", entries);
-		creator.createTextField(item -> item.getLongName(), (item,value) -> item.setLongName(value)).addLabeled("Long name", entries);
-		creator.createTextField(item -> item.getDescription(), (item,value) -> item.setDescription(value)).addLabeled("Description", entries);
-		TitledPane generalPane = creator.createTitledPane(entries, "General");
-		vBox.getChildren().add(generalPane);
-		
-		PropertyNode<ExperimentalSetup,?> selector;
-		selector = creator.createSelector(DbFile.class).titled("Files", item -> item.getFiles(),
-			(item, files) -> item.setFiles((List<DbFile>) files));
-		vBox.getChildren().add(selector.getParentNode());
-		
-		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
-		
-		FxUtil.addToPane(creator, vBox);
+		ItemEditor<ExperimentalSetup> creator = new ItemEditor<ExperimentalSetup>(getItemClass()) {
+
+			@Override
+			public void createPropertyGridPanes(Creator<ExperimentalSetup> creator) {
+				creator.createTextField(item -> item.getShortName(),
+						(item, value) -> item.setShortName(value)).addLabeled("Short name");
+				creator.createTextField(item -> item.getLongName(),
+						(item, value) -> item.setLongName(value)).addLabeled("Long name");
+				creator.createTextField(item -> item.getDescription(),
+						(item, value) -> item.setDescription(value)).addLabeled("Description");
+				creator.addTitledPropertyPane("General");
+			}
+
+			@Override
+			public void createSelectors(Creator<ExperimentalSetup> creator) {
+				creator.addSelector("Files", DbFile.class, item -> item.getFiles(),
+						(item, files) -> item.setFiles((List<DbFile>) files));
+			}
+
+		};
+		creator.addApplyButton();
 		return creator;
 	}
 

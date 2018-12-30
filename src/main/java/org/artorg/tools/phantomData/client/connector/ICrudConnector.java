@@ -7,20 +7,25 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.artorg.tools.phantomData.client.util.StreamUtils;
+import org.artorg.tools.phantomData.client.exceptions.DeleteException;
+import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
+import org.artorg.tools.phantomData.client.exceptions.PostException;
+import org.artorg.tools.phantomData.client.exceptions.PutException;
 import org.artorg.tools.phantomData.server.model.Identifiable;
 
 import javafx.collections.MapChangeListener;
 
 public interface ICrudConnector<T> {
 	
-	boolean create(T t);
+	Class<T> getItemClass();
+	
+	boolean create(T t) throws NoUserLoggedInException, PostException;
 	
 	<ID> T readById(ID id);
 	
-	boolean update(T t);
+	boolean update(T t) throws NoUserLoggedInException, PutException;
 	
-	<ID> boolean deleteById(ID id);
+	<ID> boolean deleteById(ID id) throws NoUserLoggedInException, DeleteException;
 	
 	T[] readAll();
 	
@@ -34,12 +39,20 @@ public interface ICrudConnector<T> {
 
 	void removeListener(MapChangeListener<String, T> listener);
 	
-	default boolean create(List<T> t) {
-		return StreamUtils.forEach(this::create, t);
+	default boolean create(List<T> t) throws NoUserLoggedInException, PostException {
+		if (t == null) throw new PostException(getItemClass(), " item == null");
+		for (T e: t)
+			if (!create(e))
+				return false;
+		return true;
 	}
 	
-	default boolean create(T[] t) {
-		return StreamUtils.forEach(item -> create(item), t);
+	default boolean create(T[] t) throws NoUserLoggedInException, PostException {
+		if (t == null) throw new PostException(getItemClass(), " item == null");
+		for (T e: t)
+			if (!create(e))
+				return false;
+		return true;
 	}
 	
 	default T read(T t) {
@@ -60,31 +73,47 @@ public interface ICrudConnector<T> {
 		return Arrays.stream(readAll());
 	}
 	
-	default <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean delete(U t) {
+	default <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean delete(U t) throws NoUserLoggedInException, DeleteException {
 		return deleteById((ID)t.getId());
 	}
 	
-	default <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean delete(List<U> t) {
-		return StreamUtils.forEach(this::delete, t);
+	default <U extends Identifiable<ID>, ID extends Comparable<ID>> boolean delete(List<U> t) throws NoUserLoggedInException, DeleteException {
+		for (U e: t)
+			if (!delete(e))
+				return false;
+		return true;
 	}
 	
-	default boolean delete(T[] t) {
-		return StreamUtils.forEach(item -> deleteById(((Identifiable<?>)item).getId()), t);
+	default boolean delete(T[] t) throws NoUserLoggedInException, DeleteException {
+		for (T e: t)
+			if (!deleteById(((Identifiable<?>)e).getId()))
+				return false;
+		return true;
 	}
 	
-	default boolean update(List<T> t) {
-		return StreamUtils.forEach(this::update, t);
+	default boolean update(List<T> t) throws NoUserLoggedInException, PutException {
+		for (T e: t)
+			if (!update(e))
+				return false;
+		return true;
 	}
 	
-	default boolean update(Set<T> t) {
-		return StreamUtils.forEach(this::update, t);
+	default boolean update(Set<T> t) throws NoUserLoggedInException, PutException {
+		for (T e: t)
+			if (!update(e))
+				return false;
+		return true;
 	}
 	
-	default boolean update(T[] t) {
-		return StreamUtils.forEach(this::update, t);
+	default boolean update(T[] t) throws NoUserLoggedInException, PutException {
+		for (T e: t)
+			if (!update(e))
+				return false;
+		return true;
 	}
 	
-	default boolean exist(T t) {
+	default boolean exist(T t) throws NoUserLoggedInException {
+		if (t == null) return false;
 		return existById(((Identifiable<?>)t).getId());
 	}
 	

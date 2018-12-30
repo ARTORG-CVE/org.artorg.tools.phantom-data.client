@@ -11,19 +11,22 @@ import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
+import org.artorg.tools.phantomData.client.exceptions.InvalidUIInputException;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.scene.SelectableLabel;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
+import org.artorg.tools.phantomData.server.models.base.FileTag;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
 public class DbFileUI extends UIEntity<DbFile> {
@@ -48,7 +51,7 @@ public class DbFileUI extends UIEntity<DbFile> {
 			if (iconMap.containsKey(path.getExtension()))
 				return new ImageView(iconMap.get(path.getExtension()));
 			else {
-				Image icon = FxUtil.getFileIcon(path.getFile());
+				Image icon = FxUtil.getFileIcon(path.createFile());
 				iconMap.put(path.getExtension(), icon);
 				return new ImageView(icon);
 			}
@@ -61,8 +64,6 @@ public class DbFileUI extends UIEntity<DbFile> {
 				(path, value) -> path.setExtension(value)));
 		columns.add(creator.createFilterColumn("File Tags", path -> path.getFileTags().stream()
 				.map(fileTag -> fileTag.getName()).collect(Collectors.joining(", "))));
-//		columns.add(
-//				new FilterColumn<>("Phantoms", path -> String.valueOf(path.getPhantoms().size())));
 		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
 		createPersonifiedColumns(table, columns);
 		return columns;
@@ -71,16 +72,9 @@ public class DbFileUI extends UIEntity<DbFile> {
 	@Override
 	public ItemEditor<DbFile> createEditFactory() {
 		TextField textFieldFilePath = new TextField();
-		ItemEditor<DbFile> creator = new ItemEditor<DbFile>(getItemClass()) {
-			@Override
-			public void onCreatePostSuccessful(DbFile item) {
-				item.putFile(new File(textFieldFilePath.getText()));
-			}
-		};
-		VBox vBox = new VBox();
+		SelectableLabel textFieldSwitch = new SelectableLabel();
 
-		List<PropertyEntry> entries = new ArrayList<>();
-
+		Label labelSwitch = new Label();
 		TextField textFieldName = new TextField();
 		TextField textFieldExtension = new TextField();
 		Button buttonFileChooser = new Button("Browse");
@@ -93,35 +87,62 @@ public class DbFileUI extends UIEntity<DbFile> {
 			} catch (NullPointerException e) {}
 			if (file != null) {
 				textFieldFilePath.setText(file.getAbsolutePath());
+				textFieldSwitch.setText(file.getAbsolutePath());
 				String[] splits = splitOffFileExtension(file.getName());
 				textFieldName.setText(splits[0]);
-				textFieldExtension.setText(splits[1]);
-				textFieldFilePath.setDisable(false);
-				textFieldName.setDisable(false);
-				textFieldExtension.setDisable(false);
+				textFieldExtension.setText(splits[1].toLowerCase());
 			}
 		});
 
-		entries.add(new PropertyEntry("Choose File", buttonFileChooser));
-		creator.createTextField(textFieldFilePath, item -> item.getFile().getPath(),
-				(item, value) -> {}).addLabeled("File path", entries);
-		creator.createTextField(textFieldName, item -> item.getName(),
-				(item, value) -> item.setName(value)).addLabeled("Name", entries);
-		creator.createTextField(textFieldExtension, item -> item.getExtension(),
-				(item, value) -> item.setExtension(value))
-				.setValueToNodeSetter(s -> textFieldExtension.setText(s.toLowerCase()))
-				.addLabeled("Extension", entries);
-		TitledPane generalPane = creator.createTitledPane(entries, "General");
-		vBox.getChildren().add(generalPane);
+		ItemEditor<DbFile> editor = new ItemEditor<DbFile>(getItemClass()) {
 
-		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
+			@Override
+			public void onCreateInit(DbFile item) {
+				labelSwitch.setText("File path");
+				String path = textFieldFilePath.getText();
+				String[] splits = splitOffFileExtension(path);
+				textFieldSwitch.setText(splits[0]);
+			}
 
-		FxUtil.addToPane(creator, vBox);
+			@Override
+			public void onEditInit(DbFile item) {
+				labelSwitch.setText("Id");
+				textFieldSwitch.setText(item.getId().toString());
+			}
 
-		return creator;
+			@Override
+			public void createPropertyGridPanes(Creator<DbFile> creator) {
+				creator.addPropertyEntry(new PropertyEntry("", buttonFileChooser));
+				creator.createTextField(textFieldFilePath, item -> item.createFile().getPath(),
+						(item, value) -> item.putFile(new File(value)));
+				creator.addPropertyEntry(new PropertyEntry(labelSwitch, textFieldSwitch));
+				creator.createTextField(textFieldName, item -> item.getName(),
+						(item, value) -> item.setName(value)).addLabeled("Name");
+				creator.createTextField(textFieldExtension, item -> item.getExtension(),
+						(item, value) -> item.setExtension(value)).addLabeled("Extension");
+				creator.addTitledPropertyPane("General");
+			}
+
+			@Override
+			public void createSelectors(Creator<DbFile> creator) {
+				creator.addSelector("File tags", FileTag.class, item -> item.getFileTags(),
+						(item, files) -> item.setFileTags((List<FileTag>) files));
+			}
+
+			@Override
+			public void onInputCheck() throws InvalidUIInputException {
+				File file = new File(textFieldFilePath.getText());
+				if (!file.exists()) throw new InvalidUIInputException(
+						"File does not exist '" + file.getPath() + "'");
+			}
+
+		};
+		editor.addApplyButton();
+		return editor;
 	}
 
 	private String[] splitOffFileExtension(String name) {
+		if (name.isEmpty()) return new String[] { "", "" };
 		int index = name.lastIndexOf('.');
 		String[] splits = new String[2];
 		splits[0] = name.substring(0, index);

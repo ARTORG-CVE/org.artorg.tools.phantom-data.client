@@ -1,6 +1,5 @@
 package org.artorg.tools.phantomData.client.editor;
 
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -12,6 +11,7 @@ import javafx.scene.control.Label;
 public abstract class PropertyNode<T,U> {
 	private final Class<T> itemClass;
 	private final Node controlNode;
+	private final Creator<?> creator;
 	private BiConsumer<T,U> valueToEntitySetter;
 	private Function<T,U> entityToValueEditGetter;
 	private Function<T,U> entityToValueAddGetter;
@@ -20,10 +20,11 @@ public abstract class PropertyNode<T,U> {
 	private Runnable defaultSetterRunnable;
 	private Node parentNode;
 
-	public PropertyNode(Class<T> itemClass, Node controlNode) {
+	public PropertyNode(Class<T> itemClass, Node controlNode, Creator<?> creator) {
 		this.itemClass = itemClass;
 		this.controlNode = controlNode;
 		this.parentNode = controlNode;
+		this.creator = creator;
 		valueToEntitySetter = this::valueToEntitySetterImpl;
 		entityToValueEditGetter = this::entityToValueEditGetterImpl;
 		entityToValueAddGetter = this::entityToValueAddGetterImpl;
@@ -47,7 +48,7 @@ public abstract class PropertyNode<T,U> {
 	
 	public <P> PropertyNode<P,U> map(Class<P> itemClass, Function<P,T> mapper) {
 		PropertyNode<T,U> propertyNode = this;
-		return new PropertyNode<P,U>(itemClass, propertyNode.getControlNode()) {
+		return new PropertyNode<P,U>(itemClass, propertyNode.getControlNode(), creator) {
 
 			@Override
 			protected U entityToValueEditGetterImpl(P item) {
@@ -81,8 +82,8 @@ public abstract class PropertyNode<T,U> {
 		};
 	}
 	
-	public boolean addLabeled(String labelName, List<PropertyEntry> entries) {
-		return entries.add(toPropertyEntry(labelName));
+	public boolean addLabeled(String labelName) {
+		return creator.addPropertyEntry(toPropertyEntry(labelName));
 	}
 	
 	public PropertyEntry toPropertyEntry(String labelName) {

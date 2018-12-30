@@ -6,16 +6,16 @@ import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
-import org.artorg.tools.phantomData.client.editor.PropertyEntry;
+import org.artorg.tools.phantomData.client.exceptions.InvalidUIInputException;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
+import org.artorg.tools.phantomData.server.models.base.DbFile;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
 import org.artorg.tools.phantomData.server.models.measurement.Project;
-import org.artorg.tools.phantomData.server.util.FxUtil;
 
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.TextField;
 
 public class ProjectUI extends UIEntity<Project> {
 
@@ -52,25 +52,43 @@ public class ProjectUI extends UIEntity<Project> {
 
 	@Override
 	public ItemEditor<Project> createEditFactory() {
-		ItemEditor<Project> creator = new ItemEditor<>(getItemClass());
-		VBox vBox = new VBox();
+		TextField textFieldStartYear = new TextField();
 
-		List<PropertyEntry> entries = new ArrayList<>();
-		creator.createTextField(item -> item.getName(), (item, value) -> item.setName(value))
-				.addLabeled("Prefix", entries);
-		creator.createTextField(item -> item.getDescription(),
-				(item, value) -> item.setDescription(value)).addLabeled("Description", entries);
-		creator.createTextField(item -> Short.toString(item.getStartYear()),
-				(item, value) -> item.setStartYear(Short.valueOf((value)))).addLabeled("Start year", entries);
-		creator.createComboBox(Person.class)
-				.of(item -> item.getLeader(), (item, value) -> item.setLeader(value))
-				.setMapper(l -> l.getSimpleAcademicName()).addLabeled("Leader", entries);
-		TitledPane generalPane = creator.createTitledPane(entries, "General");
-		vBox.getChildren().add(generalPane);
+		ItemEditor<Project> creator = new ItemEditor<Project>(getItemClass()) {
 
-		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
+			@Override
+			public void createPropertyGridPanes(Creator<Project> creator) {
+				creator.createTextField(item -> item.getName(),
+						(item, value) -> item.setName(value)).addLabeled("Prefix");
+				creator.createTextField(item -> item.getDescription(),
+						(item, value) -> item.setDescription(value)).addLabeled("Description");
+				creator.createTextField(textFieldStartYear,
+						item -> Short.toString(item.getStartYear()),
+						(item, value) -> item.setStartYear(Short.valueOf((value))))
+						.addLabeled("Start year");
+				creator.createComboBox(Person.class)
+						.of(item -> item.getLeader(), (item, value) -> item.setLeader(value))
+						.setMapper(l -> l.getSimpleAcademicName()).addLabeled("Leader");
+				creator.addTitledPropertyPane("General");
+			}
 
-		FxUtil.addToPane(creator, vBox);
+			@Override
+			public void createSelectors(Creator<Project> creator) {
+				creator.addSelector("Files", DbFile.class, item -> item.getFiles(),
+						(item, files) -> item.setFiles((List<DbFile>) files));
+			}
+
+			@Override
+			public void onInputCheck() throws InvalidUIInputException {
+				String startYear = textFieldStartYear.getText();
+				if (!textFieldStartYear.getText().matches("\\d{4}"))
+					throw new InvalidUIInputException(
+							"Start year has not format YYYY: '" + startYear + "'");
+
+			}
+
+		};
+		creator.addApplyButton();
 		return creator;
 	}
 

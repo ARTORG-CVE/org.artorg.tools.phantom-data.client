@@ -5,6 +5,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
+import org.artorg.tools.phantomData.client.exceptions.PutException;
 import org.artorg.tools.phantomData.client.table.Table;
 
 public abstract class AbstractColumn<T, E> {
@@ -31,7 +33,7 @@ public abstract class AbstractColumn<T, E> {
 		this.columnName = columnName;
 	}
 	
-	public abstract boolean update(T item);
+	public abstract boolean update(T item) throws NoUserLoggedInException, PutException;
 	
 	public List<E> getValues() {
 		return table.getItems().stream().map(item -> get(item)).collect(Collectors.toList());

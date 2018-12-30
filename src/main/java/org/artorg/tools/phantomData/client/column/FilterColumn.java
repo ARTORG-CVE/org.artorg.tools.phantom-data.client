@@ -5,6 +5,8 @@ import java.util.function.Function;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
+import org.artorg.tools.phantomData.client.exceptions.PutException;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
 
@@ -42,7 +44,7 @@ public class FilterColumn<T, S, R> extends AbstractFilterColumn<T, R> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public boolean update(T item) {
+	public boolean update(T item) throws NoUserLoggedInException, PutException {
 		S sub = itemToPropertyGetter.apply(item);
 		ICrudConnector<S> connector =
 				Connectors.get(((DbPersistent<S, ?>) sub).getItemClass());

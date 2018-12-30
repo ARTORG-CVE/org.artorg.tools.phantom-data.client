@@ -5,15 +5,12 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
-import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
+import org.artorg.tools.phantomData.server.models.base.DbFile;
 import org.artorg.tools.phantomData.server.models.phantom.Manufacturing;
-import org.artorg.tools.phantomData.server.util.FxUtil;
-
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.VBox;
 
 public class ManufacturingUI extends UIEntity<Manufacturing> {
 
@@ -44,20 +41,25 @@ public class ManufacturingUI extends UIEntity<Manufacturing> {
 
 	@Override
 	public ItemEditor<Manufacturing> createEditFactory() {
-		ItemEditor<Manufacturing> creator = new ItemEditor<>(getItemClass());
-		VBox vBox = new VBox();
+		ItemEditor<Manufacturing> creator = new ItemEditor<Manufacturing>(getItemClass()) {
 
-		List<PropertyEntry> generalProperties = new ArrayList<>();
-		creator.createTextField(item -> item.getName(), (item, value) -> item.setName(value))
-				.addLabeled("Shortcut", generalProperties);
-		creator.createTextField(item -> item.getDescription(),
-				(item, value) -> item.setDescription(value)).addLabeled("Description", generalProperties);
-		TitledPane generalPane = creator.createTitledPane(generalProperties, "General");
-		vBox.getChildren().add(generalPane);
+			@Override
+			public void createPropertyGridPanes(Creator<Manufacturing> creator) {
+				creator.createTextField(item -> item.getName(), (item, value) -> item.setName(value))
+						.addLabeled("Shortcut");
+				creator.createTextField(item -> item.getDescription(),
+						(item, value) -> item.setDescription(value)).addLabeled("Description");
+				creator.addTitledPropertyPane("General");
+			}
 
-		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
+			@Override
+			public void createSelectors(Creator<Manufacturing> creator) {
+				creator.addSelector("Files", DbFile.class, item -> item.getFiles(),
+						(item, files) -> item.setFiles((List<DbFile>) files));
+			}
 
-		FxUtil.addToPane(creator, vBox);
+		};
+		creator.addApplyButton();
 		return creator;
 	}
 

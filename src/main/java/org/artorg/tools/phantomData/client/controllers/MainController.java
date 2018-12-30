@@ -20,6 +20,7 @@ import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
+import org.artorg.tools.phantomData.server.models.base.FileTag;
 import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
 import org.artorg.tools.phantomData.server.models.base.property.BooleanProperty;
@@ -342,6 +343,18 @@ public class MainController extends StackPane {
 			});
 			menu.getItems().add(subMenu);
 		}
+		
+		{
+			Menu subMenu = new Menu("File");
+			addMenuItem(subMenu, "File", event -> {
+				tableFactoryCreator.accept(splitTabView, DbFile.class);
+			});
+			subMenu.getItems().add(new SeparatorMenuItem());
+			addMenuItem(subMenu, "File tag", event -> {
+				tableFactoryCreator.accept(splitTabView, FileTag.class);
+			});
+			menu.getItems().add(subMenu);
+		}
 
 		{
 			Menu subMenu = new Menu("Person");
@@ -566,7 +579,7 @@ public class MainController extends StackPane {
 			logLevel = matcher.group(4);
 			String message = matcher.group(5);
 //			String trace = matcher.group(6);
-			text = String.format("%s, %ms, %s : %s", time, millis, logLevel, message);
+			text = String.format("%s, %sms, %s : %s", time, millis, logLevel, message);
 		} else {
 			Matcher matcher2 = pattern2.matcher(text);
 			if (matcher2.find()) {

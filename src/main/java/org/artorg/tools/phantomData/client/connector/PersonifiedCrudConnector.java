@@ -3,17 +3,17 @@ package org.artorg.tools.phantomData.client.connector;
 import java.util.Date;
 import java.util.function.Supplier;
 
-import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
+import org.artorg.tools.phantomData.client.exceptions.DeleteException;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
+import org.artorg.tools.phantomData.client.exceptions.PostException;
+import org.artorg.tools.phantomData.client.exceptions.PutException;
 import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
 
-import javafx.application.Platform;
-
 public class PersonifiedCrudConnector<T> extends CrudConnector<T> {
 	private static Supplier<Person> userSupplier;
-	
+
 	static {
 		userSupplier = () -> null;
 	}
@@ -21,18 +21,12 @@ public class PersonifiedCrudConnector<T> extends CrudConnector<T> {
 	public PersonifiedCrudConnector(Class<T> itemClass) {
 		super(itemClass);
 	}
-	
+
 	@Override
-	public boolean create(T t) {
-		if (!UserAdmin.isUserLoggedIn()) {
-			Platform.runLater(() -> {
-			Main.getMainController().openLoginLogoutFrame();
-			});
-			return false;
-		}
+	public boolean create(T t) throws NoUserLoggedInException, PostException {
 		Person user = getUser();
 		if (AbstractPersonifiedEntity.class.isAssignableFrom(t.getClass())) {
-			AbstractPersonifiedEntity<?> item = ((AbstractPersonifiedEntity<?>)t);
+			AbstractPersonifiedEntity<?> item = ((AbstractPersonifiedEntity<?>) t);
 			item.setCreator(user);
 			item.setDateAdded(new Date());
 			item.setChanger(user);
@@ -40,42 +34,30 @@ public class PersonifiedCrudConnector<T> extends CrudConnector<T> {
 		}
 		return super.create(t);
 	}
-	
+
 	@Override
-	public boolean update(T t) {
-		if (!UserAdmin.isUserLoggedIn()) {
-			Platform.runLater(() -> {
-			Main.getMainController().openLoginLogoutFrame();
-			});
-			return false;
-		}
+	public boolean update(T t) throws NoUserLoggedInException, PutException {
 		Person user = getUser();
 		if (AbstractPersonifiedEntity.class.isAssignableFrom(t.getClass())) {
-			AbstractPersonifiedEntity<?> item = ((AbstractPersonifiedEntity<?>)t);
+			AbstractPersonifiedEntity<?> item = ((AbstractPersonifiedEntity<?>) t);
 			item.setChanger(user);
 			item.setDateLastModified(new Date());
 		}
 		return super.update(t);
 	}
-	
+
 	@Override
-	public <ID> boolean deleteById(ID id) {
-		if (!UserAdmin.isUserLoggedIn()) {
-			Platform.runLater(() -> {
-			Main.getMainController().openLoginLogoutFrame();
-			});
-			return false;
-		}
+	public <ID> boolean deleteById(ID id) throws NoUserLoggedInException, DeleteException {
+		if (!UserAdmin.isUserLoggedIn()) throw new NoUserLoggedInException();
 		return super.deleteById(id);
 	}
-	
+
 	public Person getUser() throws NoUserLoggedInException {
 		Person user = userSupplier.get();
-		if (user == null)
-			throw new NoUserLoggedInException();
+		if (user == null) throw new NoUserLoggedInException();
 		return user;
 	}
-	
+
 	public boolean isUserLoggedIn() {
 		Person user = userSupplier.get();
 		return user != null;

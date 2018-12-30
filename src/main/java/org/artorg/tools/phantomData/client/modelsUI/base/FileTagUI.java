@@ -5,15 +5,11 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
-import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.FileTag;
-import org.artorg.tools.phantomData.server.util.FxUtil;
-
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.VBox;
 
 public class FileTagUI extends UIEntity<FileTag> {
 
@@ -39,19 +35,21 @@ public class FileTagUI extends UIEntity<FileTag> {
 
 	@Override
 	public ItemEditor<FileTag> createEditFactory() {
-		ItemEditor<FileTag> creator = new ItemEditor<>(getItemClass());
-		VBox vBox = new VBox();
+		ItemEditor<FileTag> editor = new ItemEditor<FileTag>(getItemClass()) {
 
-		List<PropertyEntry> entries = new ArrayList<>();
-		creator.createTextField(item -> item.getName(), (item, value) -> item.setName(value))
-				.addLabeled("Name", entries);
-		TitledPane generalPane = creator.createTitledPane(entries, "General");
-		vBox.getChildren().add(generalPane);
+			@Override
+			public void createPropertyGridPanes(Creator<FileTag> creator) {
+				creator.createTextField(item -> item.getName(),
+						(item, value) -> item.setName(value)).addLabeled("Name");
+				creator.addTitledPropertyPane("General");
+			}
 
-		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
+			@Override
+			public void createSelectors(Creator<FileTag> creator) {}
 
-		FxUtil.addToPane(creator, vBox);
-		return creator;
+		};
+		editor.addApplyButton();
+		return editor;
 
 	}
 

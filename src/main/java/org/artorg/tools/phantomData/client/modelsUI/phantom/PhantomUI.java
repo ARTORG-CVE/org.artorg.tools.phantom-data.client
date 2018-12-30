@@ -1,35 +1,32 @@
 package org.artorg.tools.phantomData.client.modelsUI.phantom;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
+import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
-import org.artorg.tools.phantomData.client.editor.PropertyEntry;
-import org.artorg.tools.phantomData.client.editor.PropertyNode;
+import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
+import org.artorg.tools.phantomData.client.exceptions.InvalidUIInputException;
+import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
+import org.artorg.tools.phantomData.client.exceptions.PostException;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.modelsUI.phantom.PhantominaUI.PhantominaEditor;
 import org.artorg.tools.phantomData.client.table.Table;
-import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
-import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
-import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
-import org.artorg.tools.phantomData.server.models.phantom.LiteratureBase;
+import org.artorg.tools.phantomData.server.models.measurement.Measurement;
 import org.artorg.tools.phantomData.server.models.phantom.Manufacturing;
 import org.artorg.tools.phantomData.server.models.phantom.Phantom;
 import org.artorg.tools.phantomData.server.models.phantom.Phantomina;
-import org.artorg.tools.phantomData.server.models.phantom.Special;
 
-import com.google.common.base.Supplier;
-
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.VBox;
 
 public class PhantomUI extends UIEntity<Phantom> {
 
@@ -90,108 +87,171 @@ public class PhantomUI extends UIEntity<Phantom> {
 
 	@Override
 	public ItemEditor<Phantom> createEditFactory() {
-		VBox vBox = new VBox();
-		List<PropertyEntry> entries = new ArrayList<>();
-		Label labelIdValue = new Label("id");
-		ComboBox<AnnulusDiameter> comboBoxAnnulusDiameter = new ComboBox<>();
-		ComboBox<FabricationType> comboBoxFabricationType = new ComboBox<>();
-		ComboBox<LiteratureBase> comboBoxLiteratureBase = new ComboBox<>();
-		ComboBox<Special> comboBoxSpecial = new ComboBox<>();
 		TextField textFieldNumber = new TextField();
-
-		Supplier<String> phantominaPidSupplier = () -> {
-			return Phantomina.createProductId(
-					comboBoxAnnulusDiameter.getSelectionModel().getSelectedItem(),
-					comboBoxFabricationType.getSelectionModel().getSelectedItem(),
-					comboBoxLiteratureBase.getSelectionModel().getSelectedItem(),
-					comboBoxSpecial.getSelectionModel().getSelectedItem());
-		};
-		Supplier<String> idSupplier = () -> {
-			String sNumber = textFieldNumber.getText();
-			int number;
-			if (sNumber.isEmpty()) number = 0;
-			else
-				number = Integer.valueOf(sNumber);
-			String phantominaProductId = phantominaPidSupplier.get();
-			return Phantom.createProductId(phantominaProductId, number);
-		};
-		Runnable updateId = () -> labelIdValue.setText(idSupplier.get());
-
-		ItemEditor<Phantom> creator = new ItemEditor<Phantom>(getItemClass()) {
+		PhantominaEditor phantominaEditor =
+				(PhantominaEditor) Main.getUIEntity(Phantomina.class).createEditFactory();
+		
+		ItemEditor<Phantom> editor = new ItemEditor<Phantom>(Phantom.class) {
 
 			@Override
-			public void onCreateBeforePost(Phantom item) {
+			public void onCreateInit(Phantom item) {
+				phantominaEditor.showCreateMode();
+			}
+
+			@Override
+			public void onEditInit(Phantom item) {
+				phantominaEditor.showEditMode(item.getPhantomina());
+			}
+
+			@Override
+			public void createPropertyGridPanes(Creator<Phantom> creator) {
+				Collection<PropertyGridPane> propertyPanes =
+						phantominaEditor.getCreator().getPropertyGridPanes();
+				propertyPanes.forEach(propertyPane -> creator
+						.addPropertyEntries(propertyPane.getPropertyEntries()));
+
+				creator.createTextField(textFieldNumber, item -> Integer.toString(item.getNumber()),
+						(item, value) -> item.setNumber(Integer.valueOf(value)))
+						.addLabeled("Specific Number");
+				creator.createComboBox(Manufacturing.class)
+						.of(item -> item.getManufacturing(),
+								(item, value) -> item.setManufacturing(value))
+						.setMapper(m -> m.getName()).addLabeled("Manufacturing");
+				creator.createTextField(item -> Float.toString(item.getThickness()),
+						(item, value) -> item.setThickness(Float.valueOf(value)))
+						.addLabeled("Nominal thickness");
+				creator.addTitledPropertyPane("General");
+			}
+
+			@Override
+			public void createSelectors(Creator<Phantom> creator) {
+				creator.addSelector("Files", DbFile.class, item -> item.getFiles(),
+						(item, subItems) -> item.setFiles((List<DbFile>) subItems));
+				creator.addSelector("Measurement", Measurement.class,
+						item -> item.getMeasurements(),
+						(item, subItems) -> item.setMeasurements((List<Measurement>) subItems));
+			}
+
+			@Override
+			public void onCreateBeforePost(Phantom item)
+					throws NoUserLoggedInException, PostException, InvalidUIInputException {
 				ICrudConnector<Phantomina> connector = Connectors.get(Phantomina.class);
+				if (item.getPhantomina() == null) throw new RuntimeException();
 				if (!connector.exist(item.getPhantomina())) connector.create(item.getPhantomina());
 			}
 
 			@Override
-			public void onEditBeforApplyChanges(Phantom item) {
+			public void onCreateBeforeApplyChanges(Phantom item)
+					throws PostException, InvalidUIInputException, NoUserLoggedInException {
+				setPhantomina(item);
+			}
+
+			@Override
+			public void onEditBeforeApplyChanges(Phantom item)
+					throws PostException, InvalidUIInputException, NoUserLoggedInException {
+				setPhantomina(item);
+			}
+			
+			private void setPhantomina(Phantom item) throws PostException, InvalidUIInputException, NoUserLoggedInException {
 				ICrudConnector<Phantomina> connector = Connectors.get(Phantomina.class);
 				List<Phantomina> phantominas = connector.readAllAsList();
-				String pid = phantominaPidSupplier.get();
-				if (!phantominas.stream().filter(p -> p.getProductId().equals(pid)).findFirst()
-						.isPresent()) {
-					Phantomina phantomina = new Phantomina(
-							comboBoxAnnulusDiameter.getSelectionModel().getSelectedItem(),
-							comboBoxFabricationType.getSelectionModel().getSelectedItem(),
-							comboBoxLiteratureBase.getSelectionModel().getSelectedItem(),
-							comboBoxSpecial.getSelectionModel().getSelectedItem());
+				String pid = phantominaEditor.getPid();
+				Optional<Phantomina> optional =
+						phantominas.stream().filter(p -> p.getProductId().equals(pid)).findFirst();
+				if (optional.isPresent()) {
+					item.setPhantomina(optional.get());
+				} else {
+					Phantomina phantomina = phantominaEditor.createItem();
 					connector.create(phantomina);
 					item.setPhantomina(phantomina);
 				}
 			}
+
 		};
 
-		entries.add(new PropertyEntry("PID", labelIdValue));
-		creator.createComboBox(AnnulusDiameter.class, comboBoxAnnulusDiameter)
-				.of(item -> item.getPhantomina().getAnnulusDiameter(),
-						(item, value) -> item.getPhantomina().setAnnulusDiameter(value))
-				.setMapper(a -> String.valueOf(a.getValue()))
-				.addLabeled("Annulus diameter", entries);
-		creator.createComboBox(FabricationType.class, comboBoxFabricationType)
-				.of(item -> item.getPhantomina().getFabricationType(),
-						(item, value) -> item.getPhantomina().setFabricationType(value))
-				.setMapper(f -> f.getValue()).addLabeled("Fabrication type", entries);
-		creator.createComboBox(LiteratureBase.class, comboBoxLiteratureBase)
-				.of(item -> item.getPhantomina().getLiteratureBase(),
-						(item, value) -> item.getPhantomina().setLiteratureBase(value))
-				.setMapper(l -> l.getValue()).addLabeled("Literature type", entries);
-		creator.createComboBox(Special.class, comboBoxSpecial)
-				.of(item -> item.getPhantomina().getSpecial(),
-						(item, value) -> item.getPhantomina().setSpecial(value))
-				.setMapper(s -> s.getShortcut()).addLabeled("Special", entries);
-		creator.createTextField(textFieldNumber, item -> Integer.toString(item.getNumber()),
-				(item, value) -> item.setNumber(Integer.valueOf(value)))
-				.addLabeled("Phantom specific Number", entries);
-		creator.createComboBox(Manufacturing.class)
-				.of(item -> item.getManufacturing(), (item, value) -> item.setManufacturing(value))
-				.setMapper(m -> m.getName()).addLabeled("Manufacturing", entries);
-		creator.createTextField(item -> Float.toString(item.getThickness()),
-				(item, value) -> item.setThickness(Float.valueOf(value)))
-				.addLabeled("Nominal thickness", entries);
+//		Label labelIdValue = new Label("id");
+//		ComboBox<AnnulusDiameter> comboBoxAnnulusDiameter = new ComboBox<>();
+//		ComboBox<FabricationType> comboBoxFabricationType = new ComboBox<>();
+//		ComboBox<LiteratureBase> comboBoxLiteratureBase = new ComboBox<>();
+//		ComboBox<Special> comboBoxSpecial = new ComboBox<>();
+//		TextField textFieldNumber = new TextField();
+//
+//		Supplier<String> phantominaPidSupplier = () -> {
+//			return Phantomina.createProductId(
+//					comboBoxAnnulusDiameter.getSelectionModel().getSelectedItem(),
+//					comboBoxFabricationType.getSelectionModel().getSelectedItem(),
+//					comboBoxLiteratureBase.getSelectionModel().getSelectedItem(),
+//					comboBoxSpecial.getSelectionModel().getSelectedItem());
+//		};
+//		Supplier<String> idSupplier = () -> {
+//			String sNumber = textFieldNumber.getText();
+//			int number;
+//			if (sNumber.isEmpty()) number = 0;
+//			else
+//				number = Integer.valueOf(sNumber);
+//			String phantominaProductId = phantominaPidSupplier.get();
+//			return Phantom.createProductId(phantominaProductId, number);
+//		};
+//		Runnable updateId = () -> labelIdValue.setText(idSupplier.get());
+//
+//		ItemEditor<Phantom> creator = new ItemEditor<Phantom>(getItemClass()) {
+//
+//			@Override
+//			public void createPropertyGridPanes(Creator<Phantom> creator) {
+//				creator.addPropertyEntry(new PropertyEntry("PID", labelIdValue));
+//				creator.createComboBox(AnnulusDiameter.class, comboBoxAnnulusDiameter)
+//						.of(item -> item.getPhantomina().getAnnulusDiameter(),
+//								(item, value) -> item.getPhantomina().setAnnulusDiameter(value))
+//						.setMapper(a -> String.valueOf(a.getValue()))
+//						.addLabeled("Annulus diameter");
+//				creator.createComboBox(FabricationType.class, comboBoxFabricationType)
+//						.of(item -> item.getPhantomina().getFabricationType(),
+//								(item, value) -> item.getPhantomina().setFabricationType(value))
+//						.setMapper(f -> f.getValue()).addLabeled("Fabrication type");
+//				creator.createComboBox(LiteratureBase.class, comboBoxLiteratureBase)
+//						.of(item -> item.getPhantomina().getLiteratureBase(),
+//								(item, value) -> item.getPhantomina().setLiteratureBase(value))
+//						.setMapper(l -> l.getValue()).addLabeled("Literature type");
+//				creator.createComboBox(Special.class, comboBoxSpecial)
+//						.of(item -> item.getPhantomina().getSpecial(),
+//								(item, value) -> item.getPhantomina().setSpecial(value))
+//						.setMapper(s -> s.getShortcut()).addLabeled("Special");
+//				creator.createTextField(textFieldNumber, item -> Integer.toString(item.getNumber()),
+//						(item, value) -> item.setNumber(Integer.valueOf(value)))
+//						.addLabeled("Phantom specific Number");
+//				creator.createComboBox(Manufacturing.class)
+//						.of(item -> item.getManufacturing(),
+//								(item, value) -> item.setManufacturing(value))
+//						.setMapper(m -> m.getName()).addLabeled("Manufacturing");
+//				creator.createTextField(item -> Float.toString(item.getThickness()),
+//						(item, value) -> item.setThickness(Float.valueOf(value)))
+//						.addLabeled("Nominal thickness");
+//				creator.addTitledPropertyPane("General");
+//			}
+//
+//			@Override
+//			public void createSelectors(Creator<Phantom> creator) {
+//				creator.addSelector("Files", DbFile.class, item -> item.getFiles(),
+//						(item, subItems) -> item.setFiles((List<DbFile>) subItems));
+//				creator.addSelector("Measurement", Measurement.class,
+//						item -> item.getMeasurements(),
+//						(item, subItems) -> item.setMeasurements((List<Measurement>) subItems));
+//			}
+//
+//		};
+//		comboBoxAnnulusDiameter.getSelectionModel().selectedItemProperty()
+//				.addListener((observable, oldValue, newValue) -> updateId.run());
+//		comboBoxFabricationType.getSelectionModel().selectedItemProperty()
+//				.addListener((observable, oldValue, newValue) -> updateId.run());
+//		comboBoxLiteratureBase.getSelectionModel().selectedItemProperty()
+//				.addListener((observable, oldValue, newValue) -> updateId.run());
+//		comboBoxSpecial.getSelectionModel().selectedItemProperty()
+//				.addListener((observable, oldValue, newValue) -> updateId.run());
+//
+//		creator.addApplyButton();
 
-		comboBoxAnnulusDiameter.getSelectionModel().selectedItemProperty()
-				.addListener((observable, oldValue, newValue) -> updateId.run());
-		comboBoxFabricationType.getSelectionModel().selectedItemProperty()
-				.addListener((observable, oldValue, newValue) -> updateId.run());
-		comboBoxLiteratureBase.getSelectionModel().selectedItemProperty()
-				.addListener((observable, oldValue, newValue) -> updateId.run());
-		comboBoxSpecial.getSelectionModel().selectedItemProperty()
-				.addListener((observable, oldValue, newValue) -> updateId.run());
-
-		TitledPane generalPane = creator.createTitledPane(entries, "General");
-		vBox.getChildren().add(generalPane);
-
-		PropertyNode<Phantom, ?> selector;
-		selector = creator.createSelector(DbFile.class).titled("Files", item -> item.getFiles(),
-				(item, files) -> item.setFiles((List<DbFile>) files));
-		vBox.getChildren().add(selector.getParentNode());
-
-		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
-
-		FxUtil.addToPane(creator, vBox);
-		return creator;
+		editor.addApplyButton();
+		return editor;
 
 	}
 

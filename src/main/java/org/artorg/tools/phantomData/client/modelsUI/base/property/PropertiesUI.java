@@ -6,6 +6,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
@@ -55,21 +56,29 @@ public class PropertiesUI extends UIEntity<AbstractProperty> {
 		return new ItemEditor<AbstractProperty>(AbstractProperty.class) {
 
 			@Override
+			public void createPropertyGridPanes(Creator<AbstractProperty> creator) {}
+
+			@Override
+			public void createSelectors(Creator<AbstractProperty> creator) {}
+
+			@Override
 			public void onCreateInit(AbstractProperty item) {
-				ItemEditor<AbstractProperty> editor = (ItemEditor<AbstractProperty>) Main.getUIEntity(item.getClass()).createEditFactory();
+				ItemEditor<AbstractProperty> editor = (ItemEditor<AbstractProperty>) Main
+						.getUIEntity(item.getClass()).createEditFactory();
 				this.getChildren().clear();
 				FxUtil.addToPane(this, editor);
-				editor.createItem(item);
+				editor.showCreateMode(item);
 			}
 
 			@Override
 			public void onEditInit(AbstractProperty item) {
-				ItemEditor<AbstractProperty> editor = (ItemEditor<AbstractProperty>) Main.getUIEntity(item.getClass()).createEditFactory();
+				ItemEditor<AbstractProperty> editor = (ItemEditor<AbstractProperty>) Main
+						.getUIEntity(item.getClass()).createEditFactory();
 				this.getChildren().clear();
 				FxUtil.addToPane(this, editor);
-				editor.editItem(item);
+				editor.showEditMode(item);
 			}
-			
+
 		};
 
 	}

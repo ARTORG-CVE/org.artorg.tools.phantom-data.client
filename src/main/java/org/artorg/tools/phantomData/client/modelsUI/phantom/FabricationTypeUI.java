@@ -5,15 +5,12 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
-import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
+import org.artorg.tools.phantomData.server.models.base.DbFile;
 import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
-import org.artorg.tools.phantomData.server.util.FxUtil;
-
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.VBox;
 
 public class FabricationTypeUI extends UIEntity<FabricationType> {
 
@@ -27,15 +24,14 @@ public class FabricationTypeUI extends UIEntity<FabricationType> {
 	}
 
 	@Override
-	public List<AbstractColumn<FabricationType, ?>>
-		createColumns(Table<FabricationType> table, List<FabricationType> items) {
+	public List<AbstractColumn<FabricationType, ?>> createColumns(Table<FabricationType> table,
+			List<FabricationType> items) {
 		List<AbstractColumn<FabricationType, ?>> columns = new ArrayList<>();
-		ColumnCreator<FabricationType, FabricationType> creator =
-			new ColumnCreator<>(table);
+		ColumnCreator<FabricationType, FabricationType> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Shortcut", path -> path.getShortcut(),
-			(path, value) -> path.setShortcut(value)));
+				(path, value) -> path.setShortcut(value)));
 		columns.add(creator.createFilterColumn("Value", path -> path.getValue(),
-			(path, value) -> path.setValue(value)));
+				(path, value) -> path.setValue(value)));
 		createCountingColumn(table, "Files", columns, item -> item.getFiles());
 		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
 		createPropertyColumns(table, columns, items);
@@ -45,20 +41,25 @@ public class FabricationTypeUI extends UIEntity<FabricationType> {
 
 	@Override
 	public ItemEditor<FabricationType> createEditFactory() {
-		ItemEditor<FabricationType> creator = new ItemEditor<>(getItemClass());
-		VBox vBox = new VBox();
+		ItemEditor<FabricationType> creator = new ItemEditor<FabricationType>(getItemClass()) {
 
-		List<PropertyEntry> entries = new ArrayList<>();
-		creator.createTextField(item -> item.getShortcut(),
-			(item, value) -> item.setShortcut(value)).addLabeled("Shortcut", entries);
-		creator.createTextField(item -> item.getValue(),
-			(item, value) -> item.setValue(value)).addLabeled("Name", entries);
-		TitledPane generalPane = creator.createTitledPane(entries, "General");
-		vBox.getChildren().add(generalPane);
+			@Override
+			public void createPropertyGridPanes(Creator<FabricationType> creator) {
+				creator.createTextField(item -> item.getShortcut(),
+						(item, value) -> item.setShortcut(value)).addLabeled("Shortcut");
+				creator.createTextField(item -> item.getValue(), (item, value) -> item.setValue(value))
+						.addLabeled("Name");
+				creator.addTitledPropertyPane("General");
+			}
 
-		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
+			@Override
+			public void createSelectors(Creator<FabricationType> creator) {
+				creator.addSelector("Files", DbFile.class, item -> item.getFiles(),
+						(item, files) -> item.setFiles((List<DbFile>) files));
+			}
 
-		FxUtil.addToPane(creator, vBox);
+		};
+		creator.addApplyButton();
 		return creator;
 	}
 

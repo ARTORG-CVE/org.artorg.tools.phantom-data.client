@@ -5,17 +5,13 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
-import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
 import org.artorg.tools.phantomData.server.models.base.person.Gender;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
-import org.artorg.tools.phantomData.server.util.FxUtil;
-
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.VBox;
 
 public class PersonUI extends UIEntity<Person> {
 
@@ -45,27 +41,31 @@ public class PersonUI extends UIEntity<Person> {
 
 	@Override
 	public ItemEditor<Person> createEditFactory() {
-		ItemEditor<Person> creator = new ItemEditor<>(getItemClass());
-		VBox vBox = new VBox();
+		ItemEditor<Person> editor = new ItemEditor<Person>(getItemClass()) {
 
-		List<PropertyEntry> generalProperties = new ArrayList<>();
-		creator.createComboBox(Gender.class)
-				.of(item -> item.getGender(), (item, value) -> item.setGender(value))
-				.setMapper(g -> g.getName()).addLabeled("Gender", generalProperties);
-		creator.createComboBox(AcademicTitle.class)
-				.of(item -> item.getAcademicTitle(), (item, value) -> item.setAcademicTitle(value))
-				.setMapper(a -> a.getPrefix()).addLabeled("Academic Title", generalProperties);
-		creator.createTextField(item -> item.getFirstname(),
-				(item, value) -> item.setFirstname(value)).addLabeled("Firstname", generalProperties);
-		creator.createTextField(item -> item.getLastname(),
-				(item, value) -> item.setLastname(value)).addLabeled("Lastname", generalProperties);
-		TitledPane generalPane = creator.createTitledPane(generalProperties, "General");
-		vBox.getChildren().add(generalPane);
+			@Override
+			public void createPropertyGridPanes(Creator<Person> creator) {
+				creator.createComboBox(Gender.class)
+						.of(item -> item.getGender(), (item, value) -> item.setGender(value))
+						.setMapper(g -> g.getName()).addLabeled("Gender");
+				creator.createComboBox(AcademicTitle.class)
+						.of(item -> item.getAcademicTitle(),
+								(item, value) -> item.setAcademicTitle(value))
+						.setMapper(a -> a.getPrefix()).addLabeled("Academic Title");
+				creator.createTextField(item -> item.getFirstname(),
+						(item, value) -> item.setFirstname(value)).addLabeled("Firstname");
+				creator.createTextField(item -> item.getLastname(),
+						(item, value) -> item.setLastname(value)).addLabeled("Lastname");
+				creator.addTitledPropertyPane("General");
+			}
 
-		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
+			@Override
+			public void createSelectors(Creator<Person> creator) {}
 
-		FxUtil.addToPane(creator, vBox);
-		return creator;
+		};
+		editor.addApplyButton();
+
+		return editor;
 
 	}
 

@@ -7,9 +7,8 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
-import org.artorg.tools.phantomData.client.editor.PropertyEntry;
-import org.artorg.tools.phantomData.client.editor.PropertyNode;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
@@ -17,10 +16,6 @@ import org.artorg.tools.phantomData.server.models.base.person.Person;
 import org.artorg.tools.phantomData.server.models.measurement.ExperimentalSetup;
 import org.artorg.tools.phantomData.server.models.measurement.Measurement;
 import org.artorg.tools.phantomData.server.models.measurement.Project;
-import org.artorg.tools.phantomData.server.util.FxUtil;
-
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.VBox;
 
 public class MeasurementUI extends UIEntity<Measurement> {
 
@@ -61,38 +56,38 @@ public class MeasurementUI extends UIEntity<Measurement> {
 
 	@Override
 	public ItemEditor<Measurement> createEditFactory() {
-		ItemEditor<Measurement> creator = new ItemEditor<>(getItemClass());
-		VBox vBox = new VBox();
+		ItemEditor<Measurement> editor = new ItemEditor<Measurement>(getItemClass()) {
 
-		List<PropertyEntry> generalProperties = new ArrayList<>();
-		creator.createDatePicker((item, value) -> item.setStartDate(value),
-				item -> item.getStartDate()).addLabeled("Start date", generalProperties);
-		creator.createComboBox(Person.class)
-				.of(item -> item.getPerson(), (item, value) -> item.setPerson(value))
-				.setMapper(p -> p.getName()).addLabeled("Person", generalProperties);
-		creator.createComboBox(Project.class)
-				.of(item -> item.getProject(), (item, value) -> item.setProject(value))
-				.setMapper(p -> p.getName()).addLabeled("Project", generalProperties);
-		creator.createComboBox(ExperimentalSetup.class)
-				.of(item -> item.getExperimentalSetup(),
-						(item, value) -> item.setExperimentalSetup(value))
-				.setMapper(p -> p.getShortName())
-				.addLabeled("Experimental Setup", generalProperties);
-		TitledPane generalPane = creator.createTitledPane(generalProperties, "General");
-		vBox.getChildren().add(generalPane);
+			@Override
+			public void createPropertyGridPanes(Creator<Measurement> creator) {
+				creator.createDatePicker((item, value) -> item.setStartDate(value),
+						item -> item.getStartDate()).addLabeled("Start date");
+				creator.createComboBox(Person.class)
+						.of(item -> item.getPerson(), (item, value) -> item.setPerson(value))
+						.setMapper(p -> p.getName()).addLabeled("Person");
+				creator.createComboBox(Project.class)
+						.of(item -> item.getProject(), (item, value) -> item.setProject(value))
+						.setMapper(p -> p.getName()).addLabeled("Project");
+				creator.createComboBox(ExperimentalSetup.class)
+						.of(item -> item.getExperimentalSetup(),
+								(item, value) -> item.setExperimentalSetup(value))
+						.setMapper(p -> p.getShortName())
+						.addLabeled("Experimental Setup");
+				creator.addTitledPropertyPane("General");
+			}
 
-		PropertyNode<Measurement, ?> selector;
-		selector = creator.createSelector(DbFile.class).titled("Protocol Files",
-				item -> item.getFiles(), (item, files) -> item.setFiles((List<DbFile>) files));
-		vBox.getChildren().add(selector.getParentNode());
-		selector = creator.createSelector(DbFile.class).titled("Files", item -> item.getFiles(),
-				(item, files) -> item.setFiles((List<DbFile>) files));
-		vBox.getChildren().add(selector.getParentNode());
+			@Override
+			public void createSelectors(Creator<Measurement> creator) {
+				creator.addSelector("Protocol Files", DbFile.class,
+						item -> item.getFiles(), (item, files) -> item.setFiles((List<DbFile>) files));
+				creator.addSelector("Files", DbFile.class, item -> item.getFiles(),
+						(item, files) -> item.setFiles((List<DbFile>) files));
+			}
+			
+		};
 
-		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
-
-		FxUtil.addToPane(creator, vBox);
-		return creator;
+		editor.addApplyButton();
+		return editor;
 	}
 
 }

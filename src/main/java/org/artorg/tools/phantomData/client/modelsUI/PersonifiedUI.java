@@ -6,16 +6,15 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
-import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
-import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class PersonifiedUI extends UIEntity<AbstractPersonifiedEntity>{
+public class PersonifiedUI extends UIEntity<AbstractPersonifiedEntity> {
 
 	@Override
 	public Class<AbstractPersonifiedEntity> getItemClass() {
@@ -31,7 +30,8 @@ public class PersonifiedUI extends UIEntity<AbstractPersonifiedEntity>{
 	public List<AbstractColumn<AbstractPersonifiedEntity, ? extends Object>> createColumns(
 			Table<AbstractPersonifiedEntity> table, List<AbstractPersonifiedEntity> items) {
 		List<AbstractColumn<AbstractPersonifiedEntity, ?>> columns = new ArrayList<>();
-		ColumnCreator<AbstractPersonifiedEntity, AbstractPersonifiedEntity> creator = new ColumnCreator<>(table);
+		ColumnCreator<AbstractPersonifiedEntity, AbstractPersonifiedEntity> creator =
+				new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Type", path -> path.getClass().getSimpleName()));
 		columns.add(creator.createFilterColumn("Name", path -> path.toName()));
 		createPersonifiedColumns(table, columns);
@@ -41,29 +41,36 @@ public class PersonifiedUI extends UIEntity<AbstractPersonifiedEntity>{
 
 	@Override
 	public ItemEditor<AbstractPersonifiedEntity> createEditFactory() {
-		
+
 		return new ItemEditor<AbstractPersonifiedEntity>(AbstractPersonifiedEntity.class) {
 
 			@Override
+			public void createPropertyGridPanes(Creator<AbstractPersonifiedEntity> creator) {}
+
+			@Override
+			public void createSelectors(Creator<AbstractPersonifiedEntity> creator) {}
+
+			@Override
 			public void onCreateInit(AbstractPersonifiedEntity item) {
-				ItemEditor<AbstractPersonifiedEntity> editor = (ItemEditor<AbstractPersonifiedEntity>) Main.getUIEntity(item.getClass()).createEditFactory();
+				ItemEditor<AbstractPersonifiedEntity> editor =
+						(ItemEditor<AbstractPersonifiedEntity>) Main.getUIEntity(item.getClass())
+								.createEditFactory();
 				this.getChildren().clear();
 				FxUtil.addToPane(this, editor);
-				editor.createItem(item);
+				editor.showCreateMode(item);
 			}
 
 			@Override
 			public void onEditInit(AbstractPersonifiedEntity item) {
-				ItemEditor<AbstractPersonifiedEntity> editor = (ItemEditor<AbstractPersonifiedEntity>) Main.getUIEntity(item.getClass()).createEditFactory();
+				ItemEditor<AbstractPersonifiedEntity> editor =
+						(ItemEditor<AbstractPersonifiedEntity>) Main.getUIEntity(item.getClass())
+								.createEditFactory();
 				this.getChildren().clear();
 				FxUtil.addToPane(this, editor);
-				editor.editItem(item);
+				editor.showEditMode(item);
 			}
-			
+
 		};
-		
-//		Logger.info.println("Editing items in unpersonified view not allowed!");
-//		return null;
 	}
 
 }

@@ -8,9 +8,9 @@ import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
-import org.artorg.tools.phantomData.client.editor.PropertyNode;
 import org.artorg.tools.phantomData.client.exceptions.InvalidUIInputException;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
@@ -20,14 +20,9 @@ import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.models.phantom.LiteratureBase;
 import org.artorg.tools.phantomData.server.models.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.models.phantom.Special;
-import org.artorg.tools.phantomData.server.util.FxUtil;
-
-import com.google.common.base.Supplier;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.VBox;
 
 public class PhantominaUI extends UIEntity<Phantomina> {
 
@@ -69,63 +64,84 @@ public class PhantominaUI extends UIEntity<Phantomina> {
 		createPersonifiedColumns(table, columns);
 		return columns;
 	}
+	
+	public abstract class PhantominaEditor extends ItemEditor<Phantomina> {
+
+		public PhantominaEditor() {
+			super(Phantomina.class);
+		}
+
+		public abstract String getPid();
+		
+	}
+	
 
 	@Override
 	public ItemEditor<Phantomina> createEditFactory() {
-		VBox vBox = new VBox();
-		List<PropertyEntry> entries = new ArrayList<>();
 		Label labelIdValue = new Label("id");
 		ComboBox<AnnulusDiameter> comboBoxAnnulusDiameter = new ComboBox<>();
 		ComboBox<FabricationType> comboBoxFabricationType = new ComboBox<>();
 		ComboBox<LiteratureBase> comboBoxLiteratureBase = new ComboBox<>();
 		ComboBox<Special> comboBoxSpecial = new ComboBox<>();
-
-		Supplier<String> pidGetter = () -> {
-			return Phantomina.createProductId(
-					comboBoxAnnulusDiameter.getSelectionModel().getSelectedItem(),
-					comboBoxFabricationType.getSelectionModel().getSelectedItem(),
-					comboBoxLiteratureBase.getSelectionModel().getSelectedItem(),
-					comboBoxSpecial.getSelectionModel().getSelectedItem());
-		};
-		Runnable updateId = () -> {
-			labelIdValue.setText(pidGetter.get());
-		};
-
-		ItemEditor<Phantomina> creator = new ItemEditor<Phantomina>(getItemClass()) {
+		
+		PhantominaEditor editor = new PhantominaEditor() {
+			@Override
+			public void createPropertyGridPanes(Creator<Phantomina> creator) {
+				creator.addPropertyEntry(new PropertyEntry("PID", labelIdValue));
+				creator.createComboBox(AnnulusDiameter.class, comboBoxAnnulusDiameter)
+						.of(item -> item.getAnnulusDiameter(),
+								(item, value) -> item.setAnnulusDiameter(value))
+						.setMapper(a -> String.valueOf(a.getValue()))
+						.addLabeled("Annulus diameter");
+				creator.createComboBox(FabricationType.class, comboBoxFabricationType)
+						.of(item -> item.getFabricationType(),
+								(item, value) -> item.setFabricationType(value))
+						.setMapper(f -> String.format("(%s) %s", f.getShortcut(), f.getValue()))
+						.addLabeled("Fabrication type");
+				creator.createComboBox(LiteratureBase.class, comboBoxLiteratureBase)
+						.of(item -> item.getLiteratureBase(),
+								(item, value) -> item.setLiteratureBase(value))
+						.setMapper(f -> String.format("(%s) %s", f.getShortcut(), f.getValue()))
+						.addLabeled("Literature type");
+				creator.createComboBox(Special.class, comboBoxSpecial)
+						.of(item -> item.getSpecial(), (item, value) -> item.setSpecial(value))
+						.setMapper(
+								s -> String.format("%s: %s", s.getShortcut(), s.getDescription()))
+						.addLabeled("Special");
+				creator.addTitledPropertyPane("General");
+			}
 
 			@Override
-			public void onCreateBeforeApplyChanges(Phantomina item) throws InvalidUIInputException {
+			public void createSelectors(Creator<Phantomina> creator) {
+				creator.addSelector("Files", DbFile.class,
+						item -> item.getFiles(), (item, files) -> item.setFiles((List<DbFile>) files));
+			}
+			
+			@Override
+			public void onInputCheck() throws InvalidUIInputException {
 				ICrudConnector<Phantomina> connector = Connectors.get(Phantomina.class);
 				List<Phantomina> phantominas = connector.readAllAsList();
-				String pid = pidGetter.get();
+				String pid = getPid();
 				if (phantominas.stream().filter(p -> p.getProductId().equals(pid)).findFirst()
 						.isPresent())
 					throw new InvalidUIInputException(
 							String.format("Phantomina with product id %s exists already", pid));
 			}
 
-		};
+			@Override
+			public String getPid() {
+				return Phantomina.createProductId(
+						comboBoxAnnulusDiameter.getSelectionModel().getSelectedItem(),
+						comboBoxFabricationType.getSelectionModel().getSelectedItem(),
+						comboBoxLiteratureBase.getSelectionModel().getSelectedItem(),
+						comboBoxSpecial.getSelectionModel().getSelectedItem());
+			}
 
-		entries.add(new PropertyEntry("PID", labelIdValue));
-		creator.createComboBox(AnnulusDiameter.class, comboBoxAnnulusDiameter)
-				.of(item -> item.getAnnulusDiameter(),
-						(item, value) -> item.setAnnulusDiameter(value))
-				.setMapper(a -> String.valueOf(a.getValue()))
-				.addLabeled("Annulus diameter", entries);
-		creator.createComboBox(FabricationType.class, comboBoxFabricationType)
-				.of(item -> item.getFabricationType(),
-						(item, value) -> item.setFabricationType(value))
-				.setMapper(f -> String.format("(%s) %s", f.getShortcut(), f.getValue()))
-				.addLabeled("Fabrication type", entries);
-		creator.createComboBox(LiteratureBase.class, comboBoxLiteratureBase)
-				.of(item -> item.getLiteratureBase(),
-						(item, value) -> item.setLiteratureBase(value))
-				.setMapper(f -> String.format("(%s) %s", f.getShortcut(), f.getValue()))
-				.addLabeled("Literature type", entries);
-		creator.createComboBox(Special.class, comboBoxSpecial)
-				.of(item -> item.getSpecial(), (item, value) -> item.setSpecial(value))
-				.setMapper(s -> String.format("%s: %s", s.getShortcut(), s.getDescription()))
-				.addLabeled("Special", entries);
+		};
+		
+		Runnable updateId = () -> {
+			labelIdValue.setText(editor.getPid());
+		};
 
 		comboBoxAnnulusDiameter.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> updateId.run());
@@ -136,18 +152,8 @@ public class PhantominaUI extends UIEntity<Phantomina> {
 		comboBoxSpecial.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> updateId.run());
 
-		TitledPane generalPane = creator.createTitledPane(entries, "General");
-		vBox.getChildren().add(generalPane);
-
-		PropertyNode<Phantomina, ?> selector;
-		selector = creator.createSelector(DbFile.class).titled("Protocol Files",
-				item -> item.getFiles(), (item, files) -> item.setFiles((List<DbFile>) files));
-		vBox.getChildren().add(selector.getParentNode());
-
-		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
-
-		FxUtil.addToPane(creator, vBox);
-		return creator;
+		editor.addApplyButton();
+		return editor;
 	}
 
 }

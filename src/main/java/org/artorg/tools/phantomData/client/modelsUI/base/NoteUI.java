@@ -5,15 +5,11 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
-import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.Note;
-import org.artorg.tools.phantomData.server.util.FxUtil;
-
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.VBox;
 
 public class NoteUI extends UIEntity<Note> {
 
@@ -38,19 +34,21 @@ public class NoteUI extends UIEntity<Note> {
 
 	@Override
 	public ItemEditor<Note> createEditFactory() {
-		ItemEditor<Note> creator = new ItemEditor<>(getItemClass());
-		VBox vBox = new VBox();
+		ItemEditor<Note> editor = new ItemEditor<Note>(getItemClass()) {
 
-		List<PropertyEntry> entries = new ArrayList<>();
-		creator.createTextField(item -> item.getName(), (item, value) -> item.setName(value))
-				.addLabeled("Message", entries);
-		TitledPane generalPane = creator.createTitledPane(entries, "General");
-		vBox.getChildren().add(generalPane);
+			@Override
+			public void createPropertyGridPanes(Creator<Note> creator) {
+				creator.createTextField(item -> item.getName(), (item, value) -> item.setName(value))
+				.addLabeled("Message");
+				creator.addTitledPropertyPane("General");
+			}
 
-		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
-
-		FxUtil.addToPane(creator, vBox);
-		return creator;
+			@Override
+			public void createSelectors(Creator<Note> creator) {}
+			
+		};
+		editor.addApplyButton();
+		return editor;
 	}
 
 }

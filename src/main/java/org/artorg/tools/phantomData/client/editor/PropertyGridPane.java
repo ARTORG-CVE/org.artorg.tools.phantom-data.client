@@ -1,6 +1,7 @@
 package org.artorg.tools.phantomData.client.editor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javafx.application.Platform;
@@ -15,8 +16,11 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
 
 public class PropertyGridPane extends GridPane {
+	private final List<PropertyEntry> entries;
+	
 
 	public PropertyGridPane(List<PropertyEntry> entries) {
+		this.entries = Collections.unmodifiableList(entries);
 		int nRows = entries.size();
 
 		for (int row = 0; row < entries.size(); row++) {
@@ -49,7 +53,7 @@ public class PropertyGridPane extends GridPane {
 
 		Platform.runLater(() -> {
 			double textWidth = 0;
-			for (int i = 0; i < nRows; i++) {
+			for (int i = 0; i < getChildren().size()/2; i++) {
 				Text text = new Text(((Label) getChildren().get(2 * i)).getText());
 				text.applyCss();
 				double width = text.getLayoutBounds().getWidth();
@@ -60,12 +64,19 @@ public class PropertyGridPane extends GridPane {
 			col1.setMaxWidth(textWidth + 45.0);
 
 			textWidth = 0;
-			for (int i = 0; i < nRows; i++) {
+			for (int i = 0; i < getChildren().size()/2; i++) {
 				double width = getChildren().get(2 * i + 1).getLayoutBounds().getWidth();
 				if (width > textWidth) textWidth = width;
 			}
 			col2.setPrefWidth(textWidth + 25.0);
 		});
 	}
+
+
+	public List<PropertyEntry> getPropertyEntries() {
+		return entries;
+	}
+	
+	
 
 }

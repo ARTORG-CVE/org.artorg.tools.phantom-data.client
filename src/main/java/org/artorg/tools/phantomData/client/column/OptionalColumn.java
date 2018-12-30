@@ -6,6 +6,8 @@ import java.util.function.Function;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
+import org.artorg.tools.phantomData.client.exceptions.PutException;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
 
@@ -50,7 +52,7 @@ public class OptionalColumn<T, S, R> extends AbstractColumn<T, R> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public boolean update(T item) {
+	public boolean update(T item) throws NoUserLoggedInException, PutException {
 		Optional<S> optional = (Optional<S>) itemToPropertyGetter.apply(item);
 		if (!optional.isPresent()) return false;
 		S sub = optional.get();

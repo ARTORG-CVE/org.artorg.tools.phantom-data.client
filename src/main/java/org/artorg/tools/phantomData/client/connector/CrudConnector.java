@@ -11,6 +11,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.exceptions.DeleteException;
+import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
+import org.artorg.tools.phantomData.client.exceptions.PostException;
+import org.artorg.tools.phantomData.client.exceptions.PutException;
 import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
@@ -127,7 +131,7 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public T[] readAllDb() {
+	private T[] readAllDb() {
 		long startTime = System.currentTimeMillis();
 		HttpHeaders headers = createHttpHeaders();
 		RestTemplate restTemplate = new RestTemplate();
@@ -144,7 +148,8 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 	}
 
 	@Override
-	public boolean create(T t) {
+	public boolean create(T t) throws NoUserLoggedInException, PostException {
+		if (t == null) throw new PostException(getItemClass(), " item == null");
 		if (createDb(t)) {
 			map.put(((Identifiable<?>) t).getId().toString(), t);
 			return true;
@@ -152,7 +157,8 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 		return false;
 	}
 
-	public boolean createDb(T t) {
+	private boolean createDb(T t) throws PostException {
+		if (t == null) throw new PostException(getItemClass(), " item == null");
 		if (existById(((Identifiable<?>) t).getId())) return false;
 		try {
 			HttpHeaders headers = createHttpHeaders();
@@ -160,11 +166,11 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 			String url = createUrl(getAnnoStringCreate());
 			HttpEntity<T> requestEntity = new HttpEntity<T>(t, headers);
 			restTemplate.postForLocation(url, requestEntity);
-//			if (t instanceof NameGeneratable)
-//				Logger.info.println(String.format("CREATE - %s - %s",
-//						itemClass.getSimpleName(), ((NameGeneratable) t).toName()));
-//			else Logger.info.println(String.format("CREATE - %s - %s",
-//					itemClass.getSimpleName(), t.toString()));
+			if (t instanceof NameGeneratable)
+				Logger.info.println(String.format("CREATE - %s - %s",
+						itemClass.getSimpleName(), ((NameGeneratable) t).toName()));
+			else Logger.info.println(String.format("CREATE - %s - %s",
+					itemClass.getSimpleName(), t.toString()));
 			return true;
 		} catch (Exception e) {
 			handleException(e);
@@ -181,7 +187,7 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <ID> T readByIdDb(ID id) {
+	private <ID> T readByIdDb(ID id) {
 		RestTemplate restTemplate = new RestTemplate();
 		String url = createUrl(getAnnoStringRead());
 		T result = (T) restTemplate.getForObject(url, getModelClass(), id);
@@ -197,13 +203,15 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 	}
 
 	@Override
-	public boolean update(T t) {
+	public boolean update(T t) throws NoUserLoggedInException, PutException {
+		if (t == null) throw new PutException(getItemClass(), " item == null");
 		boolean result = updateDb(t);
 		if (result) map.replace(((Identifiable<?>) t).getId().toString(), t);
 		return result;
 	}
 
-	public boolean updateDb(T t) {
+	private boolean updateDb(T t) throws PutException {
+		if (t == null) throw new PutException(getItemClass(), " item == null");
 		try {
 			HttpHeaders headers = createHttpHeaders();
 			RestTemplate restTemplate = new RestTemplate();
@@ -223,13 +231,15 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 	}
 
 	@Override
-	public <ID> boolean deleteById(ID id) {
+	public <ID> boolean deleteById(ID id) throws NoUserLoggedInException, DeleteException {
+		if (id == null) throw new DeleteException(getItemClass(), " item == null");
 		boolean result = deleteByIdDb(id);
 		if (result) map.remove(id.toString());
 		return result;
 	}
 
-	public <ID> boolean deleteByIdDb(ID id) {
+	private <ID> boolean deleteByIdDb(ID id) throws DeleteException {
+		if (id == null) throw new DeleteException(getItemClass(), " item == null");
 		try {
 			HttpHeaders headers = createHttpHeaders();
 			RestTemplate restTemplate = new RestTemplate();
@@ -247,15 +257,16 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 
 	@Override
 	public <ID> Boolean existById(ID id) {
+		if (id == null) return false;
 		return map.containsKey(id.toString());
 	}
 
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>> Boolean existByIdDb(ID id) {
-		RestTemplate restTemplate = new RestTemplate();
-		String url = createUrl(getAnnoStringExist());
-		Boolean result = (Boolean) restTemplate.getForObject(url, Boolean.class, id);
-		return result;
-	}
+//	private <U extends Identifiable<ID>, ID extends Comparable<ID>> Boolean existByIdDb(ID id) {
+//		RestTemplate restTemplate = new RestTemplate();
+//		String url = createUrl(getAnnoStringExist());
+//		Boolean result = (Boolean) restTemplate.getForObject(url, Boolean.class, id);
+//		return result;
+//	}
 
 	@Override
 	public <ID, V> T readByAttribute(V attribute, String attributeName) {
@@ -265,7 +276,7 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <U extends Identifiable<ID>, ID extends Comparable<ID>, V> U
+	private <U extends Identifiable<ID>, ID extends Comparable<ID>, V> U
 			readByAttributeDb(V attribute, String attributeName) {
 		RestTemplate restTemplate = new RestTemplate();
 		String url = getUrlLocalhost() + "/" + getAnnoStringControlClass() + "/"
@@ -381,6 +392,11 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 
 	public final String getAnnoStringExist() {
 		return annoStringExist;
+	}
+
+	@Override
+	public Class<T> getItemClass() {
+		return itemClass;
 	}
 
 }

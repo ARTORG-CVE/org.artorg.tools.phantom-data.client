@@ -5,29 +5,27 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
-import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
+import org.artorg.tools.phantomData.server.models.base.DbFile;
 import org.artorg.tools.phantomData.server.models.phantom.Special;
-import org.artorg.tools.phantomData.server.util.FxUtil;
-
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.VBox;
 
 public class SpecialUI extends UIEntity<Special> {
 
 	public Class<Special> getItemClass() {
 		return Special.class;
 	}
-	
+
 	@Override
 	public String getTableName() {
 		return "Specials";
 	}
 
 	@Override
-	public List<AbstractColumn<Special, ?>> createColumns(Table<Special> table, List<Special> items) {
+	public List<AbstractColumn<Special, ?>> createColumns(Table<Special> table,
+			List<Special> items) {
 		List<AbstractColumn<Special, ?>> columns = new ArrayList<>();
 		ColumnCreator<Special, Special> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Shortcut", path -> path.getShortcut(),
@@ -43,20 +41,25 @@ public class SpecialUI extends UIEntity<Special> {
 
 	@Override
 	public ItemEditor<Special> createEditFactory() {
-		ItemEditor<Special> creator = new ItemEditor<>(getItemClass());
-		VBox vBox = new VBox();
+		ItemEditor<Special> creator = new ItemEditor<Special>(getItemClass()) {
 
-		List<PropertyEntry> entries = new ArrayList<>();
-		creator.createTextField(item -> item.getShortcut(),
-			(item, value) -> item.setShortcut(value)).addLabeled("Shortcut", entries);
-		creator.createTextField(item -> item.getDescription(),
-			(item, value) -> item.setDescription(value)).addLabeled("Description", entries);
-		TitledPane generalPane = creator.createTitledPane(entries, "General");
-		vBox.getChildren().add(generalPane);
+			@Override
+			public void createPropertyGridPanes(Creator<Special> creator) {
+				creator.createTextField(item -> item.getShortcut(),
+						(item, value) -> item.setShortcut(value)).addLabeled("Shortcut");
+				creator.createTextField(item -> item.getDescription(),
+						(item, value) -> item.setDescription(value)).addLabeled("Description");
+				creator.addTitledPropertyPane("General");
+			}
 
-		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
+			@Override
+			public void createSelectors(Creator<Special> creator) {
+				creator.addSelector("Files", DbFile.class, item -> item.getFiles(),
+						(item, subItems) -> item.setFiles((List<DbFile>) subItems));
+			}
 
-		FxUtil.addToPane(creator, vBox);
+		};
+		creator.addApplyButton();
 		return creator;
 	}
 

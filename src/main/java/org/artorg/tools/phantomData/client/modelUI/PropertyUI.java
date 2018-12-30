@@ -5,19 +5,15 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
-import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.table.Table;
-import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
 import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 
 import javafx.scene.Node;
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.VBox;
 
-public abstract class PropertyUI<T extends AbstractProperty<T, VALUE>,
-		VALUE> extends UIEntity<T> {
+public abstract class PropertyUI<T extends AbstractProperty<T, VALUE>, VALUE> extends UIEntity<T> {
 
 	public abstract String toString(VALUE value);
 
@@ -56,25 +52,27 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE>,
 
 	@Override
 	public ItemEditor<T> createEditFactory() {
-		ItemEditor<T> creator = new ItemEditor<>(getItemClass());
-		VBox vBox = new VBox();
+		ItemEditor<T> creator = new ItemEditor<T>(getItemClass()) {
 
-		List<PropertyEntry> entries = new ArrayList<>();
-		creator.createComboBox(PropertyField.class)
-				.of(item -> item.getPropertyField(), (item, value) -> item.setPropertyField(value))
-				.setMapper(p -> p.getName()).addLabeled("Property field", entries);
+			@Override
+			public void createPropertyGridPanes(Creator<T> creator) {
+				creator.createComboBox(PropertyField.class)
+						.of(item -> item.getPropertyField(),
+								(item, value) -> item.setPropertyField(value))
+						.setMapper(p -> p.getName()).addLabeled("Property field");
+				Node node = createValueNode();
+				creator.createNode((item, value) -> item.setValue(value), item -> item.getValue(),
+						item -> getDefaultValue(), node, value -> setValueToNode(node, value),
+						() -> getValueFromNode(node), () -> setValueToNode(node, getDefaultValue()))
+						.addLabeled("Value");
+				creator.addTitledPropertyPane("General");
+			}
 
-		Node node = createValueNode();
-		creator.createNode((item, value) -> item.setValue(value), item -> item.getValue(),
-				item -> getDefaultValue(), node, value -> setValueToNode(node, value),
-				() -> getValueFromNode(node), () -> setValueToNode(node, getDefaultValue()))
-				.addLabeled("Value", entries);
-		TitledPane generalPane = creator.createTitledPane(entries, "General");
-		vBox.getChildren().add(generalPane);
+			@Override
+			public void createSelectors(Creator<T> creator) {}
 
-		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
-
-		FxUtil.addToPane(creator, vBox);
+		};
+		creator.addApplyButton();
 		return creator;
 
 	}

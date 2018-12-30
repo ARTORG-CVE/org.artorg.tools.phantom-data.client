@@ -7,6 +7,7 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
+import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyEntry;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
@@ -17,9 +18,7 @@ import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 
 public class PropertyFieldUI extends UIEntity<PropertyField> {
 
@@ -60,8 +59,25 @@ public class PropertyFieldUI extends UIEntity<PropertyField> {
 		ComboBox<Class<?>> comboBoxType = new ComboBox<>();
 		TextField textFieldType = new TextField();
 		textFieldType.setDisable(true);
+		Collection<Class<?>> parentItemClasses = Main.getEntityClasses();
+		comboBoxType.setItems(FXCollections.observableArrayList(parentItemClasses));
+		FxUtil.setComboBoxCellFactory(comboBoxType, (Class<?> c) -> c.getSimpleName());
 
-		ItemEditor<PropertyField> creator = new ItemEditor<PropertyField>(getItemClass()) {
+		ItemEditor<PropertyField> editor = new ItemEditor<PropertyField>(getItemClass()) {
+			
+			@Override
+			public void createPropertyGridPanes(Creator<PropertyField> creator) {
+				creator.createTextField(item -> item.getName(),
+						(item, value) -> item.setName(value)).addLabeled("Name");
+				creator.createTextField(item -> item.getDescription(),
+						(item, value) -> item.setDescription(value)).addLabeled("Description");
+				creator.addPropertyEntry(new PropertyEntry("Type", typePane));
+				creator.addTitledPropertyPane("General");
+			}
+
+			@Override
+			public void createSelectors(Creator<PropertyField> creator) {}
+
 			@Override
 			public void onCreateInit(PropertyField item) {
 				typePane.getChildren().clear();
@@ -74,26 +90,10 @@ public class PropertyFieldUI extends UIEntity<PropertyField> {
 				FxUtil.addToPane(typePane, textFieldType);
 				textFieldType.setText(item.getType());
 			}
+
 		};
-		VBox vBox = new VBox();
-
-		Collection<Class<?>> parentItemClasses = Main.getEntityClasses();
-		comboBoxType.setItems(FXCollections.observableArrayList(parentItemClasses));
-		FxUtil.setComboBoxCellFactory(comboBoxType, (Class<?> c) -> c.getSimpleName());
-
-		List<PropertyEntry> entries = new ArrayList<>();
-		creator.createTextField(item -> item.getName(), (item, value) -> item.setName(value))
-				.addLabeled("Name", entries);
-		creator.createTextField(item -> item.getDescription(),
-				(item, value) -> item.setDescription(value)).addLabeled("Description", entries);
-		entries.add(new PropertyEntry("Type", typePane));
-		TitledPane generalPane = creator.createTitledPane(entries, "General");
-		vBox.getChildren().add(generalPane);
-
-		vBox.getChildren().add(creator.createButtonPane(creator.getApplyButton()));
-
-		FxUtil.addToPane(creator, vBox);
-		return creator;
+		editor.addApplyButton();
+		return editor;
 	}
 
 }

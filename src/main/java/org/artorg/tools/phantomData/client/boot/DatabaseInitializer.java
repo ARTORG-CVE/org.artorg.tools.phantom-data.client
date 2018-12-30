@@ -6,6 +6,9 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
+import org.artorg.tools.phantomData.client.exceptions.PostException;
+import org.artorg.tools.phantomData.client.exceptions.PutException;
 import org.artorg.tools.phantomData.server.models.base.person.*;
 import org.artorg.tools.phantomData.server.models.base.property.*;
 import org.artorg.tools.phantomData.server.models.phantom.*;
@@ -39,12 +42,17 @@ public class DatabaseInitializer {
 			Connectors.get(Manufacturing.class);
 
 	public static void initDatabase() {
-		initPerson();
-		initAnnulusDiameter();
-		initFabricationtype();
-		initLiteratureBase();
-		initSpecial();
-		initPhantoms();
+		Person admin = initPerson();
+		UserAdmin.login(admin);
+		try {
+			initAnnulusDiameter();
+			initFabricationtype();
+			initLiteratureBase();
+			initSpecial();
+			initPhantoms();
+		} catch (NoUserLoggedInException | PostException e) {
+			e.printStackTrace();
+		}
 		UserAdmin.logout();
 	}
 
@@ -57,39 +65,45 @@ public class DatabaseInitializer {
 		return false;
 	}
 
-	private static void initPerson() {
+	private static Person initPerson() {
 		ICrudConnector<AcademicTitle> academicTitleConnInit =
 			Connectors.get(AcademicTitle.class);
 		ICrudConnector<Person> personConnInit = Connectors.get(Person.class);
 		Gender male = new Gender("Male");
 		Gender female = new Gender("Female");
-		genderConn.create(new Gender[] {male, female});
-		AcademicTitle noAcademicTitle = new AcademicTitle("", "No title");
-		academicTitleConnInit.create(noAcademicTitle);
-		Person hutzli = new Person(noAcademicTitle, "Marc", "Hutzli", male);
-		personConnInit.create(hutzli);
-		personConnInit.update(hutzli);
-		academicTitleConnInit.update(noAcademicTitle);
-
-		UserAdmin.login(hutzli);
-		AcademicTitle master = new AcademicTitle("M.Sc.", "Master of Science");
-		academicTitleConn.create(new AcademicTitle("Dr.", "General Doctor title"));
-		academicTitleConn
-			.create(new AcademicTitle("Dr. med.", "Doctor title in medicine"));
-		academicTitleConn
-			.create(new AcademicTitle("Dr. phil.", "Doctor title in philosophy"));
-		academicTitleConn.create(master);
-		academicTitleConn.create(new AcademicTitle("B.Sc.", "Bachelor of Science"));
-		personConn.create(new Person(master, "Silje", "Ekroll Jahren", female));
-		personConn.create(new Person(master, "Joël", "Illi", male));
+		try {
+			genderConn.create(new Gender[] {male, female});
+			AcademicTitle noAcademicTitle = new AcademicTitle("", "No title");
+			academicTitleConnInit.create(noAcademicTitle);
+			Person hutzli = new Person(noAcademicTitle, "Marc", "Hutzli", male);
+			
+			personConnInit.create(hutzli);
+			personConnInit.update(hutzli);
+			academicTitleConnInit.update(noAcademicTitle);
+			
+			AcademicTitle master = new AcademicTitle("M.Sc.", "Master of Science");
+			academicTitleConn.create(new AcademicTitle("Dr.", "General Doctor title"));
+			academicTitleConn
+				.create(new AcademicTitle("Dr. med.", "Doctor title in medicine"));
+			academicTitleConn
+				.create(new AcademicTitle("Dr. phil.", "Doctor title in philosophy"));
+			academicTitleConn.create(master);
+			academicTitleConn.create(new AcademicTitle("B.Sc.", "Bachelor of Science"));
+			personConn.create(new Person(master, "Silje", "Ekroll Jahren", female));
+			personConn.create(new Person(master, "Joël", "Illi", male));
+			return hutzli;
+		} catch (NoUserLoggedInException | PostException | PutException e) {
+			e.printStackTrace();
+		}
+		throw new RuntimeException();	
 	}
-
-	private static void initAnnulusDiameter() {
+	
+	private static void initAnnulusDiameter() throws NoUserLoggedInException, PostException {
 		adConn.create(new AnnulusDiameter(21, 21.0));
 		adConn.create(new AnnulusDiameter(25, 25.0));
 	}
 
-	private static void initFabricationtype() {
+	private static void initFabricationtype() throws NoUserLoggedInException, PostException {
 		FabricationType fType1 = new FabricationType("A", "Small, thin");
 		fTypeConn.create(fType1);
 		fTypeConn.create(new FabricationType("B", "Small, thick"));
@@ -97,7 +111,7 @@ public class DatabaseInitializer {
 		fTypeConn.create(new FabricationType("D", "Tomo, thick"));
 	}
 
-	private static void initLiteratureBase() {
+	private static void initLiteratureBase() throws NoUserLoggedInException, PostException {
 		litBaseConn.create(new LiteratureBase("J", "Mean S&C, Reul"));
 		litBaseConn.create(new LiteratureBase("C", "Swanson and Clark"));
 		litBaseConn.create(new LiteratureBase("L", "Reul Large"));
@@ -107,7 +121,7 @@ public class DatabaseInitializer {
 		litBaseConn.create(new LiteratureBase("P", "Patient specific"));
 	}
 
-	private static void initSpecial() {
+	private static void initSpecial() throws NoUserLoggedInException, PostException {
 		PropertyField field1 = new PropertyField("has leaflets?", "", Special.class);
 		PropertyField field2 = new PropertyField("has coronaries?", "", Special.class);
 		PropertyField field3 =
@@ -157,7 +171,7 @@ public class DatabaseInitializer {
 
 	}
 
-	private static void initPhantoms() {
+	private static void initPhantoms() throws NoUserLoggedInException, PostException {
 		
 		Manufacturing manufactPrintCast = new Manufacturing("3d print cast", "description");
 		manufactConn.create(manufactPrintCast);
@@ -183,7 +197,7 @@ public class DatabaseInitializer {
 	}
 
 	private static Phantom createPhantom(int annulusDiameter, String fType,
-		String litBase, String special, int number, Manufacturing manufacturing, float thickness) {
+		String litBase, String special, int number, Manufacturing manufacturing, float thickness) throws NoUserLoggedInException, PostException {
 		AnnulusDiameter annulusDiameter2 =
 			adConn.readByAttribute(annulusDiameter, "shortcut");
 		FabricationType fType2 = fTypeConn.readByAttribute(fType, "shortcut");

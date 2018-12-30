@@ -71,24 +71,24 @@ public class StreamUtils {
 
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> boolean forEach(Predicate<T> predicate, T... t) {
-		boolean succesful = true;
-		for (int i = 0; i < t.length; i++) {
-			if (predicate.test(t[i]) == false) {
-				succesful = false;
-			}
-		}
-		return succesful;
-	}
-
-	public static <T> boolean forEach(Predicate<T> predicate, Collection<T> coll) {
-		return forEach(predicate, coll.stream());
-	}
-
-	public static <T> boolean forEach(Predicate<T> predicate, Stream<T> stream) {
-		return stream.map(e -> predicate.test(e)).filter(b -> b == false).findFirst()
-			.orElse(true);
-	}
+//	@SuppressWarnings("unchecked")
+//	public static <T> boolean forEach(Predicate<T> predicate, T... t) {
+//		boolean succesful = true;
+//		for (int i = 0; i < t.length; i++) {
+//			if (predicate.test(t[i]) == false) {
+//				succesful = false;
+//			}
+//		}
+//		return succesful;
+//	}
+//
+//	public static <T> boolean forEach(Predicate<T> predicate, Collection<T> coll) {
+//		return forEach(predicate, coll.stream());
+//	}
+//
+//	public static <T> boolean forEach(Predicate<T> predicate, Stream<T> stream) {
+//		return stream.map(e -> predicate.test(e)).filter(b -> b == false).findFirst()
+//			.orElse(true);
+//	}
 
 }

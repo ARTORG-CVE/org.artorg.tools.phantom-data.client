@@ -120,9 +120,4 @@ public abstract class DbTable<ITEM> extends Table<ITEM> {
 		return getItemClass().getSimpleName();
 	}
 
-	public void createItem(ITEM item) {
-		getConnector().create(item);
-		getItems().add(item);
-	}
-
 }
