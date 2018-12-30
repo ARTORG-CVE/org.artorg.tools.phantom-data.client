@@ -22,6 +22,7 @@ import org.artorg.tools.phantomData.client.modelsUI.base.DbFileUI;
 import org.artorg.tools.phantomData.client.modelsUI.base.FileTagUI;
 import org.artorg.tools.phantomData.client.modelsUI.base.NoteUI;
 import org.artorg.tools.phantomData.client.modelsUI.base.person.AcademicTitleUI;
+import org.artorg.tools.phantomData.client.modelsUI.base.person.GenderUI;
 import org.artorg.tools.phantomData.client.modelsUI.base.person.PersonUI;
 import org.artorg.tools.phantomData.client.modelsUI.base.property.BooleanPropertyUI;
 import org.artorg.tools.phantomData.client.modelsUI.base.property.DoublePropertyUI;
@@ -50,6 +51,7 @@ import org.artorg.tools.phantomData.server.models.base.DbFile;
 import org.artorg.tools.phantomData.server.models.base.FileTag;
 import org.artorg.tools.phantomData.server.models.base.Note;
 import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
+import org.artorg.tools.phantomData.server.models.base.person.Gender;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
 import org.artorg.tools.phantomData.server.models.base.property.BooleanProperty;
 import org.artorg.tools.phantomData.server.models.base.property.DoubleProperty;
@@ -68,7 +70,12 @@ import org.artorg.tools.phantomData.server.models.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.models.phantom.Special;
 import org.artorg.tools.phantomData.server.util.FxUtil;
 import org.reflections.Reflections;
+import org.slf4j.LoggerFactory;
 
+//import ch.qos.logback.classic.LoggerContext;
+//import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
+import ch.qos.logback.core.util.StatusPrinter;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -85,7 +92,7 @@ public class Main extends DesktopFxBootApplication {
 	private static MainController mainController;
 	private static final Set<Class<?>> entityClasses;
 	private static final Map<Class<?>, UIEntity<?>> uiEntities;
-//	private static final List<EntityBeanInfo<?>> entityBeanInfos;
+//	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Main.class);
 
 	static {
 		mainFxClass = null;
@@ -94,10 +101,26 @@ public class Main extends DesktopFxBootApplication {
 		entityClasses = reflections.getSubTypesOf(DbPersistent.class).stream()
 				.filter(c -> c.isAnnotationPresent(Entity.class)).collect(Collectors.toSet());
 		uiEntities = new HashMap<>();
-//		entityBeanInfos = new ArrayList<>();
 	}
 
 	public static void main(String[] args) {
+//		// assume SLF4J is bound to logback in the current environment
+//	    LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+//	    
+//		try {
+//		      JoranConfigurator configurator = new JoranConfigurator();
+//		      configurator.setContext(context);
+//		      // Call context.reset() to clear any previous configuration, e.g. default 
+//		      // configuration. For multi-step configuration, omit calling context.reset().
+//		      context.reset(); 
+//		      configurator.doConfigure(args[0]);
+//		    } catch (JoranException je) {
+//		      // StatusPrinter will handle this
+//		    }
+//		    StatusPrinter.printInCaseOfErrorsOrWarnings(context);
+//
+//		    logger.info("Entering application.");
+//		    
 		Application.launch(args);
 	}
 
@@ -157,6 +180,7 @@ public class Main extends DesktopFxBootApplication {
 	}
 
 	public static void loadClientStage() {
+		uiEntities.put(Gender.class, new GenderUI());
 		uiEntities.put(AcademicTitle.class, new AcademicTitleUI());
 		uiEntities.put(Person.class, new PersonUI());
 		uiEntities.put(DbFile.class, new DbFileUI());
@@ -179,12 +203,10 @@ public class Main extends DesktopFxBootApplication {
 		uiEntities.put(Special.class, new SpecialUI());
 		uiEntities.put(AbstractProperty.class, new PropertiesUI());
 		uiEntities.put(AbstractPersonifiedEntity.class, new PersonifiedUI());
-		
+
 //		getEntityClasses().stream().forEach(itemClass -> {
 //			entityBeanInfos.add(new EntityBeanInfo(itemClass));
 //		});
-		
-		
 
 		stage = new Stage();
 		mainController = new MainController(stage);
@@ -214,7 +236,7 @@ public class Main extends DesktopFxBootApplication {
 
 		getBooter().getConsoleDiverter().addErrLineConsumer((consoleLines, newLine) -> {
 			Platform.runLater(() -> {
-				mainController.setStatus("Exception thrown", false);
+				mainController.setStatus(newLine, false);
 			});
 		});
 
@@ -223,17 +245,22 @@ public class Main extends DesktopFxBootApplication {
 		stage.toFront();
 
 		started = true;
-		Logger.info.println("Client booted succesful");
+
+		if (getBooter().getConsoleFrame().isErrorOccured() || getBooter().isErrorOccured())
+			Logger.error.println("Client booted with errors");
+		else
+			Logger.info.println("Client booted succesful");
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> UIEntity<T> getUIEntity(Class<T> itemClass) {
 		return (UIEntity<T>) uiEntities.get(itemClass);
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public static <T extends AbstractProperty<T,V>, V> PropertyUI<T,V> getPropertyUIEntity(Class<T> propertyClass) {
-		return  (PropertyUI<T, V>) uiEntities.get(propertyClass);
+	public static <T extends AbstractProperty<T, V>, V> PropertyUI<T, V>
+			getPropertyUIEntity(Class<T> propertyClass) {
+		return (PropertyUI<T, V>) uiEntities.get(propertyClass);
 	}
 
 	public static Reflections getReflections() {

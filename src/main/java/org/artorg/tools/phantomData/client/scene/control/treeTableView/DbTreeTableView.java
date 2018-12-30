@@ -184,7 +184,12 @@ public class DbTreeTableView<T>
 		if (bean == null) throw new NullPointerException();
 
 		List<TreeItem<NamedTreeItem>> treeItems = new ArrayList<>();
-		EntityBeanInfo<U> beanInfo = Main.getUIEntity((Class<U>)bean.getClass()).getEntityBeanInfo();
+		EntityBeanInfo<U> beanInfo = null;
+		try {
+		beanInfo = Main.getUIEntity((Class<U>)bean.getClass()).getEntityBeanInfo();
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
 
 		treeItems.addAll(createEntityTreeItem(bean, beanInfo, level));
 		treeItems.addAll(createCollectionTreeItem(bean, beanInfo, level));

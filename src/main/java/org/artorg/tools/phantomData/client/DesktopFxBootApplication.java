@@ -15,7 +15,7 @@ import javafx.scene.Parent;
 import javafx.stage.Stage;
 
 public class DesktopFxBootApplication extends Application {
-	private static final int nConsoleLinesServer = 39;
+	private static final int nConsoleLinesServer = 40;
 	private static final int nConsoleLinesClient = 1;
 
 	public static void main(String[] args) {

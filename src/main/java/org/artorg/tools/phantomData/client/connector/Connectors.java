@@ -22,7 +22,6 @@ public class Connectors {
 		wrappingConnectorsMap = new HashMap<>();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static <T>
 		ICrudConnector<T> get(Class<T> itemClass) {
 		if (itemClass == AbstractProperty.class)
@@ -62,11 +61,11 @@ public class Connectors {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private static ICrudConnector<?> getOrCreateWrapper(Class<?> cls) {
-		if (wrappingConnectorsMap.containsKey(AbstractProperty.class))
-			return (ICrudConnector<AbstractProperty<?,?>>) wrappingConnectorsMap.get(AbstractProperty.class);
-		ICrudConnector<?> connector = new WrapperConnector<>(cls);
-		wrappingConnectorsMap.put(AbstractProperty.class, connector);
+	private static <T> ICrudConnector<T> getOrCreateWrapper(Class<T> cls) {
+		if (wrappingConnectorsMap.containsKey(cls))
+			return (ICrudConnector<T>) wrappingConnectorsMap.get(cls);
+		ICrudConnector<T> connector = new WrapperConnector<>(cls);
+		wrappingConnectorsMap.put(cls, connector);
 		return connector;
 	}
 

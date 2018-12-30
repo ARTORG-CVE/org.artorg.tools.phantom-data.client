@@ -97,8 +97,6 @@ public class MainController extends StackPane {
 			}
 		});
 
-//		VBox vBox = new VBox();
-
 		rootPane = this;
 		contentPane = new AnchorPane();
 		splitPane = new SplitPane();
@@ -121,14 +119,9 @@ public class MainController extends StackPane {
 		desktopLayout.setBottom(hBox);
 
 		FxUtil.addToPane(rootPane, desktopLayout);
-
-//		vBox.getChildren().add(menuBar);
-//		vBox.getChildren().add(contentPane);
 		VBox.setVgrow(splitPane, Priority.ALWAYS);
 		VBox.setVgrow(contentPane, Priority.ALWAYS);
-
 		splitPane.setOrientation(Orientation.VERTICAL);
-
 		splitTabViews.addListener((ListChangeListener<SplitTabView>) c -> {
 			if (c.next()) do {
 				if (c.wasAdded()) splitPane.getItems()
@@ -145,16 +138,17 @@ public class MainController extends StackPane {
 		addSplitTabView();
 		addSplitTabView();
 
+		initMenuBar(menuBar);
+		
+		FxUtil.addToPane(contentPane, splitPane);
+		
+		try {
 		getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
 		getOrCreate(0).openViewerTab(createScene3dTab(null));
 		getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));
-
-		FxUtil.addToPane(contentPane, splitPane);
-
-		initMenuBar(menuBar);
-
-//		FxUtil.addToPane(rootPane, vBox);
-
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	MenuItem menuItemLoginLogout;
@@ -343,7 +337,7 @@ public class MainController extends StackPane {
 			});
 			menu.getItems().add(subMenu);
 		}
-		
+
 		{
 			Menu subMenu = new Menu("File");
 			addMenuItem(subMenu, "File", event -> {
@@ -567,11 +561,11 @@ public class MainController extends StackPane {
 	public void setStatus(String text, boolean status) {
 		final Pattern pattern1 = Pattern.compile(
 				"(\\d+-\\d+-\\d+)\\W*(\\d+.?\\d+.?\\d+)\\W+(\\d+)ms\\W*(\\w*)\\W*(.*)(org.artorg.*)");
-		final Pattern pattern2 = Pattern.compile(
-				"(\\d+-\\d+-\\d+)\\W*(\\d+.?\\d+.?\\d+)\\W+(\\d+)ms\\W*(\\w*)\\W*(.*)");
+		final Pattern pattern2 = Pattern
+				.compile("(\\d+-\\d+-\\d+)\\W*(\\d+.?\\d+.?\\d+)\\W+(\\d+)ms\\W*(\\w*)\\W*(.*)");
 		Matcher matcher = pattern1.matcher(text);
 		String logLevel = null;
-		
+
 		if (matcher.find()) {
 //			String date = matcher.group(1);
 			String time = matcher.group(2);
@@ -612,9 +606,7 @@ public class MainController extends StackPane {
 		}
 
 		if (level == null) {
-			statusLabel.setText(text);
-			if (status) coloredStatusBox.setFill(Color.GREEN);
-			else
+			if (!status) 
 				coloredStatusBox.setFill(Color.RED);
 			return;
 		}
