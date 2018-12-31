@@ -9,7 +9,7 @@ import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
-import org.artorg.tools.phantomData.client.editor.PropertyEntry;
+import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.FxUtil;
@@ -67,12 +67,15 @@ public class PropertyFieldUI extends UIEntity<PropertyField> {
 			
 			@Override
 			public void createPropertyGridPanes(Creator<PropertyField> creator) {
+				PropertyGridPane<PropertyField> propertyPane =
+						new PropertyGridPane<PropertyField>(PropertyField.class);
 				creator.createTextField(item -> item.getName(),
-						(item, value) -> item.setName(value)).addLabeled("Name");
+						(item, value) -> item.setName(value)).addOn(propertyPane, "Name");
 				creator.createTextField(item -> item.getDescription(),
-						(item, value) -> item.setDescription(value)).addLabeled("Description");
-				creator.addPropertyEntry(new PropertyEntry("Type", typePane));
-				creator.addTitledPropertyPane("General");
+						(item, value) -> item.setDescription(value)).addOn(propertyPane, "Description");
+				propertyPane.addEntry("Type", typePane);
+				propertyPane.setTitled("General");
+				propertyPane.addOn(this);
 			}
 
 			@Override

@@ -190,7 +190,6 @@ public class DbTreeTableView<T>
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
-
 		treeItems.addAll(createEntityTreeItem(bean, beanInfo, level));
 		treeItems.addAll(createCollectionTreeItem(bean, beanInfo, level));
 		if (bean instanceof AbstractPersonifiedEntity) {

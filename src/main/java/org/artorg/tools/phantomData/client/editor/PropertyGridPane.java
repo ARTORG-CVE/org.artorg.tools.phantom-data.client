@@ -1,7 +1,6 @@
 package org.artorg.tools.phantomData.client.editor;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javafx.application.Platform;
@@ -15,68 +14,84 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
 
-public class PropertyGridPane extends GridPane {
-	private final List<PropertyEntry> entries;
+public class PropertyGridPane<T> extends PropertyNode<T> {
+//	private final List<AbstractEditor<T, ?>> abstractEditors;
+	private final ColumnConstraints column1;
+	private final ColumnConstraints column2;
+	private final GridPane gridPane;
+
+	{
+//		abstractEditors = new ArrayList<>();
+		gridPane = new GridPane();
+	}
+
+	public PropertyGridPane(Class<T> itemClass) {
+		super(itemClass);
+		column1 = new ColumnConstraints();
+		column1.setHgrow(Priority.ALWAYS);
+		column2 = new ColumnConstraints();
+		column2.setMaxWidth(Double.MAX_VALUE);
+		column2.setHgrow(Priority.ALWAYS);
+		column2.setFillWidth(true);
+		column2.setMaxWidth(Double.MAX_VALUE);
+		column2.setHalignment(HPos.RIGHT);
+		gridPane.getColumnConstraints().addAll(column1, column2);
+	}
+
+	public <U> PropertyGridPane<U> map(Class<U> cls) {
+		PropertyGridPane<U> result = new PropertyGridPane<U>(cls);
+		
+		return result;
+	}
+
+	public void addEntry(String title, Node rightNode) {
+		addEntry(new Label(title), rightNode);
+	}
 	
+	@SuppressWarnings("unchecked")
+	public void addEntry(Node leftNode, Node rightNode) {
+		if (leftNode instanceof AbstractEditor)
+			this.add((AbstractEditor<T, ?>) rightNode);
+		if (rightNode instanceof AbstractEditor)
+			this.add((AbstractEditor<T, ?>) rightNode);
+		int row = gridPane.getChildren().size() / 2;
+		if (rightNode instanceof AbstractEditor)
+			rightNode = ((AbstractEditor<?,?>)rightNode).getControlNode();
+		gridPane.add(leftNode, 0, row, 1, 1);
+		gridPane.add(rightNode, 1, row, 1, 1);
+		GridPane.setHgrow(rightNode, Priority.ALWAYS);
+		if (rightNode instanceof Control) ((Control) rightNode).setMaxWidth(Double.MAX_VALUE);
 
-	public PropertyGridPane(List<PropertyEntry> entries) {
-		this.entries = Collections.unmodifiableList(entries);
-		int nRows = entries.size();
-
-		for (int row = 0; row < entries.size(); row++) {
-			Node rightNode = entries.get(row).getRightNode();
-			add(entries.get(row).getLeftNode(), 0, row, 1, 1);
-			add(rightNode, 1, row, 1, 1);
-			setHgrow(rightNode, Priority.ALWAYS);
-			if (rightNode instanceof Control)
-				((Control) rightNode).setMaxWidth(Double.MAX_VALUE);
-		}
-
-		final RowConstraints row = new RowConstraints();
-		row.setVgrow(Priority.NEVER);
-		row.setPrefHeight(30.0);
-		row.setMinHeight(30.0);
-		List<RowConstraints> rowConstraints = new ArrayList<RowConstraints>();
-		for (int i = 0; i < nRows; i++)
-			rowConstraints.add(row);
-		getRowConstraints().addAll(rowConstraints);
-
-		final ColumnConstraints col1 = new ColumnConstraints();
-		col1.setHgrow(Priority.ALWAYS);
-		final ColumnConstraints col2 = new ColumnConstraints();
-		col2.setMaxWidth(Double.MAX_VALUE);
-		col2.setHgrow(Priority.ALWAYS);
-		col2.setFillWidth(true);
-		col2.setMaxWidth(Double.MAX_VALUE);
-		col2.setHalignment(HPos.RIGHT);
-		getColumnConstraints().addAll(col1, col2);
+		final RowConstraints rowConstraints = new RowConstraints();
+		rowConstraints.setVgrow(Priority.NEVER);
+		rowConstraints.setPrefHeight(30.0);
+		rowConstraints.setMinHeight(30.0);
+		gridPane.getRowConstraints().add(rowConstraints);
 
 		Platform.runLater(() -> {
 			double textWidth = 0;
-			for (int i = 0; i < getChildren().size()/2; i++) {
-				Text text = new Text(((Label) getChildren().get(2 * i)).getText());
-				text.applyCss();
-				double width = text.getLayoutBounds().getWidth();
-				if (width > textWidth) textWidth = width;
-			}
-			col1.setMinWidth(textWidth + 5.0);
-			col1.setPrefWidth(textWidth + 10.0);
-			col1.setMaxWidth(textWidth + 45.0);
+			Text text = new Text(((Label) gridPane.getChildren().get(2 * row)).getText());
+			text.applyCss();
+			double width = text.getLayoutBounds().getWidth();
+			if (width > textWidth) textWidth = width;
+			column1.setMinWidth(textWidth + 5.0);
+			column1.setPrefWidth(textWidth + 10.0);
+			column1.setMaxWidth(textWidth + 45.0);
 
 			textWidth = 0;
-			for (int i = 0; i < getChildren().size()/2; i++) {
-				double width = getChildren().get(2 * i + 1).getLayoutBounds().getWidth();
-				if (width > textWidth) textWidth = width;
-			}
-			col2.setPrefWidth(textWidth + 25.0);
+			width = gridPane.getChildren().get(2 * row + 1).getLayoutBounds().getWidth();
+			if (width > textWidth) textWidth = width;
+			column2.setPrefWidth(textWidth + 25.0);
 		});
 	}
 
-
-	public List<PropertyEntry> getPropertyEntries() {
-		return entries;
+	public GridPane getGridPane() {
+		return gridPane;
 	}
-	
-	
+
+	@Override
+	public Node getControlNode() {
+		return gridPane;
+	}
 
 }

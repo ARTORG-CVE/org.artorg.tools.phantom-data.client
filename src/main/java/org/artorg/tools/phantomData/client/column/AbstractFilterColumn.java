@@ -19,7 +19,7 @@ public abstract class AbstractFilterColumn<T,R> extends AbstractColumn<T, R> {
 
 	{
 		resetFilter();
-		maxFilterItems = 10;
+		maxFilterItems = 15;
 		itemsFilter = true;
 		
 	}

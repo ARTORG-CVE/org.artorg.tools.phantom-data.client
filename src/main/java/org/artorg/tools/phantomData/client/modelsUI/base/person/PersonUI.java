@@ -7,6 +7,7 @@ import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
+import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
@@ -45,18 +46,19 @@ public class PersonUI extends UIEntity<Person> {
 
 			@Override
 			public void createPropertyGridPanes(Creator<Person> creator) {
-				creator.createComboBox(Gender.class)
-						.of(item -> item.getGender(), (item, value) -> item.setGender(value))
-						.setMapper(g -> g.getName()).addLabeled("Gender");
-				creator.createComboBox(AcademicTitle.class)
-						.of(item -> item.getAcademicTitle(),
-								(item, value) -> item.setAcademicTitle(value))
-						.setMapper(a -> a.getPrefix()).addLabeled("Academic Title");
+				PropertyGridPane<Person> propertyPane = new PropertyGridPane<Person>(Person.class);
+				creator.createComboBox(Gender.class, item -> item.getGender(),
+						(item, value) -> item.setGender(value)).setMapper(g -> g.getName())
+						.addOn(propertyPane, "Gender");
+				creator.createComboBox(AcademicTitle.class, item -> item.getAcademicTitle(),
+						(item, value) -> item.setAcademicTitle(value)).setMapper(a -> a.getPrefix())
+						.addOn(propertyPane, "Academic Title");
 				creator.createTextField(item -> item.getFirstname(),
-						(item, value) -> item.setFirstname(value)).addLabeled("Firstname");
+						(item, value) -> item.setFirstname(value)).addOn(propertyPane, "Firstname");
 				creator.createTextField(item -> item.getLastname(),
-						(item, value) -> item.setLastname(value)).addLabeled("Lastname");
-				creator.addTitledPropertyPane("General");
+						(item, value) -> item.setLastname(value)).addOn(propertyPane, "Lastname");
+				propertyPane.setTitled("General");
+				propertyPane.addOn(this);
 			}
 
 			@Override

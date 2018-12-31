@@ -88,7 +88,7 @@ public class TableViewSelector<T> extends SplitPane {
 				menuItem.setOnAction(event -> moveToSelected());
 				contextMenu.getItems().add(menuItem);
 				menuItem = new MenuItem("Refresh");
-				menuItem.setOnAction(event -> ((ProTableView<?>) tableView).refresh());
+				menuItem.setOnAction(event -> tableView.refresh());
 				contextMenu.getItems().add(menuItem);
 
 				row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
@@ -108,7 +108,7 @@ public class TableViewSelector<T> extends SplitPane {
 				menuItem.setOnAction(event -> moveToSelectable());
 				contextMenu.getItems().addAll(menuItem);
 				menuItem = new MenuItem("Refresh");
-				menuItem.setOnAction(event -> ((ProTableView<?>) tableView).refresh());
+				menuItem.setOnAction(event -> tableView.refresh());
 				contextMenu.getItems().add(menuItem);
 
 				row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))

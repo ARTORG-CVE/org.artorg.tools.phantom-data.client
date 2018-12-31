@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 
+import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
 
 public class EntityBeanInfo<T> {
@@ -131,7 +132,10 @@ public class EntityBeanInfo<T> {
 			return descriptor.getReadMethod().invoke(bean);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
-		}
+		 } catch (NullPointerException e2) {
+			 e2.printStackTrace();
+			 Logger.error.println("Bean specification not followed");
+		 }
 		throw new IllegalArgumentException();
 	}
 

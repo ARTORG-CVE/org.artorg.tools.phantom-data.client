@@ -7,6 +7,7 @@ import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
+import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
 import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
@@ -56,16 +57,18 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE>, VALUE> ex
 
 			@Override
 			public void createPropertyGridPanes(Creator<T> creator) {
-				creator.createComboBox(PropertyField.class)
-						.of(item -> item.getPropertyField(),
+				PropertyGridPane<T> propertyPane = new PropertyGridPane<T>(getItemClass());
+				creator.createComboBox(PropertyField.class
+						,item -> item.getPropertyField(),
 								(item, value) -> item.setPropertyField(value))
-						.setMapper(p -> p.getName()).addLabeled("Property field");
+						.setMapper(p -> p.getName()).addOn(propertyPane, "Property field");
 				Node node = createValueNode();
-				creator.createNode((item, value) -> item.setValue(value), item -> item.getValue(),
+				creator.createNode(item -> item.getValue(), (item, value) -> item.setValue(value),
 						item -> getDefaultValue(), node, value -> setValueToNode(node, value),
 						() -> getValueFromNode(node), () -> setValueToNode(node, getDefaultValue()))
-						.addLabeled("Value");
-				creator.addTitledPropertyPane("General");
+						.addOn(propertyPane, "Value");
+				propertyPane.setTitled("General");
+				propertyPane.addOn(this);
 			}
 
 			@Override

@@ -13,7 +13,7 @@ import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
-import org.artorg.tools.phantomData.client.editor.PropertyEntry;
+import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
 import org.artorg.tools.phantomData.client.exceptions.InvalidUIInputException;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.scene.SelectableLabel;
@@ -21,7 +21,9 @@ import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
 import org.artorg.tools.phantomData.server.models.base.FileTag;
+import org.artorg.tools.phantomData.server.models.phantom.Phantomina;
 
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -112,29 +114,34 @@ public class DbFileUI extends UIEntity<DbFile> {
 
 			@Override
 			public void createPropertyGridPanes(Creator<DbFile> creator) {
-				creator.addPropertyEntry(new PropertyEntry("", buttonFileChooser));
-				creator.createTextField(textFieldFilePath, item -> item.createFile().getPath(),
+				PropertyGridPane<DbFile> propertyPane = new PropertyGridPane<DbFile>(DbFile.class);
+				propertyPane.addEntry("", buttonFileChooser);
+				creator.create(textFieldFilePath, item -> item.createFile().getPath(),
 						(item, value) -> item.putFile(new File(value)));
-				creator.addPropertyEntry(new PropertyEntry(labelSwitch, textFieldSwitch));
-				creator.createTextField(textFieldName, item -> item.getName(),
-						(item, value) -> item.setName(value)).addLabeled("Name");
-				creator.createTextField(textFieldExtension, item -> item.getExtension(),
-						(item, value) -> item.setExtension(value)).addLabeled("Extension");
-				creator.addTitledPropertyPane("General");
+				propertyPane.addEntry(labelSwitch, textFieldSwitch);
+				creator.create(textFieldName, item -> item.getName(),
+						(item, value) -> item.setName(value)).addOn(propertyPane, "Name");
+				creator.create(textFieldExtension, item -> item.getExtension(),
+						(item, value) -> item.setExtension(value)).addOn(propertyPane, "Extension");
+				propertyPane.setTitled("General");
+				propertyPane.addOn(this);
 			}
 
 			@Override
 			public void createSelectors(Creator<DbFile> creator) {
-				creator.addSelector("File tags", FileTag.class, item -> item.getFileTags(),
-						(item, files) -> item.setFileTags((List<FileTag>) files));
+				creator.createSelector(FileTag.class, item -> item.getFileTags(),
+						(item, files) -> item.setFileTags((List<FileTag>) files))
+						.setTitled("File tags").addOn(this);
 			}
 
 			@Override
 			public void onInputCheck() throws InvalidUIInputException {
 				File file = new File(textFieldFilePath.getText());
-				if (!file.exists()) throw new InvalidUIInputException(
+				if (!file.exists()) throw new InvalidUIInputException(Phantomina.class,
 						"File does not exist '" + file.getPath() + "'");
 			}
+
+			
 
 		};
 		editor.addApplyButton();

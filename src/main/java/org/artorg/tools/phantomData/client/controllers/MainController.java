@@ -31,12 +31,15 @@ import org.artorg.tools.phantomData.server.models.base.property.StringProperty;
 import org.artorg.tools.phantomData.server.models.measurement.ExperimentalSetup;
 import org.artorg.tools.phantomData.server.models.measurement.Measurement;
 import org.artorg.tools.phantomData.server.models.measurement.Project;
+import org.artorg.tools.phantomData.server.models.measurement.Simulation;
 import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.models.phantom.LiteratureBase;
 import org.artorg.tools.phantomData.server.models.phantom.Manufacturing;
+import org.artorg.tools.phantomData.server.models.phantom.Material;
 import org.artorg.tools.phantomData.server.models.phantom.Phantom;
 import org.artorg.tools.phantomData.server.models.phantom.Phantomina;
+import org.artorg.tools.phantomData.server.models.phantom.SimulationPhantom;
 import org.artorg.tools.phantomData.server.models.phantom.Special;
 import org.controlsfx.glyphfont.FontAwesome;
 
@@ -300,6 +303,9 @@ public class MainController extends StackPane {
 			addMenuItem(subMenu, "Phantom", event -> {
 				tableFactoryCreator.accept(splitTabView, Phantom.class);
 			});
+			addMenuItem(subMenu, "Simulation Phantom", event -> {
+				tableFactoryCreator.accept(splitTabView, SimulationPhantom.class);
+			});
 			addMenuItem(subMenu, "Phantomina", event -> {
 				tableFactoryCreator.accept(splitTabView, Phantomina.class);
 			});
@@ -320,6 +326,9 @@ public class MainController extends StackPane {
 			addMenuItem(subMenu, "Manufacturing", event -> {
 				tableFactoryCreator.accept(splitTabView, Manufacturing.class);
 			});
+			addMenuItem(subMenu, "Material", event -> {
+				tableFactoryCreator.accept(splitTabView, Material.class);
+			});
 			menu.getItems().add(subMenu);
 		}
 
@@ -327,6 +336,9 @@ public class MainController extends StackPane {
 			Menu subMenu = new Menu("Measurement");
 			addMenuItem(subMenu, "Measurement", event -> {
 				tableFactoryCreator.accept(splitTabView, Measurement.class);
+			});
+			addMenuItem(subMenu, "Simulation", event -> {
+				tableFactoryCreator.accept(splitTabView, Simulation.class);
 			});
 			subMenu.getItems().add(new SeparatorMenuItem());
 			addMenuItem(subMenu, "Project", event -> {

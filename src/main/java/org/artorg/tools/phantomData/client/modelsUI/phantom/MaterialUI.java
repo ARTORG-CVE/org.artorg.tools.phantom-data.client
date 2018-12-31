@@ -11,45 +11,43 @@ import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
-import org.artorg.tools.phantomData.server.models.phantom.Manufacturing;
+import org.artorg.tools.phantomData.server.models.phantom.Material;
 
-public class ManufacturingUI extends UIEntity<Manufacturing> {
+public class MaterialUI extends UIEntity<Material> {
 
-	public Class<Manufacturing> getItemClass() {
-		return Manufacturing.class;
+	@Override
+	public Class<Material> getItemClass() {
+		return Material.class;
 	}
 
 	@Override
 	public String getTableName() {
-		return "Manufacturings";
+		return "Materials";
 	}
 
 	@Override
-	public List<AbstractColumn<Manufacturing, ?>> createColumns(Table<Manufacturing> table,
-			List<Manufacturing> items) {
-		List<AbstractColumn<Manufacturing, ?>> columns = new ArrayList<>();
-		ColumnCreator<Manufacturing, Manufacturing> creator = new ColumnCreator<>(table);
+	public List<AbstractColumn<Material, ? extends Object>> createColumns(Table<Material> table,
+			List<Material> items) {
+		List<AbstractColumn<Material, ?>> columns = new ArrayList<>();
+		ColumnCreator<Material, Material> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn("Name", path -> path.getName(),
 				(path, value) -> path.setName(value)));
 		columns.add(creator.createFilterColumn("Description", path -> path.getDescription(),
 				(path, value) -> path.setDescription(value)));
-		createCountingColumn(table, "Files", columns, item -> item.getFiles());
-		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
-		createPropertyColumns(table, columns, items);
 		createPersonifiedColumns(table, columns);
 		return columns;
 	}
 
 	@Override
-	public ItemEditor<Manufacturing> createEditFactory() {
-		ItemEditor<Manufacturing> creator = new ItemEditor<Manufacturing>(getItemClass()) {
+	public ItemEditor<Material> createEditFactory() {
+		ItemEditor<Material> editor = new ItemEditor<Material>(getItemClass()) {
 
 			@Override
-			public void createPropertyGridPanes(Creator<Manufacturing> creator) {
-				PropertyGridPane<Manufacturing> propertyPane =
-						new PropertyGridPane<Manufacturing>(Manufacturing.class);
+			public void createPropertyGridPanes(Creator<Material> creator) {
+				PropertyGridPane<Material> propertyPane =
+						new PropertyGridPane<Material>(Material.class);
 				creator.createTextField(item -> item.getName(),
-						(item, value) -> item.setName(value)).addOn(propertyPane, "Shortcut");
+						(item, value) -> item.setName(value)).addOn(propertyPane, "Name");
 				creator.createTextArea(item -> item.getDescription(),
 						(item, value) -> item.setDescription(value))
 						.addOn(propertyPane, "Description");
@@ -58,16 +56,15 @@ public class ManufacturingUI extends UIEntity<Manufacturing> {
 			}
 
 			@Override
-			public void createSelectors(Creator<Manufacturing> creator) {
+			public void createSelectors(Creator<Material> creator) {
 				creator.createSelector(DbFile.class, item -> item.getFiles(),
-						(item, files) -> item.setFiles((List<DbFile>) files)).setTitled("Files")
-						.addOn(this);
-
+						(item, subItems) -> item.setFiles((List<DbFile>) subItems))
+						.setTitled("Files").addOn(this);
 			}
 
 		};
-		creator.addApplyButton();
-		return creator;
+		editor.addApplyButton();
+		return editor;
 	}
 
 }

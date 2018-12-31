@@ -7,6 +7,7 @@ import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
+import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
@@ -40,12 +41,14 @@ public class AcademicTitleUI extends UIEntity<AcademicTitle> {
 
 			@Override
 			public void createPropertyGridPanes(Creator<AcademicTitle> creator) {
+				PropertyGridPane<AcademicTitle> propertyPane =
+						new PropertyGridPane<AcademicTitle>(AcademicTitle.class);
 				creator.createTextField(item -> item.getPrefix(),
-						(item, value) -> item.setPrefix(value)).addLabeled("Prefix");
+						(item, value) -> item.setPrefix(value)).addOn(propertyPane,"Prefix");
 				creator.createTextField(item -> item.getDescription(),
-						(item, value) -> item.setDescription(value))
-						.addLabeled("Description");
-				creator.addTitledPropertyPane("General");
+						(item, value) -> item.setDescription(value)).addOn(propertyPane, "Description");
+				propertyPane.setTitled("General");
+				propertyPane.addOn(this);
 			}
 
 			@Override

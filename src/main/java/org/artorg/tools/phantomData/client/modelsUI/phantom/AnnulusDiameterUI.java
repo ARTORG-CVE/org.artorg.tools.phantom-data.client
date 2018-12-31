@@ -7,6 +7,7 @@ import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
+import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
@@ -53,26 +54,30 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 				labelShortcut.setText(String.valueOf(shortcut));
 			} catch (Exception e) {}
 		});
-		
+
 		ItemEditor<AnnulusDiameter> creator = new ItemEditor<AnnulusDiameter>(getItemClass()) {
-			
+
 			@Override
 			public void createPropertyGridPanes(Creator<AnnulusDiameter> creator) {
-				creator.createLabel(labelShortcut, item -> Integer.toString(item.getShortcut()),
+				PropertyGridPane<AnnulusDiameter> propertyPane =
+						new PropertyGridPane<AnnulusDiameter>(AnnulusDiameter.class);
+				creator.create(labelShortcut, item -> Integer.toString(item.getShortcut()),
 						(item, value) -> item.setShortcut(Integer.valueOf(value)))
-						.addLabeled("Shortcut");
-				creator.createTextField(textFieldValue, item -> Double.toString(item.getValue()),
+						.addOn(propertyPane, "Shortcut");
+				creator.create(textFieldValue, item -> Double.toString(item.getValue()),
 						(item, value) -> item.setValue(Double.valueOf(value)))
-						.addLabeled("Diameter [mm]");
-				creator.createTitledPropertyPane("General");
+						.addOn(propertyPane, "Diameter [mm]");
+				propertyPane.setTitled("General");
+				propertyPane.addOn(this);
 			}
 
 			@Override
 			public void createSelectors(Creator<AnnulusDiameter> creator) {
-				creator.addSelector("Files", DbFile.class, item -> item.getFiles(),
-						(item, files) -> item.setFiles((List<DbFile>) files));
+				creator.createSelector(DbFile.class, item -> item.getFiles(),
+						(item, files) -> item.setFiles((List<DbFile>) files)).setTitled("Files")
+						.addOn(this);
 			}
-			
+
 		};
 		creator.addApplyButton();
 		return creator;

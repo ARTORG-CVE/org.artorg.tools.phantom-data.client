@@ -7,6 +7,7 @@ import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
+import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.FileTag;
@@ -39,9 +40,11 @@ public class FileTagUI extends UIEntity<FileTag> {
 
 			@Override
 			public void createPropertyGridPanes(Creator<FileTag> creator) {
+				PropertyGridPane<FileTag> propertyPane = new PropertyGridPane<FileTag>(FileTag.class);
 				creator.createTextField(item -> item.getName(),
-						(item, value) -> item.setName(value)).addLabeled("Name");
-				creator.addTitledPropertyPane("General");
+						(item, value) -> item.setName(value)).addOn(propertyPane, "Name");
+				propertyPane.setTitled("General");
+				propertyPane.addOn(this);
 			}
 
 			@Override

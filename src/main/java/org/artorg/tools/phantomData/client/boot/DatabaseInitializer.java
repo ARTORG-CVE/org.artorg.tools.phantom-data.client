@@ -216,7 +216,7 @@ public class DatabaseInitializer {
 			throw new UnsupportedOperationException();
 		}
 
-		return new Phantom(phantomina, number, manufacturing, thickness);
+		return new Phantom(phantomina, number, manufacturing, null, thickness, true);
 	}
 
 }

@@ -53,7 +53,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 
 		updateColumns();
 		autoResizeColumns();
-		
+
 	}
 
 	protected ProTableView(Class<T> itemClass, Table<T> table) {
@@ -72,7 +72,8 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 					FxUtil.runNewSingleThreaded(() -> {
 						Platform.runLater(() -> {
 							showFilterButtons();
-							filterMenuButtons.forEach(filterMenuButton -> filterMenuButton.updateNodes());
+							filterMenuButtons
+									.forEach(filterMenuButton -> filterMenuButton.updateNodes());
 						});
 						try {
 							Thread.sleep(300);
@@ -215,14 +216,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		FilterMenuButton<T, ?> filterMenuButton =
 				new FilterMenuButton<T, U>(filterColumn, filterMenuButtons);
 		filterMenuButton.setText(filterColumn.getName());
-		filterMenuButton.setRefresh(() -> {
-			table.applyFilter();
-//			System.out.println("items before filtering: " +super.getItems().size());
-//			super.getItems().clear();
-//			super.getItems().addAll(table.getFilteredItems());
-//			System.out.println("items after filtering: " +super.getItems().size());
-//			super.refresh();
-		});
+		filterMenuButton.setRefresh(() -> table.applyFilter());
 		return filterMenuButton;
 	}
 
@@ -253,24 +247,6 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 			TableColumn<T, U> tableColumn, Function<CellDataFeatures<T, U>, U> valueGetter) {
 		return cellData -> new ReadOnlyObjectWrapper<U>(valueGetter.apply(cellData));
 	}
-
-//	protected TableColumn<ITEM, ?> createHeaderColumn() {
-//		TableColumn<ITEM, ?> headerColumn = new TableColumn<ITEM, Object>();
-//
-////		headerColumn.setCellFactory(col -> {
-////			TableCell<ITEM, String> cell = new TableCell<ITEM, String>();
-////			cell.getStyleClass().add("row-header-cell");
-////			return cell;
-////		});
-//
-//		headerColumn.setSortable(false);
-//		return headerColumn;
-//	}
-
-//	public void setTable(TableBase<T> table) {
-//		this.table = table;
-//		initTable();
-//	}
 
 	public BiPredicate<AbstractColumn<T, ? extends Object>, TableColumn<T, ?>>
 			getColumnAddPolicy() {

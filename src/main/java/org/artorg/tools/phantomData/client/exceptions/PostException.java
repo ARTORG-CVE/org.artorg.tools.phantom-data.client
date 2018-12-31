@@ -17,10 +17,6 @@ public class PostException extends Exception {
 		this.itemClass = itemClass;
 	}
 
-	public Class<?> getItemClass() {
-		return itemClass;
-	}
-
 	public void showAlert() {
 		Platform.runLater(() -> {
 			Alert alert = new Alert(AlertType.WARNING);
@@ -29,6 +25,10 @@ public class PostException extends Exception {
 					getItemClass().getSimpleName(), getMessage()));
 			alert.showAndWait();
 		});
+	}
+	
+	public Class<?> getItemClass() {
+		return itemClass;
 	}
 
 }

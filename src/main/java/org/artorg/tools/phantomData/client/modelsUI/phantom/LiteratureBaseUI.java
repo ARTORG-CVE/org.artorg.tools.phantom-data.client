@@ -7,6 +7,7 @@ import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
+import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
@@ -45,17 +46,21 @@ public class LiteratureBaseUI extends UIEntity<LiteratureBase> {
 
 			@Override
 			public void createPropertyGridPanes(Creator<LiteratureBase> creator) {
+				PropertyGridPane<LiteratureBase> propertyPane =
+						new PropertyGridPane<LiteratureBase>(LiteratureBase.class);
 				creator.createTextField(item -> item.getShortcut(),
-						(item, value) -> item.setShortcut(value)).addLabeled("Shortcut");
-				creator.createTextField(item -> item.getValue(), (item, value) -> item.setValue(value))
-						.addLabeled("Name");
-				creator.addTitledPropertyPane("General");
+						(item, value) -> item.setShortcut(value)).addOn(propertyPane, "Shortcut");
+				creator.createTextField(item -> item.getValue(),
+						(item, value) -> item.setValue(value)).addOn(propertyPane, "Name");
+				propertyPane.setTitled("General");
+				propertyPane.addOn(this);
 			}
 
 			@Override
 			public void createSelectors(Creator<LiteratureBase> creator) {
-				creator.addSelector("Files", DbFile.class, item -> item.getFiles(),
-						(item, files) -> item.setFiles((List<DbFile>) files));
+				creator.createSelector(DbFile.class, item -> item.getFiles(),
+						(item, files) -> item.setFiles((List<DbFile>) files)).setTitled("Files")
+						.addOn(this);
 			}
 
 		};

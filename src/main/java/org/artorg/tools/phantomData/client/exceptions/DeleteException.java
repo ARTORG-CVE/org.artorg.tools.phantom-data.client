@@ -17,9 +17,6 @@ public class DeleteException extends Exception {
 		this.itemClass = itemClass;
 	}
 
-	public Class<?> getItemClass() {
-		return itemClass;
-	}
 
 	public void showAlert() {
 		Platform.runLater(() -> {
@@ -29,6 +26,10 @@ public class DeleteException extends Exception {
 					getItemClass().getSimpleName(), getMessage()));
 			alert.showAndWait();
 		});
+	}
+
+	public Class<?> getItemClass() {
+		return itemClass;
 	}
 	
 }

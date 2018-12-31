@@ -7,6 +7,7 @@ import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
+import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
@@ -41,26 +42,34 @@ public class SpecialUI extends UIEntity<Special> {
 
 	@Override
 	public ItemEditor<Special> createEditFactory() {
-		ItemEditor<Special> creator = new ItemEditor<Special>(getItemClass()) {
+		ItemEditor<Special> editor = new ItemEditor<Special>(getItemClass()) {
 
 			@Override
 			public void createPropertyGridPanes(Creator<Special> creator) {
+				PropertyGridPane<Special> propertyPane =
+						new PropertyGridPane<Special>(Special.class);
 				creator.createTextField(item -> item.getShortcut(),
-						(item, value) -> item.setShortcut(value)).addLabeled("Shortcut");
-				creator.createTextField(item -> item.getDescription(),
-						(item, value) -> item.setDescription(value)).addLabeled("Description");
-				creator.addTitledPropertyPane("General");
+						(item, value) -> item.setShortcut(value)).addOn(propertyPane, "Shortcut");
+				creator.createTextArea(item -> item.getDescription(),
+						(item, value) -> item.setDescription(value))
+						.addOn(propertyPane, "Description");
+				propertyPane.setTitled("General");
+				propertyPane.addOn(this);
 			}
 
 			@Override
 			public void createSelectors(Creator<Special> creator) {
-				creator.addSelector("Files", DbFile.class, item -> item.getFiles(),
-						(item, subItems) -> item.setFiles((List<DbFile>) subItems));
+				creator.createSelector(DbFile.class, item -> item.getFiles(),
+						(item, subItems) -> item.setFiles((List<DbFile>) subItems))
+						.setTitled("Files").addOn(this);
+
+				creator.createPropertySelector(Special.class, item -> item).setTitled("Properties")
+						.addOn(this);
 			}
 
 		};
-		creator.addApplyButton();
-		return creator;
+		editor.addApplyButton();
+		return editor;
 	}
 
 }

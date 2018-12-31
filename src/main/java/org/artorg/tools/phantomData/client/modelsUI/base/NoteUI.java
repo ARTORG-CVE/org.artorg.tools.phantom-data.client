@@ -7,6 +7,7 @@ import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
+import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.Note;
@@ -38,9 +39,11 @@ public class NoteUI extends UIEntity<Note> {
 
 			@Override
 			public void createPropertyGridPanes(Creator<Note> creator) {
+				PropertyGridPane<Note> propertyPane = new PropertyGridPane<Note>(Note.class);
 				creator.createTextField(item -> item.getName(), (item, value) -> item.setName(value))
-				.addLabeled("Message");
-				creator.addTitledPropertyPane("General");
+				.addOn(propertyPane, "Message");
+				propertyPane.setTitled("General");
+				propertyPane.addOn(this);
 			}
 
 			@Override

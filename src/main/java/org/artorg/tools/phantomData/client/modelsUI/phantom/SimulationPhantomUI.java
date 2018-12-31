@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
@@ -12,9 +11,7 @@ import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.editor.AbstractEditor;
 import org.artorg.tools.phantomData.client.editor.Creator;
-import org.artorg.tools.phantomData.client.editor.IPropertyNode;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
 import org.artorg.tools.phantomData.client.exceptions.InvalidUIInputException;
@@ -23,56 +20,35 @@ import org.artorg.tools.phantomData.client.exceptions.PostException;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.modelsUI.phantom.PhantominaUI.PhantominaEditor;
 import org.artorg.tools.phantomData.client.table.Table;
-import org.artorg.tools.phantomData.client.util.StreamUtils;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
 import org.artorg.tools.phantomData.server.models.measurement.Measurement;
+import org.artorg.tools.phantomData.server.models.measurement.Simulation;
 import org.artorg.tools.phantomData.server.models.phantom.Manufacturing;
 import org.artorg.tools.phantomData.server.models.phantom.Phantom;
 import org.artorg.tools.phantomData.server.models.phantom.Phantomina;
+import org.artorg.tools.phantomData.server.models.phantom.SimulationPhantom;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
-public class PhantomUI extends UIEntity<Phantom> {
+public class SimulationPhantomUI extends UIEntity<SimulationPhantom> {
 
-	public Class<Phantom> getItemClass() {
-		return Phantom.class;
+	public Class<SimulationPhantom> getItemClass() {
+		return SimulationPhantom.class;
 	}
 
 	@Override
 	public String getTableName() {
-		return "Phantoms";
+		return "Simulation Phantoms";
 	}
 
 	@Override
-	public List<AbstractColumn<Phantom, ?>> createColumns(Table<Phantom> table,
-			List<Phantom> items) {
-		List<AbstractColumn<Phantom, ?>> columns = new ArrayList<>();
-		FilterColumn<Phantom, ?, ?> column;
-		ColumnCreator<Phantom, Phantom> creator = new ColumnCreator<>(table);
-		ColumnCreator<Phantom, Phantomina> creatorP =
+	public List<AbstractColumn<SimulationPhantom, ?>> createColumns(Table<SimulationPhantom> table,
+			List<SimulationPhantom> items) {
+		List<AbstractColumn<SimulationPhantom, ?>> columns = new ArrayList<>();
+		FilterColumn<SimulationPhantom, ?, ?> column;
+		ColumnCreator<SimulationPhantom, SimulationPhantom> creator = new ColumnCreator<>(table);
+		ColumnCreator<SimulationPhantom, Phantomina> creatorP =
 				new ColumnCreator<>(table, item -> item.getPhantomina());
-		columns.add(creator.createFilterColumn("", path -> {
-			Rectangle coloredStatusBox = new Rectangle();
-			coloredStatusBox.setWidth(8.0);
-			coloredStatusBox.setHeight(8.0);
-			HBox hBox = new HBox();
-			coloredStatusBox = new Rectangle();
-			coloredStatusBox.setWidth(8.0);
-			coloredStatusBox.setHeight(8.0);
-			HBox.setMargin(coloredStatusBox, new Insets(0, 5, 0, 5));
-			hBox.getChildren().addAll(coloredStatusBox);
-			hBox.setAlignment(Pos.CENTER_LEFT);
-			if (path.isViable()) coloredStatusBox.setFill(Color.GREEN);
-			else
-				coloredStatusBox.setFill(Color.RED);
-			return hBox;
-		}));
 		column = creator.createFilterColumn("PID", path -> path.getProductId(),
 				(path, value) -> path.setProductId(value));
 		column.setAscendingSortComparator(
@@ -94,18 +70,11 @@ public class PhantomUI extends UIEntity<Phantom> {
 				(path, value) -> path.setNumber(Integer.valueOf(value)));
 		column.setItemsFilter(false);
 		columns.add(column);
-		columns.add(creator.createFilterColumn("Manufacturing",
-				path -> path.getManufacturing().getName(),
-				(path, value) -> path.getManufacturing().setName(value)));
-		columns.add(creator.createFilterColumn("Material", path -> path.getMaterial().getName(),
-				(path, value) -> path.getMaterial().setName(value)));
 		columns.add(
 				creator.createFilterColumn("Thickness", path -> Float.toString(path.getThickness()),
 						(path, value) -> path.setThickness(Float.valueOf(value))));
-		columns.add(creator.createFilterColumn("Viable", path -> Boolean.toString(path.isViable()),
-				(path, value) -> path.setViable(Boolean.valueOf(value))));
+		createCountingColumn(table, "Simulations", columns, item -> item.getSimulations());
 		createCountingColumn(table, "Files", columns, item -> item.getFiles());
-		createCountingColumn(table, "Measurements", columns, item -> item.getMeasurements());
 		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
 		createPropertyColumns(table, columns, items);
 		createPersonifiedColumns(table, columns);
@@ -116,64 +85,32 @@ public class PhantomUI extends UIEntity<Phantom> {
 	}
 
 	@Override
-	public ItemEditor<Phantom> createEditFactory() {
+	public ItemEditor<SimulationPhantom> createEditFactory() {
 		TextField textFieldNumber = new TextField();
 		PhantominaEditor phantominaEditor =
 				(PhantominaEditor) Main.getUIEntity(Phantomina.class).createEditFactory();
 
-		ItemEditor<Phantom> editor = new ItemEditor<Phantom>(Phantom.class) {
+		ItemEditor<SimulationPhantom> editor = new ItemEditor<SimulationPhantom>(SimulationPhantom.class) {
 
 			@Override
-			public void onCreateInit(Phantom item) {
+			public void onCreateInit(SimulationPhantom item) {
 				phantominaEditor.showCreateMode();
 			}
 
 			@Override
-			public void onEditInit(Phantom item) {
+			public void onEditInit(SimulationPhantom item) {
 				phantominaEditor.showEditMode(item.getPhantomina());
 			}
 
 			@Override
-			public void createPropertyGridPanes(Creator<Phantom> creator) {
-				PropertyGridPane<Phantom> propertyPane =
-						new PropertyGridPane<Phantom>(Phantom.class);
+			public void createPropertyGridPanes(Creator<SimulationPhantom> creator) {
+				PropertyGridPane<SimulationPhantom> propertyPane =
+						new PropertyGridPane<>(SimulationPhantom.class);
 
-				
-//				phantominaEditor.getAllAbstractEditors()
-				
-				PhantominaEditor temp = phantominaEditor;
-				List<PropertyGridPane<Phantomina>> propertyGridPanes =
-						phantominaEditor.getAllPropertyGridPanes();
-				PropertyGridPane<Phantomina> phantominaPropertyPane = propertyGridPanes.get(0);
+				PropertyGridPane<Phantomina> phantominaPropertyPane =
+						phantominaEditor.getAllPropertyGridPanes().get(0);
 				phantominaPropertyPane.setUntitled();
-
-				List<Node> temp2 = phantominaPropertyPane.getGridPane().getChildren();
-
-				List<AbstractEditor<Phantomina, ?>> temp3 = temp2.stream()
-						.collect(StreamUtils
-								.castFilter(node -> (AbstractEditor<Phantomina, ?>) node))
-						.collect(Collectors.toList());
-//				
-				
-
-//				List<AbstractEditor<Phantomina, ?>> phantominaPropertyNodes =
-//						phantominaPropertyPane.getPropertyChildren().stream()
-//								.map(propertyNode -> (AbstractEditor<Phantomina, ?>) propertyNode)
-//								.collect(Collectors.toList());
-//				List<AbstractEditor<Phantom, ?>> phantomPropertyNodes =
-//						phantominaPropertyNodes.stream()
-//								.map(phantominaPropertyNode -> phantominaPropertyNode.map(
-//										Phantom.class, item -> item.getPhantomina(), item -> null,
-//										(item, value) -> item.setPhantomina(value)))
-//								.collect(Collectors.toList());
-//
-//				ItemEditor<Phantom> editor = this;
-//
-//				PropertyGridPane<Phantom> test = new PropertyGridPane<>(Phantom.class);
-
-//				phantomPropertyNodes.forEach(propertyNode -> propertyNode.addOn(test, "test"));
-//				test.addOn(this);
-//				propertyPane.addOn(this);
+				propertyPane.addOn(this);
 
 //				Collection<PropertyGridPane> propertyPanes =
 //						phantominaEditor.getPropertyGridPanes();
@@ -183,30 +120,25 @@ public class PhantomUI extends UIEntity<Phantom> {
 				creator.create(textFieldNumber, item -> Integer.toString(item.getNumber()),
 						(item, value) -> item.setNumber(Integer.valueOf(value)))
 						.addOn(propertyPane, "Specific Number");
-				creator.createComboBox(Manufacturing.class, item -> item.getManufacturing(),
-						(item, value) -> item.setManufacturing(value)).setMapper(m -> m.getName())
-						.addOn(propertyPane, "Manufacturing");
 				creator.createTextField(item -> Float.toString(item.getThickness()),
 						(item, value) -> item.setThickness(Float.valueOf(value)))
 						.addOn(propertyPane, "Nominal thickness");
-				creator.createCheckBox(item -> item.isViable(),
-						(item, value) -> item.setViable(value), true).addOn(propertyPane, "Viable");
 				propertyPane.setTitled("General");
 				propertyPane.addOn(this);
 			}
 
 			@Override
-			public void createSelectors(Creator<Phantom> creator) {
+			public void createSelectors(Creator<SimulationPhantom> creator) {
 				creator.createSelector(DbFile.class, item -> item.getFiles(),
 						(item, subItems) -> item.setFiles((List<DbFile>) subItems))
 						.setTitled("Files").addOn(this);
-				creator.createSelector(Measurement.class, item -> item.getMeasurements(),
-						(item, subItems) -> item.setMeasurements((List<Measurement>) subItems))
+				creator.createSelector(Simulation.class, item -> item.getSimulations(),
+						(item, subItems) -> item.setSimulations((List<Simulation>) subItems))
 						.setTitled("Measurement").addOn(this);
 			}
 
 			@Override
-			public void onCreateBeforePost(Phantom item)
+			public void onCreateBeforePost(SimulationPhantom item)
 					throws NoUserLoggedInException, PostException, InvalidUIInputException {
 				ICrudConnector<Phantomina> connector = Connectors.get(Phantomina.class);
 				if (item.getPhantomina() == null) throw new RuntimeException();
@@ -214,18 +146,18 @@ public class PhantomUI extends UIEntity<Phantom> {
 			}
 
 			@Override
-			public void onCreateBeforeApplyChanges(Phantom item)
+			public void onCreateBeforeApplyChanges(SimulationPhantom item)
 					throws PostException, InvalidUIInputException, NoUserLoggedInException {
 				setPhantomina(item);
 			}
 
 			@Override
-			public void onEditBeforeApplyChanges(Phantom item)
+			public void onEditBeforeApplyChanges(SimulationPhantom item)
 					throws PostException, InvalidUIInputException, NoUserLoggedInException {
 				setPhantomina(item);
 			}
 
-			private void setPhantomina(Phantom item)
+			private void setPhantomina(SimulationPhantom item)
 					throws PostException, InvalidUIInputException, NoUserLoggedInException {
 				ICrudConnector<Phantomina> connector = Connectors.get(Phantomina.class);
 				List<Phantomina> phantominas = connector.readAllAsList();

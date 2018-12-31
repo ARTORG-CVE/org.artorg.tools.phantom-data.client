@@ -33,12 +33,15 @@ import org.artorg.tools.phantomData.client.modelsUI.base.property.StringProperty
 import org.artorg.tools.phantomData.client.modelsUI.measurement.ExperimentalSetupUI;
 import org.artorg.tools.phantomData.client.modelsUI.measurement.MeasurementUI;
 import org.artorg.tools.phantomData.client.modelsUI.measurement.ProjectUI;
+import org.artorg.tools.phantomData.client.modelsUI.measurement.SimulationUI;
 import org.artorg.tools.phantomData.client.modelsUI.phantom.AnnulusDiameterUI;
 import org.artorg.tools.phantomData.client.modelsUI.phantom.FabricationTypeUI;
 import org.artorg.tools.phantomData.client.modelsUI.phantom.LiteratureBaseUI;
 import org.artorg.tools.phantomData.client.modelsUI.phantom.ManufacturingUI;
+import org.artorg.tools.phantomData.client.modelsUI.phantom.MaterialUI;
 import org.artorg.tools.phantomData.client.modelsUI.phantom.PhantomUI;
 import org.artorg.tools.phantomData.client.modelsUI.phantom.PhantominaUI;
+import org.artorg.tools.phantomData.client.modelsUI.phantom.SimulationPhantomUI;
 import org.artorg.tools.phantomData.client.modelsUI.phantom.SpecialUI;
 import org.artorg.tools.phantomData.server.BootApplication;
 import org.artorg.tools.phantomData.server.boot.ConsoleFrame;
@@ -61,21 +64,19 @@ import org.artorg.tools.phantomData.server.models.base.property.StringProperty;
 import org.artorg.tools.phantomData.server.models.measurement.ExperimentalSetup;
 import org.artorg.tools.phantomData.server.models.measurement.Measurement;
 import org.artorg.tools.phantomData.server.models.measurement.Project;
+import org.artorg.tools.phantomData.server.models.measurement.Simulation;
 import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.models.phantom.LiteratureBase;
 import org.artorg.tools.phantomData.server.models.phantom.Manufacturing;
+import org.artorg.tools.phantomData.server.models.phantom.Material;
 import org.artorg.tools.phantomData.server.models.phantom.Phantom;
 import org.artorg.tools.phantomData.server.models.phantom.Phantomina;
+import org.artorg.tools.phantomData.server.models.phantom.SimulationPhantom;
 import org.artorg.tools.phantomData.server.models.phantom.Special;
 import org.artorg.tools.phantomData.server.util.FxUtil;
 import org.reflections.Reflections;
-import org.slf4j.LoggerFactory;
 
-//import ch.qos.logback.classic.LoggerContext;
-//import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.core.util.StatusPrinter;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -92,7 +93,6 @@ public class Main extends DesktopFxBootApplication {
 	private static MainController mainController;
 	private static final Set<Class<?>> entityClasses;
 	private static final Map<Class<?>, UIEntity<?>> uiEntities;
-//	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Main.class);
 
 	static {
 		mainFxClass = null;
@@ -104,23 +104,6 @@ public class Main extends DesktopFxBootApplication {
 	}
 
 	public static void main(String[] args) {
-//		// assume SLF4J is bound to logback in the current environment
-//	    LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-//	    
-//		try {
-//		      JoranConfigurator configurator = new JoranConfigurator();
-//		      configurator.setContext(context);
-//		      // Call context.reset() to clear any previous configuration, e.g. default 
-//		      // configuration. For multi-step configuration, omit calling context.reset().
-//		      context.reset(); 
-//		      configurator.doConfigure(args[0]);
-//		    } catch (JoranException je) {
-//		      // StatusPrinter will handle this
-//		    }
-//		    StatusPrinter.printInCaseOfErrorsOrWarnings(context);
-//
-//		    logger.info("Entering application.");
-//		    
 		Application.launch(args);
 	}
 
@@ -203,6 +186,10 @@ public class Main extends DesktopFxBootApplication {
 		uiEntities.put(Special.class, new SpecialUI());
 		uiEntities.put(AbstractProperty.class, new PropertiesUI());
 		uiEntities.put(AbstractPersonifiedEntity.class, new PersonifiedUI());
+		uiEntities.put(Simulation.class,new SimulationUI());
+		uiEntities.put(Material.class, new MaterialUI());
+		uiEntities.put(SimulationPhantom.class,new SimulationPhantomUI());
+		
 
 //		getEntityClasses().stream().forEach(itemClass -> {
 //			entityBeanInfos.add(new EntityBeanInfo(itemClass));
