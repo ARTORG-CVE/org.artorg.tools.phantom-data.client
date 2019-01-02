@@ -131,6 +131,18 @@ public class CollectionUtil {
 		return matchedLeftIndexes;
 	}
 
+	public static final <E> void addIfAbsent(List<E> fromList, List<E> toList,
+			BiPredicate<E, E> predicate) {
+		List<E> addableList = new ArrayList<>();
+		for (int col = 0; col < fromList.size(); col++) {
+			final int localCol = col;
+			if (!toList.stream().filter(column -> predicate.test(fromList.get(localCol), column))
+					.findFirst().isPresent())
+				addableList.add(fromList.get(col));
+		}
+		toList.addAll(addableList);
+	}
+	
 	public static final <E, F> void addIfAbsent(List<E> fromList, List<F> toList,
 			BiPredicate<E, F> predicate, BiFunction<E, Integer, F> mapper) {
 		List<F> addableList = new ArrayList<F>();

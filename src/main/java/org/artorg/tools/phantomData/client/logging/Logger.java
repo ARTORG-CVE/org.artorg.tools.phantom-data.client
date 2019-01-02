@@ -17,7 +17,7 @@ public class Logger {
 	static {
 		setDefaultOut(System.out);
 		setDefaultErr(System.err);
-		setLevel(Level.INFO);
+		setLevel(Level.DEBUG);
 	}
 	
 	private static Supplier<String> createPrefixSupplier(String logType) {

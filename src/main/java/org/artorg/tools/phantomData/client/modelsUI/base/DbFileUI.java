@@ -11,9 +11,9 @@ import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
+import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.exceptions.InvalidUIInputException;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.scene.SelectableLabel;
@@ -23,7 +23,6 @@ import org.artorg.tools.phantomData.server.models.base.DbFile;
 import org.artorg.tools.phantomData.server.models.base.FileTag;
 import org.artorg.tools.phantomData.server.models.phantom.Phantomina;
 
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -99,7 +98,7 @@ public class DbFileUI extends UIEntity<DbFile> {
 		ItemEditor<DbFile> editor = new ItemEditor<DbFile>(getItemClass()) {
 
 			@Override
-			public void onCreateInit(DbFile item) {
+			public void onShowingCreateMode(DbFile item) {
 				labelSwitch.setText("File path");
 				String path = textFieldFilePath.getText();
 				String[] splits = splitOffFileExtension(path);
@@ -107,43 +106,34 @@ public class DbFileUI extends UIEntity<DbFile> {
 			}
 
 			@Override
-			public void onEditInit(DbFile item) {
+			public void onShowingEditMode(DbFile item) {
 				labelSwitch.setText("Id");
 				textFieldSwitch.setText(item.getId().toString());
 			}
 
 			@Override
-			public void createPropertyGridPanes(Creator<DbFile> creator) {
-				PropertyGridPane<DbFile> propertyPane = new PropertyGridPane<DbFile>(DbFile.class);
-				propertyPane.addEntry("", buttonFileChooser);
-				creator.create(textFieldFilePath, item -> item.createFile().getPath(),
-						(item, value) -> item.putFile(new File(value)));
-				propertyPane.addEntry(labelSwitch, textFieldSwitch);
-				creator.create(textFieldName, item -> item.getName(),
-						(item, value) -> item.setName(value)).addOn(propertyPane, "Name");
-				creator.create(textFieldExtension, item -> item.getExtension(),
-						(item, value) -> item.setExtension(value)).addOn(propertyPane, "Extension");
-				propertyPane.setTitled("General");
-				propertyPane.addOn(this);
-			}
-
-			@Override
-			public void createSelectors(Creator<DbFile> creator) {
-				creator.createSelector(FileTag.class, item -> item.getFileTags(),
-						(item, files) -> item.setFileTags((List<FileTag>) files))
-						.setTitled("File tags").addOn(this);
-			}
-
-			@Override
-			public void onInputCheck() throws InvalidUIInputException {
+			public void onCreatingClient(DbFile item) throws InvalidUIInputException {
 				File file = new File(textFieldFilePath.getText());
 				if (!file.exists()) throw new InvalidUIInputException(Phantomina.class,
 						"File does not exist '" + file.getPath() + "'");
 			}
 
-			
-
 		};
+
+		PropertyGridPane propertyPane = new PropertyGridPane();
+		propertyPane.addEntry(new Label(""), buttonFileChooser);
+		editor.addPropertyNode(editor.create(textFieldFilePath, item -> item.createFile().getPath(),
+				(item, value) -> item.putFile(new File(value))));
+		propertyPane.addEntry(labelSwitch, textFieldSwitch);
+		propertyPane.addEntry("Name", editor.create(textFieldName, item -> item.getName(),
+				(item, value) -> item.setName(value)));
+		propertyPane.addEntry("Extensison", editor.create(textFieldExtension,
+				item -> item.getExtension(), (item, value) -> item.setExtension(value)));
+		propertyPane.autosizeColumnWidths();
+		editor.add(new TitledPropertyPane("General", propertyPane));
+		editor.add(new TitledPropertyPane("Files",
+				editor.createSelector(FileTag.class, item -> item.getFileTags(),
+						(item, files) -> item.setFileTags((List<FileTag>) files))));
 		editor.addApplyButton();
 		return editor;
 	}

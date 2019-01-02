@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
+import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
@@ -42,31 +42,23 @@ public class PersonUI extends UIEntity<Person> {
 
 	@Override
 	public ItemEditor<Person> createEditFactory() {
-		ItemEditor<Person> editor = new ItemEditor<Person>(getItemClass()) {
-
-			@Override
-			public void createPropertyGridPanes(Creator<Person> creator) {
-				PropertyGridPane<Person> propertyPane = new PropertyGridPane<Person>(Person.class);
-				creator.createComboBox(Gender.class, item -> item.getGender(),
-						(item, value) -> item.setGender(value)).setMapper(g -> g.getName())
-						.addOn(propertyPane, "Gender");
-				creator.createComboBox(AcademicTitle.class, item -> item.getAcademicTitle(),
-						(item, value) -> item.setAcademicTitle(value)).setMapper(a -> a.getPrefix())
-						.addOn(propertyPane, "Academic Title");
-				creator.createTextField(item -> item.getFirstname(),
-						(item, value) -> item.setFirstname(value)).addOn(propertyPane, "Firstname");
-				creator.createTextField(item -> item.getLastname(),
-						(item, value) -> item.setLastname(value)).addOn(propertyPane, "Lastname");
-				propertyPane.setTitled("General");
-				propertyPane.addOn(this);
-			}
-
-			@Override
-			public void createSelectors(Creator<Person> creator) {}
-
-		};
+		ItemEditor<Person> editor = new ItemEditor<Person>(getItemClass());
+		PropertyGridPane propertyPane = new PropertyGridPane();
+		propertyPane.addEntry("Gender",
+				editor.createComboBox(Gender.class, item -> item.getGender(),
+						(item, value) -> item.setGender(value))
+						.setMapper(g -> g.getName()));
+		propertyPane.addEntry("Academic Title",
+				editor.createComboBox(AcademicTitle.class, item -> item.getAcademicTitle(),
+						(item, value) -> item.setAcademicTitle(value))
+						.setMapper(a -> a.getPrefix()));
+		propertyPane.addEntry("Firstname", editor.createTextField(
+				item -> item.getFirstname(), (item, value) -> item.setFirstname(value)));
+		propertyPane.addEntry("Lastname", editor.createTextField(
+				item -> item.getLastname(), (item, value) -> item.setLastname(value)));
+		propertyPane.autosizeColumnWidths();
+		editor.add(new TitledPropertyPane("General", propertyPane));
 		editor.addApplyButton();
-
 		return editor;
 
 	}

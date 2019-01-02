@@ -1,33 +1,33 @@
 package org.artorg.tools.phantomData.client.modelsUI.phantom;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
-import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
-import org.artorg.tools.phantomData.client.exceptions.InvalidUIInputException;
+import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.client.exceptions.PostException;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
-import org.artorg.tools.phantomData.client.modelsUI.phantom.PhantominaUI.PhantominaEditor;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
-import org.artorg.tools.phantomData.server.models.measurement.Measurement;
 import org.artorg.tools.phantomData.server.models.measurement.Simulation;
-import org.artorg.tools.phantomData.server.models.phantom.Manufacturing;
+import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
+import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
+import org.artorg.tools.phantomData.server.models.phantom.LiteratureBase;
 import org.artorg.tools.phantomData.server.models.phantom.Phantom;
 import org.artorg.tools.phantomData.server.models.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.models.phantom.SimulationPhantom;
+import org.artorg.tools.phantomData.server.models.phantom.Special;
 
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 public class SimulationPhantomUI extends UIEntity<SimulationPhantom> {
@@ -87,93 +87,109 @@ public class SimulationPhantomUI extends UIEntity<SimulationPhantom> {
 	@Override
 	public ItemEditor<SimulationPhantom> createEditFactory() {
 		TextField textFieldNumber = new TextField();
-		PhantominaEditor phantominaEditor =
-				(PhantominaEditor) Main.getUIEntity(Phantomina.class).createEditFactory();
+		Label labelIdValue = new Label();
+
+		ComboBox<AnnulusDiameter> comboBoxAnnulusDiameter = new ComboBox<>();
+		ComboBox<FabricationType> comboBoxFabricationType = new ComboBox<>();
+		ComboBox<LiteratureBase> comboBoxLiteratureBase = new ComboBox<>();
+		ComboBox<Special> comboBoxSpecial = new ComboBox<>();
 
 		ItemEditor<SimulationPhantom> editor = new ItemEditor<SimulationPhantom>(SimulationPhantom.class) {
 
 			@Override
-			public void onCreateInit(SimulationPhantom item) {
-				phantominaEditor.showCreateMode();
-			}
-
-			@Override
-			public void onEditInit(SimulationPhantom item) {
-				phantominaEditor.showEditMode(item.getPhantomina());
-			}
-
-			@Override
-			public void createPropertyGridPanes(Creator<SimulationPhantom> creator) {
-				PropertyGridPane<SimulationPhantom> propertyPane =
-						new PropertyGridPane<>(SimulationPhantom.class);
-
-				PropertyGridPane<Phantomina> phantominaPropertyPane =
-						phantominaEditor.getAllPropertyGridPanes().get(0);
-				phantominaPropertyPane.setUntitled();
-				propertyPane.addOn(this);
-
-//				Collection<PropertyGridPane> propertyPanes =
-//						phantominaEditor.getPropertyGridPanes();
-//				propertyPanes.forEach(
-//						propertyPane -> creator.addPropertyEntries(propertyPane.getEntries()));
-
-				creator.create(textFieldNumber, item -> Integer.toString(item.getNumber()),
-						(item, value) -> item.setNumber(Integer.valueOf(value)))
-						.addOn(propertyPane, "Specific Number");
-				creator.createTextField(item -> Float.toString(item.getThickness()),
-						(item, value) -> item.setThickness(Float.valueOf(value)))
-						.addOn(propertyPane, "Nominal thickness");
-				propertyPane.setTitled("General");
-				propertyPane.addOn(this);
-			}
-
-			@Override
-			public void createSelectors(Creator<SimulationPhantom> creator) {
-				creator.createSelector(DbFile.class, item -> item.getFiles(),
-						(item, subItems) -> item.setFiles((List<DbFile>) subItems))
-						.setTitled("Files").addOn(this);
-				creator.createSelector(Simulation.class, item -> item.getSimulations(),
-						(item, subItems) -> item.setSimulations((List<Simulation>) subItems))
-						.setTitled("Measurement").addOn(this);
-			}
-
-			@Override
-			public void onCreateBeforePost(SimulationPhantom item)
-					throws NoUserLoggedInException, PostException, InvalidUIInputException {
-				ICrudConnector<Phantomina> connector = Connectors.get(Phantomina.class);
-				if (item.getPhantomina() == null) throw new RuntimeException();
-				if (!connector.exist(item.getPhantomina())) connector.create(item.getPhantomina());
-			}
-
-			@Override
-			public void onCreateBeforeApplyChanges(SimulationPhantom item)
-					throws PostException, InvalidUIInputException, NoUserLoggedInException {
+			public void onCreatingServer(SimulationPhantom item) throws NoUserLoggedInException, PostException  {
 				setPhantomina(item);
 			}
 
 			@Override
-			public void onEditBeforeApplyChanges(SimulationPhantom item)
-					throws PostException, InvalidUIInputException, NoUserLoggedInException {
+			public void onUpdatingServer(SimulationPhantom item)
+					throws NoUserLoggedInException, PostException {
 				setPhantomina(item);
 			}
 
-			private void setPhantomina(SimulationPhantom item)
-					throws PostException, InvalidUIInputException, NoUserLoggedInException {
+			private void setPhantomina(SimulationPhantom item) throws PostException, NoUserLoggedInException {
 				ICrudConnector<Phantomina> connector = Connectors.get(Phantomina.class);
 				List<Phantomina> phantominas = connector.readAllAsList();
-				String pid = phantominaEditor.getPid();
+
+				String pid = Phantomina.createProductId(
+						comboBoxAnnulusDiameter.getSelectionModel().getSelectedItem(),
+						comboBoxFabricationType.getSelectionModel().getSelectedItem(),
+						comboBoxLiteratureBase.getSelectionModel().getSelectedItem(),
+						comboBoxSpecial.getSelectionModel().getSelectedItem());
 				Optional<Phantomina> optional =
 						phantominas.stream().filter(p -> p.getProductId().equals(pid)).findFirst();
 				if (optional.isPresent()) {
 					item.setPhantomina(optional.get());
 				} else {
-					Phantomina phantomina = phantominaEditor.createItem();
+					Phantomina phantomina = new Phantomina(
+							comboBoxAnnulusDiameter.getSelectionModel().getSelectedItem(),
+							comboBoxFabricationType.getSelectionModel().getSelectedItem(),
+							comboBoxLiteratureBase.getSelectionModel().getSelectedItem(),
+							comboBoxSpecial.getSelectionModel().getSelectedItem());
 					connector.create(phantomina);
 					item.setPhantomina(phantomina);
 				}
 			}
 
 		};
+
+		PropertyGridPane propertyPane = new PropertyGridPane();
+		propertyPane.addEntry(new Label("PID"), labelIdValue);
+		propertyPane.addEntry("Annulus Diameter",
+				editor.createComboBox(comboBoxAnnulusDiameter, AnnulusDiameter.class,
+						item -> item.getPhantomina().getAnnulusDiameter(), (item, value) -> {})
+						.setMapper(a -> String.valueOf(a.getValue())));
+		propertyPane.addEntry("Fabrication Type",
+				editor.createComboBox(comboBoxFabricationType, FabricationType.class,
+						item -> item.getPhantomina().getFabricationType(), (item, value) -> {})
+						.setMapper(f -> String.format("(%s) %s", f.getShortcut(), f.getValue())));
+		propertyPane.addEntry("Literautre Base",
+				editor.createComboBox(comboBoxLiteratureBase, LiteratureBase.class,
+						item -> item.getPhantomina().getLiteratureBase(), (item, value) -> {})
+						.setMapper(f -> String.format("(%s) %s", f.getShortcut(), f.getValue())));
+		propertyPane.addEntry("Special", editor
+				.createComboBox(comboBoxSpecial, Special.class,
+						item -> item.getPhantomina().getSpecial(), (item, value) -> {})
+				.setMapper(s -> String.format("(%s) %s", s.getShortcut(), s.getDescription())));
+		propertyPane.addEntry("Specific Number",
+				editor.create(textFieldNumber, item -> Integer.toString(item.getNumber()),
+						(item, value) -> item.setNumber(Integer.valueOf(value))));
+		propertyPane.addEntry("Nominal thickness",
+				editor.createTextField(item -> Float.toString(item.getThickness()),
+						(item, value) -> item.setThickness(Float.valueOf(value))));
+		propertyPane.autosizeColumnWidths();
+		editor.add(new TitledPropertyPane("General", propertyPane));
+
+		editor.add(new TitledPropertyPane("Files",
+				editor.createSelector(DbFile.class, item -> item.getFiles(),
+						(item, subItems) -> item.setFiles((List<DbFile>) subItems))));
+		editor.add(new TitledPropertyPane("Simulations",
+				editor.createSelector(Simulation.class, item -> item.getSimulations(),
+						(item, subItems) -> item.setSimulations((List<Simulation>) subItems))));
+
+		Runnable updateId = () -> {
+			String phantominaPid = Phantomina.createProductId(
+					comboBoxAnnulusDiameter.getSelectionModel().getSelectedItem(),
+					comboBoxFabricationType.getSelectionModel().getSelectedItem(),
+					comboBoxLiteratureBase.getSelectionModel().getSelectedItem(),
+					comboBoxSpecial.getSelectionModel().getSelectedItem());
+			String text = textFieldNumber.getText();
+			if (text.isEmpty()) return;
+			try {
+				int number = Integer.valueOf(text);
+				labelIdValue.setText(Phantom.createProductId(phantominaPid, number));
+			} catch (NumberFormatException e) {}
+		};
+
+		comboBoxAnnulusDiameter.getSelectionModel().selectedItemProperty()
+				.addListener((observable, oldValue, newValue) -> updateId.run());
+		comboBoxFabricationType.getSelectionModel().selectedItemProperty()
+				.addListener((observable, oldValue, newValue) -> updateId.run());
+		comboBoxLiteratureBase.getSelectionModel().selectedItemProperty()
+				.addListener((observable, oldValue, newValue) -> updateId.run());
+		comboBoxSpecial.getSelectionModel().selectedItemProperty()
+				.addListener((observable, oldValue, newValue) -> updateId.run());
+
 		editor.addApplyButton();
 		return editor;
 

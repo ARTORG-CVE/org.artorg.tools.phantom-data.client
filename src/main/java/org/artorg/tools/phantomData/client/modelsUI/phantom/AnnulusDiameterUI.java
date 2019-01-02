@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
+import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
@@ -31,11 +31,10 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 	public List<AbstractColumn<AnnulusDiameter, ?>> createColumns(Table<AnnulusDiameter> table,
 			List<AnnulusDiameter> items) {
 		List<AbstractColumn<AnnulusDiameter, ?>> columns = new ArrayList<>();
-		ColumnCreator<AnnulusDiameter, AnnulusDiameter> creator = new ColumnCreator<>(table);
-		columns.add(
-				creator.createFilterColumn("Sortcut", path -> String.valueOf(path.getShortcut()),
-						(path, value) -> path.setShortcut(Integer.valueOf(value))));
-		columns.add(creator.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
+		ColumnCreator<AnnulusDiameter, AnnulusDiameter> editor = new ColumnCreator<>(table);
+		columns.add(editor.createFilterColumn("Sortcut", path -> String.valueOf(path.getShortcut()),
+				(path, value) -> path.setShortcut(Integer.valueOf(value))));
+		columns.add(editor.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(Double.valueOf(value))));
 		createCountingColumn(table, "Files", columns, item -> item.getFiles());
 		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
@@ -55,32 +54,21 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 			} catch (Exception e) {}
 		});
 
-		ItemEditor<AnnulusDiameter> creator = new ItemEditor<AnnulusDiameter>(getItemClass()) {
+		ItemEditor<AnnulusDiameter> editor = new ItemEditor<>(getItemClass());
+		PropertyGridPane propertyPane = new PropertyGridPane();
+		propertyPane.addEntry("Shortcut",
+				editor.create(labelShortcut, item -> Integer.toString(item.getShortcut()),
+						(item, value) -> item.setShortcut(Integer.valueOf(value))));
+		propertyPane.addEntry("Diameter []",
+				editor.create(textFieldValue, item -> Double.toString(item.getValue()),
+						(item, value) -> item.setValue(Double.valueOf(value))));
+		propertyPane.autosizeColumnWidths();
+		editor.add(new TitledPropertyPane("General", propertyPane));
 
-			@Override
-			public void createPropertyGridPanes(Creator<AnnulusDiameter> creator) {
-				PropertyGridPane<AnnulusDiameter> propertyPane =
-						new PropertyGridPane<AnnulusDiameter>(AnnulusDiameter.class);
-				creator.create(labelShortcut, item -> Integer.toString(item.getShortcut()),
-						(item, value) -> item.setShortcut(Integer.valueOf(value)))
-						.addOn(propertyPane, "Shortcut");
-				creator.create(textFieldValue, item -> Double.toString(item.getValue()),
-						(item, value) -> item.setValue(Double.valueOf(value)))
-						.addOn(propertyPane, "Diameter [mm]");
-				propertyPane.setTitled("General");
-				propertyPane.addOn(this);
-			}
-
-			@Override
-			public void createSelectors(Creator<AnnulusDiameter> creator) {
-				creator.createSelector(DbFile.class, item -> item.getFiles(),
-						(item, files) -> item.setFiles((List<DbFile>) files)).setTitled("Files")
-						.addOn(this);
-			}
-
-		};
-		creator.addApplyButton();
-		return creator;
+		editor.add(new TitledPropertyPane("Files", editor.createSelector(DbFile.class,
+				item -> item.getFiles(), (item, files) -> item.setFiles((List<DbFile>) files))));
+		editor.addApplyButton();
+		return editor;
 	}
 
 }

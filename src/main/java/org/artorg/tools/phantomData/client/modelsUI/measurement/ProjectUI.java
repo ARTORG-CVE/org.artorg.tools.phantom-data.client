@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
+import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.exceptions.InvalidUIInputException;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
@@ -57,49 +57,48 @@ public class ProjectUI extends UIEntity<Project> {
 	public ItemEditor<Project> createEditFactory() {
 		TextField textFieldStartYear = new TextField();
 
-		ItemEditor<Project> creator = new ItemEditor<Project>(getItemClass()) {
-
+		ItemEditor<Project> editor = new ItemEditor<Project>(getItemClass()) {	
 			@Override
-			public void createPropertyGridPanes(Creator<Project> creator) {
-				PropertyGridPane<Project> propertyPane =
-						new PropertyGridPane<Project>(Project.class);
-				creator.createTextField(item -> item.getName(),
-						(item, value) -> item.setName(value)).addOn(propertyPane, "Prefix");
-				creator.createTextArea(item -> item.getDescription(),
-						(item, value) -> item.setDescription(value))
-						.addOn(propertyPane, "Description");
-				creator.create(textFieldStartYear, item -> Short.toString(item.getStartYear()),
-						(item, value) -> item.setStartYear(Short.valueOf((value))))
-						.addOn(propertyPane, "Start year");
-				creator.createComboBox(Person.class, item -> item.getLeader(),
-						(item, value) -> item.setLeader(value))
-						.setMapper(l -> l.getSimpleAcademicName()).addOn(propertyPane, "Leader");
-				propertyPane.setTitled("General");
-				propertyPane.addOn(this);
-			}
-
-			@Override
-			public void createSelectors(Creator<Project> creator) {
-				creator.createSelector(Person.class, item -> item.getMembers(),
-						(item, files) -> item.setMembers((List<Person>) files)).setTitled("Members")
-						.addOn(this);
-				creator.createSelector(DbFile.class, item -> item.getFiles(),
-						(item, files) -> item.setFiles((List<DbFile>) files)).setTitled("Files")
-						.addOn(this);
-			}
-
-			@Override
-			public void onInputCheck() throws InvalidUIInputException {
+			public void onCreatingClient(Project item) throws InvalidUIInputException {
 				String startYear = textFieldStartYear.getText();
 				if (!textFieldStartYear.getText().matches("\\d{4}"))
 					throw new InvalidUIInputException(Project.class,
 							"Start year has not format YYYY: '" + startYear + "'");
+			}
 
+			@Override
+			public void onUpdatingClient(Project item)
+					throws InvalidUIInputException {
+				String startYear = textFieldStartYear.getText();
+				if (!textFieldStartYear.getText().matches("\\d{4}"))
+					throw new InvalidUIInputException(Project.class,
+							"Start year has not format YYYY: '" + startYear + "'");
 			}
 
 		};
-		creator.addApplyButton();
-		return creator;
+		
+		PropertyGridPane propertyPane =
+				new PropertyGridPane();
+		propertyPane.addEntry("Prefix", editor.createTextField(item -> item.getName(),
+				(item, value) -> item.setName(value)));
+		propertyPane.addEntry("Description",editor.createTextArea(item -> item.getDescription(),
+				(item, value) -> item.setDescription(value)));
+		propertyPane.addEntry("Start year",editor.create(textFieldStartYear, item -> Short.toString(item.getStartYear()),
+				(item, value) -> item.setStartYear(Short.valueOf((value)))));
+		propertyPane.addEntry("Leader",editor.createComboBox(Person.class, item -> item.getLeader(),
+				(item, value) -> item.setLeader(value))
+				.setMapper(l -> l.getSimpleAcademicName()));
+		propertyPane.autosizeColumnWidths();
+		editor.add(new TitledPropertyPane("General", propertyPane));
+		
+		
+		editor.add(new TitledPropertyPane("Members", editor.createSelector(Person.class, item -> item.getMembers(),
+				(item, files) -> item.setMembers((List<Person>) files))));
+		editor.add(new TitledPropertyPane("Files", editor.createSelector(DbFile.class, item -> item.getFiles(),
+				(item, files) -> item.setFiles((List<DbFile>) files))));
+		
+		editor.addApplyButton();
+		return editor;
 	}
 
 }

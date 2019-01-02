@@ -6,7 +6,6 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
@@ -41,17 +40,10 @@ public class PersonifiedUI extends UIEntity<AbstractPersonifiedEntity> {
 
 	@Override
 	public ItemEditor<AbstractPersonifiedEntity> createEditFactory() {
-
 		return new ItemEditor<AbstractPersonifiedEntity>(AbstractPersonifiedEntity.class) {
 
 			@Override
-			public void createPropertyGridPanes(Creator<AbstractPersonifiedEntity> creator) {}
-
-			@Override
-			public void createSelectors(Creator<AbstractPersonifiedEntity> creator) {}
-
-			@Override
-			public void onCreateInit(AbstractPersonifiedEntity item) {
+			public void onShowingCreateMode(AbstractPersonifiedEntity item) {
 				ItemEditor<AbstractPersonifiedEntity> editor =
 						(ItemEditor<AbstractPersonifiedEntity>) Main.getUIEntity(item.getClass())
 								.createEditFactory();
@@ -61,7 +53,7 @@ public class PersonifiedUI extends UIEntity<AbstractPersonifiedEntity> {
 			}
 
 			@Override
-			public void onEditInit(AbstractPersonifiedEntity item) {
+			public void onShowingEditMode(AbstractPersonifiedEntity item) {
 				ItemEditor<AbstractPersonifiedEntity> editor =
 						(ItemEditor<AbstractPersonifiedEntity>) Main.getUIEntity(item.getClass())
 								.createEditFactory();

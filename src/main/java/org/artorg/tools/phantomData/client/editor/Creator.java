@@ -2,6 +2,7 @@ package org.artorg.tools.phantomData.client.editor;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -28,13 +29,27 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
-public class Creator<T> {
+public class Creator<T> extends AnchorPane implements IPropertyNode {
 	private final Class<T> itemClass;
+	private final VBox vBox = new VBox();
+	private final List<IPropertyNode> propertyNodes;
 
-	Creator(Class<T> itemClass) {
+	{
+		FxUtil.addToPane(this, vBox);
+		propertyNodes = new ArrayList<>();
+	}
+	
+	public Creator(Class<T> itemClass) {
 		this.itemClass = itemClass;
+	}
+	
+	public void add(IPropertyNode propertyNode) {
+		addPropertyNode(propertyNode);
+		getvBox().getChildren().add(propertyNode.getNode());
 	}
 
 	public TitledPane createTitledPane(String title, Node node) {
@@ -376,6 +391,20 @@ public class Creator<T> {
 
 	public Class<T> getItemClass() {
 		return itemClass;
+	}
+
+	public VBox getvBox() {
+		return vBox;
+	}
+
+	@Override
+	public Node getNode() {
+		return this;
+	}
+
+	@Override
+	public List<IPropertyNode> getChildrenProperties() {
+		return propertyNodes;
 	}
 
 }

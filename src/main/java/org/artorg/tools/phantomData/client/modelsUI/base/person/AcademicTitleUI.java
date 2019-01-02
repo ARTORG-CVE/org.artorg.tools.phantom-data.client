@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
+import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.person.AcademicTitle;
@@ -37,24 +37,14 @@ public class AcademicTitleUI extends UIEntity<AcademicTitle> {
 
 	@Override
 	public ItemEditor<AcademicTitle> createEditFactory() {
-		ItemEditor<AcademicTitle> editor = new ItemEditor<AcademicTitle>(getItemClass()) {
-
-			@Override
-			public void createPropertyGridPanes(Creator<AcademicTitle> creator) {
-				PropertyGridPane<AcademicTitle> propertyPane =
-						new PropertyGridPane<AcademicTitle>(AcademicTitle.class);
-				creator.createTextField(item -> item.getPrefix(),
-						(item, value) -> item.setPrefix(value)).addOn(propertyPane,"Prefix");
-				creator.createTextField(item -> item.getDescription(),
-						(item, value) -> item.setDescription(value)).addOn(propertyPane, "Description");
-				propertyPane.setTitled("General");
-				propertyPane.addOn(this);
-			}
-
-			@Override
-			public void createSelectors(Creator<AcademicTitle> creator) {}
-
-		};		
+		ItemEditor<AcademicTitle> editor = new ItemEditor<>(getItemClass());
+		PropertyGridPane propertyPane = new PropertyGridPane();
+		propertyPane.addEntry("Prefix", editor.createTextField(item -> item.getPrefix(),
+				(item, value) -> item.setPrefix(value)));
+		propertyPane.addEntry("Description", editor.createTextField(item -> item.getDescription(),
+				(item, value) -> item.setDescription(value)));
+		propertyPane.autosizeColumnWidths();
+		editor.add(new TitledPropertyPane("General", propertyPane));
 		editor.addApplyButton();
 		return editor;
 	}

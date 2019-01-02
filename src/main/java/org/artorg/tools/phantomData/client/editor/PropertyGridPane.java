@@ -3,30 +3,34 @@ package org.artorg.tools.phantomData.client.editor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.artorg.tools.phantomData.client.logging.Logger;
+
 import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
 
-public class PropertyGridPane<T> extends PropertyNode<T> {
+public class PropertyGridPane extends AnchorPane implements IPropertyNode {
 //	private final List<AbstractEditor<T, ?>> abstractEditors;
 	private final ColumnConstraints column1;
 	private final ColumnConstraints column2;
 	private final GridPane gridPane;
+	private final List<IPropertyNode> propertyChildren;
 
 	{
 //		abstractEditors = new ArrayList<>();
 		gridPane = new GridPane();
+		propertyChildren = new ArrayList<>();
 	}
 
-	public PropertyGridPane(Class<T> itemClass) {
-		super(itemClass);
+	public PropertyGridPane() {
 		column1 = new ColumnConstraints();
 		column1.setHgrow(Priority.ALWAYS);
 		column2 = new ColumnConstraints();
@@ -38,25 +42,42 @@ public class PropertyGridPane<T> extends PropertyNode<T> {
 		gridPane.getColumnConstraints().addAll(column1, column2);
 	}
 
-	public <U> PropertyGridPane<U> map(Class<U> cls) {
-		PropertyGridPane<U> result = new PropertyGridPane<U>(cls);
-		
-		return result;
+	public void setTitled(String title) {
+
 	}
 
-	public void addEntry(String title, Node rightNode) {
-		addEntry(new Label(title), rightNode);
+	public void autosizeColumnWidths() {
+//		Platform.runLater(() -> {
+//			Logger.debug.println("textWidth1");
+//			double textWidth = 0;
+//			for (int i = 0; i < getChildren().size() / 2; i++) {
+//				Text text = new Text(((Label) getChildren().get(2 * i)).getText());
+//				text.applyCss();
+//				double width = text.getLayoutBounds().getWidth();
+//				if (width > textWidth) textWidth = width;
+//			}
+//			column1.setMinWidth(textWidth + 5.0);
+//			column1.setPrefWidth(textWidth + 10.0);
+//			column1.setMaxWidth(textWidth + 45.0);
+//			Logger.debug.println("textWidth2 = " +textWidth);
+//
+//			textWidth = 0;
+//			for (int i = 0; i < getChildren().size() / 2; i++) {
+//				double width = getChildren().get(2 * i + 1).getLayoutBounds().getWidth();
+//				if (width > textWidth) textWidth = width;
+//			}
+//			column2.setPrefWidth(textWidth + 25.0);
+//		});
 	}
-	
-	@SuppressWarnings("unchecked")
+
+	public void addEntry(String title, IPropertyNode propertyNode) {
+		addPropertyNode(propertyNode);
+		addEntry(new Label(title), propertyNode.getNode());
+	}
+
 	public void addEntry(Node leftNode, Node rightNode) {
-		if (leftNode instanceof AbstractEditor)
-			this.add((AbstractEditor<T, ?>) rightNode);
-		if (rightNode instanceof AbstractEditor)
-			this.add((AbstractEditor<T, ?>) rightNode);
+
 		int row = gridPane.getChildren().size() / 2;
-		if (rightNode instanceof AbstractEditor)
-			rightNode = ((AbstractEditor<?,?>)rightNode).getControlNode();
 		gridPane.add(leftNode, 0, row, 1, 1);
 		gridPane.add(rightNode, 1, row, 1, 1);
 		GridPane.setHgrow(rightNode, Priority.ALWAYS);
@@ -67,22 +88,6 @@ public class PropertyGridPane<T> extends PropertyNode<T> {
 		rowConstraints.setPrefHeight(30.0);
 		rowConstraints.setMinHeight(30.0);
 		gridPane.getRowConstraints().add(rowConstraints);
-
-		Platform.runLater(() -> {
-			double textWidth = 0;
-			Text text = new Text(((Label) gridPane.getChildren().get(2 * row)).getText());
-			text.applyCss();
-			double width = text.getLayoutBounds().getWidth();
-			if (width > textWidth) textWidth = width;
-			column1.setMinWidth(textWidth + 5.0);
-			column1.setPrefWidth(textWidth + 10.0);
-			column1.setMaxWidth(textWidth + 45.0);
-
-			textWidth = 0;
-			width = gridPane.getChildren().get(2 * row + 1).getLayoutBounds().getWidth();
-			if (width > textWidth) textWidth = width;
-			column2.setPrefWidth(textWidth + 25.0);
-		});
 	}
 
 	public GridPane getGridPane() {
@@ -90,8 +95,13 @@ public class PropertyGridPane<T> extends PropertyNode<T> {
 	}
 
 	@Override
-	public Node getControlNode() {
+	public Node getNode() {
 		return gridPane;
+	}
+
+	@Override
+	public List<IPropertyNode> getChildrenProperties() {
+		return propertyChildren;
 	}
 
 }

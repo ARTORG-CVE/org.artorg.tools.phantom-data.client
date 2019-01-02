@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
+import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
@@ -57,38 +57,32 @@ public class MeasurementUI extends UIEntity<Measurement> {
 
 	@Override
 	public ItemEditor<Measurement> createEditFactory() {
-		ItemEditor<Measurement> editor = new ItemEditor<Measurement>(getItemClass()) {
+		ItemEditor<Measurement> editor = new ItemEditor<>(getItemClass());
 
-			@Override
-			public void createPropertyGridPanes(Creator<Measurement> creator) {
-				PropertyGridPane<Measurement> propertyPane =
-						new PropertyGridPane<Measurement>(Measurement.class);
-				creator.createDatePicker((item, value) -> item.setStartDate(value),
-						item -> item.getStartDate()).addOn(propertyPane, "Start date");
-				creator.createComboBox(Person.class, item -> item.getPerson(),
-						(item, value) -> item.setPerson(value)).setMapper(p -> p.getName())
-						.addOn(propertyPane, "Person");
-				creator.createComboBox(Project.class, item -> item.getProject(),
-						(item, value) -> item.setProject(value)).setMapper(p -> p.getName())
-						.addOn(propertyPane, "Project");
-				creator.createComboBox(ExperimentalSetup.class, item -> item.getExperimentalSetup(),
+		PropertyGridPane propertyPane = new PropertyGridPane();
+		propertyPane.addEntry("Start date", editor.createDatePicker(
+				(item, value) -> item.setStartDate(value), item -> item.getStartDate()));
+		propertyPane
+				.addEntry("Person",
+						editor.createComboBox(Person.class, item -> item.getPerson(),
+								(item, value) -> item.setPerson(value))
+								.setMapper(p -> p.getName()));
+		propertyPane
+				.addEntry("Project",
+						editor.createComboBox(Project.class, item -> item.getProject(),
+								(item, value) -> item.setProject(value))
+								.setMapper(p -> p.getName()));
+		propertyPane.addEntry("Experimental Setup",
+				editor.createComboBox(ExperimentalSetup.class, item -> item.getExperimentalSetup(),
 						(item, value) -> item.setExperimentalSetup(value))
-						.setMapper(p -> p.getShortName()).addOn(propertyPane, "Experimental Setup");
-				propertyPane.setTitled("General");
-				propertyPane.addOn(this);
-			}
+						.setMapper(p -> p.getShortName()));
+		propertyPane.autosizeColumnWidths();
+		editor.add(new TitledPropertyPane("General", propertyPane));
 
-			@Override
-			public void createSelectors(Creator<Measurement> creator) {
-				creator.createSelector(DbFile.class, item -> item.getFiles(),
-						(item, files) -> item.setFiles((List<DbFile>) files))
-						.setTitled("Protocol Files").addOn(this);
-				creator.createSelector(DbFile.class, item -> item.getFiles(),
-						(item, files) -> item.setFiles((List<DbFile>) files)).setTitled("Files")
-						.addOn(this);
-			}
-
-		};
+		editor.add(new TitledPropertyPane("Protocol Files", editor.createSelector(DbFile.class,
+				item -> item.getFiles(), (item, files) -> item.setFiles((List<DbFile>) files))));
+		editor.add(new TitledPropertyPane("Files", editor.createSelector(DbFile.class,
+				item -> item.getFiles(), (item, files) -> item.setFiles((List<DbFile>) files))));
 
 		editor.addApplyButton();
 		return editor;

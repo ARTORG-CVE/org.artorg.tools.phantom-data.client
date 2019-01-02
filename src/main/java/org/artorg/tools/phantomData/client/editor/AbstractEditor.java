@@ -1,34 +1,35 @@
 package org.artorg.tools.phantomData.client.editor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.artorg.tools.phantomData.client.exceptions.PostException;
-
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 
-public abstract class AbstractEditor<T, U> extends PropertyNode<T> {
+public abstract class AbstractEditor<T, U> implements IPropertyNode {
 	private BiConsumer<T, U> valueToEntitySetter;
 	private Function<T, U> entityToValueEditGetter;
 	private Function<T, U> entityToValueAddGetter;
 	private Consumer<U> valueToNodeSetter;
 	private Supplier<U> nodeToValueGetter;
 	private Runnable defaultSetterRunnable;
-	private final Node controlNode;
+	private final List<IPropertyNode> propertyNodes;
+	private Class<T> itemClass;
+	private Node node;
 
-	public AbstractEditor(Class<T> itemClass, Node controlNode) {
-		super(itemClass);
+	public AbstractEditor(Class<T> itemClass, Node node) {
 		valueToEntitySetter = this::valueToEntitySetterImpl;
 		entityToValueEditGetter = this::entityToValueEditGetterImpl;
 		entityToValueAddGetter = this::entityToValueAddGetterImpl;
 		valueToNodeSetter = this::valueToNodeSetterImpl;
 		nodeToValueGetter = this::nodeToValueGetterImpl;
 		defaultSetterRunnable = this::defaultSetterRunnableImpl;
-		this.controlNode = controlNode;
-		getvBox().getChildren().add(controlNode);
+		propertyNodes = new ArrayList<>();
+		this.itemClass = itemClass;
+		this.node = node;
 	}
 
 	protected abstract U entityToValueEditGetterImpl(T item);
@@ -44,12 +45,29 @@ public abstract class AbstractEditor<T, U> extends PropertyNode<T> {
 	protected abstract void defaultSetterRunnableImpl();
 	
 	@Override
-	public final Node getControlNode() {
-		return controlNode;
+	public final Node getNode() {
+		return node;
+	}
+	
+	@Override
+	public List<IPropertyNode> getChildrenProperties() {
+		return propertyNodes;
+	}
+	
+	public Class<T> getItemClass() {
+		return itemClass;
+	}
+
+	public void setItemClass(Class<T> itemClass) {
+		this.itemClass = itemClass;
+	}
+
+	public final void setNode(Node node) {
+		this.node = node;
 	}
 
 	public <V> AbstractEditor<V, U> map(Class<V> superClass, Function<V, T> editGetter, Function<V,T> addGetter, BiConsumer<V,T> setter) {
-		return new AbstractEditor<V, U>(superClass, controlNode) {
+		return new AbstractEditor<V, U>(superClass, node) {
 
 			@Override
 			protected U entityToValueEditGetterImpl(V item) {
@@ -176,5 +194,8 @@ public abstract class AbstractEditor<T, U> extends PropertyNode<T> {
 		this.defaultSetterRunnable = defaultSetterRunnable;
 		return this;
 	}
+
+	
+	
 
 }

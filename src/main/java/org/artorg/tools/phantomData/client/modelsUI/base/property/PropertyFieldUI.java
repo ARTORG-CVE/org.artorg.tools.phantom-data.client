@@ -7,9 +7,9 @@ import java.util.List;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
+import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.FxUtil;
@@ -17,6 +17,7 @@ import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
@@ -64,37 +65,28 @@ public class PropertyFieldUI extends UIEntity<PropertyField> {
 		FxUtil.setComboBoxCellFactory(comboBoxType, (Class<?> c) -> c.getSimpleName());
 
 		ItemEditor<PropertyField> editor = new ItemEditor<PropertyField>(getItemClass()) {
-			
 			@Override
-			public void createPropertyGridPanes(Creator<PropertyField> creator) {
-				PropertyGridPane<PropertyField> propertyPane =
-						new PropertyGridPane<PropertyField>(PropertyField.class);
-				creator.createTextField(item -> item.getName(),
-						(item, value) -> item.setName(value)).addOn(propertyPane, "Name");
-				creator.createTextField(item -> item.getDescription(),
-						(item, value) -> item.setDescription(value)).addOn(propertyPane, "Description");
-				propertyPane.addEntry("Type", typePane);
-				propertyPane.setTitled("General");
-				propertyPane.addOn(this);
-			}
-
-			@Override
-			public void createSelectors(Creator<PropertyField> creator) {}
-
-			@Override
-			public void onCreateInit(PropertyField item) {
+			public void onShowingCreateMode(PropertyField item) {
 				typePane.getChildren().clear();
 				FxUtil.addToPane(typePane, comboBoxType);
 			}
 
 			@Override
-			public void onEditInit(PropertyField item) {
+			public void onShowingEditMode(PropertyField item) {
 				typePane.getChildren().clear();
 				FxUtil.addToPane(typePane, textFieldType);
 				textFieldType.setText(item.getType());
 			}
 
 		};
+		PropertyGridPane propertyPane = new PropertyGridPane();
+		propertyPane.addEntry("Name", editor.createTextField(item -> item.getName(),
+				(item, value) -> item.setName(value)));
+		propertyPane.addEntry("Description", editor.createTextField(item -> item.getDescription(),
+				(item, value) -> item.setDescription(value)));
+		propertyPane.addEntry(new Label("Type"), typePane);
+		propertyPane.autosizeColumnWidths();
+		editor.add(new TitledPropertyPane("General", propertyPane));
 		editor.addApplyButton();
 		return editor;
 	}

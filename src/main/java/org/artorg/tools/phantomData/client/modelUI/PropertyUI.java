@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
-import org.artorg.tools.phantomData.client.editor.Creator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
+import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
 import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
@@ -33,8 +33,8 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE>, VALUE> ex
 	@Override
 	public List<AbstractColumn<T, ?>> createColumns(Table<T> table, List<T> items) {
 		List<AbstractColumn<T, ?>> columns = new ArrayList<AbstractColumn<T, ?>>();
-		ColumnCreator<T, T> creator = new ColumnCreator<>(table);
-		columns.add(creator.createFilterColumn("Type", path -> {
+		ColumnCreator<T, T> editor = new ColumnCreator<>(table);
+		columns.add(editor.createFilterColumn("Type", path -> {
 			try {
 				return Class.forName(path.getPropertyField().getType()).getSimpleName();
 			} catch (ClassNotFoundException e) {
@@ -43,9 +43,9 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE>, VALUE> ex
 			return path.getPropertyField().getType();
 		}, (path, value) -> {}));
 		columns.add(
-				creator.createFilterColumn("Field Name", path -> path.getPropertyField().getName(),
+				editor.createFilterColumn("Field Name", path -> path.getPropertyField().getName(),
 						(path, value) -> path.getPropertyField().setName(value)));
-		columns.add(creator.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
+		columns.add(editor.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(fromString(value))));
 		createPersonifiedColumns(table, columns);
 		return columns;
@@ -53,30 +53,24 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE>, VALUE> ex
 
 	@Override
 	public ItemEditor<T> createEditFactory() {
-		ItemEditor<T> creator = new ItemEditor<T>(getItemClass()) {
-
-			@Override
-			public void createPropertyGridPanes(Creator<T> creator) {
-				PropertyGridPane<T> propertyPane = new PropertyGridPane<T>(getItemClass());
-				creator.createComboBox(PropertyField.class
-						,item -> item.getPropertyField(),
+		ItemEditor<T> editor = new ItemEditor<T>(getItemClass());
+		PropertyGridPane propertyPane = new PropertyGridPane();
+		propertyPane
+				.addEntry("Property Field",
+						editor.createComboBox(PropertyField.class, item -> item.getPropertyField(),
 								(item, value) -> item.setPropertyField(value))
-						.setMapper(p -> p.getName()).addOn(propertyPane, "Property field");
-				Node node = createValueNode();
-				creator.createNode(item -> item.getValue(), (item, value) -> item.setValue(value),
+								.setMapper(p -> p.getName()));
+		Node node = createValueNode();
+		propertyPane.addEntry("Value",
+				editor.createNode(item -> item.getValue(), (item, value) -> item.setValue(value),
 						item -> getDefaultValue(), node, value -> setValueToNode(node, value),
-						() -> getValueFromNode(node), () -> setValueToNode(node, getDefaultValue()))
-						.addOn(propertyPane, "Value");
-				propertyPane.setTitled("General");
-				propertyPane.addOn(this);
-			}
+						() -> getValueFromNode(node),
+						() -> setValueToNode(node, getDefaultValue())));
+		propertyPane.autosizeColumnWidths();
+		editor.add(new TitledPropertyPane("General", propertyPane));
 
-			@Override
-			public void createSelectors(Creator<T> creator) {}
-
-		};
-		creator.addApplyButton();
-		return creator;
+		editor.addApplyButton();
+		return editor;
 
 	}
 

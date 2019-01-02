@@ -21,10 +21,9 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 
-public abstract class ItemEditor<T> extends PropertyNode<T> {
+public class ItemEditor<T> extends Creator<T> {
 	private final Button applyButton;
 	private final ICrudConnector<T> connector;
-	private final Creator<T> creator;
 	private T item;
 
 	{
@@ -34,50 +33,39 @@ public abstract class ItemEditor<T> extends PropertyNode<T> {
 	public ItemEditor(Class<T> itemClass) {
 		super(itemClass);
 		this.connector = (ICrudConnector<T>) Connectors.get(itemClass);
-		creator = new Creator<>(itemClass);
-		createPropertyGridPanes(creator);
-		createSelectors(creator);
 	}
 
-	public abstract void createPropertyGridPanes(Creator<T> creator);
+	public void onShowingCreateMode(T item) {}
 
-	public abstract void createSelectors(Creator<T> creator);
+	public void onCreatingClient(T item) throws InvalidUIInputException {}
 
-	public void onInputCheck() throws InvalidUIInputException {}
+	public void onCreatingServer(T item) throws NoUserLoggedInException, PostException {}
 
-	public void onCreateInit(T item) {}
+	public void onCreatedServer(T item) {}
 
-	public void onCreateBeforeApplyChanges(T item)
-			throws PostException, InvalidUIInputException, NoUserLoggedInException {}
+	public void onShowingEditMode(T item) {}
 
-	public void onCreateBeforePost(T item)
-			throws NoUserLoggedInException, PostException, InvalidUIInputException {}
+	public void onUpdatingClient(T item) throws InvalidUIInputException {}
 
-	public void onCreatePostSuccessful(T item) {}
+	public void onUpdatingServer(T item)
+			throws NoUserLoggedInException, PutException, PostException {}
 
-	public void onEditInit(T item) {}
-
-	public void onEditBeforeApplyChanges(T item)
-			throws PostException, InvalidUIInputException, NoUserLoggedInException {}
-
-	public void onEditBeforePut(T item) {}
-
-	public void onEditPutSuccessful(T item) {}
+	public void onUpdatedServer(T item) {}
 
 	@Override
-	public Node getControlNode() {
+	public Node getNode() {
 		return this;
 	}
-	
+
 	public final void showCreateMode() {
 		showCreateMode(null);
 	}
 
 	public final void showCreateMode(T item) {
 		this.item = item;
-		onCreateInit(item);
+		onShowingCreateMode(item);
 		applyButton.setOnAction(event -> {
-			if (getPropertyChildren().isEmpty()) Logger.warn.println("Nodes empty");
+			if (getChildrenProperties().isEmpty()) Logger.warn.println("Nodes empty");
 			FxUtil.runNewSingleThreaded(() -> {
 				try {
 					createItem(item);
@@ -101,11 +89,11 @@ public abstract class ItemEditor<T> extends PropertyNode<T> {
 
 	public final void showEditMode(T item) {
 		this.item = item;
-		onEditInit(item);
+		onShowingEditMode(item);
 		applyButton.setOnAction(event -> {
-			if (getPropertyChildren().isEmpty()) return;
+			if (getChildrenProperties().isEmpty()) return;
 			try {
-				editItem(item);
+				updateItem(item);
 			} catch (PutException e) {
 				Logger.warn.println(e.getMessage());
 				e.printStackTrace();
@@ -134,40 +122,58 @@ public abstract class ItemEditor<T> extends PropertyNode<T> {
 
 	public final T createItem(T item)
 			throws PostException, InvalidUIInputException, NoUserLoggedInException {
-		if (item == null) {
-			try {
-				item = getItemClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
-				e.printStackTrace();
-				PostException e1 = new PostException(getItemClass());
-				e1.addSuppressed(e);
-				throw e1;
-			}
+		if (item == null) item = createEmpty();
+		item = createClient(item);
+		return createServer(item);
+	}
+
+	public final T createClient(T item)
+			throws PostException, InvalidUIInputException, NoUserLoggedInException {
+		onCreatingClient(item);
+		getAllAbstractEditors().stream().forEach(node -> node.nodeToEntity(item));
+		return item;
+	}
+
+	public final T createEmpty() {
+		try {
+			return getItemClass().newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
 		}
-		final T item2 = item;
-		onCreateBeforeApplyChanges(item2);
-		onInputCheck();
-		getAllAbstractEditors().stream().forEach(node -> node.nodeToEntity(item2));
-		onCreateBeforePost(item2);
-		if (getConnector().create(item2)) {
-			this.item = item2;
-			onCreatePostSuccessful(item2);
-			Platform.runLater(
-					() -> getAllAbstractEditors().stream().forEach(node -> node.entityToNodeAdd(item2)));
-			return item2;
+		throw new RuntimeException();
+	}
+
+	public final T createServer(T item)
+			throws NoUserLoggedInException, PostException, InvalidUIInputException {
+		onCreatingServer(item);
+		if (getConnector().create(item)) {
+			this.item = item;
+			onCreatedServer(item);
+			Platform.runLater(() -> getAllAbstractEditors().stream()
+					.forEach(node -> node.entityToNodeAdd(item)));
+			return item;
 		}
 		throw new PostException(getItemClass());
 	}
 
-	public final boolean editItem(T item)
+	public final boolean updateItem(T item)
 			throws PutException, InvalidUIInputException, PostException, NoUserLoggedInException {
-		onEditBeforeApplyChanges(item);
-		onInputCheck();
+		updateClient(item);
+		return updateServer(item);
+	}
+
+	public final void updateClient(T item)
+			throws InvalidUIInputException, NoUserLoggedInException, PostException {
+		onUpdatingClient(item);
 		getAllAbstractEditors().stream().forEach(node -> node.nodeToEntity(item));
-		onEditBeforePut(item);
+	}
+
+	public final boolean updateServer(T item)
+			throws NoUserLoggedInException, PutException, PostException {
+		onUpdatingServer(item);
 		if (getConnector().update(item)) {
 			this.item = item;
-			onEditPutSuccessful(item);
+			onUpdatedServer(item);
 			return true;
 		}
 		return false;
@@ -176,37 +182,38 @@ public abstract class ItemEditor<T> extends PropertyNode<T> {
 //	public Collection<PropertyGridPane> getAllPropertyGridPanes() {
 //		
 //	}
-	public List<PropertyGridPane<T>> getAllPropertyGridPanes() {
-		return getPropertyChildren().stream().map(propertyNode -> getAllPropertyGridPanes(propertyNode))
+	public List<PropertyGridPane> getAllPropertyGridPanes() {
+		return getChildrenProperties().stream()
+				.map(propertyNode -> getAllPropertyGridPanes(propertyNode))
 				.flatMap(nodes -> nodes.stream()).collect(Collectors.toList());
 	}
 
-	private List<PropertyGridPane<T>> getAllPropertyGridPanes(IPropertyNode<T> propertyNode) {
-		List<PropertyGridPane<T>> list = new ArrayList<>();
+	private List<PropertyGridPane> getAllPropertyGridPanes(IPropertyNode propertyNode) {
+		List<PropertyGridPane> list = new ArrayList<>();
 		if (propertyNode instanceof PropertyGridPane) {
-			list.add((PropertyGridPane<T>) propertyNode);
+			list.add((PropertyGridPane) propertyNode);
 			return list;
 		}
-		if (propertyNode.getPropertyChildren().isEmpty()) return list;
-		for (IPropertyNode<T> child : propertyNode.getPropertyChildren()) {
-			if (child instanceof PropertyGridPane) list.add((PropertyGridPane<T>) child);
-			else if (!child.getPropertyChildren().isEmpty())
+		if (propertyNode.getChildrenProperties().isEmpty()) return list;
+		for (IPropertyNode child : propertyNode.getChildrenProperties()) {
+			if (child instanceof PropertyGridPane) list.add((PropertyGridPane) child);
+			else if (!child.getChildrenProperties().isEmpty())
 				list.addAll(getAllPropertyGridPanes(child));
 		}
 		return list;
 	}
 
 	public Collection<AbstractEditor<T, ?>> getAllAbstractEditors() {
-		return getPropertyChildren().stream().map(propertyNode -> getAllSubEditors(propertyNode))
+		return getChildrenProperties().stream().map(propertyNode -> getAllSubEditors(propertyNode))
 				.flatMap(nodes -> nodes.stream()).collect(Collectors.toList());
 	}
 
 	@SuppressWarnings("unchecked")
-	private Collection<AbstractEditor<T, ?>> getAllSubEditors(IPropertyNode<T> propertyNode) {
+	private Collection<AbstractEditor<T, ?>> getAllSubEditors(IPropertyNode propertyNode) {
 		List<AbstractEditor<T, ?>> list = new ArrayList<>();
-		if (!propertyNode.getPropertyChildren().isEmpty()) {
-			for (IPropertyNode<T> child : propertyNode.getPropertyChildren()) {
-				if (child.getPropertyChildren().isEmpty() && child instanceof AbstractEditor)
+		if (!propertyNode.getChildrenProperties().isEmpty()) {
+			for (IPropertyNode child : propertyNode.getChildrenProperties()) {
+				if (child.getChildrenProperties().isEmpty() && child instanceof AbstractEditor)
 					list.add((AbstractEditor<T, ?>) child);
 				else
 					list.addAll(getAllSubEditors(child));
@@ -262,10 +269,6 @@ public abstract class ItemEditor<T> extends PropertyNode<T> {
 
 	public T getItem() {
 		return item;
-	}
-
-	public Creator<T> getCreator() {
-		return creator;
 	}
 
 }
