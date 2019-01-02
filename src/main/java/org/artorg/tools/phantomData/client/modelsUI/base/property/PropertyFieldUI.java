@@ -10,6 +10,7 @@ import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.exceptions.InvalidUIInputException;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.FxUtil;
@@ -77,6 +78,13 @@ public class PropertyFieldUI extends UIEntity<PropertyField> {
 				FxUtil.addToPane(typePane, textFieldType);
 				textFieldType.setText(item.getType());
 			}
+
+			@Override
+			public void onCreatingClient(PropertyField item) throws InvalidUIInputException {
+				item.setType(comboBoxType.getSelectionModel().getSelectedItem().getName());
+			}
+			
+			
 
 		};
 		PropertyGridPane propertyPane = new PropertyGridPane();

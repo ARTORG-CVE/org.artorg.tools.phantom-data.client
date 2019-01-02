@@ -15,7 +15,13 @@ import java.util.function.Supplier;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.AbstractPropertifiedEntity;
+import org.artorg.tools.phantomData.server.model.AbstractProperty;
 import org.artorg.tools.phantomData.server.model.Identifiable;
+import org.artorg.tools.phantomData.server.models.base.property.BooleanProperty;
+import org.artorg.tools.phantomData.server.models.base.property.DateProperty;
+import org.artorg.tools.phantomData.server.models.base.property.DoubleProperty;
+import org.artorg.tools.phantomData.server.models.base.property.IntegerProperty;
+import org.artorg.tools.phantomData.server.models.base.property.StringProperty;
 
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -42,11 +48,11 @@ public class Creator<T> extends AnchorPane implements IPropertyNode {
 		FxUtil.addToPane(this, vBox);
 		propertyNodes = new ArrayList<>();
 	}
-	
+
 	public Creator(Class<T> itemClass) {
 		this.itemClass = itemClass;
 	}
-	
+
 	public void add(IPropertyNode propertyNode) {
 		addPropertyNode(propertyNode);
 		getvBox().getChildren().add(propertyNode.getNode());
@@ -59,6 +65,118 @@ public class Creator<T> extends AnchorPane implements IPropertyNode {
 		titledPane.setExpanded(false);
 		return titledPane;
 	}
+
+	@SuppressWarnings("rawtypes")
+	public AbstractEditor<T, List<AbstractProperty>> createPropertySelector() {
+		DbPropertySelector<T> propertySelector = new DbPropertySelector<T>(itemClass);
+		return new AbstractEditor<T, List<AbstractProperty>>(itemClass, propertySelector) {
+
+			@SuppressWarnings("unchecked")
+			@Override
+			protected List<AbstractProperty> entityToValueEditGetterImpl(T item) {
+				AbstractPropertifiedEntity propertyItem = (AbstractPropertifiedEntity)item;
+				List<AbstractProperty> items = new ArrayList<>();
+				items.addAll(propertyItem.getBooleanProperties());
+				items.addAll(propertyItem.getIntegerProperties());
+				items.addAll(propertyItem.getDoubleProperties());
+				items.addAll(propertyItem.getStringProperties());
+				items.addAll(propertyItem.getDateProperties());
+				return items;
+			}
+
+			@Override
+			protected List<AbstractProperty> entityToValueAddGetterImpl(T item) {
+				return new ArrayList<>();
+			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			protected void valueToEntitySetterImpl(T item, List<AbstractProperty> value) {
+				AbstractPropertifiedEntity propertyItem = (AbstractPropertifiedEntity)item;
+				List<BooleanProperty> boolProps = new ArrayList<>();
+				List<IntegerProperty> intProps = new ArrayList<>();
+				List<DoubleProperty> doubleProps = new ArrayList<>();
+				List<StringProperty> stringProps = new ArrayList<>();
+				List<DateProperty> dateProps = new ArrayList<>();
+				for (int i=0; i<value.size(); i++) {
+					AbstractProperty<T,?> property = (AbstractProperty<T,?>)value.get(i);
+					if (property instanceof BooleanProperty)
+						boolProps.add((BooleanProperty) property);
+					else if (property instanceof IntegerProperty)
+						intProps.add((IntegerProperty) property);
+					else if (property instanceof DoubleProperty)
+						doubleProps.add((DoubleProperty) property);
+					else if (property instanceof StringProperty)
+						stringProps.add((StringProperty) property);
+					else if (property instanceof DateProperty)
+						dateProps.add((DateProperty) property);
+					else
+						throw new IllegalArgumentException();
+				}
+				propertyItem.setBooleanProperties(boolProps);
+				propertyItem.setIntegerProperties(intProps);
+				propertyItem.setDoubleProperties(doubleProps);
+				propertyItem.setStringProperties(stringProps);
+				propertyItem.setDateProperties(dateProps);
+			}
+
+			@Override
+			protected List<AbstractProperty> nodeToValueGetterImpl() {
+				return propertySelector.getPropertyItems();
+			}
+
+			@Override
+			protected void valueToNodeSetterImpl(List<AbstractProperty> value) {
+				propertySelector.setPropertyItems(value);
+
+			}
+
+			@Override
+			protected void defaultSetterRunnableImpl() {
+				propertySelector.setPropertyItems(new ArrayList<>());
+			}
+
+		};
+	}
+	
+//	
+//	public AbstractEditor<T, AbstractPropertifiedEntity<?>> createPropertySelector(
+//			Class<T> itemClass, Function<T, AbstractPropertifiedEntity<?>> getter) {
+//		DbPropertySelector<T> propertySelector = new DbPropertySelector<T>(itemClass);
+//		return new AbstractEditor<T, AbstractPropertifiedEntity<?>>(itemClass, propertySelector) {
+//
+//			@Override
+//			protected AbstractPropertifiedEntity<?> entityToValueEditGetterImpl(T item) {
+//				return getter.apply(item);
+//			}
+//
+//			@Override
+//			protected AbstractPropertifiedEntity<?> entityToValueAddGetterImpl(T item) {
+//				propertySelector.setPropertyItems(null);
+//				return null;
+//			}
+//
+//			@Override
+//			protected void valueToEntitySetterImpl(T item, AbstractPropertifiedEntity<?> value) {}
+//
+//			@Override
+//			protected AbstractPropertifiedEntity<?> nodeToValueGetterImpl() {
+//				throw new UnsupportedOperationException();
+//			}
+//
+//			@Override
+//			protected void valueToNodeSetterImpl(AbstractPropertifiedEntity<?> value) {
+//				propertySelector.setPropertyItems(value);
+//			}
+//
+//			@Override
+//			protected void defaultSetterRunnableImpl() {
+//				propertySelector.setPropertyItems(null);
+//			}
+//
+//		};
+//	}
+//	
 
 	public <U> AbstractEditor<T, Collection<U>> createSelector(Class<U> subItemClass,
 			Function<T, Collection<U>> getter, BiConsumer<T, Collection<U>> setter) {
@@ -138,7 +256,8 @@ public class Creator<T> extends AnchorPane implements IPropertyNode {
 
 	public StringPropertyNode create(TextField controlNode, Function<T, String> getter,
 			BiConsumer<T, String> setter) {
-		return new StringPropertyNode(controlNode, () -> controlNode.getText(), (s) -> controlNode.setText(s)) {
+		return new StringPropertyNode(controlNode, () -> controlNode.getText(),
+				(s) -> controlNode.setText(s)) {
 			@Override
 			protected String entityToValueEditGetterImpl(T item) {
 				return getter.apply(item);
@@ -172,7 +291,8 @@ public class Creator<T> extends AnchorPane implements IPropertyNode {
 		private final Supplier<String> getter;
 		private final Consumer<String> setter;
 
-		public StringPropertyNode(Node controlNode, Supplier<String> getter, Consumer<String> setter) {
+		public StringPropertyNode(Node controlNode, Supplier<String> getter,
+				Consumer<String> setter) {
 			super(itemClass, controlNode);
 			this.getter = getter;
 			this.setter = setter;
@@ -225,42 +345,7 @@ public class Creator<T> extends AnchorPane implements IPropertyNode {
 				() -> node.setValue(LocalDate.now()));
 	}
 
-	public AbstractEditor<T, AbstractPropertifiedEntity<?>> createPropertySelector(
-			Class<T> itemClass, Function<T, AbstractPropertifiedEntity<?>> getter) {
-		DbPropertySelector<T> propertySelector = new DbPropertySelector<T>(itemClass);
-		return new AbstractEditor<T, AbstractPropertifiedEntity<?>>(itemClass, propertySelector) {
-
-			@Override
-			protected AbstractPropertifiedEntity<?> entityToValueEditGetterImpl(T item) {
-				return getter.apply(item);
-			}
-
-			@Override
-			protected AbstractPropertifiedEntity<?> entityToValueAddGetterImpl(T item) {
-				propertySelector.setItem(null);
-				return null;
-			}
-
-			@Override
-			protected void valueToEntitySetterImpl(T item, AbstractPropertifiedEntity<?> value) {}
-
-			@Override
-			protected AbstractPropertifiedEntity<?> nodeToValueGetterImpl() {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			protected void valueToNodeSetterImpl(AbstractPropertifiedEntity<?> value) {
-				propertySelector.setItem(value);
-			}
-
-			@Override
-			protected void defaultSetterRunnableImpl() {
-				propertySelector.setItem(null);
-			}
-
-		};
-	}
+	
 
 	public <U> ComboBoxCreator<U> createComboBox(Class<U> subItemClass, Function<T, U> getter,
 			BiConsumer<T, U> setter) {
@@ -268,8 +353,8 @@ public class Creator<T> extends AnchorPane implements IPropertyNode {
 		return createComboBox(controlNode, subItemClass, getter, setter);
 	}
 
-	public <U> ComboBoxCreator<U> createComboBox(ComboBox<U> controlNode, Class<U> subItemClass, Function<T, U> getter,
-			BiConsumer<T, U> setter) {
+	public <U> ComboBoxCreator<U> createComboBox(ComboBox<U> controlNode, Class<U> subItemClass,
+			Function<T, U> getter, BiConsumer<T, U> setter) {
 		List<U> items = Connectors.get(subItemClass).readAllAsList();
 		controlNode.setItems(FXCollections.observableList(items));
 		FxUtil.setComboBoxCellFactory(controlNode, o -> o.toString());

@@ -56,7 +56,7 @@ public class SpecialUI extends UIEntity<Special> {
 						(item, subItems) -> item.setFiles((List<DbFile>) subItems))));
 
 		editor.add(new TitledPropertyPane("Properties",
-				editor.createPropertySelector(Special.class, item -> item)));
+				editor.createPropertySelector()));
 
 		editor.closeTitledSelectors();
 		editor.addAutoCloseOnSelectors();

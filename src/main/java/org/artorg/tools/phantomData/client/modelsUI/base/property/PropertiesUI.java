@@ -30,7 +30,7 @@ public class PropertiesUI extends UIEntity<AbstractProperty> {
 			createColumns(Table<AbstractProperty> table, List<AbstractProperty> items) {
 		List<AbstractColumn<AbstractProperty, ?>> columns = new ArrayList<>();
 		ColumnCreator<AbstractProperty, AbstractProperty> creator = new ColumnCreator<>(table);
-		columns.add(creator.createFilterColumn("Proerty Type",
+		columns.add(creator.createFilterColumn("Property Type",
 				path -> path.getClass().getSimpleName(), (path, value) -> {}));
 		columns.add(creator.createFilterColumn("Entity Type", path -> {
 			try {
