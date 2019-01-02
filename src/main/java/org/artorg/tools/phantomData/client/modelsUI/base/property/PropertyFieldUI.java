@@ -85,7 +85,6 @@ public class PropertyFieldUI extends UIEntity<PropertyField> {
 		propertyPane.addEntry("Description", editor.createTextField(item -> item.getDescription(),
 				(item, value) -> item.setDescription(value)));
 		propertyPane.addEntry(new Label("Type"), typePane);
-		propertyPane.autosizeColumnWidths();
 		editor.add(new TitledPropertyPane("General", propertyPane));
 		editor.addApplyButton();
 		return editor;

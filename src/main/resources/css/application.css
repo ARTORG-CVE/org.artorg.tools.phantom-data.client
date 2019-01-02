@@ -1,92 +1,77 @@
 /* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
 
 .console-pane > .viewport {
-   #-fx-background-color: black;
-   -fx-focus-color: transparent;
-   -fx-padding: 0;
-	-fx-border-width: 0px 0px 0px 0px;
+-fx-focus-color: transparent;
+-fx-padding: 0.0;
+-fx-border-width: 0.0px 0.0px 0.0px 0.0px;
 }
 
 .row-header-cell {
-    -fx-background-color: -fx-box-border, -fx-inner-border, -fx-body-color;
-    -fx-background-insets: 0, 0 1 1 0, 1 2 2 1;
+-fx-background-color: -fx-box-border, -fx-inner-border, -fx-body-color;
+-fx-background-insets: 0.0, 0.0 1.0 1.0 0.0, 1.0 2.0 2.0 1.0;
 }
 
 .filter-menu-button {
- 	-fx-background-color: transparent;
+-fx-background-color: transparent;
 }
 
 .glyph-icon{
-    -fx-text-fill: -fx-text-base-color;
-    -fx-fill: -fx-text-base-color;
-    -glyph-size: 48px;
+-fx-text-fill: -fx-text-base-color;
+-fx-fill: -fx-text-base-color;
+-glyph-size: 48.0px;
 }
 
 .menu-item:focused .glyph-icon{
-    -fx-text-fill: white;
-    -fx-fill: white;
-    -glyph-size: 48px;
+-fx-text-fill: white;
+-fx-fill: white;
+-glyph-size: 48.0px;
 }
 
 .tree-table-view {
-	-fx-focus-color: transparent;
-	-fx-border-color: red;
-	
-    -fx-border-width: 0px 0px 0px 0px;
+-fx-focus-color: transparent;
+-fx-border-color: red;
 
-  -fx-background-insets: 0;
-  -fx-padding: 0;
+-fx-border-width: 0.0px 0.0px 0.0px 0.0px;
+
+-fx-background-insets: 0.0;
+-fx-padding: 0.0;
 
 }
 
 .split-pane {
-	-fx-border-color: transparent;
-	-fx-padding: 0;
-	-fx-border-width: 0px 0px 0px 0px;
+-fx-border-color: transparent;
+-fx-padding: 0.0;
+-fx-border-width: 0.0px 0.0px 0.0px 0.0px;
 }
 
 .split-pane *.split-pane-divider {
-    -fx-padding: 0 1 0 1;
-    -fx-border-color: transparent;
+-fx-padding: 0.0 1.0 0.0 1.0;
+-fx-border-color: transparent;
 }
 
 .noheader .column-header-background {
-    -fx-max-height: 0;
-    -fx-pref-height: 0;
-    -fx-min-height: 0;
+-fx-max-height: 0.0;
+-fx-pref-height: 0.0;
+-fx-min-height: 0.0;
 }
 
 .header .column-header-background {
-    -fx-max-height: -1;
-    -fx-pref-height: -1;
-    -fx-min-height: -1;
+-fx-max-height: -1.0;
+-fx-pref-height: -1.0;
+-fx-min-height: -1.0;
 }
 
 
 .titled-pane > .content > * {
-	-fx-border-color: transparent;
-    -fx-padding: 0;
+-fx-border-color: transparent;
+-fx-padding: 0.0;
 }
 
 .titled-pane > *.content {
-    -fx-border-color: transparent;
+-fx-border-color: transparent;
 }
 
-
-
-
-#.table-view .column-header {
-    #-fx-background-color: transparent;
-    #-fx-border-color: transparent;
-#}
-
-
-.table-view .column-header {
-    -fx-background-color: 	f2f2f2;
+.table-view .column-header,
+.table-view .column-header-background .filler {
+-fx-background-color: 	f2f2f2;
 }
-
-#.table-view .column-header,
-#.table-view .column-header .filler,
-#.table-view .column-header-background .filler {
-#    -fx-background-color: transparent;
-#}

@@ -66,7 +66,6 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE>, VALUE> ex
 						item -> getDefaultValue(), node, value -> setValueToNode(node, value),
 						() -> getValueFromNode(node),
 						() -> setValueToNode(node, getDefaultValue())));
-		propertyPane.autosizeColumnWidths();
 		editor.add(new TitledPropertyPane("General", propertyPane));
 
 		editor.addApplyButton();

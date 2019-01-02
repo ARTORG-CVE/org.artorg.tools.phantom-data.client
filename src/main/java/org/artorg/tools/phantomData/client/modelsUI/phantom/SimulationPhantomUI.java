@@ -157,7 +157,6 @@ public class SimulationPhantomUI extends UIEntity<SimulationPhantom> {
 		propertyPane.addEntry("Nominal thickness",
 				editor.createTextField(item -> Float.toString(item.getThickness()),
 						(item, value) -> item.setThickness(Float.valueOf(value))));
-		propertyPane.autosizeColumnWidths();
 		editor.add(new TitledPropertyPane("General", propertyPane));
 
 		editor.add(new TitledPropertyPane("Files",
@@ -190,6 +189,8 @@ public class SimulationPhantomUI extends UIEntity<SimulationPhantom> {
 		comboBoxSpecial.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> updateId.run());
 
+		editor.closeTitledSelectors();
+		editor.addAutoCloseOnSelectors();
 		editor.addApplyButton();
 		return editor;
 

@@ -39,7 +39,6 @@ public class NoteUI extends UIEntity<Note> {
 		PropertyGridPane propertyPane = new PropertyGridPane();
 		propertyPane.addEntry("Message", editor.createTextArea(item -> item.getName(),
 				(item, value) -> item.setName(value)));
-		propertyPane.autosizeColumnWidths();
 		editor.add(new TitledPropertyPane("General", propertyPane));
 		editor.addApplyButton();
 		return editor;

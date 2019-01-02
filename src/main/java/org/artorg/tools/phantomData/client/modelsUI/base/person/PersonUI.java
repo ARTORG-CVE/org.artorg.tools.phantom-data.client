@@ -56,7 +56,6 @@ public class PersonUI extends UIEntity<Person> {
 				item -> item.getFirstname(), (item, value) -> item.setFirstname(value)));
 		propertyPane.addEntry("Lastname", editor.createTextField(
 				item -> item.getLastname(), (item, value) -> item.setLastname(value)));
-		propertyPane.autosizeColumnWidths();
 		editor.add(new TitledPropertyPane("General", propertyPane));
 		editor.addApplyButton();
 		return editor;

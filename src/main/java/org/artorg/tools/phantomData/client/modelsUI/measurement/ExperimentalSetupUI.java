@@ -52,12 +52,13 @@ public class ExperimentalSetupUI extends UIEntity<ExperimentalSetup> {
 				(item, value) -> item.setLongName(value)));
 		propertyPane.addEntry("Description", editor.createTextArea(item -> item.getDescription(),
 				(item, value) -> item.setDescription(value)));
-		propertyPane.autosizeColumnWidths();
 		editor.add(new TitledPropertyPane("General", propertyPane));
 
 		editor.add(new TitledPropertyPane("Files", editor.createSelector(DbFile.class,
 				item -> item.getFiles(), (item, files) -> item.setFiles((List<DbFile>) files))));
 
+		editor.closeTitledSelectors();
+		editor.addAutoCloseOnSelectors();
 		editor.addApplyButton();
 		return editor;
 	}

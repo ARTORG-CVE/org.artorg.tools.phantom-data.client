@@ -49,12 +49,13 @@ public class LiteratureBaseUI extends UIEntity<LiteratureBase> {
 				(item, value) -> item.setShortcut(value)));
 		propertyPane.addEntry("Name", editor.createTextField(item -> item.getValue(),
 				(item, value) -> item.setValue(value)));
-		propertyPane.autosizeColumnWidths();
 		editor.add(new TitledPropertyPane("General", propertyPane));
 
 		editor.add(new TitledPropertyPane("Files", editor.createSelector(DbFile.class,
 				item -> item.getFiles(), (item, files) -> item.setFiles((List<DbFile>) files))));
 
+		editor.closeTitledSelectors();
+		editor.addAutoCloseOnSelectors();
 		editor.addApplyButton();
 		return editor;
 	}

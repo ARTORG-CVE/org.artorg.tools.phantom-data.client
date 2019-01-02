@@ -29,7 +29,7 @@ public interface IPropertyNode {
 		getChildrenProperties().add(propertyNode);
 	}
 	
-	default List<IPropertyNode> findLeafs() {
+	default List<IPropertyNode> flatToLeafs() {
 		List<IPropertyNode> children = getChildrenProperties();
 		List<IPropertyNode> leafs = new ArrayList<>();
 		if (children.isEmpty()) return leafs;
@@ -37,9 +37,21 @@ public interface IPropertyNode {
 			if (child.getChildrenProperties().isEmpty())
 				leafs.add(child);
 			else
-				leafs.addAll(child.findLeafs());
+				leafs.addAll(child.flatToLeafs());
 		}
 		return leafs;
+	}
+	
+	default List<IPropertyNode> flatToList() {
+		List<IPropertyNode> list = new ArrayList<>();
+		List<IPropertyNode> children = getChildrenProperties();
+		if (children.isEmpty()) return list;
+		for (IPropertyNode child : children) {
+			list.add(child);
+			if (!child.getChildrenProperties().isEmpty())
+				list.addAll(child.flatToList());
+		}
+		return list;
 	}
 
 //	Class<T> getItemClass();

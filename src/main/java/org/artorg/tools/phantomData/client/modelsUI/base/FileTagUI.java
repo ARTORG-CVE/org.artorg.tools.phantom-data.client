@@ -40,7 +40,6 @@ public class FileTagUI extends UIEntity<FileTag> {
 		PropertyGridPane propertyPane = new PropertyGridPane();
 		propertyPane.addEntry("Name", editor.createTextField(item -> item.getName(),
 				(item, value) -> item.setName(value)));
-		propertyPane.autosizeColumnWidths();
 		editor.add(new TitledPropertyPane("General", propertyPane));
 		editor.addApplyButton();
 		return editor;

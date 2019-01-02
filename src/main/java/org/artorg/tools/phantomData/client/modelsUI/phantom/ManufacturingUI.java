@@ -48,12 +48,13 @@ public class ManufacturingUI extends UIEntity<Manufacturing> {
 				(item, value) -> item.setName(value)));
 		propertyPane.addEntry("Description", editor.createTextArea(item -> item.getDescription(),
 				(item, value) -> item.setDescription(value)));
-		propertyPane.autosizeColumnWidths();
 		editor.add(new TitledPropertyPane("General", propertyPane));
 
 		editor.add(new TitledPropertyPane("Files", editor.createSelector(DbFile.class,
 				item -> item.getFiles(), (item, files) -> item.setFiles((List<DbFile>) files))));
 
+		editor.closeTitledSelectors();
+		editor.addAutoCloseOnSelectors();
 		editor.addApplyButton();
 		return editor;
 	}

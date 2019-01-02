@@ -76,7 +76,7 @@ public class MeasurementUI extends UIEntity<Measurement> {
 				editor.createComboBox(ExperimentalSetup.class, item -> item.getExperimentalSetup(),
 						(item, value) -> item.setExperimentalSetup(value))
 						.setMapper(p -> p.getShortName()));
-		propertyPane.autosizeColumnWidths();
+//		propertyPane.autosizeColumnWidths();
 		editor.add(new TitledPropertyPane("General", propertyPane));
 
 		editor.add(new TitledPropertyPane("Protocol Files", editor.createSelector(DbFile.class,
@@ -84,6 +84,8 @@ public class MeasurementUI extends UIEntity<Measurement> {
 		editor.add(new TitledPropertyPane("Files", editor.createSelector(DbFile.class,
 				item -> item.getFiles(), (item, files) -> item.setFiles((List<DbFile>) files))));
 
+		editor.closeTitledSelectors();
+		editor.addAutoCloseOnSelectors();
 		editor.addApplyButton();
 		return editor;
 	}

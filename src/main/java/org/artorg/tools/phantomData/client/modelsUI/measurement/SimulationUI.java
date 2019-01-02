@@ -68,7 +68,6 @@ public class SimulationUI extends UIEntity<Simulation> {
 						editor.createComboBox(Project.class, item -> item.getProject(),
 								(item, value) -> item.setProject(value))
 								.setMapper(p -> p.getName()));
-		propertyPane.autosizeColumnWidths();
 		editor.add(new TitledPropertyPane("General", propertyPane));
 
 		editor.add(new TitledPropertyPane("Protocol FIles", editor.createSelector(DbFile.class,
@@ -76,6 +75,8 @@ public class SimulationUI extends UIEntity<Simulation> {
 		editor.add(new TitledPropertyPane("Files", editor.createSelector(DbFile.class,
 				item -> item.getFiles(), (item, files) -> item.setFiles((List<DbFile>) files))));
 
+		editor.closeTitledSelectors();
+		editor.addAutoCloseOnSelectors();
 		editor.addApplyButton();
 		return editor;
 	}

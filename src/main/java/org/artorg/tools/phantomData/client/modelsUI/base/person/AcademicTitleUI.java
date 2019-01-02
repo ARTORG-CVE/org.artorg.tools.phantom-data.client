@@ -43,7 +43,6 @@ public class AcademicTitleUI extends UIEntity<AcademicTitle> {
 				(item, value) -> item.setPrefix(value)));
 		propertyPane.addEntry("Description", editor.createTextField(item -> item.getDescription(),
 				(item, value) -> item.setDescription(value)));
-		propertyPane.autosizeColumnWidths();
 		editor.add(new TitledPropertyPane("General", propertyPane));
 		editor.addApplyButton();
 		return editor;

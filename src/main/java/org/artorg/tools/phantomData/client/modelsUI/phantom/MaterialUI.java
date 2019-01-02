@@ -47,13 +47,14 @@ public class MaterialUI extends UIEntity<Material> {
 				(item, value) -> item.setName(value)));
 		propertyPane.addEntry("Description", editor.createTextArea(item -> item.getDescription(),
 				(item, value) -> item.setDescription(value)));
-		propertyPane.autosizeColumnWidths();
 		editor.add(new TitledPropertyPane("General", propertyPane));
 
 		editor.add(new TitledPropertyPane("Files",
 				editor.createSelector(DbFile.class, item -> item.getFiles(),
 						(item, subItems) -> item.setFiles((List<DbFile>) subItems))));
 
+		editor.closeTitledSelectors();
+		editor.addAutoCloseOnSelectors();
 		editor.addApplyButton();
 		return editor;
 	}

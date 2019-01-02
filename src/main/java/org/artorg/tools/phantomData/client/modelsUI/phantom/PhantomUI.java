@@ -192,7 +192,7 @@ public class PhantomUI extends UIEntity<Phantom> {
 						(item, value) -> item.setThickness(Float.valueOf(value))));
 		propertyPane.addEntry("Viable", editor.createCheckBox(item -> item.isViable(),
 				(item, value) -> item.setViable(value), true));
-		propertyPane.autosizeColumnWidths();
+//		propertyPane.autosizeColumnWidths();
 		editor.add(new TitledPropertyPane("General", propertyPane));
 
 		editor.add(new TitledPropertyPane("Files",
@@ -225,6 +225,8 @@ public class PhantomUI extends UIEntity<Phantom> {
 		comboBoxSpecial.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> updateId.run());
 
+		editor.closeTitledSelectors();
+		editor.addAutoCloseOnSelectors();
 		editor.addApplyButton();
 		return editor;
 

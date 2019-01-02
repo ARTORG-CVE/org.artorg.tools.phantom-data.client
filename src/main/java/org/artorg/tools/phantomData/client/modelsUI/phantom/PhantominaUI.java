@@ -122,7 +122,6 @@ public class PhantominaUI extends UIEntity<Phantomina> {
 				.createComboBox(comboBoxSpecial, Special.class, item -> item.getSpecial(),
 						(item, value) -> item.setSpecial(value))
 				.setMapper(s -> String.format("(%s) %s", s.getShortcut(), s.getDescription())));
-		propertyPane.autosizeColumnWidths();
 		editor.add(new TitledPropertyPane("General", propertyPane));
 
 		editor.add(new TitledPropertyPane("Files", editor.createSelector(DbFile.class,
@@ -145,6 +144,8 @@ public class PhantominaUI extends UIEntity<Phantomina> {
 		comboBoxSpecial.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> updateId.run());
 
+		editor.closeTitledSelectors();
+		editor.addAutoCloseOnSelectors();
 		editor.addApplyButton();
 		return editor;
 	}

@@ -13,6 +13,7 @@ import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.client.exceptions.PostException;
 import org.artorg.tools.phantomData.client.exceptions.PutException;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.client.util.StreamUtils;
 
 import huma.logging.Logger;
 import javafx.application.Platform;
@@ -20,6 +21,8 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 public class ItemEditor<T> extends Creator<T> {
 	private final Button applyButton;
@@ -51,6 +54,34 @@ public class ItemEditor<T> extends Creator<T> {
 			throws NoUserLoggedInException, PutException, PostException {}
 
 	public void onUpdatedServer(T item) {}
+
+	public void closeTitledSelectors() {
+		List<TitledPropertyPane> propertyPanes = getTitledSelectorPanes();
+		propertyPanes.forEach(pane -> pane.setExpanded(false));
+	}
+
+	public void addAutoCloseOnSelectors() {
+		List<TitledPropertyPane> propertyPanes = getTitledSelectorPanes();
+		propertyPanes.forEach(pane -> {
+			pane.expandedProperty().addListener((observable, oldValue, newValue) -> {
+				if (newValue) propertyPanes.stream().filter(pane2 -> pane2 != pane)
+						.forEach(pane2 -> pane2.setExpanded(false));
+			});
+		});
+	}
+
+	public List<TitledPropertyPane> getTitledPropertyPanes() {
+		List<IPropertyNode> nodes = flatToList();
+		return nodes.stream().collect(StreamUtils.castFilter(node -> (TitledPropertyPane) node))
+				.collect(Collectors.toList());
+	}
+
+	public List<TitledPropertyPane> getTitledSelectorPanes() {
+		List<IPropertyNode> nodes = flatToList();
+		return nodes.stream().collect(StreamUtils.castFilter(node -> (TitledPropertyPane) node))
+				.filter(pane -> pane.getContent() instanceof TableViewSelector)
+				.collect(Collectors.toList());
+	}
 
 	@Override
 	public Node getNode() {
@@ -248,11 +279,12 @@ public class ItemEditor<T> extends Creator<T> {
 	}
 
 	public AnchorPane createButtonPane(Button button) {
-		button.setPrefHeight(25.0);
+//		button.setPrefHeight(25.0);
 		button.setMaxWidth(Double.MAX_VALUE);
+		VBox.setVgrow(button, Priority.NEVER);
 		AnchorPane buttonPane = new AnchorPane();
-		buttonPane.setPrefHeight(button.getPrefHeight() + 20);
-		buttonPane.setMaxHeight(buttonPane.getPrefHeight());
+//		buttonPane.setPrefHeight(button.getPrefHeight() + 20);
+//		buttonPane.setMaxHeight(buttonPane.getPrefHeight());
 		buttonPane.setPadding(new Insets(5, 10, 5, 10));
 		buttonPane.getChildren().add(button);
 		FxUtil.setAnchorZero(button);
