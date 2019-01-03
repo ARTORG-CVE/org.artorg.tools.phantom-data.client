@@ -80,7 +80,7 @@ public abstract class UIEntity<T> {
 	}
 
 	public ProTableView<T> createProTableView() {
-		ProTableView<T> tableView = new ProTableView<>(getItemClass());
+		ProTableView<T> tableView = new ProTableView<>(getItemClass(), createTableBase());
 		Platform.runLater(() -> {
 			if (tableView.isFilterable()) {
 				tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
@@ -93,33 +93,17 @@ public abstract class UIEntity<T> {
 
 	public DbTableView<T> createDbTableView() {
 		long startTime = System.currentTimeMillis();
-		DbTableView<T> tableView = new DbTableView<>(getItemClass());
+		DbTableView<T> tableView = new DbTableView<>(getItemClass(), createDbTableBase());
 		Logger.info.println(String.format("%s - Table created with %d items in %d ms",
 				getItemClass().getSimpleName(), tableView.getTable().getItems().size(),
 				System.currentTimeMillis() - startTime));
-
-//		tableView.showFilterButtons();
-//		tableView.refresh();
-//
-//		tableView.getFilterMenuButtons().stream().forEach(column -> {
-//			column.updateNodes();
-//			column.applyFilter();
-//		});
-//		
-//		Platform.runLater(() -> {
-//			if (tableView.isFilterable()) {
-//				tableView.getFilterMenuButtons().forEach(filterMenuButton -> {
-//					filterMenuButton.refreshImage();
-//				});
-//			}
-//		});
 
 		return tableView;
 	}
 
 	@SuppressWarnings("unchecked")
 	public ProTableView<T> createProTableView(List<TreeItem<NamedTreeItem>> treeItems) {
-		ProTableView<T> tableView = new ProTableView<>(getItemClass());
+		ProTableView<T> tableView = new ProTableView<>(getItemClass(),createTableBase());
 		ObservableList<T> items = FXCollections.observableArrayList();
 		for (int i = 0; i < treeItems.size(); i++)
 			try {
@@ -127,16 +111,15 @@ public abstract class UIEntity<T> {
 				items.add(item);
 			} catch (Exception e) {}
 
-//		tableView.setItems(items);
-		tableView.getItems().clear();
-		tableView.getItems().addAll(items);
+		tableView.getTable().getItems().clear();
+		tableView.getTable().getItems().addAll(items);
 
 		return tableView;
 	}
 
 	@SuppressWarnings("unchecked")
 	public DbTableView<T> createDbTableView(List<TreeItem<NamedTreeItem>> treeItems) {
-		DbTableView<T> tableView = new DbTableView<>(getItemClass());
+		DbTableView<T> tableView = new DbTableView<>(getItemClass(),createDbTableBase());
 		ObservableList<T> items = FXCollections.observableArrayList();
 		for (int i = 0; i < treeItems.size(); i++)
 			try {
@@ -144,9 +127,8 @@ public abstract class UIEntity<T> {
 				items.add(item);
 			} catch (Exception e) {}
 
-//		tableView.setItems(items);
-		tableView.getItems().clear();
-		tableView.getItems().addAll(items);
+		tableView.getTable().getItems().clear();
+		tableView.getTable().getItems().addAll(items);
 
 		return tableView;
 	}

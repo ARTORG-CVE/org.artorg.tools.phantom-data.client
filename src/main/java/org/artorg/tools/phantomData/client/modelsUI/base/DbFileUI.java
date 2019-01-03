@@ -130,7 +130,7 @@ public class DbFileUI extends UIEntity<DbFile> {
 		propertyPane.addEntry("Extensison", editor.create(textFieldExtension,
 				item -> item.getExtension(), (item, value) -> item.setExtension(value)));
 		editor.add(new TitledPropertyPane("General", propertyPane));
-		editor.add(new TitledPropertyPane("Files",
+		editor.add(new TitledPropertyPane("File tags",
 				editor.createSelector(FileTag.class, item -> item.getFileTags(),
 						(item, files) -> item.setFileTags((List<FileTag>) files))));
 		

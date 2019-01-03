@@ -117,7 +117,7 @@ public class FxUtil extends org.artorg.tools.phantomData.server.util.FxUtil {
 		comboBox.setCellFactory(cellFactory);
 	}
 
-	public static <T> Callback<ListView<T>, ListCell<T>> createComboBoxCellFactory(Function<T, String> mapper) {
+	private static <T> Callback<ListView<T>, ListCell<T>> createComboBoxCellFactory(Function<T, String> mapper) {
 		return param -> {
 			return new ListCell<T>() {
 				@Override

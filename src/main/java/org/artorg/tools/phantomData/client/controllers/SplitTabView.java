@@ -54,6 +54,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.DirectoryChooser;
 
 public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
@@ -90,16 +91,16 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		this.index = index;
 		this.twinGetter = twinGetter;
 
-//		Platform.runLater(() -> {
-//			Main.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-//				controlDown = event.isControlDown();
-//				menuItemUpdater.stream().forEach(rc -> rc.run());
-//			});
-//			Main.getScene().addEventHandler(KeyEvent.KEY_RELEASED, event -> {
-//				controlDown = event.isControlDown();
-//				menuItemUpdater.stream().forEach(rc -> rc.run());
-//			});
-//		});
+		Platform.runLater(() -> {
+			Main.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+				controlDown = event.isControlDown();
+				menuItemUpdater.stream().forEach(rc -> rc.run());
+			});
+			Main.getScene().addEventHandler(KeyEvent.KEY_RELEASED, event -> {
+				controlDown = event.isControlDown();
+				menuItemUpdater.stream().forEach(rc -> rc.run());
+			});
+		});
 	}
 
 	private SmartTabPane createSmartTabPane() {
@@ -201,7 +202,14 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		menuItem.setOnAction(event -> {
 			ItemEditor<T> controller =
 					Main.getUIEntity(tableViewSpring.getItemClass()).createEditFactory();
-			controller.showCreateMode();
+			T t = null;
+			try {
+				t = tableViewSpring.getItemClass().newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+				return;
+			}
+			controller.showCreateMode(t);
 			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Add " + tableViewSpring.getTable().getItemName());
 		});
@@ -226,8 +234,15 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 		menuItem = new MenuItem("Add item");
 		menuItem.setOnAction(event -> {
-			ItemEditor<?> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
-			controller.showCreateMode();
+			ItemEditor<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
+			T t = null;
+			try {
+				t = view.getItemClass().newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+				return;
+			}
+			controller.showCreateMode(t);
 			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Add " + view.getTable().getItemName());
 		});

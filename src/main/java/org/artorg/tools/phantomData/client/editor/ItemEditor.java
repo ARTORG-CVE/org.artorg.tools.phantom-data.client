@@ -88,10 +88,6 @@ public class ItemEditor<T> extends Creator<T> {
 		return this;
 	}
 
-	public final void showCreateMode() {
-		showCreateMode(null);
-	}
-
 	public final void showCreateMode(T item) {
 		this.item = item;
 		onShowingCreateMode(item);
@@ -99,7 +95,7 @@ public class ItemEditor<T> extends Creator<T> {
 			if (getChildrenProperties().isEmpty()) Logger.warn.println("Nodes empty");
 			FxUtil.runNewSingleThreaded(() -> {
 				try {
-					createItem(item);
+					createItem(getItem());
 				} catch (PostException e) {
 					e.printStackTrace();
 					Logger.warn.println(e.getMessage());
@@ -124,7 +120,7 @@ public class ItemEditor<T> extends Creator<T> {
 		applyButton.setOnAction(event -> {
 			if (getChildrenProperties().isEmpty()) return;
 			try {
-				updateItem(item);
+				updateItem(getItem());
 			} catch (PutException e) {
 				Logger.warn.println(e.getMessage());
 				e.printStackTrace();
@@ -146,14 +142,9 @@ public class ItemEditor<T> extends Creator<T> {
 		getAllAbstractEditors().stream().forEach(node -> node.entityToNodeEdit(item));
 	}
 
-	public final T createItem()
-			throws PostException, InvalidUIInputException, NoUserLoggedInException {
-		return createItem(null);
-	}
-
 	public final T createItem(T item)
 			throws PostException, InvalidUIInputException, NoUserLoggedInException {
-		if (item == null) item = createEmpty();
+		if (item == null) throw new IllegalArgumentException(); 
 		item = createClient(item);
 		return createServer(item);
 	}
@@ -164,16 +155,7 @@ public class ItemEditor<T> extends Creator<T> {
 		getAllAbstractEditors().stream().forEach(node -> node.nodeToEntity(item));
 		return item;
 	}
-
-	public final T createEmpty() {
-		try {
-			return getItemClass().newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		throw new RuntimeException();
-	}
-
+	
 	public final T createServer(T item)
 			throws NoUserLoggedInException, PostException, InvalidUIInputException {
 		onCreatingServer(item);
@@ -209,10 +191,7 @@ public class ItemEditor<T> extends Creator<T> {
 		}
 		return false;
 	}
-
-//	public Collection<PropertyGridPane> getAllPropertyGridPanes() {
-//		
-//	}
+	
 	public List<PropertyGridPane> getAllPropertyGridPanes() {
 		return getChildrenProperties().stream()
 				.map(propertyNode -> getAllPropertyGridPanes(propertyNode))
@@ -254,37 +233,15 @@ public class ItemEditor<T> extends Creator<T> {
 		if (propertyNode instanceof AbstractEditor) list.add((AbstractEditor<T, ?>) propertyNode);
 		return list;
 	}
-
-//	public <U> void add(ItemEditor<U> subEditor) {
-//		Collection<AbstractEditor<T, ?, ?>> list = getAllSubEditors(nodes).stream()
-//				.map(propertyNode -> propertyNode.map(itemClass, item -> subEditor.getItem()))
-//				.collect(Collectors.toList());
-//		nodes.addAll(list);
-//	}
-
-//	public TitledPane createTitledPane(List<PropertyEntry> entries, String title) {
-//		TitledPane titledPane = new TitledPane();
-//		PropertyGridPane<T> gridPane = new PropertyGridPane<>(itemClass, entries);
-//		titledPane.setText(title);
-//		titledPane.setContent(gridPane);
-//		return titledPane;
-//	}
-//
-//	public PropertyGridPane createUntitledPane(List<PropertyEntry> entries) {
-//		return new PropertyGridPane(entries);
-//	}
-
+	
 	public void addApplyButton() {
 		getvBox().getChildren().add(createButtonPane(getApplyButton()));
 	}
 
 	public AnchorPane createButtonPane(Button button) {
-//		button.setPrefHeight(25.0);
 		button.setMaxWidth(Double.MAX_VALUE);
 		VBox.setVgrow(button, Priority.NEVER);
 		AnchorPane buttonPane = new AnchorPane();
-//		buttonPane.setPrefHeight(button.getPrefHeight() + 20);
-//		buttonPane.setMaxHeight(buttonPane.getPrefHeight());
 		buttonPane.setPadding(new Insets(5, 10, 5, 10));
 		buttonPane.getChildren().add(button);
 		FxUtil.setAnchorZero(button);

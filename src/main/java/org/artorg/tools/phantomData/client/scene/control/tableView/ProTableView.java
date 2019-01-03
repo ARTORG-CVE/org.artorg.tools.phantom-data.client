@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
-import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.logging.Logger;
@@ -46,17 +45,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		filterMenuButtons = new ArrayList<>();
 	}
 
-	public ProTableView(Class<T> itemClass) {
-		this(itemClass, Main.getUIEntity(itemClass).createTableBase());
-		getItems().clear();
-		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
-		updateColumns();
-		autoResizeColumns();
-
-	}
-
-	protected ProTableView(Class<T> itemClass, Table<T> table) {
+	public ProTableView(Class<T> itemClass, Table<T> table) {
 		this.itemClass = itemClass;
 		this.table = table;
 		super.setItems(FXCollections.observableArrayList());
@@ -64,6 +53,12 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 
 		if (isFilterable()) getTable().setFilterActivated(true);
 
+		getItems().clear();
+		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+		updateColumns();
+		autoResizeColumns();
+		
 		sceneProperty().addListener(new ChangeListener<Scene>() {
 			@Override
 			public void changed(ObservableValue<? extends Scene> observable, Scene oldValue,

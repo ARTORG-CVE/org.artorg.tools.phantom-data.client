@@ -30,14 +30,11 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 
 public class Creator<T> extends AnchorPane implements IPropertyNode {
 	private final Class<T> itemClass;
@@ -352,6 +349,11 @@ public class Creator<T> extends AnchorPane implements IPropertyNode {
 		ComboBox<U> controlNode = new ComboBox<U>();
 		return createComboBox(controlNode, subItemClass, getter, setter);
 	}
+	
+	public <U> ComboBoxCreator<U> createComboBox(ComboBox<U> controlNode,
+			Function<T, U> getter, BiConsumer<T, U> setter) {
+		return new ComboBoxCreator<U>(controlNode, getter, setter);
+	}
 
 	public <U> ComboBoxCreator<U> createComboBox(ComboBox<U> controlNode, Class<U> subItemClass,
 			Function<T, U> getter, BiConsumer<T, U> setter) {
@@ -375,10 +377,11 @@ public class Creator<T> extends AnchorPane implements IPropertyNode {
 		}
 
 		public ComboBoxCreator<U> setMapper(Function<U, String> mapper) {
-			Callback<ListView<U>, ListCell<U>> cellFactory =
-					FxUtil.createComboBoxCellFactory(mapper);
-			controlNode.setButtonCell(cellFactory.call(null));
-			controlNode.setCellFactory(cellFactory);
+			FxUtil.setComboBoxCellFactory(controlNode, mapper);
+//			Callback<ListView<U>, ListCell<U>> cellFactory =
+//					FxUtil.createComboBoxCellFactory(mapper);
+//			controlNode.setButtonCell(cellFactory.call(null));
+//			controlNode.setCellFactory(cellFactory);
 			return this;
 		}
 
@@ -416,9 +419,10 @@ public class Creator<T> extends AnchorPane implements IPropertyNode {
 		@Override
 		protected void defaultSetterRunnableImpl() {
 			controlNode.getSelectionModel().clearSelection();
-			Callback<ListView<U>, ListCell<U>> cellFactory =
-					FxUtil.createComboBoxCellFactory(item -> "");
-			controlNode.setButtonCell(cellFactory.call(null));
+			FxUtil.setComboBoxCellFactory(controlNode, item -> "");
+//			Callback<ListView<U>, ListCell<U>> cellFactory =
+//					FxUtil.createComboBoxCellFactory(item -> "");
+//			controlNode.setButtonCell(cellFactory.call(null));
 		}
 
 	}

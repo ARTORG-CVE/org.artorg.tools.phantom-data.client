@@ -83,6 +83,7 @@ import javafx.concurrent.Task;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class Main extends DesktopFxBootApplication {
 	private static ServerBooter booter;
 	private static final Reflections reflections = new Reflections("org.artorg.tools.phantomData");
@@ -93,6 +94,7 @@ public class Main extends DesktopFxBootApplication {
 	private static MainController mainController;
 	private static final Set<Class<?>> entityClasses;
 	private static final Map<Class<?>, UIEntity<?>> uiEntities;
+	private static final Set<Class<? extends AbstractProperty>> propertyClasses;
 
 	static {
 		mainFxClass = null;
@@ -100,7 +102,11 @@ public class Main extends DesktopFxBootApplication {
 
 		entityClasses = reflections.getSubTypesOf(DbPersistent.class).stream()
 				.filter(c -> c.isAnnotationPresent(Entity.class)).collect(Collectors.toSet());
+		propertyClasses =
+				entityClasses.stream().filter(cls -> AbstractProperty.class.isAssignableFrom(cls))
+						.map(cls -> (Class<AbstractProperty>) cls).collect(Collectors.toSet());
 		uiEntities = new HashMap<>();
+
 	}
 
 	public static void main(String[] args) {
@@ -186,10 +192,9 @@ public class Main extends DesktopFxBootApplication {
 		uiEntities.put(Special.class, new SpecialUI());
 		uiEntities.put(AbstractProperty.class, new PropertiesUI());
 		uiEntities.put(AbstractPersonifiedEntity.class, new PersonifiedUI());
-		uiEntities.put(Simulation.class,new SimulationUI());
+		uiEntities.put(Simulation.class, new SimulationUI());
 		uiEntities.put(Material.class, new MaterialUI());
-		uiEntities.put(SimulationPhantom.class,new SimulationPhantomUI());
-		
+		uiEntities.put(SimulationPhantom.class, new SimulationPhantomUI());
 
 //		getEntityClasses().stream().forEach(itemClass -> {
 //			entityBeanInfos.add(new EntityBeanInfo(itemClass));
@@ -238,16 +243,18 @@ public class Main extends DesktopFxBootApplication {
 		else
 			Logger.info.println("Client booted succesful");
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	public static <T> UIEntity<T> getUIEntity(Class<T> itemClass) {
 		return (UIEntity<T>) uiEntities.get(itemClass);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T extends AbstractProperty<T, V>, V> PropertyUI<T, V>
 			getPropertyUIEntity(Class<T> propertyClass) {
 		return (PropertyUI<T, V>) uiEntities.get(propertyClass);
+	}
+
+	public static Set<Class<? extends AbstractProperty>> getPropertyclasses() {
+		return propertyClasses;
 	}
 
 	public static Reflections getReflections() {
