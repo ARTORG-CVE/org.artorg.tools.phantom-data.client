@@ -80,7 +80,9 @@ public class EntityBeanInfo<T> {
 		propertiesDescriptors = bean -> notPersonifiedPropertyDescriptors.stream()
 				.filter(d -> !d.getPropertyType().isAnnotationPresent(Entity.class))
 				.filter(d -> !Collection.class.isAssignableFrom(d.getPropertyType()))
-				.filter(d -> getValue(d, bean) != null).collect(Collectors.toList());
+				.filter(d -> getValue(d, bean) != null)
+				.filter(d -> !d.getName().equalsIgnoreCase("password"))
+				.collect(Collectors.toList());
 
 		getterFunctionsMap = notPersonifiedPropertyDescriptors.stream()
 				.collect(Collectors.groupingBy((PropertyDescriptor d) -> d.getPropertyType(),
@@ -132,10 +134,10 @@ public class EntityBeanInfo<T> {
 			return descriptor.getReadMethod().invoke(bean);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
-		 } catch (NullPointerException e2) {
-			 e2.printStackTrace();
-			 Logger.error.println("Bean specification not followed");
-		 }
+		} catch (NullPointerException e2) {
+			e2.printStackTrace();
+			Logger.error.println("Bean specification not followed");
+		}
 		throw new IllegalArgumentException();
 	}
 

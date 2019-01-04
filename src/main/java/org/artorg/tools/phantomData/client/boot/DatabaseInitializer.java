@@ -75,7 +75,7 @@ public class DatabaseInitializer {
 			genderConn.create(new Gender[] {male, female});
 			AcademicTitle noAcademicTitle = new AcademicTitle("", "No title");
 			academicTitleConnInit.create(noAcademicTitle);
-			Person hutzli = new Person(noAcademicTitle, "Marc", "Hutzli", male);
+			Person hutzli = new Person(noAcademicTitle, "Marc", "Hutzli", "1234", male);
 			
 			personConnInit.create(hutzli);
 			personConnInit.update(hutzli);
@@ -89,8 +89,8 @@ public class DatabaseInitializer {
 				.create(new AcademicTitle("Dr. phil.", "Doctor title in philosophy"));
 			academicTitleConn.create(master);
 			academicTitleConn.create(new AcademicTitle("B.Sc.", "Bachelor of Science"));
-			personConn.create(new Person(master, "Silje", "Ekroll Jahren", female));
-			personConn.create(new Person(master, "Joël", "Illi", male));
+			personConn.create(new Person(master, "Silje", "Ekroll Jahren", "1234", female));
+			personConn.create(new Person(master, "Joël", "Illi", "1234", male));
 			return hutzli;
 		} catch (NoUserLoggedInException | PostException | PutException e) {
 			e.printStackTrace();
