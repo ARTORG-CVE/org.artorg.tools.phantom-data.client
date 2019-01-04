@@ -62,8 +62,7 @@ public abstract class Table<T> {
 
 		itemListChangeListener = c -> {
 			while (c.next()) {
-				CollectionUtil.addIfAbsent(items, filteredItems);
-				CollectionUtil.removeIfAbsent(items, filteredItems);
+				updateItems();
 				updateColumns();
 			}
 		};
@@ -84,9 +83,15 @@ public abstract class Table<T> {
 	public void setTableName(String name) {
 		this.tableName = name;
 	}
+	
+	public void updateItems() {
+		CollectionUtil.addIfAbsent(items, filteredItems);
+		CollectionUtil.removeIfAbsent(items, filteredItems);
+	}
 
 	public void refresh() {
 		Logger.debug.println(getItemClass().getSimpleName());
+		updateItems();
 		updateColumns();
 		if (isFilterable()) applyFilter();
 	}
@@ -122,8 +127,6 @@ public abstract class Table<T> {
 		if (column instanceof AbstractFilterColumn) {
 			AbstractFilterColumn<T, ?> filterColumn = (AbstractFilterColumn<T, ?>) column;
 			filterColumn.setSortComparatorQueue(getSortComparatorQueue());
-		} else {
-			Logger.debug.println("NON FILTERING COLUMN");
 		}
 		this.columns.add(index, column);
 	}

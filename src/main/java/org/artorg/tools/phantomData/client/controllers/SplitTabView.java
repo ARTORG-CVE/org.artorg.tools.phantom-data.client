@@ -115,7 +115,6 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 	}
 
 	public <T> void openTableTab(Tab tab) {
-		Logger.debug.println("openTableTab");
 		setTab(tableTabPane.getTabPane(), tab, tab.getContent());
 	}
 

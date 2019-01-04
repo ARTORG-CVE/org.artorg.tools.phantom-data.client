@@ -20,7 +20,6 @@ import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ContentDisplay;
@@ -38,7 +37,6 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 	public ProTableView(Class<T> itemClass, Table<T> table) {
 		this.itemClass = itemClass;
 		this.table = table;
-		super.setItems(FXCollections.observableArrayList());
 		super.setItems(table.getFilteredItems());
 
 		if (isFilterable()) getTable().setFilterActivated(true);
@@ -121,7 +119,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		}
 
 		for (int i = 0; i < super.getColumns().size(); i++) {
-			setCellValueFactories((TableColumn<T, Object>) super.getColumns().get(i), table, i);
+			updateColumn((TableColumn<T, Object>) super.getColumns().get(i), table, i);
 		}
 
 		Logger.debug.println(String.format("%s - Columns updated in %d ms",
@@ -130,8 +128,8 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 
 	public void applyFilter() {
 		getTable().applyFilter();
-		super.setItems(FXCollections.observableArrayList());
-		super.setItems(getTable().getFilteredItems());
+//		super.setItems(FXCollections.observableArrayList());
+//		super.setItems(getTable().getFilteredItems());
 	}
 
 //	public void removeHeaderRow() {
@@ -216,8 +214,9 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		return tableColumn;
 	}
 
-	private void setCellValueFactories(TableColumn<T, Object> tableColumn, Table<T> table,
-			int index) {
+	private void updateColumn(TableColumn<T, Object> tableColumn, Table<T> table, int index) {
+		if (tableColumn instanceof TableBaseColumn) tableColumn
+				.setText(((TableBaseColumn<T, Object>) tableColumn).getBaseColumn().getName());
 		if (!isFilterable()) {
 			tableColumn.setCellValueFactory(createCellValueFactory(tableColumn,
 					cellData -> table.getValue(cellData.getValue(), index)));
@@ -284,8 +283,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		return getColumns().stream()
 				.collect(StreamUtils.castFilter(column -> (TableBaseColumn<T, Object>) column))
 				.map(column -> column.getFilterMenuButton())
-				.filter(filterMenuButton -> filterMenuButton != null)
-				.collect(Collectors.toList());
+				.filter(filterMenuButton -> filterMenuButton != null).collect(Collectors.toList());
 	}
 
 }
