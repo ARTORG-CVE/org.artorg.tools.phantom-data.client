@@ -5,6 +5,7 @@ import static org.artorg.tools.phantomData.client.boot.DatabaseInitializer.initD
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
@@ -95,6 +96,7 @@ public class Main extends DesktopFxBootApplication {
 	private static final Set<Class<?>> entityClasses;
 	private static final Map<Class<?>, UIEntity<?>> uiEntities;
 	private static final Set<Class<? extends AbstractProperty>> propertyClasses;
+	private static boolean initialized;
 
 	static {
 		mainFxClass = null;
@@ -169,36 +171,42 @@ public class Main extends DesktopFxBootApplication {
 	}
 
 	public static void loadClientStage() {
-		uiEntities.put(Gender.class, new GenderUI());
-		uiEntities.put(AcademicTitle.class, new AcademicTitleUI());
-		uiEntities.put(Person.class, new PersonUI());
-		uiEntities.put(DbFile.class, new DbFileUI());
-		uiEntities.put(FileTag.class, new FileTagUI());
-		uiEntities.put(Note.class, new NoteUI());
-		uiEntities.put(BooleanProperty.class, new BooleanPropertyUI());
-		uiEntities.put(DoubleProperty.class, new DoublePropertyUI());
-		uiEntities.put(IntegerProperty.class, new IntegerPropertyUI());
-		uiEntities.put(StringProperty.class, new StringPropertyUI());
-		uiEntities.put(PropertyField.class, new PropertyFieldUI());
-		uiEntities.put(ExperimentalSetup.class, new ExperimentalSetupUI());
-		uiEntities.put(Measurement.class, new MeasurementUI());
-		uiEntities.put(Project.class, new ProjectUI());
-		uiEntities.put(AnnulusDiameter.class, new AnnulusDiameterUI());
-		uiEntities.put(FabricationType.class, new FabricationTypeUI());
-		uiEntities.put(LiteratureBase.class, new LiteratureBaseUI());
-		uiEntities.put(Manufacturing.class, new ManufacturingUI());
-		uiEntities.put(Phantomina.class, new PhantominaUI());
-		uiEntities.put(Phantom.class, new PhantomUI());
-		uiEntities.put(Special.class, new SpecialUI());
-		uiEntities.put(AbstractProperty.class, new PropertiesUI());
-		uiEntities.put(AbstractPersonifiedEntity.class, new PersonifiedUI());
-		uiEntities.put(Simulation.class, new SimulationUI());
-		uiEntities.put(Material.class, new MaterialUI());
-		uiEntities.put(SimulationPhantom.class, new SimulationPhantomUI());
-
-//		getEntityClasses().stream().forEach(itemClass -> {
-//			entityBeanInfos.add(new EntityBeanInfo(itemClass));
-//		});
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				uiEntities.put(Gender.class, new GenderUI());
+				uiEntities.put(AcademicTitle.class, new AcademicTitleUI());
+				uiEntities.put(Person.class, new PersonUI());
+				uiEntities.put(DbFile.class, new DbFileUI());
+				uiEntities.put(FileTag.class, new FileTagUI());
+				uiEntities.put(Note.class, new NoteUI());
+				uiEntities.put(BooleanProperty.class, new BooleanPropertyUI());
+				uiEntities.put(DoubleProperty.class, new DoublePropertyUI());
+				uiEntities.put(IntegerProperty.class, new IntegerPropertyUI());
+				uiEntities.put(StringProperty.class, new StringPropertyUI());
+				uiEntities.put(PropertyField.class, new PropertyFieldUI());
+				uiEntities.put(ExperimentalSetup.class, new ExperimentalSetupUI());
+				uiEntities.put(Measurement.class, new MeasurementUI());
+				uiEntities.put(Project.class, new ProjectUI());
+				uiEntities.put(AnnulusDiameter.class, new AnnulusDiameterUI());
+				uiEntities.put(FabricationType.class, new FabricationTypeUI());
+				uiEntities.put(LiteratureBase.class, new LiteratureBaseUI());
+				uiEntities.put(Manufacturing.class, new ManufacturingUI());
+				uiEntities.put(Phantomina.class, new PhantominaUI());
+				uiEntities.put(Phantom.class, new PhantomUI());
+				uiEntities.put(Special.class, new SpecialUI());
+				uiEntities.put(AbstractProperty.class, new PropertiesUI());
+				uiEntities.put(AbstractPersonifiedEntity.class, new PersonifiedUI());
+				uiEntities.put(Simulation.class, new SimulationUI());
+				uiEntities.put(Material.class, new MaterialUI());
+				uiEntities.put(SimulationPhantom.class, new SimulationPhantomUI());
+				Main.initialized = true;
+				return null;
+			}
+			
+		};
+		ExecutorService executor = Executors.newCachedThreadPool();
+		executor.submit(task);
 
 		stage = new Stage();
 		mainController = new MainController(stage);
@@ -242,6 +250,14 @@ public class Main extends DesktopFxBootApplication {
 			Logger.error.println("Client booted with errors");
 		else
 			Logger.info.println("Client booted succesful");
+	}
+
+	public static boolean isInitialized() {
+		return initialized;
+	}
+
+	public static void setInitialized(boolean initialized) {
+		Main.initialized = initialized;
 	}
 
 	public static Class<?> getEntityClassBySimpleName(String simpleName) {

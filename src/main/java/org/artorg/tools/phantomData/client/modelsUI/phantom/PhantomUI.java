@@ -22,6 +22,7 @@ import org.artorg.tools.phantomData.server.models.phantom.AnnulusDiameter;
 import org.artorg.tools.phantomData.server.models.phantom.FabricationType;
 import org.artorg.tools.phantomData.server.models.phantom.LiteratureBase;
 import org.artorg.tools.phantomData.server.models.phantom.Manufacturing;
+import org.artorg.tools.phantomData.server.models.phantom.Material;
 import org.artorg.tools.phantomData.server.models.phantom.Phantom;
 import org.artorg.tools.phantomData.server.models.phantom.Phantomina;
 import org.artorg.tools.phantomData.server.models.phantom.Special;
@@ -186,6 +187,11 @@ public class PhantomUI extends UIEntity<Phantom> {
 				.addEntry("Manufacturing",
 						editor.createComboBox(Manufacturing.class, item -> item.getManufacturing(),
 								(item, value) -> item.setManufacturing(value))
+								.setMapper(m -> m.getName()));
+		propertyPane
+				.addEntry("Material",
+						editor.createComboBox(Material.class, item -> item.getMaterial(),
+								(item, value) -> item.setMaterial(value))
 								.setMapper(m -> m.getName()));
 		propertyPane.addEntry("Nominal thickness",
 				editor.createTextField(item -> Float.toString(item.getThickness()),

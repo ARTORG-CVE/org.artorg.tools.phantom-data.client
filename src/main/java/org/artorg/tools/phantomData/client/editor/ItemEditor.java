@@ -96,10 +96,6 @@ public class ItemEditor<T> extends Creator<T> {
 			FxUtil.runNewSingleThreaded(() -> {
 				try {
 					createItem(getItem());
-				} catch (PostException e) {
-					e.printStackTrace();
-					Logger.warn.println(e.getMessage());
-					e.showAlert();
 				} catch (InvalidUIInputException e) {
 					e.setMode(Mode.CREATE);
 					Logger.warn.println(e.getMessage());
@@ -107,7 +103,11 @@ public class ItemEditor<T> extends Creator<T> {
 				} catch (NoUserLoggedInException e) {
 					Logger.warn.println(e.getMessage());
 					e.showAlert();
-				}
+				} catch (PostException e) {
+					e.printStackTrace();
+					Logger.warn.println(e.getMessage());
+					e.showAlert();
+				} 
 			});
 		});
 		applyButton.setText("Create");
@@ -121,20 +121,20 @@ public class ItemEditor<T> extends Creator<T> {
 			if (getChildrenProperties().isEmpty()) return;
 			try {
 				updateItem(getItem());
+			}  catch (InvalidUIInputException e) {
+				e.setMode(Mode.EDIT);
+				Logger.warn.println(e.getMessage());
+				e.showAlert();
+			}  catch (NoUserLoggedInException e) {
+				Logger.warn.println(e.getMessage());
+				e.showAlert();
 			} catch (PutException e) {
 				Logger.warn.println(e.getMessage());
 				e.printStackTrace();
 				e.showAlert();
-			} catch (InvalidUIInputException e) {
-				e.setMode(Mode.EDIT);
-				Logger.warn.println(e.getMessage());
-				e.showAlert();
 			} catch (PostException e) {
 				Logger.warn.println(e.getMessage());
 				e.printStackTrace();
-				e.showAlert();
-			} catch (NoUserLoggedInException e) {
-				Logger.warn.println(e.getMessage());
 				e.showAlert();
 			}
 		});

@@ -145,6 +145,14 @@ public class MainController extends StackPane {
 		
 		FxUtil.addToPane(contentPane, splitPane);
 		
+		while (!Main.isInitialized()) {
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		try {
 		getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
 		getOrCreate(0).openViewerTab(createScene3dTab(null));
