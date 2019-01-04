@@ -1,10 +1,9 @@
 package org.artorg.tools.phantomData.client.scene.control.tableView;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
@@ -14,6 +13,7 @@ import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.FxUtil;
+import org.artorg.tools.phantomData.client.util.StreamUtils;
 import org.artorg.tools.phantomData.client.util.TableViewUtils;
 
 import javafx.application.Platform;
@@ -32,18 +32,8 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.util.Callback;
 
 public class ProTableView<T> extends javafx.scene.control.TableView<T> implements AddableToPane {
-	private BiPredicate<AbstractColumn<T, ? extends Object>, TableColumn<T, ?>> columnAddPolicy;
-	private BiPredicate<AbstractColumn<T, ? extends Object>, TableColumn<T, ?>> columnRemovePolicy;
 	private final Class<T> itemClass;
 	private Table<T> table;
-	private final List<FilterMenuButton<T, ?>> filterMenuButtons;
-
-	{
-		columnAddPolicy = (fromColumn, toColumn) -> toColumn.getText().equals(fromColumn.getName());
-		columnRemovePolicy =
-				(fromColumn, toColumn) -> toColumn.getText().equals(fromColumn.getName());
-		filterMenuButtons = new ArrayList<>();
-	}
 
 	public ProTableView(Class<T> itemClass, Table<T> table) {
 		this.itemClass = itemClass;
@@ -58,7 +48,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 
 		updateColumns();
 		autoResizeColumns();
-		
+
 		sceneProperty().addListener(new ChangeListener<Scene>() {
 			@Override
 			public void changed(ObservableValue<? extends Scene> observable, Scene oldValue,
@@ -67,7 +57,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 					FxUtil.runNewSingleThreaded(() -> {
 						Platform.runLater(() -> {
 							showFilterButtons();
-							filterMenuButtons
+							getFilterMenuButtons()
 									.forEach(filterMenuButton -> filterMenuButton.updateNodes());
 						});
 						try {
@@ -112,18 +102,28 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		super.refresh();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void updateColumns() {
 		long startTime = System.currentTimeMillis();
 		getTable().updateColumns();
+		List<AbstractColumn<T, ? extends Object>> baseTableColumns = table.getColumns();
+		List<Integer> indexes = CollectionUtil.searchLeftNotInRight(super.getColumns(),
+				baseTableColumns, (col1, col2) -> col1.getText().equals(col2.getName()));
+		List<TableColumn<T, ?>> removableColumns =
+				CollectionUtil.subList(super.getColumns(), indexes);
+		super.getColumns().removeAll(removableColumns);
 
-		if (!isFilterable()) {
-			CollectionUtil.addIfAbsent(table.createColumns(getItems()), super.getColumns(),
-					columnAddPolicy, (baseColumn, index) -> createTableColumn(table, index));
-		} else {
-			CollectionUtil.addIfAbsent(table.createColumns(table.getFilteredItems()),
-					super.getColumns(), getColumnAddPolicy(),
-					(baseColumn, index) -> createTableColumn(table, index));
+		for (int i = 0; i < baseTableColumns.size(); i++) {
+			if (i == super.getColumns().size())
+				super.getColumns().add(createTableColumn(baseTableColumns.get(i)));
+			if (!super.getColumns().get(i).getText().equals(baseTableColumns.get(i).getName()))
+				super.getColumns().add(i, createTableColumn(baseTableColumns.get(i)));
 		}
+
+		for (int i = 0; i < super.getColumns().size(); i++) {
+			setCellValueFactories((TableColumn<T, Object>) super.getColumns().get(i), table, i);
+		}
+
 		Logger.debug.println(String.format("%s - Columns updated in %d ms",
 				getItemClass().getSimpleName(), System.currentTimeMillis() - startTime));
 	}
@@ -151,6 +151,33 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 //		}
 //	}
 
+	public class TableBaseColumn<U, V> extends TableColumn<U, V> {
+		private final AbstractColumn<U, ?> baseColumn;
+		private final FilterMenuButton<U> filterMenuButton;
+
+		public TableBaseColumn(AbstractColumn<U, ?> baseColumn) {
+			super(baseColumn.getName());
+			this.baseColumn = baseColumn;
+			this.filterMenuButton = null;
+		}
+
+		public TableBaseColumn(AbstractFilterColumn<U, ?> baseColumn,
+				FilterMenuButton<U> filterMenuButton) {
+			super(baseColumn.getName());
+			this.baseColumn = baseColumn;
+			this.filterMenuButton = filterMenuButton;
+		}
+
+		public AbstractColumn<U, ?> getBaseColumn() {
+			return baseColumn;
+		}
+
+		public FilterMenuButton<U> getFilterMenuButton() {
+			return filterMenuButton;
+		}
+
+	}
+
 	public void showFilterButtons() {
 		Logger.debug.println("showFilterButtons");
 		if (!isFilterable()) return;
@@ -159,7 +186,7 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 				Label label = (Label) n;
 
 				String columnName = label.getText();
-				Optional<FilterMenuButton<T, ?>> filterMenuButton = getFilterMenuButtons().stream()
+				Optional<FilterMenuButton<T>> filterMenuButton = getFilterMenuButtons().stream()
 						.filter(f -> f.getText().equals(columnName)).findFirst();
 				if (filterMenuButton.isPresent()) {
 					filterMenuButton.get().prefWidthProperty().bind(label.widthProperty());
@@ -176,40 +203,33 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 			}
 	}
 
-	protected TableColumn<T, ?> createTableColumn(Table<T> table, int index) {
-		if (!isFilterable()) {
-			TableColumn<T, Object> tableColumn =
-					new TableColumn<T, Object>(table.getColumns().get(index).getName());
+	protected TableColumn<T, Object>
+			createTableColumn(AbstractColumn<T, ? extends Object> baseColumn) {
+		TableColumn<T, Object> tableColumn;
+		if (isFilterable() && baseColumn instanceof AbstractFilterColumn) {
+			AbstractFilterColumn<T, ?> filterColumn = (AbstractFilterColumn<T, ?>) baseColumn;
+			tableColumn = new TableBaseColumn<>(filterColumn, createFilterMenuButton(filterColumn));
+		} else
+			tableColumn = new TableBaseColumn<>(baseColumn);
+		tableColumn.setSortable(false);
+		tableColumn.setCellFactory(createCellFactory(tableColumn));
+		return tableColumn;
+	}
 
-			tableColumn.setSortable(false);
-			tableColumn.setCellFactory(createCellFactory(tableColumn));
+	private void setCellValueFactories(TableColumn<T, Object> tableColumn, Table<T> table,
+			int index) {
+		if (!isFilterable()) {
 			tableColumn.setCellValueFactory(createCellValueFactory(tableColumn,
 					cellData -> table.getValue(cellData.getValue(), index)));
-			return tableColumn;
 		} else {
-			AbstractColumn<T, ?> baseColumn = table.getFilteredColumns().get(index);
-			TableColumn<T, Object> tableColumn = new TableColumn<T, Object>(baseColumn.getName());
-			tableColumn.setSortable(false);
-
-			if (baseColumn instanceof AbstractFilterColumn) {
-				AbstractFilterColumn<T, ?> filterColumn = (AbstractFilterColumn<T, ?>) baseColumn;
-				filterColumn.setSortComparatorQueue(table.getSortComparatorQueue());
-				getFilterMenuButtons().add(createFilterMenuButton(filterColumn, index));
-			}
-
-			tableColumn.setSortable(false);
-			tableColumn.setCellFactory(createCellFactory(tableColumn));
 			tableColumn.setCellValueFactory(createCellValueFactory(tableColumn,
 					cellData -> table.getFilteredValue(cellData.getValue(), index)));
-			return tableColumn;
 		}
 	}
 
-	public <U> FilterMenuButton<T, ?>
-			createFilterMenuButton(AbstractFilterColumn<T, U> filterColumn, int index) {
-
-		FilterMenuButton<T, ?> filterMenuButton =
-				new FilterMenuButton<T, U>(filterColumn, filterMenuButtons);
+	public <U> FilterMenuButton<T> createFilterMenuButton(AbstractFilterColumn<T, U> filterColumn) {
+		FilterMenuButton<T> filterMenuButton =
+				new FilterMenuButton<T>(filterColumn, () -> getFilterMenuButtons());
 		filterMenuButton.setText(filterColumn.getName());
 		filterMenuButton.setRefresh(() -> table.applyFilter());
 		return filterMenuButton;
@@ -243,26 +263,6 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		return cellData -> new ReadOnlyObjectWrapper<U>(valueGetter.apply(cellData));
 	}
 
-	public BiPredicate<AbstractColumn<T, ? extends Object>, TableColumn<T, ?>>
-			getColumnAddPolicy() {
-		return columnAddPolicy;
-	}
-
-	public void setColumnAddPolicy(
-			BiPredicate<AbstractColumn<T, ? extends Object>, TableColumn<T, ?>> addColumnPolicy) {
-		this.columnAddPolicy = addColumnPolicy;
-	}
-
-	public BiPredicate<AbstractColumn<T, ? extends Object>, TableColumn<T, ?>>
-			getColumnRemovePolicy() {
-		return columnRemovePolicy;
-	}
-
-	public void setColumnRemovePolicy(BiPredicate<AbstractColumn<T, ? extends Object>,
-			TableColumn<T, ?>> removeColumnPolicy) {
-		this.columnRemovePolicy = removeColumnPolicy;
-	}
-
 	public boolean isFilterable() {
 		return getTable().isEditable();
 	}
@@ -279,8 +279,13 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 		return itemClass;
 	}
 
-	public List<FilterMenuButton<T, ?>> getFilterMenuButtons() {
-		return filterMenuButtons;
+	@SuppressWarnings("unchecked")
+	public List<FilterMenuButton<T>> getFilterMenuButtons() {
+		return getColumns().stream()
+				.collect(StreamUtils.castFilter(column -> (TableBaseColumn<T, Object>) column))
+				.map(column -> column.getFilterMenuButton())
+				.filter(filterMenuButton -> filterMenuButton != null)
+				.collect(Collectors.toList());
 	}
 
 }

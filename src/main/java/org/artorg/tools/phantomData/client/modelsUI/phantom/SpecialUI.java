@@ -36,7 +36,7 @@ public class SpecialUI extends UIEntity<Special> {
 		createCountingColumn(table, "Files", columns, item -> item.getFiles());
 		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
 		createPropertyColumns(table, columns, items);
-//		createPersonifiedColumns(table, columns);
+		createPersonifiedColumns(table, columns);
 		return columns;
 	}
 

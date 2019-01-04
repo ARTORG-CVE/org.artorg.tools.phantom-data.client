@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.table.Table;
 
-public abstract class AbstractFilterColumn<T,R> extends AbstractColumn<T, R> {
+public abstract class AbstractFilterColumn<T, R> extends AbstractColumn<T, R> {
 	private Comparator<T> sortComparator;
 	private Comparator<T> ascendingSortComparator;
 	private Predicate<T> filterPredicate;
@@ -21,7 +21,7 @@ public abstract class AbstractFilterColumn<T,R> extends AbstractColumn<T, R> {
 		resetFilter();
 		maxFilterItems = 15;
 		itemsFilter = true;
-		
+
 	}
 
 	public AbstractFilterColumn(Table<T> table, String columnName) {
@@ -32,26 +32,25 @@ public abstract class AbstractFilterColumn<T,R> extends AbstractColumn<T, R> {
 	public void resetFilter() {
 		ascendingSortComparator = (i1, i2) -> {
 			if (i1 instanceof Comparable && i2 instanceof Comparable)
-			return ((Comparable<R>)get(i1)).compareTo(get(i2));
+				return ((Comparable<R>) get(i1)).compareTo(get(i2));
 			return 0;
-			};
+		};
 		filterPredicate = item -> true;
 	}
-	
+
 	public List<R> getFilteredValues() {
 		return getTable().getFilteredItems().stream().map(item -> get(item))
-			.collect(Collectors.toList());
+				.collect(Collectors.toList());
 	}
-	
+
 	public void setSortComparator(Comparator<T> sortComparator) {
 		this.sortComparator = sortComparator;
 		sortComparatorQueue.add(sortComparator);
 	}
 
-	public void setSortComparator(Comparator<R> sortComparator,
-		Function<T, R> valueGetter) {
-		this.sortComparator = (item1, item2) -> sortComparator
-			.compare(valueGetter.apply(item1), valueGetter.apply(item2));
+	public void setSortComparator(Comparator<R> sortComparator, Function<T, R> valueGetter) {
+		this.sortComparator = (item1, item2) -> sortComparator.compare(valueGetter.apply(item1),
+				valueGetter.apply(item2));
 	}
 
 	// Getters & Setters
@@ -97,6 +96,6 @@ public abstract class AbstractFilterColumn<T,R> extends AbstractColumn<T, R> {
 
 	public void setItemsFilter(boolean itemsFilter) {
 		this.itemsFilter = itemsFilter;
-	}	
+	}
 
 }

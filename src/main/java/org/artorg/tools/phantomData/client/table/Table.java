@@ -8,7 +8,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Queue;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -16,7 +15,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
-import org.artorg.tools.phantomData.client.column.FilterColumn;
 import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
 import org.artorg.tools.phantomData.client.util.LimitedQueue;
@@ -43,9 +41,6 @@ public abstract class Table<T> {
 	private List<Predicate<T>> columnItemFilterPredicates;
 	private List<Predicate<T>> columnTextFilterPredicates;
 	private Comparator<T> sortComparator;
-	private int nFilteredCols;
-	private List<Integer> mappedColumnIndexes;
-	private Function<Integer, Integer> columnIndexMapper;
 	private Queue<Comparator<T>> sortComparatorQueue;
 
 	{
@@ -63,10 +58,8 @@ public abstract class Table<T> {
 			if (i1 instanceof Comparable) return ((Comparable<T>) i1).compareTo(i2);
 			return 0;
 		};
-		mappedColumnIndexes = new ArrayList<>();
 		sortComparatorQueue = new LimitedQueue<>(1);
 
-		
 		itemListChangeListener = c -> {
 			while (c.next()) {
 				CollectionUtil.addIfAbsent(items, filteredItems);
@@ -101,24 +94,38 @@ public abstract class Table<T> {
 	public void updateColumns() {
 		long startTime = System.currentTimeMillis();
 		List<AbstractColumn<T, ? extends Object>> columns = createColumns(getItems());
-		CollectionUtil.syncLists(this.columns, columns,
-				(column, newColumn) -> column.getName().equals(newColumn.getName()));
+
+		List<Integer> indexes = CollectionUtil.searchLeftNotInRight(this.columns, columns,
+				(col1, col2) -> col1.getName().equals(col2.getName()));
+		List<AbstractColumn<T, ? extends Object>> removableColumns =
+				CollectionUtil.subList(this.columns, indexes);
+		this.columns.removeAll(removableColumns);
+
+		for (int i = 0; i < columns.size(); i++) {
+			if (i >= this.columns.size()) addColumn(this.columns.size(), columns.get(i));
+			if (!this.columns.get(i).getName().equals(columns.get(i).getName()))
+				addColumn(i, columns.get(i));
+		}
 
 		if (isFilterable()) {
 			int nCols = getNcols();
-			mappedColumnIndexes = new ArrayList<Integer>(nCols);
-			for (int i = 0; i < nCols; i++)
-				if (getColumns().get(i).isVisible()) mappedColumnIndexes.add(i);
-			nFilteredCols = mappedColumnIndexes.size();
 			for (int i = 0; i < nCols; i++) {
 				columnItemFilterPredicates.add(item -> true);
 				columnTextFilterPredicates.add(item -> true);
 			}
-			columnIndexMapper = i -> mappedColumnIndexes.get(i);
 		}
-		Logger.debug.println(
-				getItemClass().getSimpleName() + " - Updated " + getFilteredColumns().size()
-						+ " column(s) in " + (System.currentTimeMillis() - startTime) + " ms");
+		Logger.debug.println(getItemClass().getSimpleName() + " - Updated " + getColumns().size()
+				+ " column(s) in " + (System.currentTimeMillis() - startTime) + " ms");
+	}
+
+	private void addColumn(int index, AbstractColumn<T, ? extends Object> column) {
+		if (column instanceof AbstractFilterColumn) {
+			AbstractFilterColumn<T, ?> filterColumn = (AbstractFilterColumn<T, ?>) column;
+			filterColumn.setSortComparatorQueue(getSortComparatorQueue());
+		} else {
+			Logger.debug.println("NON FILTERING COLUMN");
+		}
+		this.columns.add(index, column);
 	}
 
 	public void resetFilter() {
@@ -142,9 +149,8 @@ public abstract class Table<T> {
 			resetFilter();
 			return;
 		}
-		filterPredicate = mappedColumnIndexes.stream()
-				.filter(i -> i < columnItemFilterPredicates.size()).map(i -> getColumns().get(i))
-				.collect(castFilter(column -> ((FilterColumn<T, ?, ?>) column)))
+		filterPredicate = getColumns().stream()
+				.collect(castFilter(column -> ((AbstractFilterColumn<T, ?>) column)))
 				.map(filterColumn -> filterColumn.getFilterPredicate())
 				.reduce((f1, f2) -> f1.and(f2)).orElse(item -> true);
 
@@ -161,7 +167,7 @@ public abstract class Table<T> {
 	}
 
 	public void setColumnItemFilterValues(int columnIndex, List<Object> values) {
-		columnItemFilterPredicates.set(columnIndexMapper.apply(columnIndex), item -> {
+		columnItemFilterPredicates.set(columnIndex, item -> {
 			return values.stream()
 					.filter(value -> getFilteredValue(item, columnIndex).equals(value)).findFirst()
 					.isPresent();
@@ -170,28 +176,18 @@ public abstract class Table<T> {
 
 	public void setColumnTextFilterValues(int columnIndex, String searchText) {
 		final Pattern p = Pattern.compile("(?i)" + searchText);
-		if (searchText.isEmpty())
-			columnTextFilterPredicates.set(columnIndexMapper.apply(columnIndex), item -> true);
+		if (searchText.isEmpty()) columnTextFilterPredicates.set(columnIndex, item -> true);
 		else
-			columnTextFilterPredicates.set(columnIndexMapper.apply(columnIndex),
+			columnTextFilterPredicates.set(columnIndex,
 					item -> p.matcher(getFilteredValue(item, columnIndex).toString()).find());
 	}
 
-	public Object getColumnFilteredValue(int row, int col) {
-		List<AbstractColumn<T, ? extends Object>> columns = getFilteredColumns();
-		AbstractColumn<T, ?> column = columns.get(col);
-		ObservableList<T> items = getItems();
-		T item = items.get(row);
-		column.get(item);
-		return getFilteredColumns().get(col).get(getItems().get(row));
-	}
-
 	public Object getFilteredValue(int row, int col) {
-		return getFilteredColumns().get(col).get(getFilteredItems().get(row));
+		return getColumns().get(col).get(getFilteredItems().get(row));
 	}
 
 	public Object getFilteredValue(T item, int col) {
-		return getValue(item, columnIndexMapper.apply(col));
+		return getValue(item, col);
 	}
 
 	public Object getValue(int row, int col) {
@@ -215,22 +211,7 @@ public abstract class Table<T> {
 	}
 
 	public void setFilteredValue(T filteredItem, int filteredCol, Object value) {
-		if (isEditable()) getFilteredColumns().get(filteredCol).set(filteredItem, value);
-	}
-
-	public List<String> getFilteredColumnNames() {
-		return getFilteredColumns().stream().map(c -> c.getName()).collect(Collectors.toList());
-	}
-
-	public List<AbstractFilterColumn<T, ? extends Object>> getFilteredFilterColumns() {
-		return getFilteredColumns().stream()
-				.collect(castFilter(column -> (AbstractFilterColumn<T, ?>) column))
-				.collect(Collectors.toList());
-	}
-
-	public List<AbstractColumn<T, ? extends Object>> getFilteredColumns() {
-		return mappedColumnIndexes.stream().map(i -> getColumns().get(i))
-				.collect(Collectors.toList());
+		if (isEditable()) getColumns().get(filteredCol).set(filteredItem, value);
 	}
 
 	public List<String> getColumnNames() {
@@ -250,7 +231,7 @@ public abstract class Table<T> {
 		if (!isFilterable()) return createString(getNrows(), getNcols(), getColumnNames(),
 				(row, col) -> getValue(row, col).toString());
 		else
-			return createString(getFilteredNrows(), getFilteredNcols(), getFilteredColumnNames(),
+			return createString(getFilteredNrows(), getNcols(), getColumnNames(),
 					(row, col) -> getFilteredValue(row, col).toString());
 	}
 
@@ -263,8 +244,13 @@ public abstract class Table<T> {
 		for (int col = 0; col < nCols; col++)
 			content[0][col] = columnNames.get(col);
 		for (int row = 0; row < nRows; row++)
-			for (int col = 0; col < nCols; col++)
-				content[row + 1][col] = valueGetter.apply(row, col);
+			for (int col = 0; col < nCols; col++) {
+				try {
+					content[row + 1][col] = valueGetter.apply(row, col);
+				} catch (NullPointerException e) {
+					content[row + 1][col] = "null";
+				}
+			}
 
 		// determine column width
 		int[] columnWidth = new int[nCols];
@@ -356,10 +342,6 @@ public abstract class Table<T> {
 
 	public int getFilteredNrows() {
 		return filteredItems.size();
-	}
-
-	public int getFilteredNcols() {
-		return nFilteredCols;
 	}
 
 	public Predicate<T> getFilterPredicate() {

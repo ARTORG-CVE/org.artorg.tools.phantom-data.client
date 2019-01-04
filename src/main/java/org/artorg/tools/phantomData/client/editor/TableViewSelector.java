@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.Reflect;
@@ -26,8 +25,8 @@ public class TableViewSelector<T> extends SplitPane {
 	private SplitPane splitPane;
 	private int height;
 	private final Class<?> subItemClass;
-	private ProTableView<T> tableView1;
-	private ProTableView<T> tableView2;
+	private final ProTableView<T> tableView1;
+	private final ProTableView<T> tableView2;
 	private String name;
 
 	{
@@ -38,12 +37,11 @@ public class TableViewSelector<T> extends SplitPane {
 
 	}
 
-	public TableViewSelector(Class<T> subItemClass) {
+	public TableViewSelector(Class<T> subItemClass, ProTableView<T> tableView1, ProTableView<T> tableView2) {
 		this.subItemClass = subItemClass;
+		this.tableView1 = tableView1;
+		this.tableView2 = tableView2;
 		setName(subItemClass.getSimpleName());
-		
-		setTableView1(Main.getUIEntity(subItemClass).createProTableView());
-		setTableView2(Main.getUIEntity(subItemClass).createProTableView());
 		
 		if (!splitPane.getItems().contains(getTableView1())) {
 			splitPane.getItems().add(getTableView1());
@@ -59,20 +57,8 @@ public class TableViewSelector<T> extends SplitPane {
 		TableColumn<T, Void> removeButtonCellColumn =
 				FxUtil.createButtonCellColumn("-", this::moveToSelectable);
 
-		getTableView1().setColumnRemovePolicy((fromColumn, toColumn) -> {
-			if (toColumn == addButtonCellColumn) return true;
-			return toColumn.getText().equals(fromColumn.getName());
-		});
-
-		getTableView2().setColumnRemovePolicy((fromColumn, toColumn) -> {
-			if (toColumn == removeButtonCellColumn) return true;
-			return toColumn.getText().equals(fromColumn.getName());
-		});
-
 		this.getTableView1().getColumns().add(0, addButtonCellColumn);
 		this.getTableView2().getColumns().add(0, removeButtonCellColumn);
-//		((ProTableView<ITEM>) this.getTableView2()).removeHeaderRow();
-//		((ProTableView<ITEM>) this.getTableView2()).showHeaderRow();
 
 		getTableView1().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		getTableView2().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -130,17 +116,6 @@ public class TableViewSelector<T> extends SplitPane {
 		}
 	}
 	
-//	protected TableColumn<Object, String> createValueColumn(String columnName) {
-//		TableColumn<Object, String> column = new TableColumn<Object, String>(columnName);
-//		column.setSortable(false);
-//
-//		column.setCellFactory(TextFieldTableCell.forTableColumn());
-//		column.setCellValueFactory(
-//			cellData -> new SimpleStringProperty(cellData.getValue().toString()));
-//
-//		return column;
-//	}
-	
 	public void setSelectedItems(Collection<T> items) {
 		getSelectedItems().clear();
 		getSelectedItems().addAll(items);
@@ -181,11 +156,7 @@ public class TableViewSelector<T> extends SplitPane {
 		getTableView1().getTable().getItems().removeAll(items);
 		getTableView2().getTable().getItems().addAll(items);
 		getTableView2().getTable().applyFilter();
-		
-		
 		refreshVisibility();
-
-//		((ProTableView<?>) getTableView2()).showHeaderRow();
 		autoResizeColumns(getTableView1());
 		autoResizeColumns(getTableView2());
 	}
@@ -194,9 +165,7 @@ public class TableViewSelector<T> extends SplitPane {
 		getTableView2().getTable().getItems().removeAll(items);
 		getTableView1().getTable().getItems().addAll(items);
 		getTableView1().getTable().applyFilter();
-		
 		refreshVisibility();
-
 		autoResizeColumns(getTableView1());
 		autoResizeColumns(getTableView2());
 	}
@@ -253,17 +222,9 @@ public class TableViewSelector<T> extends SplitPane {
 	protected ProTableView<T> getTableView1() {
 		return tableView1;
 	}
-	
-	public void setTableView1(ProTableView<T> tableView1) {
-		this.tableView1 = tableView1;
-	}
 
 	protected ProTableView<T> getTableView2() {
 		return tableView2;
-	}
-
-	public void setTableView2(ProTableView<T> tableView2) {
-		this.tableView2 = tableView2;
 	}
 	
 	public String getName() {

@@ -122,10 +122,10 @@ public class DatabaseInitializer {
 	}
 
 	private static void initSpecial() throws NoUserLoggedInException, PostException {
-		PropertyField field1 = new PropertyField("has leaflets?", "", Special.class);
-		PropertyField field2 = new PropertyField("has coronaries?", "", Special.class);
+		PropertyField field1 = new PropertyField("has leaflets?", "", Special.class, BooleanProperty.class);
+		PropertyField field2 = new PropertyField("has coronaries?", "", Special.class, BooleanProperty.class);
 		PropertyField field3 =
-			new PropertyField("num. of simulations?", "", Special.class);
+			new PropertyField("num. of simulations?", "", Special.class, IntegerProperty.class);
 		fieldConn.create(field1);
 		fieldConn.create(field2);
 		fieldConn.create(field3);

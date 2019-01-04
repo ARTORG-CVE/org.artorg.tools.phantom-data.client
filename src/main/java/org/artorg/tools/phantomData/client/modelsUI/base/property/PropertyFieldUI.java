@@ -38,14 +38,8 @@ public class PropertyFieldUI extends UIEntity<PropertyField> {
 			List<PropertyField> items) {
 		List<AbstractColumn<PropertyField, ?>> columns = new ArrayList<>();
 		ColumnCreator<PropertyField, PropertyField> creator = new ColumnCreator<>(table);
-		columns.add(creator.createFilterColumn("Type", path -> {
-			try {
-				return Class.forName(path.getType()).getSimpleName();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-			return path.getType();
-		}));
+		columns.add(creator.createFilterColumn("Entity Type", path -> path.getEntityType()));
+		columns.add(creator.createFilterColumn("Property Type", path -> path.getPropertyType()));
 		columns.add(creator.createFilterColumn("Name", path -> path.getName(),
 				(path, value) -> path.setName((String) value)));
 		columns.add(creator.createFilterColumn("Description", path -> path.getDescription(),
@@ -76,16 +70,13 @@ public class PropertyFieldUI extends UIEntity<PropertyField> {
 			public void onShowingEditMode(PropertyField item) {
 				typePane.getChildren().clear();
 				FxUtil.addToPane(typePane, textFieldType);
-				textFieldType.setText(item.getType());
+				textFieldType.setText(item.getEntityType());
 			}
 
 			@Override
 			public void onCreatingClient(PropertyField item) throws InvalidUIInputException {
-				item.setType(comboBoxType.getSelectionModel().getSelectedItem().getName());
+				item.setEntityType(comboBoxType.getSelectionModel().getSelectedItem().getSimpleName());
 			}
-			
-			
-
 		};
 		PropertyGridPane propertyPane = new PropertyGridPane();
 		propertyPane.addEntry("Name", editor.createTextField(item -> item.getName(),

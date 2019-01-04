@@ -54,7 +54,7 @@ public class PhantomUI extends UIEntity<Phantom> {
 		ColumnCreator<Phantom, Phantom> editor = new ColumnCreator<>(table);
 		ColumnCreator<Phantom, Phantomina> editorP =
 				new ColumnCreator<>(table, item -> item.getPhantomina());
-		columns.add(editor.createFilterColumn("", path -> {
+		columns.add(editor.createColumn("", path -> {
 			Rectangle coloredStatusBox = new Rectangle();
 			coloredStatusBox.setWidth(8.0);
 			coloredStatusBox.setHeight(8.0);

@@ -34,14 +34,8 @@ public abstract class PropertyUI<T extends AbstractProperty<T, VALUE>, VALUE> ex
 	public List<AbstractColumn<T, ?>> createColumns(Table<T> table, List<T> items) {
 		List<AbstractColumn<T, ?>> columns = new ArrayList<AbstractColumn<T, ?>>();
 		ColumnCreator<T, T> editor = new ColumnCreator<>(table);
-		columns.add(editor.createFilterColumn("Type", path -> {
-			try {
-				return Class.forName(path.getPropertyField().getType()).getSimpleName();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-			return path.getPropertyField().getType();
-		}, (path, value) -> {}));
+		columns.add(editor.createFilterColumn("Entity Type",
+				path -> path.getPropertyField().getEntityType(), (path, value) -> {}));
 		columns.add(
 				editor.createFilterColumn("Field Name", path -> path.getPropertyField().getName(),
 						(path, value) -> path.getPropertyField().setName(value)));

@@ -12,7 +12,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.connector.Connectors;
+import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.AbstractPropertifiedEntity;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
@@ -135,50 +137,13 @@ public class Creator<T> extends AnchorPane implements IPropertyNode {
 
 		};
 	}
-	
-//	
-//	public AbstractEditor<T, AbstractPropertifiedEntity<?>> createPropertySelector(
-//			Class<T> itemClass, Function<T, AbstractPropertifiedEntity<?>> getter) {
-//		DbPropertySelector<T> propertySelector = new DbPropertySelector<T>(itemClass);
-//		return new AbstractEditor<T, AbstractPropertifiedEntity<?>>(itemClass, propertySelector) {
-//
-//			@Override
-//			protected AbstractPropertifiedEntity<?> entityToValueEditGetterImpl(T item) {
-//				return getter.apply(item);
-//			}
-//
-//			@Override
-//			protected AbstractPropertifiedEntity<?> entityToValueAddGetterImpl(T item) {
-//				propertySelector.setPropertyItems(null);
-//				return null;
-//			}
-//
-//			@Override
-//			protected void valueToEntitySetterImpl(T item, AbstractPropertifiedEntity<?> value) {}
-//
-//			@Override
-//			protected AbstractPropertifiedEntity<?> nodeToValueGetterImpl() {
-//				throw new UnsupportedOperationException();
-//			}
-//
-//			@Override
-//			protected void valueToNodeSetterImpl(AbstractPropertifiedEntity<?> value) {
-//				propertySelector.setPropertyItems(value);
-//			}
-//
-//			@Override
-//			protected void defaultSetterRunnableImpl() {
-//				propertySelector.setPropertyItems(null);
-//			}
-//
-//		};
-//	}
-//	
 
 	public <U> AbstractEditor<T, Collection<U>> createSelector(Class<U> subItemClass,
 			Function<T, Collection<U>> getter, BiConsumer<T, Collection<U>> setter) {
+		ProTableView<U> tableView1 = Main.getUIEntity(subItemClass).createProTableView();
+		ProTableView<U> tableView2 = Main.getUIEntity(subItemClass).createProTableView();
 		DbTableViewSelector<T, U> selector =
-				new DbTableViewSelector<T, U>(getItemClass(), subItemClass);
+				new DbTableViewSelector<T, U>(getItemClass(), subItemClass, tableView1, tableView2);
 		return new AbstractEditor<T, Collection<U>>(itemClass, selector) {
 
 			@Override

@@ -243,7 +243,12 @@ public class Main extends DesktopFxBootApplication {
 		else
 			Logger.info.println("Client booted succesful");
 	}
-	
+
+	public static Class<?> getEntityClassBySimpleName(String simpleName) {
+		return getEntityClasses().stream().filter(cls -> cls.getSimpleName().equals(simpleName))
+				.findFirst().orElse(null);
+	}
+
 	public static <T> UIEntity<T> getUIEntity(Class<T> itemClass) {
 		return (UIEntity<T>) uiEntities.get(itemClass);
 	}

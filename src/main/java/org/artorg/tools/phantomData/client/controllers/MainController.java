@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.scene.CssGlyph;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
@@ -445,7 +446,9 @@ public class MainController extends StackPane {
 
 	private Tab createTableViewTab(Class<?> itemClass) {
 		ProTableView<?> table = Main.getUIEntity(itemClass).createDbTableView();
-
+		Logger.debug.println(table.getTable().toString());
+		
+		
 		Tab tab = new Tab(table.getTable().getTableName());
 		tab.setContent(table);
 

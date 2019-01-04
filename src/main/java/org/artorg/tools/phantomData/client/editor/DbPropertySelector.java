@@ -132,7 +132,7 @@ public class DbPropertySelector<T> extends VBox {
 		ComboBox<PropertyField> comboBoxPropertyField = new ComboBox<>();
 		ICrudConnector<PropertyField> connector = Connectors.get(PropertyField.class);
 		ObservableList<PropertyField> items = connector.readAllAsList().stream()
-				.filter(propertyField -> propertyField.getType().equals(parentItemClass.getName()))
+				.filter(propertyField -> propertyField.getEntityType().equals(parentItemClass.getSimpleName()))
 				.collect(Collectors.toCollection(() -> FXCollections.observableArrayList()));
 		comboBoxPropertyField.setItems(items);
 		FxUtil.setComboBoxCellFactory(comboBoxPropertyField, item -> item.getName());

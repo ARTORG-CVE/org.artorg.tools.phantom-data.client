@@ -1,21 +1,19 @@
 package org.artorg.tools.phantomData.client.modelUI;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.artorg.tools.phantomData.client.beans.NamedTreeItem;
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
+import org.artorg.tools.phantomData.client.beans.NamedTreeItem;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
@@ -186,7 +184,7 @@ public abstract class UIEntity<T> {
 		createPropertyColumns(table, columns, items,
 				container -> container.getStringProperties(), s -> s, s -> s);
 		
-		DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
+//		DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
 		Function<String, Date> stringDateFunc = s -> {
 			try {
 				format.parse(s);
@@ -215,7 +213,7 @@ public abstract class UIEntity<T> {
 			OptionalColumnCreator<T,
 					P> creator = new OptionalColumnCreator<>(table,
 							item -> propsGetter.apply(item).stream()
-									.filter(p -> p.getPropertyField().getId() == entry.getKey())
+									.filter(p -> p.getPropertyField().getId().equals(entry.getKey()))
 									.findFirst());
 			columns.add(creator.createFilterColumn(entry.getValue(),
 					path -> toStringFun.apply(path.getValue()),
