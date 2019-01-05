@@ -57,7 +57,7 @@ public class PropertyGridPane extends AnchorPane implements IPropertyNode {
 			double width = text.getLayoutBounds().getWidth();
 			if (width > textWidth) textWidth = width;
 		}
-		col1.setMinWidth(textWidth+5.0);
+		col1.setMinWidth(textWidth + 5.0);
 		col1.setPrefWidth(textWidth + 10.0);
 		col1.setMaxWidth(textWidth + 45.0);
 
@@ -76,23 +76,38 @@ public class PropertyGridPane extends AnchorPane implements IPropertyNode {
 		addEntry(new Label(title), propertyNode.getNode());
 	}
 
+	public void addEntry(Node rowSpanNode) {
+		int row = gridPane.getChildren().size() / 2;
+		gridPane.add(rowSpanNode, 0, row, 2, 1);
+		formatNodes(rowSpanNode);
+		gridPane.getRowConstraints().add(createRowConstraints(rowSpanNode));
+	}
+
 	public void addEntry(Node leftNode, Node rightNode) {
 		int row = gridPane.getChildren().size() / 2;
 		gridPane.add(leftNode, 0, row, 1, 1);
 		gridPane.add(rightNode, 1, row, 1, 1);
-		if (rightNode instanceof Control) ((Control) rightNode).setMaxWidth(Double.MAX_VALUE);
-		if (rightNode instanceof Control) ((Control) rightNode).setMaxHeight(Double.MAX_VALUE);
+		formatNodes(leftNode, rightNode);
+		gridPane.getRowConstraints().add(createRowConstraints(leftNode, rightNode));
+	}
 
-		if (rightNode instanceof TextArea) {
-			((TextArea)rightNode).setPrefRowCount(10);
-			GridPane.setVgrow(rightNode, Priority.ALWAYS);
-			((TextArea)rightNode).setPrefHeight(400.0);
+	private static void formatNodes(Node... nodes) {
+		for (Node node : nodes) {
+			if (node instanceof Control) ((Control) node).setMaxWidth(Double.MAX_VALUE);
+			if (node instanceof TextArea) {
+				((TextArea) node).setPrefRowCount(10);
+				GridPane.setVgrow(node, Priority.ALWAYS);
+				((TextArea) node).setPrefHeight(400.0);
+			}
 		}
-		
+	}
+
+	private static RowConstraints createRowConstraints(Node... nodes) {
+		boolean hasTextArea = false;
+		for (Node node : nodes)
+			if (node instanceof TextArea) hasTextArea = true;
 		final RowConstraints rowConstraints = new RowConstraints();
-		
-		
-		if (leftNode instanceof TextArea || rightNode instanceof TextArea) {
+		if (hasTextArea) {
 			rowConstraints.setMinHeight(40.0);
 			rowConstraints.setVgrow(Priority.ALWAYS);
 		} else {
@@ -100,7 +115,7 @@ public class PropertyGridPane extends AnchorPane implements IPropertyNode {
 			rowConstraints.setVgrow(Priority.NEVER);
 			rowConstraints.setPrefHeight(25.0);
 		}
-		gridPane.getRowConstraints().add(rowConstraints);
+		return rowConstraints;
 	}
 
 	public GridPane getGridPane() {

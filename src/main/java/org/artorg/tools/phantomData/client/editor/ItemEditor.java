@@ -1,9 +1,7 @@
 package org.artorg.tools.phantomData.client.editor;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
@@ -16,15 +14,17 @@ import org.artorg.tools.phantomData.client.exceptions.PostException;
 import org.artorg.tools.phantomData.client.exceptions.PutException;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.StreamUtils;
-import org.artorg.tools.phantomData.server.model.DbPersistent;
 
 import huma.logging.Logger;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 public class ItemEditor<T> extends Creator<T> {
@@ -36,12 +36,6 @@ public class ItemEditor<T> extends Creator<T> {
 
 	{
 		applyButton = new Button("Apply");
-//		itemSupplier = () -> {
-//			try {
-//				return getItemClass().newInstance();
-//			} catch (InstantiationException | IllegalAccessException e) {}
-//			throw new RuntimeException("Declare itemSupplier for itemClass: " + getItemClass());
-//		};
 	}
 
 	public ItemEditor(Class<T> itemClass) {
@@ -66,39 +60,6 @@ public class ItemEditor<T> extends Creator<T> {
 
 	public void onUpdatedServer(T item) {}
 
-	public void closeTitledSelectors() {
-		List<TitledPropertyPane> propertyPanes = getTitledSelectorPanes();
-		propertyPanes.forEach(pane -> pane.setExpanded(false));
-	}
-
-	public void addAutoCloseOnSelectors() {
-		List<TitledPropertyPane> propertyPanes = getTitledSelectorPanes();
-		propertyPanes.forEach(pane -> {
-			pane.expandedProperty().addListener((observable, oldValue, newValue) -> {
-				if (newValue) propertyPanes.stream().filter(pane2 -> pane2 != pane)
-						.forEach(pane2 -> pane2.setExpanded(false));
-			});
-		});
-	}
-
-	public List<TitledPropertyPane> getTitledPropertyPanes() {
-		List<IPropertyNode> nodes = flatToList();
-		return nodes.stream().collect(StreamUtils.castFilter(node -> (TitledPropertyPane) node))
-				.collect(Collectors.toList());
-	}
-
-	public List<TitledPropertyPane> getTitledSelectorPanes() {
-		List<IPropertyNode> nodes = flatToList();
-		return nodes.stream().collect(StreamUtils.castFilter(node -> (TitledPropertyPane) node))
-				.filter(pane -> pane.getContent() instanceof TableViewSelector)
-				.collect(Collectors.toList());
-	}
-
-	@Override
-	public Node getNode() {
-		return this;
-	}
-
 	public final void showCreateMode() {
 		onShowingCreateMode(beanClass);
 		applyButton.setOnAction(event -> {
@@ -110,7 +71,7 @@ public class ItemEditor<T> extends Creator<T> {
 					setItem(createInstance());
 					Platform.runLater(() -> getAllAbstractEditors().stream().forEach(node -> {
 						T template = getCreateTemplate();
-						if (template == null || template.getClass() != beanClass) 
+						if (template == null || template.getClass() != beanClass)
 							template = createInstance();
 						node.entityToNodeAdd(template);
 					}));
@@ -222,61 +183,67 @@ public class ItemEditor<T> extends Creator<T> {
 		}
 		return false;
 	}
-
-	public List<PropertyGridPane> getAllPropertyGridPanes() {
-		return getChildrenProperties().stream()
-				.map(propertyNode -> getAllPropertyGridPanes(propertyNode))
-				.flatMap(nodes -> nodes.stream()).collect(Collectors.toList());
+	
+	public void closeTitledSelectors() {
+		List<TitledPropertyPane> propertyPanes = getTitledSelectorPanes();
+		propertyPanes.forEach(pane -> pane.setExpanded(false));
 	}
 
-	private List<PropertyGridPane> getAllPropertyGridPanes(IPropertyNode propertyNode) {
-		List<PropertyGridPane> list = new ArrayList<>();
-		if (propertyNode instanceof PropertyGridPane) {
-			list.add((PropertyGridPane) propertyNode);
-			return list;
-		}
-		if (propertyNode.getChildrenProperties().isEmpty()) return list;
-		for (IPropertyNode child : propertyNode.getChildrenProperties()) {
-			if (child instanceof PropertyGridPane) list.add((PropertyGridPane) child);
-			else if (!child.getChildrenProperties().isEmpty())
-				list.addAll(getAllPropertyGridPanes(child));
-		}
-		return list;
+	public void addAutoCloseOnSelectors() {
+		List<TitledPropertyPane> propertyPanes = getTitledSelectorPanes();
+		propertyPanes.forEach(pane -> {
+			pane.expandedProperty().addListener((observable, oldValue, newValue) -> {
+				if (newValue) propertyPanes.stream().filter(pane2 -> pane2 != pane)
+						.forEach(pane2 -> pane2.setExpanded(false));
+			});
+		});
 	}
 
-	public Collection<AbstractEditor<T, ?>> getAllAbstractEditors() {
-		return getChildrenProperties().stream().map(propertyNode -> getAllSubEditors(propertyNode))
-				.flatMap(nodes -> nodes.stream()).collect(Collectors.toList());
+	public List<TitledPropertyPane> getTitledPropertyPanes() {
+		List<IPropertyNode> nodes = flatToList();
+		return nodes.stream().collect(StreamUtils.castFilter(node -> (TitledPropertyPane) node))
+				.collect(Collectors.toList());
+	}
+
+	public List<TitledPropertyPane> getTitledSelectorPanes() {
+		List<IPropertyNode> nodes = flatToList();
+		return nodes.stream().collect(StreamUtils.castFilter(node -> (TitledPropertyPane) node))
+				.filter(pane -> pane.getContent() instanceof TableViewSelector)
+				.collect(Collectors.toList());
 	}
 
 	@SuppressWarnings("unchecked")
-	private Collection<AbstractEditor<T, ?>> getAllSubEditors(IPropertyNode propertyNode) {
-		List<AbstractEditor<T, ?>> list = new ArrayList<>();
-		if (!propertyNode.getChildrenProperties().isEmpty()) {
-			for (IPropertyNode child : propertyNode.getChildrenProperties()) {
-				if (child.getChildrenProperties().isEmpty() && child instanceof AbstractEditor)
-					list.add((AbstractEditor<T, ?>) child);
-				else
-					list.addAll(getAllSubEditors(child));
-			}
-			return list;
-		}
-		if (propertyNode instanceof AbstractEditor) list.add((AbstractEditor<T, ?>) propertyNode);
-		return list;
+	public Collection<AbstractEditor<T, ?>> getAllAbstractEditors() {
+		List<IPropertyNode> nodes = flatToList();
+		return nodes.stream().collect(StreamUtils.castFilter(node -> (AbstractEditor<T,?>) node))
+				.collect(Collectors.toList());
 	}
 
 	public void addApplyButton() {
-		getvBox().getChildren().add(createButtonPane(getApplyButton()));
+		Button button = getApplyButton();
+		Pane pane = createButtonPane(button);
+		HBox.setHgrow(button, Priority.ALWAYS);
+		pane.setPadding(new Insets(5, 10, 5, 10));
+		getvBox().getChildren().add(pane);
 	}
 
-	public AnchorPane createButtonPane(Button button) {
-		button.setMaxWidth(Double.MAX_VALUE);
-		VBox.setVgrow(button, Priority.NEVER);
-		AnchorPane buttonPane = new AnchorPane();
-		buttonPane.setPadding(new Insets(5, 10, 5, 10));
-		buttonPane.getChildren().add(button);
-		FxUtil.setAnchorZero(button);
+	public static Pane createButtonPane(Button... buttons) {
+		StackPane buttonPane = new StackPane();
+		HBox hBox = new HBox();
+		hBox.setSpacing(10.0);
+		hBox.setAlignment(Pos.CENTER_RIGHT);
+		FxUtil.addToPane(buttonPane, hBox);
+		for (Button button : buttons) {
+			button.setMaxWidth(Double.MAX_VALUE);
+			VBox.setVgrow(button, Priority.NEVER);
+			hBox.getChildren().add(button);
+		}
 		return buttonPane;
+	}
+	
+	@Override
+	public Node getNode() {
+		return this;
 	}
 
 	public ICrudConnector<T> getConnector() {
