@@ -3,6 +3,7 @@ package org.artorg.tools.phantomData.client.editor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.connector.Connectors;
@@ -10,10 +11,12 @@ import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.exceptions.InvalidUIInputException;
 import org.artorg.tools.phantomData.client.exceptions.InvalidUIInputException.Mode;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
+import org.artorg.tools.phantomData.client.exceptions.PermissionDeniedException;
 import org.artorg.tools.phantomData.client.exceptions.PostException;
 import org.artorg.tools.phantomData.client.exceptions.PutException;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.client.util.StreamUtils;
+import org.artorg.tools.phantomData.server.model.DbPersistent;
 
 import huma.logging.Logger;
 import javafx.application.Platform;
@@ -27,10 +30,18 @@ import javafx.scene.layout.VBox;
 public class ItemEditor<T> extends Creator<T> {
 	private final Button applyButton;
 	private final ICrudConnector<T> connector;
+	private T createTemplate;
 	private T item;
+	private Class<? extends T> beanClass;
 
 	{
 		applyButton = new Button("Apply");
+//		itemSupplier = () -> {
+//			try {
+//				return getItemClass().newInstance();
+//			} catch (InstantiationException | IllegalAccessException e) {}
+//			throw new RuntimeException("Declare itemSupplier for itemClass: " + getItemClass());
+//		};
 	}
 
 	public ItemEditor(Class<T> itemClass) {
@@ -38,7 +49,7 @@ public class ItemEditor<T> extends Creator<T> {
 		this.connector = (ICrudConnector<T>) Connectors.get(itemClass);
 	}
 
-	public void onShowingCreateMode(T item) {}
+	public void onShowingCreateMode(Class<? extends T> itemClass) {}
 
 	public void onCreatingClient(T item) throws InvalidUIInputException {}
 
@@ -88,14 +99,21 @@ public class ItemEditor<T> extends Creator<T> {
 		return this;
 	}
 
-	public final void showCreateMode(T item) {
-		this.item = item;
-		onShowingCreateMode(item);
+	public final void showCreateMode() {
+		onShowingCreateMode(beanClass);
 		applyButton.setOnAction(event -> {
 			if (getChildrenProperties().isEmpty()) Logger.warn.println("Nodes empty");
 			FxUtil.runNewSingleThreaded(() -> {
 				try {
-					createItem(getItem());
+					createItem();
+					setCreateTemplate(getItem());
+					setItem(createInstance());
+					Platform.runLater(() -> getAllAbstractEditors().stream().forEach(node -> {
+						T template = getCreateTemplate();
+						if (template == null || template.getClass() != beanClass) 
+							template = createInstance();
+						node.entityToNodeAdd(template);
+					}));
 				} catch (InvalidUIInputException e) {
 					e.setMode(Mode.CREATE);
 					Logger.warn.println(e.getMessage());
@@ -107,25 +125,40 @@ public class ItemEditor<T> extends Creator<T> {
 					e.printStackTrace();
 					Logger.warn.println(e.getMessage());
 					e.showAlert();
-				} 
+				}
 			});
 		});
 		applyButton.setText("Create");
-		getAllAbstractEditors().stream().forEach(node -> node.entityToNodeAdd(item));
+		getAllAbstractEditors().stream().forEach(node -> {
+			T template = getCreateTemplate();
+			if (template == null) template = createInstance();
+			node.entityToNodeAdd(template);
+		});
 	}
 
+	public T createInstance() {
+		try {
+			return beanClass.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
 	public final void showEditMode(T item) {
-		this.item = item;
+		beanClass = (Class<? extends T>) item.getClass();
+		setItem(item);
 		onShowingEditMode(item);
 		applyButton.setOnAction(event -> {
 			if (getChildrenProperties().isEmpty()) return;
 			try {
-				updateItem(getItem());
-			}  catch (InvalidUIInputException e) {
+				updateItem();
+			} catch (InvalidUIInputException e) {
 				e.setMode(Mode.EDIT);
 				Logger.warn.println(e.getMessage());
 				e.showAlert();
-			}  catch (NoUserLoggedInException e) {
+			} catch (NoUserLoggedInException e) {
 				Logger.warn.println(e.getMessage());
 				e.showAlert();
 			} catch (PutException e) {
@@ -136,62 +169,60 @@ public class ItemEditor<T> extends Creator<T> {
 				Logger.warn.println(e.getMessage());
 				e.printStackTrace();
 				e.showAlert();
+			} catch (PermissionDeniedException e) {
+				e.showAlert();
 			}
 		});
 		applyButton.setText("Save");
 		getAllAbstractEditors().stream().forEach(node -> node.entityToNodeEdit(item));
 	}
 
-	public final T createItem(T item)
+	public final T createItem()
 			throws PostException, InvalidUIInputException, NoUserLoggedInException {
-		if (item == null) throw new IllegalArgumentException(); 
-		item = createClient(item);
-		return createServer(item);
+		if (item == null) throw new IllegalArgumentException();
+		setItem(createClient());
+		return createServer();
 	}
 
-	public final T createClient(T item)
+	public final T createClient()
 			throws PostException, InvalidUIInputException, NoUserLoggedInException {
 		onCreatingClient(item);
-		getAllAbstractEditors().stream().forEach(node -> node.nodeToEntity(item));
+		getAllAbstractEditors().stream().forEach(node -> node.nodeToEntity(getItem()));
 		return item;
 	}
-	
-	public final T createServer(T item)
+
+	public final T createServer()
 			throws NoUserLoggedInException, PostException, InvalidUIInputException {
 		onCreatingServer(item);
 		if (getConnector().create(item)) {
-			this.item = item;
 			onCreatedServer(item);
-			Platform.runLater(() -> getAllAbstractEditors().stream()
-					.forEach(node -> node.entityToNodeAdd(item)));
 			return item;
 		}
 		throw new PostException(getItemClass());
 	}
 
-	public final boolean updateItem(T item)
-			throws PutException, InvalidUIInputException, PostException, NoUserLoggedInException {
-		updateClient(item);
-		return updateServer(item);
+	public final boolean updateItem() throws PutException, InvalidUIInputException, PostException,
+			NoUserLoggedInException, PermissionDeniedException {
+		updateClient();
+		return updateServer();
 	}
 
-	public final void updateClient(T item)
+	public final void updateClient()
 			throws InvalidUIInputException, NoUserLoggedInException, PostException {
 		onUpdatingClient(item);
 		getAllAbstractEditors().stream().forEach(node -> node.nodeToEntity(item));
 	}
 
-	public final boolean updateServer(T item)
-			throws NoUserLoggedInException, PutException, PostException {
+	public final boolean updateServer()
+			throws NoUserLoggedInException, PutException, PostException, PermissionDeniedException {
 		onUpdatingServer(item);
 		if (getConnector().update(item)) {
-			this.item = item;
 			onUpdatedServer(item);
 			return true;
 		}
 		return false;
 	}
-	
+
 	public List<PropertyGridPane> getAllPropertyGridPanes() {
 		return getChildrenProperties().stream()
 				.map(propertyNode -> getAllPropertyGridPanes(propertyNode))
@@ -233,7 +264,7 @@ public class ItemEditor<T> extends Creator<T> {
 		if (propertyNode instanceof AbstractEditor) list.add((AbstractEditor<T, ?>) propertyNode);
 		return list;
 	}
-	
+
 	public void addApplyButton() {
 		getvBox().getChildren().add(createButtonPane(getApplyButton()));
 	}
@@ -258,6 +289,29 @@ public class ItemEditor<T> extends Creator<T> {
 
 	public T getItem() {
 		return item;
+	}
+
+	private void setItem(T item) {
+		this.item = item;
+	}
+
+	public T getCreateTemplate() {
+		return createTemplate;
+	}
+
+	public void setCreateTemplate(T createTemplate) {
+		this.createTemplate = createTemplate;
+	}
+
+	public Class<? extends T> getBeanClass() {
+		return beanClass;
+	}
+
+	public void setBeanClass(Class<? extends T> beanClass) {
+		this.beanClass = beanClass;
+		T item = createInstance();
+		setItem(item);
+		setCreateTemplate(item);
 	}
 
 }

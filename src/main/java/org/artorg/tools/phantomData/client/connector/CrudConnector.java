@@ -2,17 +2,21 @@ package org.artorg.tools.phantomData.client.connector;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.exceptions.DeleteException;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
+import org.artorg.tools.phantomData.client.exceptions.PermissionDeniedException;
 import org.artorg.tools.phantomData.client.exceptions.PostException;
 import org.artorg.tools.phantomData.client.exceptions.PutException;
 import org.artorg.tools.phantomData.client.logging.Logger;
@@ -21,6 +25,7 @@ import org.artorg.tools.phantomData.client.util.Reflect;
 import org.artorg.tools.phantomData.server.controller.ControllerSpecDefault;
 import org.artorg.tools.phantomData.server.model.Identifiable;
 import org.artorg.tools.phantomData.server.model.NameGeneratable;
+import org.artorg.tools.phantomData.server.models.base.person.Person;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -149,7 +154,6 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 
 	@Override
 	public boolean create(T t) throws NoUserLoggedInException, PostException {
-		if (t == null) throw new PostException(getItemClass(), " item == null");
 		if (createDb(t)) {
 			map.put(((Identifiable<?>) t).getId().toString(), t);
 			return true;
@@ -166,11 +170,11 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 			String url = createUrl(getAnnoStringCreate());
 			HttpEntity<T> requestEntity = new HttpEntity<T>(t, headers);
 			restTemplate.postForLocation(url, requestEntity);
-			if (t instanceof NameGeneratable)
-				Logger.info.println(String.format("CREATE - %s - %s",
-						itemClass.getSimpleName(), ((NameGeneratable) t).toName()));
-			else Logger.info.println(String.format("CREATE - %s - %s",
-					itemClass.getSimpleName(), t.toString()));
+			if (t instanceof NameGeneratable) Logger.info.println(String.format("CREATE - %s - %s",
+					itemClass.getSimpleName(), ((NameGeneratable) t).toName()));
+			else
+				Logger.info.println(
+						String.format("CREATE - %s - %s", itemClass.getSimpleName(), t.toString()));
 			return true;
 		} catch (Exception e) {
 			handleException(e);
@@ -203,15 +207,21 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 	}
 
 	@Override
-	public boolean update(T t) throws NoUserLoggedInException, PutException {
-		if (t == null) throw new PutException(getItemClass(), " item == null");
+	public boolean update(T t)
+			throws NoUserLoggedInException, PutException, PermissionDeniedException {
 		boolean result = updateDb(t);
 		if (result) map.replace(((Identifiable<?>) t).getId().toString(), t);
 		return result;
 	}
 
-	private boolean updateDb(T t) throws PutException {
+	private boolean updateDb(T t)
+			throws PutException, NoUserLoggedInException, PermissionDeniedException {
 		if (t == null) throw new PutException(getItemClass(), " item == null");
+		if (t instanceof Person) {
+			if (!UserAdmin.isUserLoggedIn()) throw new NoUserLoggedInException();
+			if (!permissionGranted() && !((Person) t).equalsId(UserAdmin.getUser()))
+				throw new PermissionDeniedException();
+		}
 		try {
 			HttpHeaders headers = createHttpHeaders();
 			RestTemplate restTemplate = new RestTemplate();
@@ -231,15 +241,18 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 	}
 
 	@Override
-	public <ID> boolean deleteById(ID id) throws NoUserLoggedInException, DeleteException {
-		if (id == null) throw new DeleteException(getItemClass(), " item == null");
+	public <ID> boolean deleteById(ID id)
+			throws NoUserLoggedInException, DeleteException, PermissionDeniedException {
 		boolean result = deleteByIdDb(id);
 		if (result) map.remove(id.toString());
 		return result;
 	}
 
-	private <ID> boolean deleteByIdDb(ID id) throws DeleteException {
+	private <ID> boolean deleteByIdDb(ID id)
+			throws DeleteException, NoUserLoggedInException, PermissionDeniedException {
 		if (id == null) throw new DeleteException(getItemClass(), " item == null");
+		if (!UserAdmin.isUserLoggedIn()) throw new NoUserLoggedInException();
+		if (!permissionGranted()) throw new PermissionDeniedException();
 		try {
 			HttpHeaders headers = createHttpHeaders();
 			RestTemplate restTemplate = new RestTemplate();
@@ -250,9 +263,13 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 					String.format("DELETE - %s - %s", itemClass.getSimpleName(), id.toString()));
 			return true;
 		} catch (Exception e) {
-			handleException(e);
+			throw new DeleteException(getItemClass(), e);
 		}
-		return false;
+	}
+
+	private boolean permissionGranted() {
+		return UserAdmin.getUser().equalsId(UserAdmin.getAdmin())
+				|| UserAdmin.getUser().equalsId(UserAdmin.getHutzli());
 	}
 
 	@Override

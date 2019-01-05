@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.exceptions.DeleteException;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
+import org.artorg.tools.phantomData.client.exceptions.PermissionDeniedException;
 import org.artorg.tools.phantomData.client.exceptions.PostException;
 import org.artorg.tools.phantomData.client.exceptions.PutException;
 import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
@@ -36,7 +37,7 @@ public class PersonifiedCrudConnector<T> extends CrudConnector<T> {
 	}
 
 	@Override
-	public boolean update(T t) throws NoUserLoggedInException, PutException {
+	public boolean update(T t) throws NoUserLoggedInException, PutException, PermissionDeniedException {
 		Person user = getUser();
 		if (AbstractPersonifiedEntity.class.isAssignableFrom(t.getClass())) {
 			AbstractPersonifiedEntity<?> item = ((AbstractPersonifiedEntity<?>) t);
@@ -47,7 +48,8 @@ public class PersonifiedCrudConnector<T> extends CrudConnector<T> {
 	}
 
 	@Override
-	public <ID> boolean deleteById(ID id) throws NoUserLoggedInException, DeleteException {
+	public <ID> boolean deleteById(ID id)
+			throws NoUserLoggedInException, DeleteException, PermissionDeniedException {
 		if (!UserAdmin.isUserLoggedIn()) throw new NoUserLoggedInException();
 		return super.deleteById(id);
 	}

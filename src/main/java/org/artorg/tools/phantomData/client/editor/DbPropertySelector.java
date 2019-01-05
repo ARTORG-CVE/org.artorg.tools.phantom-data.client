@@ -3,6 +3,8 @@ package org.artorg.tools.phantomData.client.editor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
@@ -11,6 +13,7 @@ import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.column.ColumnCreator;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.modelUI.PropertyUI;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
@@ -23,6 +26,8 @@ import org.artorg.tools.phantomData.server.models.base.property.PropertyField;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -44,15 +49,17 @@ import javafx.util.Callback;
 public class DbPropertySelector<T> extends VBox {
 	private final Class<? extends AbstractPropertifiedEntity<?>> parentItemClass;
 	private final ProTableView<AbstractProperty> tableView;
-	private final ItemEditor<AbstractProperty> propertyEditor;
-	private final ComboBox<Class<? extends AbstractProperty>> comboBoxPropertyType;
+	private final PropertySelectorItemEditor propertyEditor;
+//	private final ComboBox<Class<? extends AbstractProperty>> comboBoxPropertyType;
 	private PropertyUI propertyUI;
+//	private Class<? extends AbstractProperty<?, ?>> propertyClass;
 
 	{
-		comboBoxPropertyType = new ComboBox<>();
-		Collection<Class<? extends AbstractProperty>> propertyClasses = Main.getPropertyclasses();
-		comboBoxPropertyType.setItems(FXCollections.observableArrayList(propertyClasses));
-		FxUtil.setComboBoxCellFactory(comboBoxPropertyType, item -> item.getSimpleName());
+//		comboBoxPropertyType = new ComboBox<>();
+//		Collection<Class<? extends AbstractProperty>> propertyClasses = Main.getPropertyclasses();
+//		comboBoxPropertyType.setItems(FXCollections.observableArrayList(propertyClasses));
+//		FxUtil.setComboBoxCellFactory(comboBoxPropertyType, item -> item.getSimpleName());
+//		propertyEditor = (DbPropertySelector<T>.PropertySelectorItemEditor) createEditFactory();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -60,85 +67,127 @@ public class DbPropertySelector<T> extends VBox {
 		this.parentItemClass = (Class<? extends AbstractPropertifiedEntity<?>>) parentItemClass;
 		propertyUI = Main.getPropertyUIEntity(BooleanProperty.class);
 
-		propertyEditor = createEditFactory();
-		Class<? extends AbstractProperty<?, ?>> propertyClass = BooleanProperty.class;
-		propertyEditor.showCreateMode(createInstance(propertyClass));
+		propertyEditor = (DbPropertySelector<T>.PropertySelectorItemEditor) createEditFactory();
+//		propertyClass = BooleanProperty.class;
+		propertyEditor.setBeanClass(BooleanProperty.class);
+		propertyEditor.showCreateMode();
 		this.getChildren().add(propertyEditor);
-		comboBoxPropertyType.getSelectionModel().selectedItemProperty()
-				.addListener((observable, oldValue, newValue) -> {
-					Platform.runLater(() -> {
-						propertyUI = Main.getPropertyUIEntity(newValue);
-						Class<? extends AbstractProperty<?, ?>> propertyClass2 =
-								(Class<? extends AbstractProperty<?, ?>>) newValue;
-						propertyEditor.showCreateMode(createInstance(propertyClass2));
-					});
-				});
+//		comboBoxPropertyType.getSelectionModel().selectedItemProperty()
+//				.addListener((observable, oldValue, newValue) -> {
+//					Platform.runLater(() -> {
+//						propertyUI = Main.getPropertyUIEntity(newValue);
+//						propertyClass = (Class<? extends AbstractProperty<?, ?>>) newValue;
+//						propertyEditor.showCreateMode();
+//					});
+//				});
 
 		tableView = createTableView();
 		this.getChildren().add(tableView);
 	}
 
+	private abstract class PropertySelectorItemEditor extends ItemEditor<AbstractProperty> {
+
+		public PropertySelectorItemEditor() {
+			super(AbstractProperty.class);
+			// TODO Auto-generated constructor stub
+		}
+
+		public abstract void updateValueNode();
+
+	}
+
 	@SuppressWarnings("unchecked")
 	private ItemEditor<AbstractProperty> createEditFactory() {
 		final AnchorPane valuePane = new AnchorPane();
+		ComboBox<PropertyField> comboBoxPropertyField = new ComboBox<>();
 
-		ItemEditor<AbstractProperty> editor =
-				new ItemEditor<AbstractProperty>(AbstractProperty.class) {
-					IPropertyNode valuePropertyNode = null;
+		PropertySelectorItemEditor editor = new PropertySelectorItemEditor() {
+			IPropertyNode valuePropertyNode = null;
 
-					@Override
-					public void onCreatedServer(AbstractProperty item) {
-						getPropertyItems().add(item);
-					}
+			@Override
+			public void onCreatedServer(AbstractProperty item) {
+				getPropertyItems().add(item);
+			}
 
-					@Override
-					public void onShowingCreateMode(AbstractProperty item) {
-						Class<? extends AbstractProperty> propertyClass;
-						if (item == null) propertyClass =
-								comboBoxPropertyType.getSelectionModel().getSelectedItem();
-						else
-							propertyClass = item.getClass();
-						propertyUI = Main.getPropertyUIEntity(propertyClass);
-						comboBoxPropertyType.setDisable(false);
-						updateValueNode();
-					}
+			@Override
+			public void onShowingCreateMode(Class<? extends AbstractProperty> beanClass) {
+//				propertyClass = (Class<? extends AbstractProperty<?, ?>>) beanClass;
+				propertyUI = Main.getPropertyUIEntity(beanClass);
+//						comboBoxPropertyType.setDisable(false);
+				updateValueNode();
+			}
 
-					@Override
-					public void onShowingEditMode(AbstractProperty item) {
-						propertyUI = Main.getPropertyUIEntity(item.getClass());
-						Class<? extends AbstractProperty> propertyClass = item.getClass();
-						comboBoxPropertyType.getSelectionModel().select(propertyClass);
-						comboBoxPropertyType.setDisable(true);
-						updateValueNode();
-					}
+			@Override
+			public void onShowingEditMode(AbstractProperty item) {
+				propertyUI = Main.getPropertyUIEntity(item.getClass());
+				Class<? extends AbstractProperty> propertyClass = item.getClass();
+				PropertyField propertyField = comboBoxPropertyField.getItems().stream()
+						.filter(p -> p.getPropertyType().equals(propertyClass.getSimpleName()))
+						.findFirst().get();
+				comboBoxPropertyField.getSelectionModel().select(propertyField);
 
-					private void updateValueNode() {
-						if (valuePropertyNode != null)
-							getChildrenProperties().remove(valuePropertyNode);
-						Node valueNode = propertyUI.createValueNode();
-						valuePropertyNode = createNode(item -> item.getValue(),
-								(item, value) -> item.setValue(value),
-								item -> propertyUI.getDefaultValue(), valueNode,
-								value -> propertyUI.setValueToNode(valueNode, value),
-								() -> propertyUI.getValueFromNode(valueNode), () -> propertyUI
-										.setValueToNode(valueNode, propertyUI.getDefaultValue()));
-						FxUtil.addToPane(valuePane, valueNode);
-						getChildrenProperties().add(valuePropertyNode);
-					}
+//						comboBoxPropertyType.getSelectionModel().select(propertyClass);
+//						comboBoxPropertyType.setDisable(true);
+				updateValueNode();
+			}
 
-				};
+			public void updateValueNode() {
+				if (valuePropertyNode != null) getChildrenProperties().remove(valuePropertyNode);
+				Node valueNode = propertyUI.createValueNode();
+				valuePropertyNode = createNode(item -> item.getValue(),
+						(item, value) -> item.setValue(value), item -> propertyUI.getDefaultValue(),
+						valueNode, value -> propertyUI.setValueToNode(valueNode, value),
+						() -> propertyUI.getValueFromNode(valueNode),
+						() -> propertyUI.setValueToNode(valueNode, propertyUI.getDefaultValue()));
+				valuePane.getChildren().clear();
+				FxUtil.addToPane(valuePane, valueNode);
+				getChildrenProperties().add(valuePropertyNode);
+			}
+
+		};
 		PropertyGridPane propertyPane = new PropertyGridPane();
 
-		ComboBox<PropertyField> comboBoxPropertyField = new ComboBox<>();
 		ICrudConnector<PropertyField> connector = Connectors.get(PropertyField.class);
 		ObservableList<PropertyField> items = connector.readAllAsList().stream()
-				.filter(propertyField -> propertyField.getEntityType().equals(parentItemClass.getSimpleName()))
+				.filter(propertyField -> propertyField.getEntityType()
+						.equals(parentItemClass.getSimpleName()))
 				.collect(Collectors.toCollection(() -> FXCollections.observableArrayList()));
 		comboBoxPropertyField.setItems(items);
-		FxUtil.setComboBoxCellFactory(comboBoxPropertyField, item -> item.getName());
+		Pattern pattern = Pattern.compile("(?i)(.*)property");
+		FxUtil.setComboBoxCellFactory(comboBoxPropertyField, item -> {
+			Matcher matcher = pattern.matcher(item.getPropertyType());
+			String type = "";
+			if (matcher.find()) type = matcher.group(1);
+			return String.format("%s (%s)", item.getName(), type);
+		});
+		comboBoxPropertyField.getSelectionModel().selectedItemProperty()
+				.addListener(new ChangeListener<PropertyField>() {
+//
+					@Override
+					public void changed(ObservableValue<? extends PropertyField> observable,
+							PropertyField oldValue, PropertyField newValue) {
+						PropertyField propertyField = newValue;
+						if (propertyField != null) {
+							Platform.runLater(() -> {
+								String propertyType = propertyField.getPropertyType();
+								Class<? extends AbstractProperty<?, ?>> propertyClass = Main
+										.getPropertyclasses().stream()
+										.filter(cls -> cls.getSimpleName().equals(propertyType))
+										.map(cls -> (Class<? extends AbstractProperty<?, ?>>) cls)
+										.findFirst().get();
+								propertyEditor.setBeanClass(propertyClass);
+								propertyUI = Main.getPropertyUIEntity(
+										(Class<AbstractProperty>) propertyClass);
+//								propertyEditor.showCreateMode();
+								propertyEditor.updateValueNode();
+							});
+						}
+					}
+//					
+				});
 
-		propertyPane.addEntry(new Label("Type"), comboBoxPropertyType);
-		propertyPane.addEntry("Property Field", editor.createComboBox(comboBoxPropertyField,
+//		propertyPane.addEntry(new Label("Type"), comboBoxPropertyType);
+		propertyPane.addEntry("Property Field", editor.create(comboBoxPropertyField,
 				item -> item.getPropertyField(), (item, value) -> item.setPropertyField(value)));
 
 		propertyPane.addEntry(new Label("Value"), valuePane);
@@ -147,10 +196,19 @@ public class DbPropertySelector<T> extends VBox {
 		Button applyButton = editor.getApplyButton();
 		Button cancelButton = new Button("Cancel");
 		cancelButton.setOnAction(event -> {
-			Class<AbstractProperty<?, ?>> propertyClass =
-					(Class<AbstractProperty<?, ?>>) comboBoxPropertyType.getSelectionModel()
-							.getSelectedItem();
-			propertyEditor.showCreateMode(createInstance(propertyClass));
+//			PropertyField propertyField =
+//					comboBoxPropertyField.getSelectionModel().getSelectedItem();
+//			if (propertyField != null) {
+//				String propertyType = propertyField.getPropertyType();
+//				propertyClass = Main.getPropertyclasses().stream()
+//						.filter(cls -> cls.getSimpleName().equals(propertyType))
+//						.map(cls -> (Class<? extends AbstractProperty<?, ?>>) cls).findFirst()
+//						.get();
+
+//			propertyClass = (Class<AbstractProperty<?, ?>>) comboBoxPropertyType.getSelectionModel()
+//					.getSelectedItem();
+			propertyEditor.showCreateMode();
+//			}
 		});
 		applyButton.setMaxWidth(Double.MAX_VALUE);
 		VBox.setVgrow(applyButton, Priority.NEVER);
@@ -210,6 +268,7 @@ public class DbPropertySelector<T> extends VBox {
 		}.createProTableView();
 		tableView.setRowFactory(
 				new Callback<TableView<AbstractProperty>, TableRow<AbstractProperty>>() {
+					@SuppressWarnings("unchecked")
 					@Override
 					public TableRow<AbstractProperty> call(TableView<AbstractProperty> tableView) {
 						final TableRow<AbstractProperty> row = new TableRow<>();
@@ -217,7 +276,12 @@ public class DbPropertySelector<T> extends VBox {
 						ContextMenu contextMenu = new ContextMenu();
 						MenuItem menuItem;
 						menuItem = new MenuItem("Edit");
-						menuItem.setOnAction(event -> propertyEditor.showEditMode(row.getItem()));
+						menuItem.setOnAction(event -> {
+							propertyUI = Main.getPropertyUIEntity(row.getItem().getClass());
+							propertyEditor.updateValueNode();
+							propertyEditor.showEditMode(row.getItem());
+							
+						});
 						contextMenu.getItems().add(menuItem);
 
 						menuItem = new MenuItem("Remove");
@@ -237,14 +301,14 @@ public class DbPropertySelector<T> extends VBox {
 		return tableView;
 	}
 
-	private AbstractProperty<?, ?> createInstance(Class<? extends AbstractProperty<?, ?>> cls) {
-		try {
-			return cls.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		throw new IllegalArgumentException();
-	}
+//	private AbstractProperty<?, ?> createInstance(Class<? extends AbstractProperty<?, ?>> cls) {
+//		try {
+//			return cls.newInstance();
+//		} catch (InstantiationException | IllegalAccessException e) {
+//			e.printStackTrace();
+//		}
+//		throw new IllegalArgumentException();
+//	}
 
 	public List<AbstractProperty> getPropertyItems() {
 		return tableView.getTable().getItems();

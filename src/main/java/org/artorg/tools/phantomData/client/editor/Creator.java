@@ -315,7 +315,7 @@ public class Creator<T> extends AnchorPane implements IPropertyNode {
 		return createComboBox(controlNode, subItemClass, getter, setter);
 	}
 	
-	public <U> ComboBoxCreator<U> createComboBox(ComboBox<U> controlNode,
+	public <U> ComboBoxCreator<U> create(ComboBox<U> controlNode,
 			Function<T, U> getter, BiConsumer<T, U> setter) {
 		return new ComboBoxCreator<U>(controlNode, getter, setter);
 	}

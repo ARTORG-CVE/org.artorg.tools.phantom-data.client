@@ -49,12 +49,12 @@ public class PropertiesUI extends UIEntity<AbstractProperty> {
 		return new ItemEditor<AbstractProperty>(AbstractProperty.class) {
 
 			@Override
-			public void onShowingCreateMode(AbstractProperty item) {
+			public void onShowingCreateMode(Class<? extends AbstractProperty> beanClass) {
 				ItemEditor<AbstractProperty> editor = (ItemEditor<AbstractProperty>) Main
-						.getUIEntity(item.getClass()).createEditFactory();
+						.getUIEntity(beanClass).createEditFactory();
 				this.getChildren().clear();
 				FxUtil.addToPane(this, editor);
-				editor.showCreateMode(item);
+				editor.showCreateMode();
 			}
 
 			@Override

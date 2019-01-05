@@ -3,8 +3,8 @@ package org.artorg.tools.phantomData.client;
 import static org.artorg.tools.phantomData.client.boot.DatabaseInitializer.initDatabase;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -49,6 +49,7 @@ import org.artorg.tools.phantomData.server.boot.ConsoleFrame;
 import org.artorg.tools.phantomData.server.boot.ServerBooter;
 import org.artorg.tools.phantomData.server.boot.StartupProgressFrame;
 import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
+import org.artorg.tools.phantomData.server.model.AbstractPropertifiedEntity;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
@@ -93,9 +94,11 @@ public class Main extends DesktopFxBootApplication {
 	private static Scene scene;
 	private static Stage stage;
 	private static MainController mainController;
-	private static final Set<Class<?>> entityClasses;
+	private static final List<Class<?>> entityClasses;
+	private static final List<Class<? extends AbstractProperty>> propertyClasses;
+	private static final List<Class<? extends AbstractPropertifiedEntity>> propertifiedClasses;
 	private static final Map<Class<?>, UIEntity<?>> uiEntities;
-	private static final Set<Class<? extends AbstractProperty>> propertyClasses;
+
 	private static boolean initialized;
 
 	static {
@@ -103,10 +106,15 @@ public class Main extends DesktopFxBootApplication {
 		started = false;
 
 		entityClasses = reflections.getSubTypesOf(DbPersistent.class).stream()
-				.filter(c -> c.isAnnotationPresent(Entity.class)).collect(Collectors.toSet());
+				.filter(c -> c.isAnnotationPresent(Entity.class))
+				.sorted((cls1, cls2) -> cls1.getSimpleName().compareTo(cls2.getSimpleName()))
+				.collect(Collectors.toList());
 		propertyClasses =
 				entityClasses.stream().filter(cls -> AbstractProperty.class.isAssignableFrom(cls))
-						.map(cls -> (Class<AbstractProperty>) cls).collect(Collectors.toSet());
+						.map(cls -> (Class<? extends AbstractProperty>) cls).collect(Collectors.toList());
+		propertifiedClasses = entityClasses.stream()
+				.filter(cls -> AbstractPropertifiedEntity.class.isAssignableFrom(cls))
+				.map(cls -> (Class<? extends AbstractPropertifiedEntity>) cls).collect(Collectors.toList());
 		uiEntities = new HashMap<>();
 
 	}
@@ -203,7 +211,7 @@ public class Main extends DesktopFxBootApplication {
 				Main.initialized = true;
 				return null;
 			}
-			
+
 		};
 		ExecutorService executor = Executors.newCachedThreadPool();
 		executor.submit(task);
@@ -274,7 +282,7 @@ public class Main extends DesktopFxBootApplication {
 		return (PropertyUI<T, V>) uiEntities.get(propertyClass);
 	}
 
-	public static Set<Class<? extends AbstractProperty>> getPropertyclasses() {
+	public static List<Class<? extends AbstractProperty>> getPropertyclasses() {
 		return propertyClasses;
 	}
 
@@ -324,8 +332,12 @@ public class Main extends DesktopFxBootApplication {
 		return mainController;
 	}
 
-	public static Set<Class<?>> getEntityClasses() {
+	public static List<Class<?>> getEntityClasses() {
 		return entityClasses;
 	}
 
+	public static List<Class<? extends AbstractPropertifiedEntity>> getPropertifiedclasses() {
+		return propertifiedClasses;
+	}
+	
 }

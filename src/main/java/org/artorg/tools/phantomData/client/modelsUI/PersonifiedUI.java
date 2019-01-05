@@ -43,13 +43,14 @@ public class PersonifiedUI extends UIEntity<AbstractPersonifiedEntity> {
 		return new ItemEditor<AbstractPersonifiedEntity>(AbstractPersonifiedEntity.class) {
 
 			@Override
-			public void onShowingCreateMode(AbstractPersonifiedEntity item) {
+			public void onShowingCreateMode(Class<? extends AbstractPersonifiedEntity> beanClass) {
 				ItemEditor<AbstractPersonifiedEntity> editor =
-						(ItemEditor<AbstractPersonifiedEntity>) Main.getUIEntity(item.getClass())
+						(ItemEditor<AbstractPersonifiedEntity>) Main.getUIEntity(beanClass)
 								.createEditFactory();
 				this.getChildren().clear();
 				FxUtil.addToPane(this, editor);
-				editor.showCreateMode(item);
+//				editor.setCreateTemplate(editor.createBeanInstance());
+				editor.showCreateMode();
 			}
 
 			@Override

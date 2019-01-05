@@ -1,6 +1,10 @@
 package org.artorg.tools.phantomData.client.controllers;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collection;
+import java.util.Date;
+import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.connector.Connectors;
@@ -32,11 +36,10 @@ public class LoginController extends VGridBoxPane {
 		super.addColumn(180.0);
 
 		personChoiceBox.setMaxWidth(Double.MAX_VALUE);
-		Collection<Person> persons =  Connectors.get(Person.class).readAllAsSet();
+		Collection<Person> persons = Connectors.get(Person.class).readAllAsSet().stream()
+				.filter(person -> person.isActive()).collect(Collectors.toList());
 		personChoiceBox.setItems(FXCollections.observableArrayList(persons));
 		FxUtil.setComboBoxCellFactory(personChoiceBox, p -> p.getAcademicName());
-		
-		pwdField.setText("123456789");
 
 		addRow("Users", personChoiceBox);
 		addRow("User", activeUser);
@@ -53,7 +56,7 @@ public class LoginController extends VGridBoxPane {
 		logoutButton.setOnAction(event -> {
 			UserAdmin.logout();
 			updateActiveUserLabel();
-			pwdField.setText("123456789");
+			pwdField.setText("");
 		});
 		AnchorPane logoutButtonPane = createButtonPane(logoutButton);
 		getvBox().getChildren().add(logoutButtonPane);
@@ -68,18 +71,25 @@ public class LoginController extends VGridBoxPane {
 
 	private void login() {
 		Person user = personChoiceBox.getSelectionModel().getSelectedItem();
-		if (user != null) {
-			if (user.getFirstname().equals("Marc")) {
-				if (pwdField.getText().equals("swordfish")) {
-					UserAdmin.login(user);
-					updateActiveUserLabel();
-				}
-			} else {
-				if (pwdField.getText().equals("123456789")) {
-					UserAdmin.login(user);
-					updateActiveUserLabel();
-				}
+		if (user.equalsId(UserAdmin.getAdmin())) {
+			Date date = new Date();
+			LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			int month = localDate.getMonthValue();
+			final int[] codes =
+					new int[] { 356, 791, 324, 681, 992, 231, 533, 875, 391, 118, 823, 886 };
+			int code = codes[month-1];
+			String input = pwdField.getText();
+			if (input.length() < 5) return;
+			String[] splits = new String[] { input.substring(0, input.length() - 3),
+					input.substring(input.length() - 3, input.length()) };
+			if (splits[0].equals(user.getPassword()) && splits[1].equals(Integer.toString(code))) {
+				UserAdmin.login(user);
+				updateActiveUserLabel();
 			}
+		}
+		if (pwdField.getText().equals(user.getPassword())) {
+			UserAdmin.login(user);
+			updateActiveUserLabel();
 		}
 	}
 

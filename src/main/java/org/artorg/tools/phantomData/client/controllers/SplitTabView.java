@@ -24,6 +24,7 @@ import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.exceptions.DeleteException;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
+import org.artorg.tools.phantomData.client.exceptions.PermissionDeniedException;
 import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.SmartSplitTabPane;
@@ -201,14 +202,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		menuItem.setOnAction(event -> {
 			ItemEditor<T> controller =
 					Main.getUIEntity(tableViewSpring.getItemClass()).createEditFactory();
-			T t = null;
-			try {
-				t = tableViewSpring.getItemClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
-				e.printStackTrace();
-				return;
-			}
-			controller.showCreateMode(t);
+			controller.showCreateMode();
 			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Add " + tableViewSpring.getTable().getItemName());
 		});
@@ -234,14 +228,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		menuItem = new MenuItem("Add item");
 		menuItem.setOnAction(event -> {
 			ItemEditor<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
-			T t = null;
-			try {
-				t = view.getItemClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
-				e.printStackTrace();
-				return;
-			}
-			controller.showCreateMode(t);
+			controller.showCreateMode();
 			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Add " + view.getTable().getItemName());
 		});
@@ -333,37 +320,34 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		addMenuItem(rowMenu, "Edit item", event -> {
 			ItemEditor<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
 			if (controller == null) return;
-				controller.showEditMode(row.getItem());
-//			} catch (PutException e) {
-//				Logger.warn.println(e.getMessage());
-//				e.showAlert();
-//				return;
-//			}
-
+			controller.showEditMode(row.getItem());
 			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Edit " + view.getTable().getItemName());
 		});
 
 		addMenuItem(rowMenu, "Add item", event -> {
 			ItemEditor<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
-			controller.showCreateMode(row.getItem());
+			controller.setCreateTemplate(row.getItem());
+			controller.showCreateMode();
 			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Add " + view.getTable().getItemName());
 		});
 
 		addMenuItem(rowMenu, "Delete", event -> {
-				ICrudConnector<T> connector =
-						(ICrudConnector<T>) Connectors.get(view.getItemClass());
-				try {
-					if (connector.deleteById(((Identifiable<?>) row.getItem()).getId()))
-						view.getItems().remove(row.getItem());
-				} catch (NoUserLoggedInException e) {
-					Logger.warn.println(e.getMessage());
-					e.showAlert();
-				} catch (DeleteException e) {
-					Logger.warn.println(e.getMessage());
-					e.showAlert();
-				}
+			ICrudConnector<T> connector = (ICrudConnector<T>) Connectors.get(view.getItemClass());
+			try {
+				if (connector.deleteById(((Identifiable<?>) row.getItem()).getId()))
+					view.getItems().remove(row.getItem());
+			} catch (NoUserLoggedInException e) {
+				Logger.warn.println(e.getMessage());
+				e.showAlert();
+			} catch (DeleteException e) {
+				Logger.error.println(e.getMessage());
+//				e.printStackTrace();
+				e.showAlert();
+			} catch (PermissionDeniedException e) {
+				e.showAlert();
+			}
 		});
 
 		addMenuItem(rowMenu, "Open 3d Viewer", event -> {

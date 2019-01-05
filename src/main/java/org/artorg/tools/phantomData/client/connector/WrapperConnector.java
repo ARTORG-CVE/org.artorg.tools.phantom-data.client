@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.exceptions.DeleteException;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
+import org.artorg.tools.phantomData.client.exceptions.PermissionDeniedException;
 import org.artorg.tools.phantomData.client.exceptions.PostException;
 import org.artorg.tools.phantomData.client.exceptions.PutException;
 import org.artorg.tools.phantomData.client.util.CollectionUtil;
@@ -50,12 +51,13 @@ public class WrapperConnector<T> implements ICrudConnector<T> {
 	}
 
 	@Override
-	public boolean update(T t) throws NoUserLoggedInException, PutException {
+	public boolean update(T t) throws NoUserLoggedInException, PutException, PermissionDeniedException {
 		return getConnector(t.getClass()).update(t);
 	}
 
 	@Override
-	public <ID> boolean deleteById(ID id) throws NoUserLoggedInException, DeleteException {
+	public <ID> boolean deleteById(ID id)
+			throws NoUserLoggedInException, DeleteException, PermissionDeniedException {
 		for (ICrudConnector<?> connector : getConnectors())
 			if (connector.existById(id)) return connector.deleteById(id);
 		return false;

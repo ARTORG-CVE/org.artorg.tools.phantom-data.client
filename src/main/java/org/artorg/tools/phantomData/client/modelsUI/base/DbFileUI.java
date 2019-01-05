@@ -98,7 +98,7 @@ public class DbFileUI extends UIEntity<DbFile> {
 		ItemEditor<DbFile> editor = new ItemEditor<DbFile>(getItemClass()) {
 
 			@Override
-			public void onShowingCreateMode(DbFile item) {
+			public void onShowingCreateMode(Class<? extends DbFile> beanClass) {
 				labelSwitch.setText("File path");
 				String path = textFieldFilePath.getText();
 				String[] splits = splitOffFileExtension(path);

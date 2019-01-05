@@ -7,6 +7,7 @@ import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
+import org.artorg.tools.phantomData.client.exceptions.PermissionDeniedException;
 import org.artorg.tools.phantomData.client.exceptions.PostException;
 import org.artorg.tools.phantomData.client.exceptions.PutException;
 import org.artorg.tools.phantomData.server.models.base.person.*;
@@ -42,7 +43,12 @@ public class DatabaseInitializer {
 			Connectors.get(Manufacturing.class);
 
 	public static void initDatabase() {
-		Person admin = initPerson();
+		Person admin = null;
+		try {
+			admin = initPerson();
+		} catch (PermissionDeniedException e1) {
+			e1.printStackTrace();
+		}
 		UserAdmin.login(admin);
 		try {
 			initAnnulusDiameter();
@@ -65,7 +71,7 @@ public class DatabaseInitializer {
 		return false;
 	}
 
-	private static Person initPerson() {
+	private static Person initPerson() throws PermissionDeniedException {
 		ICrudConnector<AcademicTitle> academicTitleConnInit =
 			Connectors.get(AcademicTitle.class);
 		ICrudConnector<Person> personConnInit = Connectors.get(Person.class);
