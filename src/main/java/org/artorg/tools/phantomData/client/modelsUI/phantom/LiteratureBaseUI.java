@@ -53,9 +53,10 @@ public class LiteratureBaseUI extends UIEntity<LiteratureBase> {
 
 		editor.add(new TitledPropertyPane("Files", editor.createSelector(DbFile.class,
 				item -> item.getFiles(), (item, files) -> item.setFiles((List<DbFile>) files))));
+		editor.add(new TitledPropertyPane("Properties", editor.createPropertySelector()));
 
-		editor.closeTitledSelectors();
-		editor.addAutoCloseOnSelectors();
+		editor.closeTitledNonGeneralPanes();
+		editor.addAutoCloseOnNonGeneral();
 		editor.addApplyButton();
 		return editor;
 	}

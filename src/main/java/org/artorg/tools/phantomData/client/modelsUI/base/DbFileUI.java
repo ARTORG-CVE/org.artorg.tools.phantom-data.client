@@ -134,8 +134,8 @@ public class DbFileUI extends UIEntity<DbFile> {
 				editor.createSelector(FileTag.class, item -> item.getFileTags(),
 						(item, files) -> item.setFileTags((List<FileTag>) files))));
 		
-		editor.closeTitledSelectors();
-		editor.addAutoCloseOnSelectors();
+		editor.closeTitledNonGeneralPanes();
+		editor.addAutoCloseOnNonGeneral();
 		editor.addApplyButton();
 		return editor;
 	}

@@ -92,11 +92,13 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 	public void refresh() {
 		Logger.debug.println(getItemClass());
 		getTable().refresh();
+		
+		updateColumns();
 
 		Platform.runLater(() -> {
 			showFilterButtons();
 		});
-
+		
 		super.refresh();
 	}
 

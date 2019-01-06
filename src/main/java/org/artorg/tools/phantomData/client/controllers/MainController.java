@@ -53,6 +53,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -430,8 +431,8 @@ public class MainController extends StackPane {
 	}
 
 	public void openLoginLogoutFrame() {
-		FxUtil.openFrame("Login/Logout", new LoginController());
-
+		Rectangle2D bounds = new Rectangle2D(Main.getStage().getX(), Main.getStage().getY(), Main.getStage().getWidth(), Main.getStage().getHeight());
+		FxUtil.openFrame("Login/Logout", new LoginController(), bounds);
 	}
 
 	public void openTable(Class<?> itemClass) {

@@ -126,6 +126,7 @@ public class PhantominaUI extends UIEntity<Phantomina> {
 
 		editor.add(new TitledPropertyPane("Files", editor.createSelector(DbFile.class,
 				item -> item.getFiles(), (item, files) -> item.setFiles((List<DbFile>) files))));
+		editor.add(new TitledPropertyPane("Properties", editor.createPropertySelector()));
 
 		Runnable updateId = () -> {
 			labelIdValue.setText(Phantomina.createProductId(
@@ -144,8 +145,8 @@ public class PhantominaUI extends UIEntity<Phantomina> {
 		comboBoxSpecial.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> updateId.run());
 
-		editor.closeTitledSelectors();
-		editor.addAutoCloseOnSelectors();
+		editor.closeTitledNonGeneralPanes();
+		editor.addAutoCloseOnNonGeneral();
 		editor.addApplyButton();
 		return editor;
 	}

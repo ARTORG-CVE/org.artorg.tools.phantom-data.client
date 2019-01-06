@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
 import org.artorg.tools.phantomData.client.beans.NamedTreeItem;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
@@ -36,7 +37,7 @@ import javafx.scene.control.TreeItem;
 
 public abstract class UIEntity<T> {
 	private final EntityBeanInfo<T> entityBeanInfo;
-	
+
 	{
 		entityBeanInfo = new EntityBeanInfo<>(getItemClass());
 	}
@@ -45,7 +46,8 @@ public abstract class UIEntity<T> {
 
 	public abstract String getTableName();
 
-	public abstract List<AbstractColumn<T, ? extends Object>> createColumns(Table<T> table, List<T> items);
+	public abstract List<AbstractColumn<T, ? extends Object>> createColumns(Table<T> table,
+			List<T> items);
 
 	public abstract ItemEditor<T> createEditFactory();
 
@@ -58,8 +60,8 @@ public abstract class UIEntity<T> {
 			}
 		};
 		table.setTableName(getTableName());
-		Logger.debug.println(String.format("%s - TableBase created in %d ms", getItemClass().getSimpleName(),
-				System.currentTimeMillis() - startTime));
+		Logger.debug.println(String.format("%s - TableBase created in %d ms",
+				getItemClass().getSimpleName(), System.currentTimeMillis() - startTime));
 		return table;
 	}
 
@@ -72,8 +74,8 @@ public abstract class UIEntity<T> {
 			}
 		};
 		table.setTableName(getTableName());
-		Logger.debug.println(String.format("%s - DbTable created in %d ms", getItemClass().getSimpleName(),
-				System.currentTimeMillis() - startTime));
+		Logger.debug.println(String.format("%s - DbTable created in %d ms",
+				getItemClass().getSimpleName(), System.currentTimeMillis() - startTime));
 		return table;
 	}
 
@@ -101,7 +103,7 @@ public abstract class UIEntity<T> {
 
 	@SuppressWarnings("unchecked")
 	public ProTableView<T> createProTableView(List<TreeItem<NamedTreeItem>> treeItems) {
-		ProTableView<T> tableView = new ProTableView<>(getItemClass(),createTableBase());
+		ProTableView<T> tableView = new ProTableView<>(getItemClass(), createTableBase());
 		ObservableList<T> items = FXCollections.observableArrayList();
 		for (int i = 0; i < treeItems.size(); i++)
 			try {
@@ -117,7 +119,7 @@ public abstract class UIEntity<T> {
 
 	@SuppressWarnings("unchecked")
 	public DbTableView<T> createDbTableView(List<TreeItem<NamedTreeItem>> treeItems) {
-		DbTableView<T> tableView = new DbTableView<>(getItemClass(),createDbTableBase());
+		DbTableView<T> tableView = new DbTableView<>(getItemClass(), createDbTableBase());
 		ObservableList<T> items = FXCollections.observableArrayList();
 		for (int i = 0; i < treeItems.size(); i++)
 			try {
@@ -131,20 +133,20 @@ public abstract class UIEntity<T> {
 		return tableView;
 	}
 
-	
 	public DbTreeTableView<T> createProTreeTableView() {
 		DbTreeTableView<T> treeTableView = new DbTreeTableView<>(getItemClass());
 		return treeTableView;
 	}
-	
+
 	public DbTreeTableView<T> createProTreeTableView(List<T> items) {
 		DbTreeTableView<T> treeTableView = new DbTreeTableView<>(getItemClass());
 		treeTableView.setItems(items);
 		return treeTableView;
 	}
-	
+
 	public static <T, R> void createCountingColumn(Table<T> table, String name,
-			Collection<AbstractColumn<T, ?>> columns, Function<T, ? extends Collection<R>> listGetter) {
+			Collection<AbstractColumn<T, ?>> columns,
+			Function<T, ? extends Collection<R>> listGetter) {
 		ColumnCreator<T, T> creator = new ColumnCreator<>(table);
 		columns.add(creator.createFilterColumn(name,
 				path -> String.valueOf(listGetter.apply(path).size())));
@@ -161,29 +163,32 @@ public abstract class UIEntity<T> {
 				path -> format.format(path.getDateLastModified()));
 		column.setItemsFilter(false);
 		columns.add(column);
-		columns.add(creator.createFilterColumn("Changed By",
-				path -> path.getChanger().getSimpleAcademicName()));
+		columns.add(creator.createFilterColumn("Changed By", path -> {
+			if (path.getChanger().equalsId(UserAdmin.getAdmin())) return "admin";
+			else
+				return path.getChanger().getSimpleAcademicName();
+		}));
 		column = creator.createFilterColumn("Added", path -> format.format(path.getDateAdded()));
 		column.setItemsFilter(false);
 		columns.add(column);
-		columns.add(creator.createFilterColumn("Created By",
-				path -> path.getCreator().getSimpleAcademicName()));
+		columns.add(creator.createFilterColumn("Created By", path -> {
+			if (path.getCreator().equalsId(UserAdmin.getAdmin())) return "admin";
+			else
+				return path.getCreator().getSimpleAcademicName();
+		}));
 	}
 
 	public static <T extends AbstractPropertifiedEntity<T>> void createPropertyColumns(
 			Table<T> table, Collection<AbstractColumn<T, ?>> columns, Collection<T> items) {
-		createPropertyColumns(table, columns, items,
-				container -> container.getBooleanProperties(), bool -> String.valueOf(bool),
-				s -> Boolean.valueOf(s));
-		createPropertyColumns(table, columns, items,
-				container -> container.getDoubleProperties(), bool -> String.valueOf(bool),
-				s -> Double.valueOf(s));
-		createPropertyColumns(table, columns, items,
-				container -> container.getIntegerProperties(), bool -> String.valueOf(bool),
-				s -> Integer.valueOf(s));
-		createPropertyColumns(table, columns, items,
-				container -> container.getStringProperties(), s -> s, s -> s);
-		
+		createPropertyColumns(table, columns, items, container -> container.getBooleanProperties(),
+				bool -> String.valueOf(bool), s -> Boolean.valueOf(s));
+		createPropertyColumns(table, columns, items, container -> container.getDoubleProperties(),
+				bool -> String.valueOf(bool), s -> Double.valueOf(s));
+		createPropertyColumns(table, columns, items, container -> container.getIntegerProperties(),
+				bool -> String.valueOf(bool), s -> Integer.valueOf(s));
+		createPropertyColumns(table, columns, items, container -> container.getStringProperties(),
+				s -> s, s -> s);
+
 //		DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
 		Function<String, Date> stringDateFunc = s -> {
 			try {
@@ -208,13 +213,12 @@ public abstract class UIEntity<T> {
 				(p1, p2) -> p1.getPropertyField().getId().compareTo(p2.getPropertyField().getId()))
 				.forEach(
 						p -> map.put(p.getPropertyField().getId(), p.getPropertyField().getName()));
-		
+
 		map.entrySet().stream().forEach(entry -> {
-			OptionalColumnCreator<T,
-					P> creator = new OptionalColumnCreator<>(table,
-							item -> propsGetter.apply(item).stream()
-									.filter(p -> p.getPropertyField().getId().equals(entry.getKey()))
-									.findFirst());
+			OptionalColumnCreator<T, P> creator = new OptionalColumnCreator<>(table,
+					item -> propsGetter.apply(item).stream()
+							.filter(p -> p.getPropertyField().getId().equals(entry.getKey()))
+							.findFirst());
 			columns.add(creator.createFilterColumn(entry.getValue(),
 					path -> toStringFun.apply(path.getValue()),
 					(path, value) -> path.setValue(fromStringFun.apply((String) value)), ""));

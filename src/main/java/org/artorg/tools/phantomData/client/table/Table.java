@@ -87,6 +87,10 @@ public abstract class Table<T> {
 	public void updateItems() {
 		CollectionUtil.addIfAbsent(items, filteredItems);
 		CollectionUtil.removeIfAbsent(items, filteredItems);
+		List<T> items = new ArrayList<>();
+		items.addAll(getFilteredItems());
+		filteredItems.clear();
+		filteredItems.addAll(items);
 	}
 
 	public void refresh() {

@@ -66,9 +66,10 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 
 		editor.add(new TitledPropertyPane("Files", editor.createSelector(DbFile.class,
 				item -> item.getFiles(), (item, files) -> item.setFiles((List<DbFile>) files))));
-		
-		editor.closeTitledSelectors();
-		editor.addAutoCloseOnSelectors();
+		editor.add(new TitledPropertyPane("Properties", editor.createPropertySelector()));
+
+		editor.closeTitledNonGeneralPanes();
+		editor.addAutoCloseOnNonGeneral();
 		editor.addApplyButton();
 		return editor;
 	}

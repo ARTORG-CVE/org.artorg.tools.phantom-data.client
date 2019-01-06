@@ -185,20 +185,41 @@ public class ItemEditor<T> extends Creator<T> {
 		}
 		return false;
 	}
-	
-	public void closeTitledSelectors() {
-		List<TitledPropertyPane> propertyPanes = getTitledSelectorPanes();
+
+	public void closeTitledNonGeneralPanes() {
+		List<TitledPropertyPane> propertyPanes = getTitledNonPropertyPanes();
 		propertyPanes.forEach(pane -> pane.setExpanded(false));
 	}
+	
+//	public void closeTitledSelectors() {
+//		List<TitledPropertyPane> propertyPanes = getTitledSelectorPanes();
+//		propertyPanes.forEach(pane -> pane.setExpanded(false));
+//	}
 
-	public void addAutoCloseOnSelectors() {
-		List<TitledPropertyPane> propertyPanes = getTitledSelectorPanes();
+	public void addAutoCloseOnNonGeneral() {
+		final List<TitledPropertyPane> propertyPanes = getTitledNonPropertyPanes();
 		propertyPanes.forEach(pane -> {
 			pane.expandedProperty().addListener((observable, oldValue, newValue) -> {
 				if (newValue) propertyPanes.stream().filter(pane2 -> pane2 != pane)
 						.forEach(pane2 -> pane2.setExpanded(false));
 			});
 		});
+	}
+
+//	public void addAutoCloseOnSelectors() {
+//		List<TitledPropertyPane> propertyPanes = getTitledSelectorPanes();
+//		propertyPanes.forEach(pane -> {
+//			pane.expandedProperty().addListener((observable, oldValue, newValue) -> {
+//				if (newValue) propertyPanes.stream().filter(pane2 -> pane2 != pane)
+//						.forEach(pane2 -> pane2.setExpanded(false));
+//			});
+//		});
+//	}
+	
+	public List<TitledPropertyPane> getTitledNonPropertyPanes() {
+		return getTitledPropertyPanes().stream()
+				.filter(propertyPane -> !propertyPane.getText().equalsIgnoreCase("General"))
+				.collect(Collectors.toList());
 	}
 
 	public List<TitledPropertyPane> getTitledPropertyPanes() {
@@ -217,7 +238,7 @@ public class ItemEditor<T> extends Creator<T> {
 	@SuppressWarnings("unchecked")
 	public Collection<AbstractEditor<T, ?>> getAllAbstractEditors() {
 		List<IPropertyNode> nodes = flatToList();
-		return nodes.stream().collect(StreamUtils.castFilter(node -> (AbstractEditor<T,?>) node))
+		return nodes.stream().collect(StreamUtils.castFilter(node -> (AbstractEditor<T, ?>) node))
 				.collect(Collectors.toList());
 	}
 
@@ -242,7 +263,7 @@ public class ItemEditor<T> extends Creator<T> {
 		}
 		return buttonPane;
 	}
-	
+
 	@Override
 	public Node getNode() {
 		return this;

@@ -165,6 +165,7 @@ public class SimulationPhantomUI extends UIEntity<SimulationPhantom> {
 		editor.add(new TitledPropertyPane("Simulations",
 				editor.createSelector(Simulation.class, item -> item.getSimulations(),
 						(item, subItems) -> item.setSimulations((List<Simulation>) subItems))));
+		editor.add(new TitledPropertyPane("Properties", editor.createPropertySelector()));
 
 		Runnable updateId = () -> {
 			String phantominaPid = Phantomina.createProductId(
@@ -189,8 +190,8 @@ public class SimulationPhantomUI extends UIEntity<SimulationPhantom> {
 		comboBoxSpecial.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> updateId.run());
 
-		editor.closeTitledSelectors();
-		editor.addAutoCloseOnSelectors();
+		editor.closeTitledNonGeneralPanes();
+		editor.addAutoCloseOnNonGeneral();
 		editor.addApplyButton();
 		return editor;
 

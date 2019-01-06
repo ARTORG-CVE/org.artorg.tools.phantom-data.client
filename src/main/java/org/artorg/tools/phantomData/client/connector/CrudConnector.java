@@ -2,12 +2,10 @@ package org.artorg.tools.phantomData.client.connector;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -177,9 +175,10 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 						String.format("CREATE - %s - %s", itemClass.getSimpleName(), t.toString()));
 			return true;
 		} catch (Exception e) {
-			handleException(e);
+			PostException e2 = new PostException(itemClass);
+			e2.addSuppressed(e);
+			throw e2;
 		}
-		return false;
 	}
 
 	@Override
@@ -210,7 +209,8 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 	public boolean update(T t)
 			throws NoUserLoggedInException, PutException, PermissionDeniedException {
 		boolean result = updateDb(t);
-		if (result) map.replace(((Identifiable<?>) t).getId().toString(), t);
+		if (result)
+			map.replace(((Identifiable<?>) t).getId().toString(), t);
 		return result;
 	}
 
@@ -235,9 +235,10 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 						String.format("UPDATE - %s - %s", itemClass.getSimpleName(), t.toString()));
 			return true;
 		} catch (Exception e) {
-			handleException(e);
+			PutException e2 = new PutException(itemClass);
+			e2.addSuppressed(e);
+			throw e2;
 		}
-		return false;
 	}
 
 	@Override
@@ -310,10 +311,6 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 
 	private String createUrl(String mappingAnno) {
 		return getUrlLocalhost() + "/" + getAnnoStringControlClass() + "/" + mappingAnno;
-	}
-
-	private void handleException(Exception e) {
-		e.printStackTrace();
 	}
 
 	private String getAnnotatedValue(String methodName, Class<? extends Annotation> annotationClass,

@@ -81,6 +81,7 @@ public abstract class DbTable<T> extends Table<T> {
 				e.printStackTrace();
 			}
 		}
+		updateItems();
 	}
 
 	private static <T> int getIndex(List<T> items, String id) {

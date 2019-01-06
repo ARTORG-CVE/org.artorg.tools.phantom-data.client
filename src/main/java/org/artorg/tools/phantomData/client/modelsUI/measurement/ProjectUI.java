@@ -57,7 +57,7 @@ public class ProjectUI extends UIEntity<Project> {
 	public ItemEditor<Project> createEditFactory() {
 		TextField textFieldStartYear = new TextField();
 
-		ItemEditor<Project> editor = new ItemEditor<Project>(getItemClass()) {	
+		ItemEditor<Project> editor = new ItemEditor<Project>(getItemClass()) {
 			@Override
 			public void onCreatingClient(Project item) throws InvalidUIInputException {
 				String startYear = textFieldStartYear.getText();
@@ -67,8 +67,7 @@ public class ProjectUI extends UIEntity<Project> {
 			}
 
 			@Override
-			public void onUpdatingClient(Project item)
-					throws InvalidUIInputException {
+			public void onUpdatingClient(Project item) throws InvalidUIInputException {
 				String startYear = textFieldStartYear.getText();
 				if (!textFieldStartYear.getText().matches("\\d{4}"))
 					throw new InvalidUIInputException(Project.class,
@@ -76,28 +75,30 @@ public class ProjectUI extends UIEntity<Project> {
 			}
 
 		};
-		
-		PropertyGridPane propertyPane =
-				new PropertyGridPane();
+
+		PropertyGridPane propertyPane = new PropertyGridPane();
 		propertyPane.addEntry("Prefix", editor.createTextField(item -> item.getName(),
 				(item, value) -> item.setName(value)));
-		propertyPane.addEntry("Description",editor.createTextArea(item -> item.getDescription(),
+		propertyPane.addEntry("Description", editor.createTextArea(item -> item.getDescription(),
 				(item, value) -> item.setDescription(value)));
-		propertyPane.addEntry("Start year",editor.create(textFieldStartYear, item -> Short.toString(item.getStartYear()),
-				(item, value) -> item.setStartYear(Short.valueOf((value)))));
-		propertyPane.addEntry("Leader",editor.createComboBox(Person.class, item -> item.getLeader(),
-				(item, value) -> item.setLeader(value))
-				.setMapper(l -> l.getSimpleAcademicName()));
+		propertyPane.addEntry("Start year",
+				editor.create(textFieldStartYear, item -> Short.toString(item.getStartYear()),
+						(item, value) -> item.setStartYear(Short.valueOf((value)))));
+		propertyPane.addEntry("Leader",
+				editor.createComboBox(Person.class, item -> item.getLeader(),
+						(item, value) -> item.setLeader(value))
+						.setMapper(l -> l.getSimpleAcademicName()));
 		editor.add(new TitledPropertyPane("General", propertyPane));
-		
-		
-		editor.add(new TitledPropertyPane("Members", editor.createSelector(Person.class, item -> item.getMembers(),
-				(item, files) -> item.setMembers((List<Person>) files))));
-		editor.add(new TitledPropertyPane("Files", editor.createSelector(DbFile.class, item -> item.getFiles(),
-				(item, files) -> item.setFiles((List<DbFile>) files))));
-		
-		editor.closeTitledSelectors();
-		editor.addAutoCloseOnSelectors();
+
+		editor.add(new TitledPropertyPane("Members",
+				editor.createSelector(Person.class, item -> item.getMembers(),
+						(item, files) -> item.setMembers((List<Person>) files))));
+		editor.add(new TitledPropertyPane("Files", editor.createSelector(DbFile.class,
+				item -> item.getFiles(), (item, files) -> item.setFiles((List<DbFile>) files))));
+		editor.add(new TitledPropertyPane("Properties", editor.createPropertySelector()));
+
+		editor.closeTitledNonGeneralPanes();
+		editor.addAutoCloseOnNonGeneral();
 		editor.addApplyButton();
 		return editor;
 	}

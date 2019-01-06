@@ -23,8 +23,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
 
 public class Scene3D extends AnchorPane implements AddableToPane {
 	private static final Color lightColor = Color.rgb(244, 255, 250);
@@ -191,33 +189,33 @@ public class Scene3D extends AnchorPane implements AddableToPane {
 		});
 	}
 	
-	private void buildAxes() {
-		final int AXIS_LENGTH = 30;
-        final PhongMaterial redMaterial = new PhongMaterial();
-        redMaterial.setDiffuseColor(Color.DARKRED);
-        redMaterial.setSpecularColor(Color.RED);
-
-        final PhongMaterial greenMaterial = new PhongMaterial();
-        greenMaterial.setDiffuseColor(Color.DARKGREEN);
-        greenMaterial.setSpecularColor(Color.GREEN);
-
-        final PhongMaterial blueMaterial = new PhongMaterial();
-        blueMaterial.setDiffuseColor(Color.DARKBLUE);
-        blueMaterial.setSpecularColor(Color.BLUE);
-
-        final Box xAxis = new Box(AXIS_LENGTH, 1, 1);
-        final Box yAxis = new Box(1, AXIS_LENGTH, 1);
-        final Box zAxis = new Box(1, 1, AXIS_LENGTH);
-
-        xAxis.setMaterial(redMaterial);
-        yAxis.setMaterial(greenMaterial);
-        zAxis.setMaterial(blueMaterial);
-        
-        final Xform axisGroup = new Xform();
-        axisGroup.getChildren().addAll(xAxis, yAxis, zAxis);
-        axisGroup.setVisible(true);
-        world.getChildren().addAll(axisGroup);
-    }
+//	private void buildAxes() {
+//		final int AXIS_LENGTH = 30;
+//        final PhongMaterial redMaterial = new PhongMaterial();
+//        redMaterial.setDiffuseColor(Color.DARKRED);
+//        redMaterial.setSpecularColor(Color.RED);
+//
+//        final PhongMaterial greenMaterial = new PhongMaterial();
+//        greenMaterial.setDiffuseColor(Color.DARKGREEN);
+//        greenMaterial.setSpecularColor(Color.GREEN);
+//
+//        final PhongMaterial blueMaterial = new PhongMaterial();
+//        blueMaterial.setDiffuseColor(Color.DARKBLUE);
+//        blueMaterial.setSpecularColor(Color.BLUE);
+//
+//        final Box xAxis = new Box(AXIS_LENGTH, 1, 1);
+//        final Box yAxis = new Box(1, AXIS_LENGTH, 1);
+//        final Box zAxis = new Box(1, 1, AXIS_LENGTH);
+//
+//        xAxis.setMaterial(redMaterial);
+//        yAxis.setMaterial(greenMaterial);
+//        zAxis.setMaterial(blueMaterial);
+//        
+//        final Xform axisGroup = new Xform();
+//        axisGroup.getChildren().addAll(xAxis, yAxis, zAxis);
+//        axisGroup.setVisible(true);
+//        world.getChildren().addAll(axisGroup);
+//    }
 	
 	  private void handleMouse(SubScene subscene, final Node root) {
 	        subscene.setOnMousePressed(new EventHandler<MouseEvent>() {

@@ -207,6 +207,7 @@ public class PhantomUI extends UIEntity<Phantom> {
 		editor.add(new TitledPropertyPane("Measurements",
 				editor.createSelector(Measurement.class, item -> item.getMeasurements(),
 						(item, subItems) -> item.setMeasurements((List<Measurement>) subItems))));
+		editor.add(new TitledPropertyPane("Properties", editor.createPropertySelector()));
 
 		Runnable updateId = () -> {
 			String phantominaPid = Phantomina.createProductId(
@@ -231,8 +232,8 @@ public class PhantomUI extends UIEntity<Phantom> {
 		comboBoxSpecial.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> updateId.run());
 
-		editor.closeTitledSelectors();
-		editor.addAutoCloseOnSelectors();
+		editor.closeTitledNonGeneralPanes();
+		editor.addAutoCloseOnNonGeneral();
 		editor.addApplyButton();
 		return editor;
 
