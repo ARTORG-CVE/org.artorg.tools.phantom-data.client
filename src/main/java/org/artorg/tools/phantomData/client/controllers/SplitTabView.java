@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -26,6 +28,9 @@ import org.artorg.tools.phantomData.client.exceptions.DeleteException;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.client.exceptions.PermissionDeniedException;
 import org.artorg.tools.phantomData.client.logging.Logger;
+import org.artorg.tools.phantomData.client.modelUI.UIEntity;
+import org.artorg.tools.phantomData.client.scene.control.DbEntityView;
+import org.artorg.tools.phantomData.client.scene.control.EntityView;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.SmartSplitTabPane;
 import org.artorg.tools.phantomData.client.scene.control.SmartTabPane;
@@ -42,17 +47,16 @@ import org.artorg.tools.phantomData.server.models.base.DbFile;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.IndexedCell;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.input.KeyEvent;
@@ -119,42 +123,53 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		setTab(tableTabPane.getTabPane(), tab, tab.getContent());
 	}
 
-	private <T> void changeToTreeTableView(ProTableView<T> tableView) {
-		List<T> items = tableView.getSelectionModel().getSelectedItems();
-		DbTreeTableView<T> treeTableView =
-				Main.getUIEntity(tableView.getItemClass()).createProTreeTableView(items);
+	@SuppressWarnings("unchecked")
+	private void changeToTreeTableView(EntityView view) {
+
+		Collection<Object> items = view.getSelectedItems();
+		DbTreeTableView<Object> treeTableView =
+				((UIEntity<Object>) Main.getUIEntity(view.getItemClass()))
+						.createProTreeTableView(items);
 		Tab tab;
-		tab = findTabByContent(tableTabPane.getTabPane(), tableView);
+		tab = findTabByContent(tableTabPane.getTabPane(), view.getNode());
 		if (controlDown) tab = new Tab(tab.getText());
 		setTab(tableTabPane.getTabPane(), tab, treeTableView);
 	}
 
-	private <T> void openTreeTableViewBelow(ProTableView<T> tableView) {
-		List<T> items = tableView.getSelectionModel().getSelectedItems();
-		DbTreeTableView<T> treeTableView =
-				Main.getUIEntity(tableView.getItemClass()).createProTreeTableView(items);
+	@SuppressWarnings("unchecked")
+	private void openTreeTableViewBelow(EntityView view) {
+		Collection<Object> items = view.getSelectedItems();
+		DbTreeTableView<Object> treeTableView =
+				((UIEntity<Object>) Main.getUIEntity(view.getItemClass()))
+						.createProTreeTableView(items);
 
 		SplitTabView splitTabView = twinGetter.apply(index + 1);
 
-		ObservableList<T> selectedItems = tableView.getSelectionModel().getSelectedItems();
-		String tabName = tableView.getItemClass().getSimpleName();
-		if (selectedItems.size() == 1)
-			tabName = ((DbPersistent<?, ?>) selectedItems.get(0)).getItemClass().getSimpleName();
+		String tabName = view.getItemClass().getSimpleName();
+		if (items.size() == 1)
+			tabName = ((DbPersistent<?, ?>) items.iterator().next()).getItemClass().getSimpleName();
 		Tab tab = new Tab(tabName);
 		setTab(splitTabView.tableTabPane.getTabPane(), tab, treeTableView);
 	}
 
-	private <T> void changeToTableView(DbTreeTableView<T> tableView) {
+	private void changeToTableView(EntityView view) {
 //		ProTableView<T> treeTableView = (ProTableView<T>)TableViewFactory.createTableView(
 //			tableView.getItemClass(), DbTable.class, DbTableView.class,
 //			tableView.getSelectionModel().getSelectedItems());
 
-		List<TreeItem<NamedTreeItem>> treeItems = tableView.getSelectionModel().getSelectedItems();
-		ProTableView<T> treeTableView =
-				Main.getUIEntity(tableView.getItemClass()).createDbTableView(treeItems);
+		Map<Class<?>, List<Object>> itemsMap = view.getSelectedItems().stream()
+				.collect(Collectors.groupingBy(item -> item.getClass()));
+		Class<?> itemClass = itemsMap.entrySet().stream().reduce((e1, e2) -> {
+			if (e1.getValue().size() > e2.getValue().size()) return e1;
+			return e2;
+		}).get().getKey();
+
+		List<?> items = itemsMap.get(itemClass);
+
+		ProTableView<?> treeTableView = Main.getUIEntity(itemClass).createDbTableView(items);
 
 		Tab tab;
-		tab = findTabByContent(tableTabPane.getTabPane(), tableView);
+		tab = findTabByContent(tableTabPane.getTabPane(), view.getNode());
 		if (controlDown) tab = new Tab(tab.getText());
 		setTab(tableTabPane.getTabPane(), tab, treeTableView);
 	}
@@ -180,11 +195,10 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		if (node instanceof DbTreeTableView) setTreeTableTab(tab, (DbTreeTableView<T>) node);
 	}
 
-	private <T> void setTableTab(Tab tab, ProTableView<T> tableViewSpring) {
-		tableViewSpring
-				.setRowFactory(tableView -> createTableViewContext(tableViewSpring, tableView));
+	private <T> void setTableTab(Tab tab, ProTableView<T> view) {
+		view.setRowFactory(v -> (TableRow<T>) createContextMenu(view, new TableRow<T>()));
 
-		tableViewSpring.getSelectionModel().selectedItemProperty()
+		view.getSelectionModel().selectedItemProperty()
 				.addListener((ChangeListener<T>) (observable, oldValue, newValue) -> {
 					FxUtil.runNewSingleThreaded(() -> {
 						try {
@@ -195,61 +209,101 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 					});
 				});
 
-		ContextMenu contextMenu = new ContextMenu();
-		MenuItem menuItem;
-
-		menuItem = new MenuItem("Add item");
-		menuItem.setOnAction(event -> {
-			ItemEditor<T> controller =
-					Main.getUIEntity(tableViewSpring.getItemClass()).createEditFactory();
-			controller.showCreateMode();
-			addTab(itemAddEditTabPane.getTabPane(), controller,
-					"Add " + tableViewSpring.getTable().getItemName());
-		});
-		contextMenu.getItems().addAll(menuItem);
-		menuItem = new MenuItem("Reload");
-		menuItem.setOnAction(event -> {
-			if (tableViewSpring instanceof DbTableView) {
-				((DbTableView<?>) tableViewSpring).reload();
-			}
-		});
-		contextMenu.getItems().addAll(menuItem);
-
-		tableViewSpring.setContextMenu(contextMenu);
+		view.setContextMenu(createOutterContextMenu(tab, view));
 
 	}
 
 	private <T> void setTreeTableTab(Tab tab, DbTreeTableView<T> view) {
-		view.setRowFactory(tableView -> createTreeTableViewContext(view, tableView));
+		view.setRowFactory(tableView -> (TreeTableRow<NamedTreeItem>) createContextMenu(view,
+				new TreeTableRow<NamedTreeItem>()));
+		view.setContextMenu(createOutterContextMenu(tab, view));
+	}
 
+	@SuppressWarnings("unchecked")
+	private ContextMenu createOutterContextMenu(Tab tab, EntityView view) {
 		ContextMenu contextMenu = new ContextMenu();
 		MenuItem menuItem;
 
+		menuItem = new MenuItem("Refresh");
+		menuItem.setOnAction(event -> view.refresh());
+		contextMenu.getItems().addAll(menuItem);
+
+		menuItem = new MenuItem("Reload");
+		menuItem.setOnAction(event -> {
+			if (view instanceof DbEntityView) ((DbEntityView) view).reload();
+		});
+		contextMenu.getItems().addAll(menuItem);
+		
 		menuItem = new MenuItem("Add item");
 		menuItem.setOnAction(event -> {
-			ItemEditor<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
+			ItemEditor<Object> controller =
+					((UIEntity<Object>) Main.getUIEntity(view.getItemClass())).createEditFactory();
 			controller.showCreateMode();
 			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Add " + view.getTable().getItemName());
 		});
 		contextMenu.getItems().addAll(menuItem);
-
-		menuItem = new MenuItem("Reload");
-		menuItem.setOnAction(event -> view.reload());
+		
+		menuItem = new MenuItem("Open Viewer");
+		menuItem.setOnAction(event -> {
+			Scene3D scene3d = new Scene3D();
+			addTab(viewerTabPane.getTabPane(), scene3d, "Viewer");
+		});
 		contextMenu.getItems().addAll(menuItem);
-
-		view.setContextMenu(contextMenu);
+		
+		return contextMenu;
 	}
 
-	private <T> TableRow<T> createTableViewContext(ProTableView<T> view, TableView<T> tableView) {
-		final TableRow<T> row = new TableRow<T>();
-		final ContextMenu rowMenu = new ContextMenu();
+	private <T> IndexedCell<T> createContextMenu(EntityView view, IndexedCell<T> row) {
+		ContextMenu contextMenu = createContextMenu(view);
+
+		// only display context menu for non-null items:
+		row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
+				.then(contextMenu).otherwise((ContextMenu) null));
 
 		if (view.getItemClass() == DbFile.class) {
-			addMenuItem(rowMenu, "Open", event -> {
-				ObservableList<T> selectedItems = view.getSelectionModel().getSelectedItems();
+			row.setOnMouseClicked(event -> {
+				if (event.getClickCount() > 1) {
+					FxUtil.runNewSingleThreaded(() -> {
+						File srcFile = ((DbFile) view.getEntityItem()).createFile();
+						try {
+							Desktop.getDesktop().open(srcFile);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					});
+				}
+			});
+		}
+		return row;
+	}
+
+//	private <T> TreeTableRow<NamedTreeItem> createTreeTableViewContext(DbTreeTableView<T> view) {
+//		final TreeTableRow<NamedTreeItem> row = new TreeTableRow<NamedTreeItem>();
+//		final ContextMenu rowMenu = new ContextMenu();
+//
+//		addMenuItem(rowMenu, "Show Table View", event -> {
+//			changeToTableView(view);
+//		});
+//
+//		addMenuItem(rowMenu, "Reload", event -> view.reload());
+//
+//		// only display context menu for non-null items:
+//		row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
+//				.then(rowMenu).otherwise((ContextMenu) null));
+//
+//		return row;
+//	}
+
+	@SuppressWarnings("unchecked")
+	private ContextMenu createContextMenu(EntityView view) {
+
+		final ContextMenu contextMenu = new ContextMenu();
+
+		if (view.getItemClass() == DbFile.class) {
+			addMenuItem(contextMenu, "Open", event -> {
 				List<DbFile> selectedDbFiles =
-						selectedItems.stream().filter(item -> item instanceof DbFile)
+						view.getSelectedItems().stream().filter(item -> item instanceof DbFile)
 								.map(item -> ((DbFile) item)).collect(Collectors.toList());
 
 				FxUtil.runNewSingleThreaded(() -> {
@@ -265,10 +319,9 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 				});
 			});
 
-			addMenuItem(rowMenu, "Download", event -> {
-				ObservableList<T> selectedItems = view.getSelectionModel().getSelectedItems();
+			addMenuItem(contextMenu, "Download", event -> {
 				List<DbFile> selectedDbFiles =
-						selectedItems.stream().filter(item -> item instanceof DbFile)
+						view.getSelectedItems().stream().filter(item -> item instanceof DbFile)
 								.map(item -> ((DbFile) item)).collect(Collectors.toList());
 
 				DirectoryChooser chooser = new DirectoryChooser();
@@ -296,48 +349,38 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 				}
 			});
 
-			row.setOnMouseClicked(event -> {
-				if (event.getClickCount() > 1) {
-					FxUtil.runNewSingleThreaded(() -> {
-						File srcFile = ((DbFile) row.getItem()).createFile();
-						try {
-							Desktop.getDesktop().open(srcFile);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					});
-				}
-			});
-
 		}
 
-		addMenuItem(rowMenu, "Refresh", event -> view.refresh());
+		addMenuItem(contextMenu, "Refresh", event -> view.refresh());
 
-		addMenuItem(rowMenu, "Reload", event -> {
+		addMenuItem(contextMenu, "Reload", event -> {
 			if (view instanceof DbTableView) ((DbTableView<?>) view).reload();
 		});
 
-		addMenuItem(rowMenu, "Edit item", event -> {
-			ItemEditor<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
+		addMenuItem(contextMenu, "Edit item", event -> {
+			ItemEditor<Object> controller =
+					(ItemEditor<Object>) Main.getUIEntity(view.getEntityItem().getClass()).createEditFactory();
 			if (controller == null) return;
-			controller.showEditMode(row.getItem());
+			controller.showEditMode(view.getEntityItem());
 			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Edit " + view.getTable().getItemName());
 		});
 
-		addMenuItem(rowMenu, "Add item", event -> {
-			ItemEditor<T> controller = Main.getUIEntity(view.getItemClass()).createEditFactory();
-			controller.setCreateTemplate(row.getItem());
+		addMenuItem(contextMenu, "Add item", event -> {
+			ItemEditor<Object> controller =
+					(ItemEditor<Object>) Main.getUIEntity(view.getEntityItem().getClass()).createEditFactory();
+			controller.setCreateTemplate(view.getEntityItem());
 			controller.showCreateMode();
 			addTab(itemAddEditTabPane.getTabPane(), controller,
 					"Add " + view.getTable().getItemName());
 		});
 
-		addMenuItem(rowMenu, "Delete", event -> {
-			ICrudConnector<T> connector = (ICrudConnector<T>) Connectors.get(view.getItemClass());
+		addMenuItem(contextMenu, "Delete", event -> {
+			ICrudConnector<Object> connector =
+					(ICrudConnector<Object>) Connectors.get(view.getEntityItem().getClass());
 			try {
-				if (connector.deleteById(((Identifiable<?>) row.getItem()).getId()))
-					view.getItems().remove(row.getItem());
+				if (connector.deleteById(((Identifiable<?>) view.getEntityItem()).getId()))
+					view.getTable().getItems().remove(view.getEntityItem());
 			} catch (NoUserLoggedInException e) {
 				Logger.warn.println(e.getMessage());
 				e.showAlert();
@@ -350,29 +393,37 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 			}
 		});
 
-		addMenuItem(rowMenu, "Open 3d Viewer", event -> {
+		addMenuItem(contextMenu, "Open Viewer", event -> {
 			Scene3D scene3d = new Scene3D();
-			scene3d.loadFile(get3dFile(row.getItem()));
-			addTab(viewerTabPane.getTabPane(), scene3d, "3D Viewer");
+			scene3d.loadFile(get3dFile(view.getEntityItem()));
+			addTab(viewerTabPane.getTabPane(), scene3d, "Viewer");
 		});
 
-		MenuItem treeMenuItem = new MenuItem("Show Tree View");
-		treeMenuItem.setOnAction(event -> changeToTreeTableView(view));
-		menuItemUpdater.add(() -> {
-			if (controlDown) treeMenuItem.setText("Show Tree View +");
-			else
-				treeMenuItem.setText("Show Tree View");
-		});
-		rowMenu.getItems().add(treeMenuItem);
+		if (view instanceof TableView) {
+			MenuItem treeMenuItem = new MenuItem("Show Tree View");
+			treeMenuItem.setOnAction(event -> changeToTreeTableView(view));
+			menuItemUpdater.add(() -> {
+				if (controlDown) treeMenuItem.setText("Show Tree View +");
+				else
+					treeMenuItem.setText("Show Tree View");
+			});
+			contextMenu.getItems().add(treeMenuItem);
+		} else if (view instanceof TreeTableView) {
+			MenuItem treeMenuItem = new MenuItem("Show Table View");
+			treeMenuItem.setOnAction(event -> changeToTableView(view));
+			menuItemUpdater.add(() -> {
+				if (controlDown) treeMenuItem.setText("Show Table View +");
+				else
+					treeMenuItem.setText("Show Table View");
+			});
+			contextMenu.getItems().add(treeMenuItem);
+		}
 
-		addMenuItem(rowMenu, "Show Tree below", event -> {
+		addMenuItem(contextMenu, "Show Tree below", event -> {
 			openTreeTableViewBelow(view);
 		});
 
-		// only display context menu for non-null items:
-		row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
-				.then(rowMenu).otherwise((ContextMenu) null));
-		return row;
+		return contextMenu;
 	}
 
 	private <T> void show3dInViewer(T item) {
@@ -453,24 +504,6 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		}
 
 		return value;
-	}
-
-	private <T> TreeTableRow<NamedTreeItem> createTreeTableViewContext(DbTreeTableView<T> view,
-			TreeTableView<NamedTreeItem> tableView) {
-		final TreeTableRow<NamedTreeItem> row = new TreeTableRow<NamedTreeItem>();
-		final ContextMenu rowMenu = new ContextMenu();
-
-		addMenuItem(rowMenu, "Show Table View", event -> {
-			changeToTableView(view);
-		});
-
-		addMenuItem(rowMenu, "Reload", event -> view.reload());
-
-		// only display context menu for non-null items:
-		row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
-				.then(rowMenu).otherwise((ContextMenu) null));
-
-		return row;
 	}
 
 	public void addTabPanePolicy(TabPane tabPane) {

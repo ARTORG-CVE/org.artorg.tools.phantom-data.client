@@ -143,9 +143,9 @@ public class MainController extends StackPane {
 		addSplitTabView();
 
 		initMenuBar(menuBar);
-		
+
 		FxUtil.addToPane(contentPane, splitPane);
-		
+
 		while (!Main.isInitialized()) {
 			try {
 				Thread.sleep(50);
@@ -153,11 +153,11 @@ public class MainController extends StackPane {
 				e.printStackTrace();
 			}
 		}
-		
+
 		try {
-		getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
-		getOrCreate(0).openViewerTab(createScene3dTab(null));
-		getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));
+			getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
+			getOrCreate(0).openViewerTab(createScene3dTab(null));
+			getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -431,7 +431,8 @@ public class MainController extends StackPane {
 	}
 
 	public void openLoginLogoutFrame() {
-		Rectangle2D bounds = new Rectangle2D(Main.getStage().getX(), Main.getStage().getY(), Main.getStage().getWidth(), Main.getStage().getHeight());
+		Rectangle2D bounds = new Rectangle2D(Main.getStage().getX(), Main.getStage().getY(),
+				Main.getStage().getWidth(), Main.getStage().getHeight());
 		FxUtil.openFrame("Login/Logout", new LoginController(), bounds);
 	}
 
@@ -570,6 +571,15 @@ public class MainController extends StackPane {
 			Main.getBooter().getConsoleFrame().setVisible(true);
 		});
 		menu.getItems().add(menuItem);
+
+		menuItem = new MenuItem("Open 3D Viewer");
+		menuItem.setOnAction(event -> {
+			Scene3D scene3d = new Scene3D();
+			splitTabViews.get(0).addTab(splitTabViews.get(0).getViewerTabPane().getTabPane(),
+					scene3d, "3D Viewer");
+		});
+		menu.getItems().add(menuItem);
+
 		menuBar.getMenus().add(menu);
 
 //		menu = new Menu("Help");
@@ -626,8 +636,7 @@ public class MainController extends StackPane {
 		}
 
 		if (level == null) {
-			if (!status) 
-				coloredStatusBox.setFill(Color.RED);
+			if (!status) coloredStatusBox.setFill(Color.RED);
 			return;
 		}
 

@@ -17,7 +17,7 @@ public class SmartSplitTabPane extends SmartNode {
 		tabPanes = new ArrayList<SmartTabPane>();
 	}
 	
-	protected void addTab(TabPane tabePane, Node node, String tabName) {
+	public void addTab(TabPane tabePane, Node node, String tabName) {
 		Tab tab = new Tab(tabName);
 		tab.setContent(node);
 		tab.setOnClosed(closeEvent -> {

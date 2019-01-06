@@ -1,9 +1,10 @@
 package org.artorg.tools.phantomData.client.scene.control.tableView;
 
 import org.artorg.tools.phantomData.client.logging.Logger;
+import org.artorg.tools.phantomData.client.scene.control.DbEntityView;
 import org.artorg.tools.phantomData.client.table.DbTable;
 
-public class DbTableView<ITEM> extends ProTableView<ITEM> {
+public class DbTableView<ITEM> extends ProTableView<ITEM> implements DbEntityView {
 	
 	public DbTableView(Class<ITEM> itemClass, DbTable<ITEM> table) {
 		super(itemClass, table);

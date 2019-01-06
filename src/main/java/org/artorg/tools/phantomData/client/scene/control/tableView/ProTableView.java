@@ -1,5 +1,7 @@
 package org.artorg.tools.phantomData.client.scene.control.tableView;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -8,6 +10,7 @@ import java.util.stream.Collectors;
 import org.artorg.tools.phantomData.client.column.AbstractColumn;
 import org.artorg.tools.phantomData.client.column.AbstractFilterColumn;
 import org.artorg.tools.phantomData.client.logging.Logger;
+import org.artorg.tools.phantomData.client.scene.control.EntityView;
 import org.artorg.tools.phantomData.client.scene.control.FilterMenuButton;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.table.Table;
@@ -30,7 +33,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.util.Callback;
 
-public class ProTableView<T> extends javafx.scene.control.TableView<T> implements AddableToPane {
+public class ProTableView<T> extends javafx.scene.control.TableView<T>
+		implements AddableToPane, EntityView {
 	private final Class<T> itemClass;
 	private Table<T> table;
 
@@ -92,13 +96,13 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 	public void refresh() {
 		Logger.debug.println(getItemClass());
 		getTable().refresh();
-		
+
 		updateColumns();
 
 		Platform.runLater(() -> {
 			showFilterButtons();
 		});
-		
+
 		super.refresh();
 	}
 
@@ -286,6 +290,17 @@ public class ProTableView<T> extends javafx.scene.control.TableView<T> implement
 				.collect(StreamUtils.castFilter(column -> (TableBaseColumn<T, Object>) column))
 				.map(column -> column.getFilterMenuButton())
 				.filter(filterMenuButton -> filterMenuButton != null).collect(Collectors.toList());
+	}
+
+	@Override
+	public Collection<Object> getSelectedItems() {
+		return getSelectionModel().getSelectedItems().stream()
+				.collect(Collectors.toCollection(() -> new ArrayList<Object>()));
+	}
+
+	@Override
+	public Node getNode() {
+		return this;
 	}
 
 }

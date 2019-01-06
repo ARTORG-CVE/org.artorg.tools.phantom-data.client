@@ -91,6 +91,21 @@ public abstract class UIEntity<T> {
 		return tableView;
 	}
 
+	@SuppressWarnings("unchecked")
+	public DbTableView<T> createDbTableView(List<?> items) {
+		long startTime = System.currentTimeMillis();
+		DbTableView<T> tableView = new DbTableView<>(getItemClass(), createDbTableBase());
+		Logger.info.println(String.format("%s - Table created with %d items in %d ms",
+				getItemClass().getSimpleName(), tableView.getTable().getItems().size(),
+				System.currentTimeMillis() - startTime));
+
+		List<T> castedItems = items.stream().map(item -> (T)item).collect(Collectors.toList());
+		tableView.getTable().getItems().clear();
+		tableView.getTable().getItems().addAll(castedItems);
+		
+		return tableView;
+	}
+	
 	public DbTableView<T> createDbTableView() {
 		long startTime = System.currentTimeMillis();
 		DbTableView<T> tableView = new DbTableView<>(getItemClass(), createDbTableBase());
@@ -117,28 +132,28 @@ public abstract class UIEntity<T> {
 		return tableView;
 	}
 
-	@SuppressWarnings("unchecked")
-	public DbTableView<T> createDbTableView(List<TreeItem<NamedTreeItem>> treeItems) {
-		DbTableView<T> tableView = new DbTableView<>(getItemClass(), createDbTableBase());
-		ObservableList<T> items = FXCollections.observableArrayList();
-		for (int i = 0; i < treeItems.size(); i++)
-			try {
-				T item = (T) treeItems.get(i).getValue().getValue();
-				items.add(item);
-			} catch (Exception e) {}
-
-		tableView.getTable().getItems().clear();
-		tableView.getTable().getItems().addAll(items);
-
-		return tableView;
-	}
+//	@SuppressWarnings("unchecked")
+//	public DbTableView<T> createDbTableView(List<TreeItem<NamedTreeItem>> treeItems) {
+//		DbTableView<T> tableView = new DbTableView<>(getItemClass(), createDbTableBase());
+//		ObservableList<T> items = FXCollections.observableArrayList();
+//		for (int i = 0; i < treeItems.size(); i++)
+//			try {
+//				T item = (T) treeItems.get(i).getValue().getValue();
+//				items.add(item);
+//			} catch (Exception e) {}
+//
+//		tableView.getTable().getItems().clear();
+//		tableView.getTable().getItems().addAll(items);
+//
+//		return tableView;
+//	}
 
 	public DbTreeTableView<T> createProTreeTableView() {
 		DbTreeTableView<T> treeTableView = new DbTreeTableView<>(getItemClass());
 		return treeTableView;
 	}
 
-	public DbTreeTableView<T> createProTreeTableView(List<T> items) {
+	public DbTreeTableView<T> createProTreeTableView(Collection<T> items) {
 		DbTreeTableView<T> treeTableView = new DbTreeTableView<>(getItemClass());
 		treeTableView.setItems(items);
 		return treeTableView;

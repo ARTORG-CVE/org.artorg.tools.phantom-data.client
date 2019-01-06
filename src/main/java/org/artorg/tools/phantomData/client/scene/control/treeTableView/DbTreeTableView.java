@@ -2,6 +2,7 @@ package org.artorg.tools.phantomData.client.scene.control.treeTableView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ import javax.persistence.Entity;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.beans.NamedTreeItem;
 import org.artorg.tools.phantomData.client.beans.EntityBeanInfo;
+import org.artorg.tools.phantomData.client.scene.control.DbEntityView;
 import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.table.DbTable;
 import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
@@ -20,6 +22,7 @@ import org.artorg.tools.phantomData.server.model.NameGeneratable;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.Node;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeSortMode;
@@ -27,8 +30,8 @@ import javafx.scene.control.TreeTableColumn.CellDataFeatures;
 import javafx.scene.control.TreeTableView;
 import javafx.util.Callback;
 
-public class DbTreeTableView<T>
-	extends TreeTableView<NamedTreeItem> implements AddableToPane {
+public class DbTreeTableView<T> extends TreeTableView<NamedTreeItem>
+		implements AddableToPane, DbEntityView {
 	private List<DbTreeTableColumn> treeTableColumns;
 	private final DbTable<T> table;
 	private TreeItem<NamedTreeItem> root;
@@ -37,17 +40,18 @@ public class DbTreeTableView<T>
 
 	{
 		treeTableColumns = new ArrayList<DbTreeTableColumn>();
-		root = new TreeItem<NamedTreeItem>(new NamedTreeItem("Root value", "Root name", "Root type"));
+		root = new TreeItem<NamedTreeItem>(
+				new NamedTreeItem("Root value", "Root name", "Root type"));
 	}
-	
+
 	public DbTreeTableView(Class<T> itemClass) {
 		this(itemClass, Main.getUIEntity(itemClass).createDbTableBase());
 	}
-	
+
 	protected DbTreeTableView(Class<T> itemClass, DbTable<T> table) {
 		this.itemClass = itemClass;
 		this.table = table;
-		
+
 		super.getColumns().clear();
 		treeTableColumns = new ArrayList<DbTreeTableColumn>();
 		DbTreeTableColumn column;
@@ -56,7 +60,7 @@ public class DbTreeTableView<T>
 		column.setPrefWidth(150);
 		column.setCellValueFactory(param -> {
 			return new ReadOnlyStringWrapper(
-				((NamedTreeItem) param.getValue().getValue()).getName());
+					((NamedTreeItem) param.getValue().getValue()).getName());
 		});
 		column.setPrefAutosizeWidth(180.0);
 		column.setMaxAutosizeWidth(300.0);
@@ -82,13 +86,10 @@ public class DbTreeTableView<T>
 		treeTableColumns.add(column);
 
 		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-		addPersonifiedColumn("Last modified",
-			item -> format.format(item.getDateLastModified()));
-		addPersonifiedColumn("Changed by",
-			item -> item.getChanger().getSimpleAcademicName());
+		addPersonifiedColumn("Last modified", item -> format.format(item.getDateLastModified()));
+		addPersonifiedColumn("Changed by", item -> item.getChanger().getSimpleAcademicName());
 		addPersonifiedColumn("Added", item -> format.format(item.getDateAdded()));
-		addPersonifiedColumn("Created by",
-			item -> item.getCreator().getSimpleAcademicName());
+		addPersonifiedColumn("Created by", item -> item.getCreator().getSimpleAcademicName());
 
 		getColumns().addAll(treeTableColumns);
 		root.setExpanded(true);
@@ -98,46 +99,47 @@ public class DbTreeTableView<T>
 		super.setSortMode(TreeSortMode.ONLY_FIRST_LEVEL);
 		super.refresh();
 		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		
+
 		setItems(getTable().getItems());
-		
+
 		reload();
 	}
-	
+
 	public void reload() {
 		getTable().readAllData();
 		setItems(getTable().getItems());
 		refresh();
 	}
-	
+
 	private void addPersonifiedColumn(String name,
-		Function<AbstractPersonifiedEntity<?>, String> mapper) {
+			Function<AbstractPersonifiedEntity<?>, String> mapper) {
 		treeTableColumns.add(createBaseColumn(name, mapper));
 	}
 
 	private DbTreeTableColumn createBaseColumn(String name,
-		Function<AbstractPersonifiedEntity<?>, String> mapper) {
+			Function<AbstractPersonifiedEntity<?>, String> mapper) {
 		DbTreeTableColumn column = new DbTreeTableColumn(name);
 		column.setCellValueFactory(createCellValueFactory(mapper));
 		return column;
 	}
 
 	private Callback<CellDataFeatures<NamedTreeItem, String>, ObservableValue<String>>
-		createCellValueFactory(Function<AbstractPersonifiedEntity<?>, String> mapper) {
+			createCellValueFactory(Function<AbstractPersonifiedEntity<?>, String> mapper) {
 		return param -> {
 			Object entity = ((NamedTreeItem) param.getValue().getValue()).getValue();
-			if (entity instanceof AbstractPersonifiedEntity)
-				return new ReadOnlyStringWrapper(
+			if (entity instanceof AbstractPersonifiedEntity) return new ReadOnlyStringWrapper(
 					mapper.apply(((AbstractPersonifiedEntity<?>) entity)));
 			return new ReadOnlyStringWrapper("");
 		};
 	}
 
-	public void setItems(List<T> items) {
+	public void setItems(Collection<T> items) {
 		List<TreeItem<NamedTreeItem>> treeItems = new ArrayList<TreeItem<NamedTreeItem>>();
 		items.forEach(item -> {
 			TreeItem<NamedTreeItem> treeItem = createTreeItem(
-				new NamedTreeItem(item, ((DbPersistent<?,?>)item).getItemClass().getSimpleName(), "Items"), 0);
+					new NamedTreeItem(item,
+							((DbPersistent<?, ?>) item).getItemClass().getSimpleName(), "Items"),
+					0);
 			if (treeItem != null) {
 				treeItems.add(treeItem);
 				addResizeColumnsExpandListener(treeItem);
@@ -165,7 +167,7 @@ public class DbTreeTableView<T>
 			List<Object> list = (List<Object>) value;
 			for (int i = 0; i < list.size(); i++) {
 				TreeItem<NamedTreeItem> treeItem = createTreeItem(
-					new NamedTreeItem(list.get(i), "[" + i + "]", "Collection"), level + 1);
+						new NamedTreeItem(list.get(i), "[" + i + "]", "Collection"), level + 1);
 				if (treeItem != null) treeItems.add(treeItem);
 			}
 			return treeItems;
@@ -186,7 +188,7 @@ public class DbTreeTableView<T>
 		List<TreeItem<NamedTreeItem>> treeItems = new ArrayList<>();
 		EntityBeanInfo<U> beanInfo = null;
 		try {
-		beanInfo = Main.getUIEntity((Class<U>)bean.getClass()).getEntityBeanInfo();
+			beanInfo = Main.getUIEntity((Class<U>) bean.getClass()).getEntityBeanInfo();
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
@@ -194,7 +196,7 @@ public class DbTreeTableView<T>
 		treeItems.addAll(createCollectionTreeItem(bean, beanInfo, level));
 		if (bean instanceof AbstractPersonifiedEntity) {
 			NamedTreeItem dbNode =
-				new NamedTreeItem(((AbstractPersonifiedEntity<?>) bean).getId(), "id", "ID");
+					new NamedTreeItem(((AbstractPersonifiedEntity<?>) bean).getId(), "id", "ID");
 			TreeItem<NamedTreeItem> treeItem = createTreeItem(dbNode, level + 1);
 			if (treeItem != null) treeItems.add(treeItem);
 		}
@@ -204,7 +206,7 @@ public class DbTreeTableView<T>
 	}
 
 	private <U> List<TreeItem<NamedTreeItem>> createEntityTreeItem(U bean,
-		EntityBeanInfo<U> beanInfo, int level) {
+			EntityBeanInfo<U> beanInfo, int level) {
 		if (level > dephtLevelMax) return new ArrayList<>();
 		return beanInfo.getNamedEntityValuesAsStream(bean).map(dbNode -> {
 			TreeItem<NamedTreeItem> node = new TreeItem<>(dbNode);
@@ -214,7 +216,7 @@ public class DbTreeTableView<T>
 	}
 
 	private <U> List<TreeItem<NamedTreeItem>> createCollectionTreeItem(U bean,
-		EntityBeanInfo<U> beanInfo, int level) {
+			EntityBeanInfo<U> beanInfo, int level) {
 		if (level > dephtLevelMax) return new ArrayList<>();
 		return beanInfo.getNamedEntityCollectionValuesAsStream(bean).map(dbNode -> {
 			return createTreeItem(dbNode, level + 1);
@@ -222,41 +224,46 @@ public class DbTreeTableView<T>
 	}
 
 	private <U> List<TreeItem<NamedTreeItem>> createPropertiesTreeItems(U bean,
-		EntityBeanInfo<U> beanInfo, int level) {
+			EntityBeanInfo<U> beanInfo, int level) {
 		if (level > dephtLevelMax) return new ArrayList<>();
 		return beanInfo.getNamedPropertiesValueAsStream(bean)
-			.filter(namedValue -> namedValue.getValue().getClass() != Class.class)
-			.map(o -> new TreeItem<>((NamedTreeItem) o)).collect(Collectors.toList());
+				.filter(namedValue -> namedValue.getValue().getClass() != Class.class)
+				.map(o -> new TreeItem<>((NamedTreeItem) o)).collect(Collectors.toList());
 	}
 
 	private void addResizeColumnsExpandListener(TreeItem<?> treeItem) {
 		treeItem.expandedProperty()
-			.addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
-				if (newValue) autoResizeColumns();
-			});
+				.addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
+					if (newValue) autoResizeColumns();
+				});
 		if (!treeItem.isLeaf()) treeItem.getChildren().stream()
-			.forEach(subTreeItem -> addResizeColumnsExpandListener(subTreeItem));
+				.forEach(subTreeItem -> addResizeColumnsExpandListener(subTreeItem));
 	}
 
 	public void autoResizeColumns() {
-		super.setColumnResizePolicy(
-			javafx.scene.control.TreeTableView.UNCONSTRAINED_RESIZE_POLICY);
+		super.setColumnResizePolicy(javafx.scene.control.TreeTableView.UNCONSTRAINED_RESIZE_POLICY);
 		treeTableColumns.stream()
-			.forEach(column -> column.autoResizeWidth(getRoot().getChildren()));
+				.forEach(column -> column.autoResizeWidth(getRoot().getChildren()));
 	}
-	
-	
 
 	public DbTable<T> getTable() {
 		return table;
 	}
 
-	public javafx.scene.control.TreeTableView<?> getGraphic() {
-		return this;
-	}
-
 	public Class<T> getItemClass() {
 		return itemClass;
+	}
+
+	@Override
+	public Collection<Object> getSelectedItems() {
+		return getSelectionModel().getSelectedItems().stream()
+				.map(treeItem -> treeItem.getValue().getValue())
+				.collect(Collectors.toCollection(() -> new ArrayList<Object>()));
+	}
+
+	@Override
+	public Node getNode() {
+		return this;
 	}
 
 }
