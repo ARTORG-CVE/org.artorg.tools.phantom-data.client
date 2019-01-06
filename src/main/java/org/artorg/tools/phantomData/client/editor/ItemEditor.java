@@ -40,6 +40,7 @@ public class ItemEditor<T> extends Creator<T> {
 
 	public ItemEditor(Class<T> itemClass) {
 		super(itemClass);
+		this.beanClass = itemClass;
 		this.connector = (ICrudConnector<T>) Connectors.get(itemClass);
 	}
 
@@ -90,10 +91,11 @@ public class ItemEditor<T> extends Creator<T> {
 			});
 		});
 		applyButton.setText("Create");
+		T template = getCreateTemplate();
+		if (template == null) template = createInstance();
+		final T template2 = template;
 		getAllAbstractEditors().stream().forEach(node -> {
-			T template = getCreateTemplate();
-			if (template == null) template = createInstance();
-			node.entityToNodeAdd(template);
+			node.entityToNodeAdd(template2);
 		});
 	}
 
@@ -140,7 +142,7 @@ public class ItemEditor<T> extends Creator<T> {
 
 	public final T createItem()
 			throws PostException, InvalidUIInputException, NoUserLoggedInException {
-		if (item == null) throw new IllegalArgumentException();
+		item = createInstance();
 		setItem(createClient());
 		return createServer();
 	}
