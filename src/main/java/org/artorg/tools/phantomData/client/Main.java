@@ -135,12 +135,12 @@ public class Main extends DesktopFxBootApplication {
 				Logger.setDefaultOut(getBooter().getConsoleDiverter().getOut());
 				Logger.setDefaultErr(getBooter().getConsoleDiverter().getErr());
 
-				getStartupFrame().setVisible(true);
-				getStartupFrame().setTitle("Phantom Database");
-				getStartupFrame().setProgressing(true);
 				if (isDebugConsoleMode()) getConsoleFrame().setVisible(true);
 				if (!isConnected()) {
 					getStartupFrame().setnConsoleLines(nConsoleLinesServer + nConsoleLinesClient);
+					getStartupFrame().setTitle("Phantom Database");
+					getStartupFrame().setVisible(true);
+					getStartupFrame().setProgressing(true);
 					setServerStartedEmbedded(true);
 					Task<Void> task = FxUtil.createTask(() -> startSpringServer(args),
 							e -> handleException(e));
@@ -151,7 +151,6 @@ public class Main extends DesktopFxBootApplication {
 					task.setOnCancelled(event -> finish());
 					Executors.newCachedThreadPool().execute(task);
 				} else {
-					getStartupFrame().setnConsoleLines(nConsoleLinesClient);
 					Main.bootClient(this);
 				}
 			}

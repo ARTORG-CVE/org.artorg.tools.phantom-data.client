@@ -31,15 +31,14 @@ public class DesktopFxBootApplication extends Application {
 		String[] args = rawArgs.toArray(new String[rawArgs.size()]);
 
 		ConsoleFrame consoleFrame = new FxConsoleFrame();
-		StartupProgressFrame startupFrame =
-			new FxStartupProgressController(primaryStage);
+		StartupProgressFrame startupFrame = new FxStartupProgressController(primaryStage);
 		Parent parent = FxUtil.loadFXML("fxml/Boot.fxml", startupFrame, getClass());
 
 		DesktopFxBootServer.initStartupStage(primaryStage, parent);
 
 		Platform.runLater(() -> {
-			Main.createBooter(consoleFrame, startupFrame, nConsoleLinesServer,
-				nConsoleLinesClient).catchedBoot(args);
+			Main.createBooter(consoleFrame, startupFrame, nConsoleLinesServer, nConsoleLinesClient)
+					.catchedBoot(args);
 		});
 	}
 

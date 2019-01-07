@@ -154,6 +154,7 @@ public class FilterMenuButton<T> extends MenuButton {
 		return column;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void applyFilter() {
 		Predicate<T> itemFilter;
 		if (itemFilterAll.getCheckBox().isSelected()) itemFilter = item -> true;
@@ -172,7 +173,11 @@ public class FilterMenuButton<T> extends MenuButton {
 		Predicate<T> filter = itemFilter.and(textFilter);
 		column.setFilterPredicate(filter);
 
-		Comparator<T> comparator = null;
+		Comparator<T> comparator = (item1,item2) -> {
+			if (item1 instanceof Comparable)
+				return ((Comparable<T>) item1).compareTo(item2);
+			return Integer.compare(item1.hashCode(), item2.hashCode());
+		};
 		if (itemAscending.getCheckBox().isSelected())
 			comparator = column.getAscendingSortComparator();
 		else if (itemDescending.getCheckBox().isSelected()) {
@@ -180,7 +185,7 @@ public class FilterMenuButton<T> extends MenuButton {
 			if (ascendingSortComparator != null) comparator = ascendingSortComparator.reversed();
 		}
 
-		if (comparator != null) column.setSortComparator(comparator);
+		if (comparator != null) column.getTable().getSortComparatorQueue().add(comparator);
 		refreshImage();
 		getRefresher().run();
 	}

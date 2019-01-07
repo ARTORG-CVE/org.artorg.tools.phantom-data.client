@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.artorg.tools.phantomData.client.DesktopFxBootApplication;
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.admin.UserAdmin;
 import org.artorg.tools.phantomData.client.connector.Connectors;
@@ -66,7 +67,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -84,9 +85,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -300,9 +298,6 @@ public class MainController extends StackPane {
 				(view, cls) -> view.openTableTab(createTreeTableViewTab(cls)));
 		contextMenu.getItems().add(treeTableMenu);
 
-		addMenuItem(contextMenu, "Close", event -> {
-			splitTabViews.remove(splitTabView);
-		});
 		splitTabView.getSplitPane().setContextMenu(contextMenu);
 
 		splitTabViews.add(splitTabView);
@@ -311,16 +306,16 @@ public class MainController extends StackPane {
 	private void createTableMenu(Menu menu, SplitTabView splitTabView,
 			BiConsumer<SplitTabView, Class<?>> tableFactoryCreator) {
 
-		addMenuItem(menu, "Phantom", event -> {
+		addMenuItem(menu, "Phantoms", event -> {
 			tableFactoryCreator.accept(splitTabView, Phantom.class);
 		});
-		addMenuItem(menu, "Measurement", event -> {
+		addMenuItem(menu, "Measurements", event -> {
 			tableFactoryCreator.accept(splitTabView, Measurement.class);
 		});
-		addMenuItem(menu, "File", event -> {
+		addMenuItem(menu, "Files", event -> {
 			tableFactoryCreator.accept(splitTabView, DbFile.class);
 		});
-		addMenuItem(menu, "Property Field", event -> {
+		addMenuItem(menu, "Property Fields", event -> {
 			tableFactoryCreator.accept(splitTabView, PropertyField.class);
 		});
 
@@ -328,33 +323,33 @@ public class MainController extends StackPane {
 
 		{
 			Menu subMenu = new Menu("Phantom");
-			addMenuItem(subMenu, "Phantom", event -> {
+			addMenuItem(subMenu, "Phantoms", event -> {
 				tableFactoryCreator.accept(splitTabView, Phantom.class);
 			});
-			addMenuItem(subMenu, "Simulation Phantom", event -> {
+			addMenuItem(subMenu, "Simulation Phantoms", event -> {
 				tableFactoryCreator.accept(splitTabView, SimulationPhantom.class);
 			});
-			addMenuItem(subMenu, "Phantomina", event -> {
+			addMenuItem(subMenu, "Phantominas", event -> {
 				tableFactoryCreator.accept(splitTabView, Phantomina.class);
 			});
 			subMenu.getItems().add(new SeparatorMenuItem());
-			addMenuItem(subMenu, "Annulus Diameter", event -> {
+			addMenuItem(subMenu, "Annulus Diameters", event -> {
 				tableFactoryCreator.accept(splitTabView, AnnulusDiameter.class);
 			});
-			addMenuItem(subMenu, "Fabrication Type", event -> {
+			addMenuItem(subMenu, "Fabrication Types", event -> {
 				tableFactoryCreator.accept(splitTabView, FabricationType.class);
 			});
-			addMenuItem(subMenu, "Literature Base", event -> {
+			addMenuItem(subMenu, "Literature Bases", event -> {
 				tableFactoryCreator.accept(splitTabView, LiteratureBase.class);
 			});
-			addMenuItem(subMenu, "Special", event -> {
+			addMenuItem(subMenu, "Specials", event -> {
 				tableFactoryCreator.accept(splitTabView, Special.class);
 			});
 			subMenu.getItems().add(new SeparatorMenuItem());
-			addMenuItem(subMenu, "Manufacturing", event -> {
+			addMenuItem(subMenu, "Manufacturings", event -> {
 				tableFactoryCreator.accept(splitTabView, Manufacturing.class);
 			});
-			addMenuItem(subMenu, "Material", event -> {
+			addMenuItem(subMenu, "Materials", event -> {
 				tableFactoryCreator.accept(splitTabView, Material.class);
 			});
 			menu.getItems().add(subMenu);
@@ -362,17 +357,17 @@ public class MainController extends StackPane {
 
 		{
 			Menu subMenu = new Menu("Measurement");
-			addMenuItem(subMenu, "Measurement", event -> {
+			addMenuItem(subMenu, "Measurements", event -> {
 				tableFactoryCreator.accept(splitTabView, Measurement.class);
 			});
-			addMenuItem(subMenu, "Simulation", event -> {
+			addMenuItem(subMenu, "Simulations", event -> {
 				tableFactoryCreator.accept(splitTabView, Simulation.class);
 			});
 			subMenu.getItems().add(new SeparatorMenuItem());
-			addMenuItem(subMenu, "Project", event -> {
+			addMenuItem(subMenu, "Projects", event -> {
 				tableFactoryCreator.accept(splitTabView, Project.class);
 			});
-			addMenuItem(subMenu, "Experimental Setup", event -> {
+			addMenuItem(subMenu, "Experimental Setups", event -> {
 				tableFactoryCreator.accept(splitTabView, ExperimentalSetup.class);
 			});
 			menu.getItems().add(subMenu);
@@ -380,11 +375,11 @@ public class MainController extends StackPane {
 
 		{
 			Menu subMenu = new Menu("File");
-			addMenuItem(subMenu, "File", event -> {
+			addMenuItem(subMenu, "Files", event -> {
 				tableFactoryCreator.accept(splitTabView, DbFile.class);
 			});
 			subMenu.getItems().add(new SeparatorMenuItem());
-			addMenuItem(subMenu, "File tag", event -> {
+			addMenuItem(subMenu, "File tags", event -> {
 				tableFactoryCreator.accept(splitTabView, FileTag.class);
 			});
 			menu.getItems().add(subMenu);
@@ -392,11 +387,11 @@ public class MainController extends StackPane {
 
 		{
 			Menu subMenu = new Menu("Person");
-			addMenuItem(subMenu, "Person", event -> {
+			addMenuItem(subMenu, "Persons", event -> {
 				tableFactoryCreator.accept(splitTabView, Person.class);
 			});
 			subMenu.getItems().add(new SeparatorMenuItem());
-			addMenuItem(subMenu, "Academic Title", event -> {
+			addMenuItem(subMenu, "Academic Titles", event -> {
 				tableFactoryCreator.accept(splitTabView, AcademicTitle.class);
 			});
 			menu.getItems().add(subMenu);
@@ -411,16 +406,16 @@ public class MainController extends StackPane {
 				tableFactoryCreator.accept(splitTabView, PropertyField.class);
 			});
 			subMenu.getItems().add(new SeparatorMenuItem());
-			addMenuItem(subMenu, "Boolean Property", event -> {
+			addMenuItem(subMenu, "Boolean Properties", event -> {
 				tableFactoryCreator.accept(splitTabView, BooleanProperty.class);
 			});
-			addMenuItem(subMenu, "Integer Property", event -> {
+			addMenuItem(subMenu, "Integer Properties", event -> {
 				tableFactoryCreator.accept(splitTabView, IntegerProperty.class);
 			});
-			addMenuItem(subMenu, "Double Property", event -> {
+			addMenuItem(subMenu, "Double Propertyie", sevent -> {
 				tableFactoryCreator.accept(splitTabView, DoubleProperty.class);
 			});
-			addMenuItem(subMenu, "String Property", event -> {
+			addMenuItem(subMenu, "String Properties", event -> {
 				tableFactoryCreator.accept(splitTabView, StringProperty.class);
 			});
 			menu.getItems().add(subMenu);
@@ -428,7 +423,7 @@ public class MainController extends StackPane {
 
 		menu.getItems().add(new SeparatorMenuItem());
 
-		addMenuItem(menu, "All...", event -> {
+		addMenuItem(menu, "All", event -> {
 			tableFactoryCreator.accept(splitTabView, AbstractPersonifiedEntity.class);
 		});
 	}
@@ -450,9 +445,7 @@ public class MainController extends StackPane {
 	}
 
 	public void openLoginLogoutFrame() {
-		Rectangle2D bounds = new Rectangle2D(Main.getStage().getX(), Main.getStage().getY(),
-				Main.getStage().getWidth(), Main.getStage().getHeight());
-		FxUtil.openFrame("Login/Logout", new LoginController(), bounds);
+		FxUtil.openFrame("Login/Logout", new LoginController());
 	}
 
 	public void openTable(Class<?> itemClass) {
@@ -465,7 +458,7 @@ public class MainController extends StackPane {
 	}
 
 	private Tab createScene3dTab(File file) {
-		Tab tab = new Tab("3D Viewer");
+		Tab tab = new Tab("Viewer");
 		Scene3D scene3d = new Scene3D();
 		if (file != null) scene3d.loadFile(file);
 		tab.setContent(scene3d);
@@ -641,16 +634,9 @@ public class MainController extends StackPane {
 		MenuItem menuItem;
 
 		menu = new Menu("File");
-		menuItem = new MenuItem("New", new CssGlyph("FontAwesome", FontAwesome.Glyph.FILE));
-		menu.getItems().add(menuItem);
-
-		menuItem =
-				new MenuItem("Export...", new CssGlyph("FontAwesome", FontAwesome.Glyph.CARET_UP));
-		menuItem.setOnAction(event -> loginLogout(event));
-		menu.getItems().add(menuItem);
 
 		menuItem = new MenuItem("Login/Logout...",
-				new CssGlyph("FontAwesome", FontAwesome.Glyph.SIGN_IN));
+				new CssGlyph("FontAwesome", FontAwesome.Glyph.USER));
 		menuItem.setOnAction(event -> loginLogout(event));
 		menu.getItems().add(menuItem);
 
@@ -658,27 +644,6 @@ public class MainController extends StackPane {
 		menuItem = new MenuItem("Close");
 		menuItem.setOnAction(event -> close(event));
 		menu.getItems().add(menuItem);
-		menuBar.getMenus().add(menu);
-
-		menu = new Menu("Edit");
-		menuItem = new MenuItem("Undo", new CssGlyph("FontAwesome", FontAwesome.Glyph.ROTATE_LEFT));
-		menuItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
-		menuItem.setOnAction(event -> undo(event));
-		menu.getItems().add(menuItem);
-
-		menuItem =
-				new MenuItem("Redo", new CssGlyph("FontAwesome", FontAwesome.Glyph.ROTATE_RIGHT));
-		menuItem.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
-		menuItem.setOnAction(event -> redo(event));
-		menu.getItems().add(menuItem);
-
-		menuItem = new MenuItem("Refresh", new CssGlyph("FontAwesome", FontAwesome.Glyph.REFRESH));
-		menuItem.setOnAction(event -> refresh(event));
-		menu.getItems().add(menuItem);
-
-		menuItem = new MenuItem("Delete", new CssGlyph("FontAwesome", FontAwesome.Glyph.REMOVE));
-		menu.getItems().add(menuItem);
-
 		menuBar.getMenus().add(menu);
 
 		menu = new Menu("Table");
@@ -692,29 +657,32 @@ public class MainController extends StackPane {
 		menuBar.getMenus().add(menu);
 
 		menu = new Menu("Window");
-		menuItem = new MenuItem("Open SplitTabPane");
-		menuItem.setOnAction(event -> newSplitTabPane(event));
+		menuItem = new MenuItem("Open Viewer");
+		menuItem.setOnAction(event -> {
+			Scene3D scene3d = new Scene3D();
+			splitTabViews.get(0).addTab(splitTabViews.get(0).getViewerTabPane().getTabPane(),
+					scene3d, "Viewer");
+		});
 		menu.getItems().add(menuItem);
+
 		menuItem = new MenuItem("Show LoggingPane");
 		menuItem.setOnAction(event -> {
 			Main.getBooter().getConsoleFrame().setVisible(true);
 		});
 		menu.getItems().add(menuItem);
 
-		menuItem = new MenuItem("Open 3D Viewer");
-		menuItem.setOnAction(event -> {
-			Scene3D scene3d = new Scene3D();
-			splitTabViews.get(0).addTab(splitTabViews.get(0).getViewerTabPane().getTabPane(),
-					scene3d, "3D Viewer");
-		});
-		menu.getItems().add(menuItem);
-
 		menuBar.getMenus().add(menu);
 
-//		menu = new Menu("Help");
-//		menuItem = new MenuItem("About");
-//		menu.getItems().add(menuItem);
-//		menuBar.getMenus().add(menu);
+		menu = new Menu("Help");
+		menuItem = new MenuItem("About");
+		menuItem.setOnAction(event -> {
+			AboutController controller = new AboutController(stage);
+			Parent parent =
+					FxUtil.loadFXML("fxml/About.fxml", controller, DesktopFxBootApplication.class);
+			FxUtil.openFrame("About PhantomDb", parent);
+		});
+		menu.getItems().add(menuItem);
+		menuBar.getMenus().add(menu);
 	}
 
 	public void setStatus(String text, boolean status) {

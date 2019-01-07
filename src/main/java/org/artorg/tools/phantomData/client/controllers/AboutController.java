@@ -2,12 +2,19 @@ package org.artorg.tools.phantomData.client.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 public class AboutController {
-
+	private final Stage stage;
+	
+	public AboutController(Stage stage) {
+		this.stage = stage;
+	}
+	
     @FXML
     private ResourceBundle resources;
 
@@ -15,30 +22,22 @@ public class AboutController {
     private URL location;
 
     @FXML
-    private AnchorPane mainPane;
+    private TextArea textPane;
 
     @FXML
-    private TextArea textArea;
+    void close(MouseEvent event) {
+    	stage.close();
+    }
+
+    @FXML
+    void minimize(MouseEvent event) {
+    	stage.setIconified(true);
+    }
 
     @FXML
     void initialize() {
-        assert mainPane != null : "fx:id=\"mainPane\" was not injected: check your FXML file 'About.fxml'.";
-        assert textArea != null : "fx:id=\"textArea\" was not injected: check your FXML file 'About.fxml'.";
-        
-        textArea.setText(
-        		"Version 1.0.0\n"
-        		+ "Build Information\n"
-        		+ "Version 1.0.0\n"
-        		+ "Date: 2018-07-11\n"
-        		+ "Java Version SE10\n"
-        		+ "\n"
-        		+ "Logging\n"
-        		+ "The default file path is ...\n"
-        		+ "\n"
-        		+ "ARTORT Center, Biomedical Engineering\n"
-        		
-        		);
-        textArea.setEditable(false);
-
+        assert textPane != null : "fx:id=\"textPane\" was not injected: check your FXML file 'About.fxml'.";
     }
+    
 }
+

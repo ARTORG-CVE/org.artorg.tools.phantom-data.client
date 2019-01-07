@@ -3,6 +3,7 @@ package org.artorg.tools.phantomData.client.modelUI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -99,13 +100,13 @@ public abstract class UIEntity<T> {
 				getItemClass().getSimpleName(), tableView.getTable().getItems().size(),
 				System.currentTimeMillis() - startTime));
 
-		List<T> castedItems = items.stream().map(item -> (T)item).collect(Collectors.toList());
+		List<T> castedItems = items.stream().map(item -> (T) item).collect(Collectors.toList());
 		tableView.getTable().getItems().clear();
 		tableView.getTable().getItems().addAll(castedItems);
-		
+
 		return tableView;
 	}
-	
+
 	public DbTableView<T> createDbTableView() {
 		long startTime = System.currentTimeMillis();
 		DbTableView<T> tableView = new DbTableView<>(getItemClass(), createDbTableBase());
@@ -177,6 +178,9 @@ public abstract class UIEntity<T> {
 		column = creator.createFilterColumn("Last modified",
 				path -> format.format(path.getDateLastModified()));
 		column.setItemsFilter(false);
+		Comparator<T> comparator1 =
+				(c1, c2) -> c1.getDateLastModified().compareTo(c2.getDateLastModified());
+		column.setAscendingSortComparator(comparator1);
 		columns.add(column);
 		columns.add(creator.createFilterColumn("Changed By", path -> {
 			if (path.getChanger().equalsId(UserAdmin.getAdmin())) return "admin";
@@ -185,6 +189,8 @@ public abstract class UIEntity<T> {
 		}));
 		column = creator.createFilterColumn("Added", path -> format.format(path.getDateAdded()));
 		column.setItemsFilter(false);
+		Comparator<T> comparator2 = (c1, c2) -> c1.getDateAdded().compareTo(c2.getDateAdded());
+		column.setAscendingSortComparator(comparator2);
 		columns.add(column);
 		columns.add(creator.createFilterColumn("Created By", path -> {
 			if (path.getCreator().equalsId(UserAdmin.getAdmin())) return "admin";

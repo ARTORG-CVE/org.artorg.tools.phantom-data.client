@@ -39,7 +39,11 @@ public class LoginController extends VGridBoxPane {
 		Collection<Person> persons = Connectors.get(Person.class).readAllAsSet().stream()
 				.filter(person -> person.isActive()).collect(Collectors.toList());
 		personChoiceBox.setItems(FXCollections.observableArrayList(persons));
-		FxUtil.setComboBoxCellFactory(personChoiceBox, p -> p.getAcademicName());
+		FxUtil.setComboBoxCellFactory(personChoiceBox, p -> {
+			if (p.equalsId(UserAdmin.getAdmin()))
+				return "admin";
+			return p.getAcademicName();
+		});
 
 		addRow("Users", personChoiceBox);
 		addRow("User", activeUser);

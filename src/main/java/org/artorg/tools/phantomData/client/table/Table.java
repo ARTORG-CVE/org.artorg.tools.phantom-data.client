@@ -111,9 +111,9 @@ public abstract class Table<T> {
 		this.columns.removeAll(removableColumns);
 
 		for (int i = 0; i < columns.size(); i++) {
-			if (i >= this.columns.size()) addColumn(this.columns.size(), columns.get(i));
+			if (i >= this.columns.size()) this.columns.add(this.columns.size(), columns.get(i));
 			if (!this.columns.get(i).getName().equals(columns.get(i).getName()))
-				addColumn(i, columns.get(i));
+				this.columns.add(i, columns.get(i));
 		}
 
 		if (isFilterable()) {
@@ -126,15 +126,7 @@ public abstract class Table<T> {
 		Logger.debug.println(getItemClass().getSimpleName() + " - Updated " + getColumns().size()
 				+ " column(s) in " + (System.currentTimeMillis() - startTime) + " ms");
 	}
-
-	private void addColumn(int index, AbstractColumn<T, ? extends Object> column) {
-		if (column instanceof AbstractFilterColumn) {
-			AbstractFilterColumn<T, ?> filterColumn = (AbstractFilterColumn<T, ?>) column;
-			filterColumn.setSortComparatorQueue(getSortComparatorQueue());
-		}
-		this.columns.add(index, column);
-	}
-
+	
 	public void resetFilter() {
 		filterPredicate = item -> true;
 		getFilteredItems().clear();

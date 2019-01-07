@@ -1,10 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="304.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <TextArea fx:id="textArea" layoutX="100.0" layoutY="39.0" prefHeight="200.0" prefWidth="200.0" promptText="343" text="sdf" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-   </children>
-</AnchorPane>
+<BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+   <bottom>
+      <AnchorPane BorderPane.alignment="CENTER" />
+   </bottom>
+   <right>
+      <VBox alignment="CENTER_RIGHT" prefHeight="200.0" prefWidth="100.0" spacing="50.0" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView>
+               <image>
+                  <Image url="@../img/artorgLogo.png" />
+               </image>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </ImageView>
+            <ImageView fitWidth="166.0">
+               <image>
+                  <Image url="@../img/inselLogo.png" />
+               </image>
+            </ImageView>
+         </children>
+         <BorderPane.margin>
+            <Insets right="10.0" />
+         </BorderPane.margin>
+      </VBox>
+   </right>
+   <center>
+      <AnchorPane minWidth="19.0" prefHeight="277.0" prefWidth="19.0" BorderPane.alignment="CENTER" />
+   </center>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+   <left>
+      <TextArea fx:id="textPane" editable="false" prefHeight="277.0" prefWidth="216.0" stylesheets="@../css/about.css" text="Product Version&#10;PhantomDb 1.0.0&#10;&#10;Build Information&#10;Date: 2019-01-08&#10;Java Version: jdk1.8.0_072&#10;Apache Maven 3.5.3&#10;&#10;Author &#10;Marc Hutzli&#10;https://github.com/hutzli&#10;&#10;Code&#10;https://github.com/ARTORG-CVE&#10;" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <padding>
+            <Insets left="10.0" top="10.0" />
+         </padding></TextArea>
+   </left>
+</BorderPane>
