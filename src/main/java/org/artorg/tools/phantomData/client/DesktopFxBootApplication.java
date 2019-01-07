@@ -1,6 +1,7 @@
 package org.artorg.tools.phantomData.client;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.artorg.tools.phantomData.server.DesktopFxBootServer;
 import org.artorg.tools.phantomData.server.boot.ConsoleFrame;
@@ -24,6 +25,7 @@ public class DesktopFxBootApplication extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		Locale.setDefault(Locale.ENGLISH);
 		Main.setStage(primaryStage);
 		List<String> rawArgs = getParameters().getRaw();
 		String[] args = rawArgs.toArray(new String[rawArgs.size()]);

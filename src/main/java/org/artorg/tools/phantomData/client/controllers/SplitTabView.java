@@ -47,8 +47,11 @@ import org.artorg.tools.phantomData.server.models.base.DbFile;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
+import javafx.concurrent.Task;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.IndexedCell;
 import javafx.scene.control.MenuItem;
@@ -79,6 +82,14 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		tableTabPane = createSmartTabPane();
 		itemAddEditTabPane = createSmartTabPane();
 		viewerTabPane = createSmartTabPane();
+
+		tableTabPane.getTabPane().setOnDragOver(event -> {
+			Logger.debug.println("Drag over");
+		});
+
+		tableTabPane.getTabPane().setOnDragDropped(event -> {
+			Logger.debug.println("Drag dropped");
+		});
 
 		super.setNodeAddPolicy(addTabPanePolicy);
 
@@ -233,7 +244,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 			if (view instanceof DbEntityView) ((DbEntityView) view).reload();
 		});
 		contextMenu.getItems().addAll(menuItem);
-		
+
 		menuItem = new MenuItem("Add item");
 		menuItem.setOnAction(event -> {
 			ItemEditor<Object> controller =
@@ -243,14 +254,14 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 					"Add " + view.getTable().getItemName());
 		});
 		contextMenu.getItems().addAll(menuItem);
-		
+
 		menuItem = new MenuItem("Open Viewer");
 		menuItem.setOnAction(event -> {
 			Scene3D scene3d = new Scene3D();
 			addTab(viewerTabPane.getTabPane(), scene3d, "Viewer");
 		});
 		contextMenu.getItems().addAll(menuItem);
-		
+
 		return contextMenu;
 	}
 
@@ -358,8 +369,8 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		});
 
 		addMenuItem(contextMenu, "Edit item", event -> {
-			ItemEditor<Object> controller =
-					(ItemEditor<Object>) Main.getUIEntity(view.getEntityItem().getClass()).createEditFactory();
+			ItemEditor<Object> controller = (ItemEditor<Object>) Main
+					.getUIEntity(view.getEntityItem().getClass()).createEditFactory();
 			if (controller == null) return;
 			controller.showEditMode(view.getEntityItem());
 			addTab(itemAddEditTabPane.getTabPane(), controller,
@@ -367,8 +378,8 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		});
 
 		addMenuItem(contextMenu, "Add item", event -> {
-			ItemEditor<Object> controller =
-					(ItemEditor<Object>) Main.getUIEntity(view.getEntityItem().getClass()).createEditFactory();
+			ItemEditor<Object> controller = (ItemEditor<Object>) Main
+					.getUIEntity(view.getEntityItem().getClass()).createEditFactory();
 			controller.setCreateTemplate(view.getEntityItem());
 			controller.showCreateMode();
 			addTab(itemAddEditTabPane.getTabPane(), controller,
@@ -376,21 +387,82 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		});
 
 		addMenuItem(contextMenu, "Delete", event -> {
-			ICrudConnector<Object> connector =
-					(ICrudConnector<Object>) Connectors.get(view.getEntityItem().getClass());
-			try {
-				if (connector.deleteById(((Identifiable<?>) view.getEntityItem()).getId()))
-					view.getTable().getItems().remove(view.getEntityItem());
-			} catch (NoUserLoggedInException e) {
-				Logger.warn.println(e.getMessage());
-				e.showAlert();
-			} catch (DeleteException e) {
-				Logger.error.println(e.getMessage());
-//				e.printStackTrace();
-				e.showAlert();
-			} catch (PermissionDeniedException e) {
-				e.showAlert();
-			}
+			List<Object> items = view.getEntityItems();
+			final List<Object> failuredItems = new ArrayList<>(items.size());
+			final List<Exception> exceptions = new ArrayList<>(items.size());
+			Platform.runLater(() -> {
+				Task<Void> task = new Task<Void>() {
+
+					@Override
+					protected Void call() throws Exception {
+						for (int i = 0; i < items.size(); i++) {
+							if (this.isCancelled()) break;
+							Object item = items.get(i);
+							ICrudConnector<Object> connector =
+									(ICrudConnector<Object>) Connectors.get(item.getClass());
+							try {
+								if (connector.deleteById(((Identifiable<?>) item).getId()))
+									view.getTable().getItems().remove(item);
+							} catch (NoUserLoggedInException e) {
+								Logger.warn.println(e.getMessage());
+								e.showAlert();
+								break;
+							} catch (DeleteException e) {
+								Logger.error.println(e.getMessage());
+								failuredItems.add(item);
+								exceptions.add(e);
+							} catch (PermissionDeniedException e) {
+								Logger.warn.println(e.getMessage());
+								failuredItems.add(item);
+								exceptions.add(e);
+							}
+							updateMessage(String.format("Deleting items %d/%d\n%s", i, items.size(),
+									getItemName(item)));
+							updateProgress(i + 1, items.size());
+						}
+						updateProgress(items.size(), items.size());
+
+						if (!exceptions.isEmpty()) throw new Exception();
+						return null;
+					}
+
+				};
+				task.setOnFailed(event2 -> {
+					if (!failuredItems.isEmpty()) {
+						if (failuredItems.size() == 1) {
+							Exception e = exceptions.get(0);
+							if (e instanceof DeleteException) ((DeleteException) e).showAlert();
+							else if (e instanceof PermissionDeniedException)
+								((PermissionDeniedException) e).showAlert();
+						} else {
+							Alert alert = new Alert(AlertType.ERROR);
+							alert.setTitle("Delete failure");
+							if (failuredItems.size() < 10) {
+								StringBuilder sb = new StringBuilder();
+								for (int i = 0; i < failuredItems.size(); i++) {
+									sb.append("  - ");
+									sb.append(exceptions.get(i).getClass().getSimpleName());
+									sb.append(":   ");
+									sb.append(getItemName(failuredItems.get(i)));
+									if (i != failuredItems.size() - 1) sb.append("\n");
+								}
+								alert.setContentText(String.format("%d %s(s) couldn't deleted\n%s",
+										failuredItems.size(), view.getItemClass().getSimpleName(),
+										sb.toString()));
+							} else {
+								alert.setContentText(String.format("%d %s(s) couldn't deleted",
+										failuredItems.size(), view.getItemClass().getSimpleName()));
+							}
+							alert.showAndWait();
+						}
+
+					}
+				});
+
+				SimpleProgressDialog dialog = new SimpleProgressDialog(task, "Deleting progress");
+				dialog.showAndWait();
+
+			});
 		});
 
 		addMenuItem(contextMenu, "Open Viewer", event -> {
@@ -424,6 +496,14 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		});
 
 		return contextMenu;
+	}
+
+	private String getItemName(Object item) {
+		if (item instanceof NameGeneratable) return ((NameGeneratable) item).toName();
+		else if (item instanceof Identifiable<?>)
+			return ((Identifiable<?>) item).getId().toString();
+		else
+			return item.toString();
 	}
 
 	private <T> void show3dInViewer(T item) {

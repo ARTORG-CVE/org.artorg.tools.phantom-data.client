@@ -6,16 +6,28 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.artorg.tools.phantomData.client.Main;
+import org.artorg.tools.phantomData.client.admin.UserAdmin;
+import org.artorg.tools.phantomData.client.connector.Connectors;
+import org.artorg.tools.phantomData.client.connector.ICrudConnector;
+import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
+import org.artorg.tools.phantomData.client.exceptions.PostException;
+import org.artorg.tools.phantomData.client.logging.Logger;
 import org.artorg.tools.phantomData.client.scene.CssGlyph;
+import org.artorg.tools.phantomData.client.scene.control.DbEntityView;
+import org.artorg.tools.phantomData.client.scene.control.EntityView;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
+import org.artorg.tools.phantomData.client.table.Table;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.AbstractPersonifiedEntity;
 import org.artorg.tools.phantomData.server.model.AbstractProperty;
@@ -48,6 +60,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -55,7 +68,10 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -66,9 +82,12 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -458,6 +477,8 @@ public class MainController extends StackPane {
 		Tab tab = new Tab(table.getTable().getTableName());
 		tab.setContent(table);
 
+		if (table.getItemClass() == DbFile.class) addFilesDragNDropListener(table);
+
 		return tab;
 	}
 
@@ -490,6 +511,114 @@ public class MainController extends StackPane {
 //        button.getStyleClass().add("tab-button");
 //        return button;
 //    }
+
+	private void addFilesDragNDropListener(EntityView view) {
+		view.getNode().setOnDragOver(event -> {
+			if (event.getGestureSource() != view.getNode() && event.getDragboard().hasFiles()) {
+				/* allow for both copying and moving, whatever user chooses */
+				event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+			}
+			event.consume();
+		});
+
+		view.getNode().setOnDragDropped(new EventHandler<DragEvent>() {
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public void handle(DragEvent event) {
+				Dragboard db = event.getDragboard();
+				if (db.hasFiles()) {
+					List<File> files = db.getFiles();
+					event.setDropCompleted(true);
+
+					ICrudConnector<DbFile> connector = Connectors.get(DbFile.class);
+
+					List<DbFile> dbFiles = files.stream().map(file -> new DbFile(file))
+							.collect(Collectors.toList());
+
+					Platform.runLater(() -> {
+						if (!UserAdmin.isUserLoggedIn()) {
+							openLoginLogoutFrame();
+							return;
+						}
+
+						Alert alert = new Alert(AlertType.CONFIRMATION);
+						alert.setTitle("Adding Files");
+						if (dbFiles.size() < 5) {
+							String filesText = dbFiles.stream()
+									.map(file -> file.getName() + "." + file.getExtension())
+									.collect(Collectors.joining("\n  - ", "  - ", ""));
+							alert.setContentText(String.format("Start import of %d files:\n%s",
+									dbFiles.size(), filesText));
+						} else
+							alert.setContentText(
+									String.format("Start import of %d files", dbFiles.size()));
+						alert.showAndWait();
+
+						if (alert.getResult() != ButtonType.OK) return;
+
+						Task<Void> task = new Task<Void>() {
+							@Override
+							protected Void call() throws Exception {
+
+								for (int i = 0; i < dbFiles.size(); i++) {
+									if (this.isCancelled()) break;
+									DbFile dbFile = dbFiles.get(i);
+									File file = files.get(i);
+									try {
+										dbFile.putFile(file);
+										connector.create(dbFile);
+									} catch (NoUserLoggedInException e) {
+										Logger.warn.println(e.getMessage());
+										e.showAlert();
+									} catch (PostException e) {
+										Logger.error.println(e.getMessage());
+										e.printStackTrace();
+										e.showAlert();
+									}
+									updateMessage(String.format("Copying files  %d/%d\n%s", i,
+											dbFiles.size(),
+											dbFile.getName() + "." + dbFile.getExtension()));
+									updateProgress(i + 1, dbFiles.size());
+								}
+								return null;
+							}
+						};
+
+						SimpleProgressDialog dialog =
+								new SimpleProgressDialog(task, "Copying progress");
+						dialog.showAndWait();
+
+						if (view instanceof DbEntityView) ((DbEntityView) view).reload();
+						List<DbFile> items = ((Table<DbFile>) view.getTable()).getItems();
+						List<UUID> newIds = dbFiles.stream().map(dbFile -> dbFile.getId())
+								.collect(Collectors.toList());
+						List<Integer> newIndexes = new ArrayList<>();
+						for (int j = 0; j < items.size(); j++) {
+							DbFile item = items.get(j);
+							if (newIds.stream().filter(id -> id.equals(item.getId())).findFirst()
+									.isPresent())
+								newIndexes.add(j);
+						}
+
+						if (newIndexes.size() == 1)
+							view.getSelectionModel().select(newIndexes.get(0));
+						else if (newIndexes.size() > 1) {
+							int row = newIndexes.get(0);
+							int[] rows = new int[newIndexes.size() - 1];
+							for (int k = 0; k < rows.length; k++) {
+								rows[k] = newIndexes.get(k + 1);
+							}
+							view.getSelectionModel().selectIndices(row, rows);
+						}
+					});
+				}
+
+				event.consume();
+			}
+		});
+
+	}
 
 	public static String getUrlLocalhost() {
 		return urlLocalhost;

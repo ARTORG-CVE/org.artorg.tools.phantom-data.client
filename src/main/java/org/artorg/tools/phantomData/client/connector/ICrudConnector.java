@@ -1,6 +1,7 @@
 package org.artorg.tools.phantomData.client.connector;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -41,7 +42,7 @@ public interface ICrudConnector<T> {
 
 	void removeListener(MapChangeListener<String, T> listener);
 
-	default boolean create(List<T> t) throws NoUserLoggedInException, PostException {
+	default boolean create(Collection<T> t) throws NoUserLoggedInException, PostException {
 		if (t == null) throw new PostException(getItemClass(), " item == null");
 		for (T e : t)
 			if (!create(e)) return false;
@@ -92,13 +93,7 @@ public interface ICrudConnector<T> {
 		return true;
 	}
 
-	default boolean update(List<T> t) throws NoUserLoggedInException, PutException, PermissionDeniedException {
-		for (T e : t)
-			if (!update(e)) return false;
-		return true;
-	}
-
-	default boolean update(Set<T> t) throws NoUserLoggedInException, PutException, PermissionDeniedException {
+	default boolean update(Collection<T> t) throws NoUserLoggedInException, PutException, PermissionDeniedException {
 		for (T e : t)
 			if (!update(e)) return false;
 		return true;

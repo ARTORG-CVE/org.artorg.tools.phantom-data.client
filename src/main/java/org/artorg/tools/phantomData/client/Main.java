@@ -109,12 +109,13 @@ public class Main extends DesktopFxBootApplication {
 				.filter(c -> c.isAnnotationPresent(Entity.class))
 				.sorted((cls1, cls2) -> cls1.getSimpleName().compareTo(cls2.getSimpleName()))
 				.collect(Collectors.toList());
-		propertyClasses =
-				entityClasses.stream().filter(cls -> AbstractProperty.class.isAssignableFrom(cls))
-						.map(cls -> (Class<? extends AbstractProperty>) cls).collect(Collectors.toList());
+		propertyClasses = entityClasses.stream()
+				.filter(cls -> AbstractProperty.class.isAssignableFrom(cls))
+				.map(cls -> (Class<? extends AbstractProperty>) cls).collect(Collectors.toList());
 		propertifiedClasses = entityClasses.stream()
 				.filter(cls -> AbstractPropertifiedEntity.class.isAssignableFrom(cls))
-				.map(cls -> (Class<? extends AbstractPropertifiedEntity>) cls).collect(Collectors.toList());
+				.map(cls -> (Class<? extends AbstractPropertifiedEntity>) cls)
+				.collect(Collectors.toList());
 		uiEntities = new HashMap<>();
 
 	}
@@ -339,5 +340,5 @@ public class Main extends DesktopFxBootApplication {
 	public static List<Class<? extends AbstractPropertifiedEntity>> getPropertifiedclasses() {
 		return propertifiedClasses;
 	}
-	
+
 }

@@ -254,6 +254,10 @@ public class CrudConnector<T> implements ICrudConnector<T> {
 		if (id == null) throw new DeleteException(getItemClass(), " item == null");
 		if (!UserAdmin.isUserLoggedIn()) throw new NoUserLoggedInException();
 		if (!permissionGranted()) throw new PermissionDeniedException();
+		if (getItemClass() == Person.class && UserAdmin.getHutzli().getId().equals(id)) {
+			if (!UserAdmin.getUser().equalsId(UserAdmin.getHutzli()))
+				throw new PermissionDeniedException();
+		}
 		try {
 			HttpHeaders headers = createHttpHeaders();
 			RestTemplate restTemplate = new RestTemplate();
