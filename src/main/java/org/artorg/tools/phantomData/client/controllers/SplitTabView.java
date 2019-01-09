@@ -10,11 +10,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -41,6 +42,7 @@ import org.artorg.tools.phantomData.client.scene.layout.AddableToPane;
 import org.artorg.tools.phantomData.client.util.FxUtil;
 import org.artorg.tools.phantomData.server.model.DbPersistent;
 import org.artorg.tools.phantomData.server.model.Identifiable;
+import org.artorg.tools.phantomData.server.model.IdentifiableUUID;
 import org.artorg.tools.phantomData.server.model.NameGeneratable;
 import org.artorg.tools.phantomData.server.models.base.DbFile;
 
@@ -72,8 +74,6 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 	private final SmartTabPane viewerTabPane;
 	private boolean controlDown;
 	private List<Runnable> menuItemUpdater;
-	private int index;
-	private Function<Integer, SplitTabView> twinGetter;
 
 	{
 		splitPane = super.getSplitPane();
@@ -103,9 +103,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 	}
 
-	public SplitTabView(int index, Function<Integer, SplitTabView> twinGetter) {
-		this.index = index;
-		this.twinGetter = twinGetter;
+	public SplitTabView() {
 
 		Platform.runLater(() -> {
 			Main.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
@@ -123,6 +121,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		SmartTabPane smartTabPane = new SmartTabPane();
 		smartTabPane.setParentItemsSupplier(() -> this.getSplitPane().getItems());
 		smartTabPane.setNodeAddPolicy(tabPane -> addTabPanePolicy((TabPane) tabPane));
+		smartTabPane.setNodeRemovePolicy(tabPane -> removeTabPanePolicy((TabPane) tabPane));
 		return smartTabPane;
 	}
 
@@ -148,15 +147,15 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void openTreeTableViewBelow(EntityView view) {
-		Collection<Object> items = view.getSelectedItems();
+	private void openTreeTableViewBelow(Class<?> itemClass, String tabName,
+			Collection<Object> items) {
 		DbTreeTableView<Object> treeTableView =
-				((UIEntity<Object>) Main.getUIEntity(view.getItemClass()))
-						.createProTreeTableView(items);
+				((UIEntity<Object>) Main.getUIEntity(itemClass)).createProTreeTableView();
+		treeTableView.setItems(items);
 
-		SplitTabView splitTabView = twinGetter.apply(index + 1);
+		SplitTabView splitTabView = Main.getMainController().getSplitTabViews().get(1);
 
-		String tabName = view.getItemClass().getSimpleName();
+//		String tabName = view.getItemClass().getSimpleName();
 		if (items.size() == 1)
 			tabName = ((DbPersistent<?, ?>) items.iterator().next()).getItemClass().getSimpleName();
 		Tab tab = new Tab(tabName);
@@ -206,17 +205,48 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		if (node instanceof DbTreeTableView) setTreeTableTab(tab, (DbTreeTableView<T>) node);
 	}
 
+	@SuppressWarnings("unchecked")
 	private <T> void setTableTab(Tab tab, ProTableView<T> view) {
-		view.setRowFactory(v -> (TableRow<T>) createContextMenu(view, new TableRow<T>()));
+		view.setRowFactory(v -> (TableRow<T>) addRowContextMenu(view, new TableRow<T>()));
 
 		view.getSelectionModel().selectedItemProperty()
 				.addListener((ChangeListener<T>) (observable, oldValue, newValue) -> {
+					T selectedItem = newValue;
+					if (newValue == null) return;
 					FxUtil.runNewSingleThreaded(() -> {
 						try {
 							Platform.runLater(() -> {
-								show3dInViewer(newValue);
+								show3dInViewer(selectedItem);
 							});
 						} catch (Exception e) {}
+					});
+					FxUtil.runNewSingleThreaded(() -> {
+						Platform.runLater(() -> {
+							TabPane tableTabPane = Main.getMainController().getSplitTabViews()
+									.get(1).getTableTabPane().getTabPane();
+							DbTreeTableView<T> treeTableView = null;
+							Node content;
+
+							int n = 0;
+							do {
+								content = tableTabPane.getSelectionModel().getSelectedItem()
+										.getContent();
+								if (content instanceof DbTreeTableView
+										&& ((DbTreeTableView<?>) content).getItemClass() == view
+												.getItemClass())
+									treeTableView = (DbTreeTableView<T>) content;
+								else {
+									SplitTabView.this.openTreeTableViewBelow(view.getItemClass(),
+											view.getTable().getTableName(),
+											Collections.emptyList());
+								}
+								if (n > 1) {
+									Logger.warn.println("Tree table couldn't generated");
+									break;
+								}
+							} while (treeTableView == null);
+							treeTableView.setItem(selectedItem);
+						});
 					});
 				});
 
@@ -225,7 +255,7 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 	}
 
 	private <T> void setTreeTableTab(Tab tab, DbTreeTableView<T> view) {
-		view.setRowFactory(tableView -> (TreeTableRow<NamedTreeItem>) createContextMenu(view,
+		view.setRowFactory(tableView -> (TreeTableRow<NamedTreeItem>) addRowContextMenu(view,
 				new TreeTableRow<NamedTreeItem>()));
 		view.setContextMenu(createOutterContextMenu(tab, view));
 	}
@@ -265,8 +295,8 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		return contextMenu;
 	}
 
-	private <T> IndexedCell<T> createContextMenu(EntityView view, IndexedCell<T> row) {
-		ContextMenu contextMenu = createContextMenu(view);
+	private <T> IndexedCell<T> addRowContextMenu(EntityView view, IndexedCell<T> row) {
+		ContextMenu contextMenu = createRowContextMenu(view);
 
 		// only display context menu for non-null items:
 		row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
@@ -289,28 +319,9 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		return row;
 	}
 
-//	private <T> TreeTableRow<NamedTreeItem> createTreeTableViewContext(DbTreeTableView<T> view) {
-//		final TreeTableRow<NamedTreeItem> row = new TreeTableRow<NamedTreeItem>();
-//		final ContextMenu rowMenu = new ContextMenu();
-//
-//		addMenuItem(rowMenu, "Show Table View", event -> {
-//			changeToTableView(view);
-//		});
-//
-//		addMenuItem(rowMenu, "Reload", event -> view.reload());
-//
-//		// only display context menu for non-null items:
-//		row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty()))
-//				.then(rowMenu).otherwise((ContextMenu) null));
-//
-//		return row;
-//	}
-
 	@SuppressWarnings("unchecked")
-	private ContextMenu createContextMenu(EntityView view) {
-
+	private ContextMenu createRowContextMenu(EntityView view) {
 		final ContextMenu contextMenu = new ContextMenu();
-
 		if (view.getItemClass() == DbFile.class) {
 			addMenuItem(contextMenu, "Open", event -> {
 				List<DbFile> selectedDbFiles =
@@ -467,8 +478,14 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 		addMenuItem(contextMenu, "Open Viewer", event -> {
 			Scene3D scene3d = new Scene3D();
-			scene3d.loadFile(get3dFile(view.getEntityItem()));
-			addTab(viewerTabPane.getTabPane(), scene3d, "Viewer");
+			File file = get3dFile(view.getEntityItem());
+			if (file != null) {
+				scene3d.loadFile(file);
+				addTab(viewerTabPane.getTabPane(), scene3d, "Viewer");
+			} else
+				Logger.warn.println(
+						"File not supported for viewer: " + getItemName(view.getEntityItem()));
+
 		});
 
 		if (view instanceof TableView) {
@@ -492,7 +509,8 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		}
 
 		addMenuItem(contextMenu, "Show Tree below", event -> {
-			openTreeTableViewBelow(view);
+			openTreeTableViewBelow(view.getItemClass(), view.getTable().getTableName(),
+					(Collection<Object>) view.getSelectedItems());
 		});
 
 		return contextMenu;
@@ -536,8 +554,13 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 
 		List<DbFile> files = getFiles(item);
 		if (files != null && !files.isEmpty()) {
-			Optional<DbFile> optionalFile = files.stream()
-					.filter(dbFile -> dbFile.getExtension().equalsIgnoreCase("stl")).findFirst();
+			UUID previewId = IdentifiableUUID.getUuid("57d35e8c805c4b2693a89dd44f1c7a16");
+			Optional<DbFile> optionalFile =
+					files.stream().filter(dbFile -> dbFile.getExtension().equalsIgnoreCase("stl"))
+							.filter(dbFile -> dbFile.getFileTags().stream()
+									.filter(fileTag -> fileTag.getId().equals(previewId))
+									.findFirst().isPresent())
+							.findFirst();
 			if (optionalFile.isPresent()) return optionalFile.get().createFile();
 		}
 		return null;
@@ -595,6 +618,11 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		updateDividerPositions(tabPane);
 	}
 
+	public void removeTabPanePolicy(TabPane tabPane) {
+		splitPane.getItems().remove(tabPane);
+		updateDividerPositions(tabPane);
+	}
+
 	public void updateDividerPositions(TabPane tabPane) {
 		final double tablePortion = 0.7;
 		final double viewerPortion = 0.3;
@@ -615,6 +643,10 @@ public class SplitTabView extends SmartSplitTabPane implements AddableToPane {
 		splitPane.setDividerPositions(positions);
 
 	}
+
+//	private double getPortion(TabPane tabPane, int n) {
+//		if (tabPane == getTableTabPane().getTabPane()) return 0.6;
+//	}
 
 	public SmartTabPane getTableTabPane() {
 		return tableTabPane;

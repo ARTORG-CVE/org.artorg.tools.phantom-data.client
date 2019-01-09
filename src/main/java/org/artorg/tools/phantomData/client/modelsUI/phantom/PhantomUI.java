@@ -12,6 +12,7 @@ import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.editor.ItemEditor;
 import org.artorg.tools.phantomData.client.editor.PropertyGridPane;
 import org.artorg.tools.phantomData.client.editor.TitledPropertyPane;
+import org.artorg.tools.phantomData.client.exceptions.InvalidUIInputException;
 import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.client.exceptions.PostException;
 import org.artorg.tools.phantomData.client.modelUI.UIEntity;
@@ -103,7 +104,6 @@ public class PhantomUI extends UIEntity<Phantom> {
 				(path, value) -> path.setViable(Boolean.valueOf(value))));
 		createCountingColumn(table, "Files", columns, item -> item.getFiles());
 		createCountingColumn(table, "Measurements", columns, item -> item.getMeasurements());
-		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
 		createPropertyColumns(table, columns, items);
 		createPersonifiedColumns(table, columns);
 
@@ -125,6 +125,16 @@ public class PhantomUI extends UIEntity<Phantom> {
 		ItemEditor<Phantom> editor = new ItemEditor<Phantom>(Phantom.class) {
 
 			@Override
+			public void onCreatingClient(Phantom item) throws InvalidUIInputException {
+				checkPid();
+			}
+
+			@Override
+			public void onUpdatingClient(Phantom item) throws InvalidUIInputException {
+				checkPid();
+			}
+
+			@Override
 			public void onCreatingServer(Phantom item)
 					throws NoUserLoggedInException, PostException {
 				setPhantomina(item);
@@ -140,11 +150,7 @@ public class PhantomUI extends UIEntity<Phantom> {
 				ICrudConnector<Phantomina> connector = Connectors.get(Phantomina.class);
 				List<Phantomina> phantominas = connector.readAllAsList();
 
-				String pid = Phantomina.createProductId(
-						comboBoxAnnulusDiameter.getSelectionModel().getSelectedItem(),
-						comboBoxFabricationType.getSelectionModel().getSelectedItem(),
-						comboBoxLiteratureBase.getSelectionModel().getSelectedItem(),
-						comboBoxSpecial.getSelectionModel().getSelectedItem());
+				String pid = getPhantominaPid();
 				Optional<Phantomina> optional =
 						phantominas.stream().filter(p -> p.getProductId().equals(pid)).findFirst();
 				if (optional.isPresent()) {
@@ -158,6 +164,34 @@ public class PhantomUI extends UIEntity<Phantom> {
 					connector.create(phantomina);
 					item.setPhantomina(phantomina);
 				}
+			}
+
+			private void checkPid() throws InvalidUIInputException {
+				int number = 0;
+				String sNumber = textFieldNumber.getText();
+				try {
+					number = Integer.valueOf(sNumber);
+				} catch (NumberFormatException e) {
+					throw new InvalidUIInputException(Phantom.class, "Invalid number");
+				}
+				if (number < 1) throw new InvalidUIInputException(Phantom.class,
+						"Invalid number. Number has to be > 0.");
+				String pid = Phantom.createProductId(getPhantominaPid(), number);
+				List<Phantom> phantoms = Connectors.get(Phantom.class).readAllAsList();
+				if (phantoms.stream().map(phantom -> phantom.getProductId())
+						.filter(pid2 -> pid2.equals(pid)).findFirst().isPresent()) {
+					if (!(this.getItem() != null && this.getItem().getProductId().equals(pid)))
+					throw new InvalidUIInputException(Phantom.class,
+							String.format("Phantom with pid %s exists already", pid));
+				}
+			}
+
+			private String getPhantominaPid() {
+				return Phantomina.createProductId(
+						comboBoxAnnulusDiameter.getSelectionModel().getSelectedItem(),
+						comboBoxFabricationType.getSelectionModel().getSelectedItem(),
+						comboBoxLiteratureBase.getSelectionModel().getSelectedItem(),
+						comboBoxSpecial.getSelectionModel().getSelectedItem());
 			}
 
 		};
@@ -193,12 +227,11 @@ public class PhantomUI extends UIEntity<Phantom> {
 						editor.createComboBox(Material.class, item -> item.getMaterial(),
 								(item, value) -> item.setMaterial(value))
 								.setMapper(m -> m.getName()));
-		propertyPane.addEntry("Nominal thickness",
+		propertyPane.addEntry("Nominal thickness [mm]",
 				editor.createTextField(item -> Float.toString(item.getThickness()),
 						(item, value) -> item.setThickness(Float.valueOf(value))));
 		propertyPane.addEntry("Viable", editor.createCheckBox(item -> item.isViable(),
 				(item, value) -> item.setViable(value), true));
-//		propertyPane.autosizeColumnWidths();
 		editor.add(new TitledPropertyPane("General", propertyPane));
 
 		editor.add(new TitledPropertyPane("Files",
@@ -216,11 +249,11 @@ public class PhantomUI extends UIEntity<Phantom> {
 					comboBoxLiteratureBase.getSelectionModel().getSelectedItem(),
 					comboBoxSpecial.getSelectionModel().getSelectedItem());
 			String text = textFieldNumber.getText();
-			if (text.isEmpty()) return;
+			int number = 0;
 			try {
-				int number = Integer.valueOf(text);
-				labelIdValue.setText(Phantom.createProductId(phantominaPid, number));
+				number = Integer.valueOf(text);
 			} catch (NumberFormatException e) {}
+			labelIdValue.setText(Phantom.createProductId(phantominaPid, number));
 		};
 
 		comboBoxAnnulusDiameter.getSelectionModel().selectedItemProperty()
@@ -230,6 +263,8 @@ public class PhantomUI extends UIEntity<Phantom> {
 		comboBoxLiteratureBase.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> updateId.run());
 		comboBoxSpecial.getSelectionModel().selectedItemProperty()
+				.addListener((observable, oldValue, newValue) -> updateId.run());
+		textFieldNumber.textProperty()
 				.addListener((observable, oldValue, newValue) -> updateId.run());
 
 		editor.closeTitledNonGeneralPanes();

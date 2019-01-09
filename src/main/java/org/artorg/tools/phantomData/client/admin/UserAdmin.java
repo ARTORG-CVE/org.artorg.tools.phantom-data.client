@@ -1,14 +1,13 @@
 package org.artorg.tools.phantomData.client.admin;
 
-import java.math.BigInteger;
 import java.util.List;
-import java.util.UUID;
 
 import org.artorg.tools.phantomData.client.Main;
 import org.artorg.tools.phantomData.client.connector.Connectors;
 import org.artorg.tools.phantomData.client.connector.ICrudConnector;
 import org.artorg.tools.phantomData.client.connector.PersonifiedCrudConnector;
 import org.artorg.tools.phantomData.client.logging.Logger;
+import org.artorg.tools.phantomData.server.model.IdentifiableUUID;
 import org.artorg.tools.phantomData.server.models.base.person.Person;
 
 import javafx.application.Platform;
@@ -60,20 +59,16 @@ public class UserAdmin {
 
 	public static Person getHutzli() {
 		return Connectors.get(Person.class).readAllAsList().stream().filter(
-				person -> person.getId().equals(getUuid("624f42e6252b40c98eecd346f989c0cc")))
+				person -> person.getId().equals(IdentifiableUUID.getUuid("624f42e6252b40c98eecd346f989c0cc")))
 				.findFirst().get();
 	}
 
 	public static Person getAdmin() {
 		return Connectors.get(Person.class).readAllAsList().stream().filter(
-				person -> person.getId().equals(getUuid("2ccc4440340a4afc9a0307d4167fcefe")))
+				person -> person.getId().equals(IdentifiableUUID.getUuid("2ccc4440340a4afc9a0307d4167fcefe")))
 				.findFirst().get();
 	}
 
-	public static UUID getUuid(String s) {
-		String s2 = s.replace("-", "");
-		return new UUID(new BigInteger(s2.substring(0, 16), 16).longValue(),
-				new BigInteger(s2.substring(16), 16).longValue());
-	}
+	
 
 }

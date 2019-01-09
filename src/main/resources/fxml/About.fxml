@@ -41,7 +41,7 @@
       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
    </padding>
    <left>
-      <TextArea fx:id="textPane" editable="false" prefHeight="277.0" prefWidth="216.0" stylesheets="@../css/about.css" text="Product Version&#10;PhantomDb 1.0.0&#10;&#10;Build Information&#10;Date: 2019-01-08&#10;Java Version: jdk1.8.0_072&#10;Apache Maven 3.5.3&#10;&#10;Author &#10;Marc Hutzli&#10;https://github.com/hutzli&#10;&#10;Code&#10;https://github.com/ARTORG-CVE&#10;" BorderPane.alignment="CENTER">
+      <TextArea fx:id="textPane" editable="false" prefHeight="277.0" prefWidth="216.0" stylesheets="@../css/about.css" text="Product Version&#10;Phantom Database 1.0.0&#10;&#10;Build Information&#10;Date: 2019-01-08&#10;Java Version: jdk1.8.0_072&#10;Apache Maven 3.5.3&#10;&#10;Author &#10;Marc Hutzli&#10;https://github.com/hutzli&#10;&#10;Code&#10;https://github.com/ARTORG-CVE&#10;" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets />
          </BorderPane.margin>

@@ -108,7 +108,6 @@ public class SmartTabPane extends SmartNode {
 						removeHeader(headerMode);
 						if (tabPane.getTabs().size() == 0)  {
 							getNodeRemovePolicy().accept(tabPane);
-							getNodeRemovePolicy().accept(contentNode);
 							contentNode = null;
 						}						
 					}

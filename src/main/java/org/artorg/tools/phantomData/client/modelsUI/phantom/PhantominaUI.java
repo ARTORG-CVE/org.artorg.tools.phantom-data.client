@@ -56,10 +56,9 @@ public class PhantominaUI extends UIEntity<Phantomina> {
 				editor.createFilterColumn("Literature", path -> path.getLiteratureBase().getValue(),
 						(path, value) -> path.getLiteratureBase().setValue(value)));
 		columns.add(
-				editor.createFilterColumn("Special", path -> path.getLiteratureBase().getShortcut(),
-						(path, value) -> path.getLiteratureBase().setShortcut(value)));
+				editor.createFilterColumn("Special", path -> path.getSpecial().getShortcut(),
+						(path, value) -> path.getSpecial().setShortcut(value)));
 		createCountingColumn(table, "Files", columns, item -> item.getFiles());
-		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
 		createPropertyColumns(table, columns, items);
 		createPersonifiedColumns(table, columns);
 		return columns;

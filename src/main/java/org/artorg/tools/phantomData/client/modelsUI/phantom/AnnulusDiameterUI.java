@@ -37,7 +37,6 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 		columns.add(editor.createFilterColumn("Value", path -> String.valueOf(path.getValue()),
 				(path, value) -> path.setValue(Double.valueOf(value))));
 		createCountingColumn(table, "Files", columns, item -> item.getFiles());
-		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
 		createPropertyColumns(table, columns, items);
 		createPersonifiedColumns(table, columns);
 		return columns;
@@ -59,7 +58,7 @@ public class AnnulusDiameterUI extends UIEntity<AnnulusDiameter> {
 		propertyPane.addEntry("Shortcut",
 				editor.create(labelShortcut, item -> Integer.toString(item.getShortcut()),
 						(item, value) -> item.setShortcut(Integer.valueOf(value))));
-		propertyPane.addEntry("Diameter []",
+		propertyPane.addEntry("Diameter [mm]",
 				editor.create(textFieldValue, item -> Double.toString(item.getValue()),
 						(item, value) -> item.setValue(Double.valueOf(value))));
 		editor.add(new TitledPropertyPane("General", propertyPane));

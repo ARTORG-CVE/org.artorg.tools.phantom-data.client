@@ -34,7 +34,6 @@ public class ManufacturingUI extends UIEntity<Manufacturing> {
 		columns.add(editor.createFilterColumn("Description", path -> path.getDescription(),
 				(path, value) -> path.setDescription(value)));
 		createCountingColumn(table, "Files", columns, item -> item.getFiles());
-		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
 		createPropertyColumns(table, columns, items);
 		createPersonifiedColumns(table, columns);
 		return columns;

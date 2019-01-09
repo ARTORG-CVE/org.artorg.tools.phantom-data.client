@@ -47,7 +47,6 @@ public class ProjectUI extends UIEntity<Project> {
 		createCountingColumn(table, "Measur.", columns, item -> item.getMeasurements());
 		createCountingColumn(table, "Simul.", columns, item -> item.getSimulations());
 		createCountingColumn(table, "Files", columns, item -> item.getFiles());
-		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
 		createPropertyColumns(table, columns, items);
 		createPersonifiedColumns(table, columns);
 		return columns;

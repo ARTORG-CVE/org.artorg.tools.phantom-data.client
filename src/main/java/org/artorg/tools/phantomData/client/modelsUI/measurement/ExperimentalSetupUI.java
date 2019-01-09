@@ -36,7 +36,6 @@ public class ExperimentalSetupUI extends UIEntity<ExperimentalSetup> {
 		columns.add(creator.createFilterColumn("Description", path -> path.getDescription(),
 				(path, value) -> path.setDescription(value)));
 		createCountingColumn(table, "Files", columns, item -> item.getFiles());
-		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
 		createPropertyColumns(table, columns, items);
 		createPersonifiedColumns(table, columns);
 		return columns;

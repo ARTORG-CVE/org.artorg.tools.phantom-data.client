@@ -9,7 +9,7 @@ public class PutException extends Exception {
 	private final Class<?> itemClass;
 
 	public PutException(Class<?> itemClass) {
-		this(itemClass, itemClass.getSimpleName() +" could not created");
+		this(itemClass, itemClass.getSimpleName() +" could not updated");
 	}
 	
 	public PutException(Class<?> itemClass, String message) {

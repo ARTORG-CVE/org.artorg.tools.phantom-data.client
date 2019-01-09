@@ -65,7 +65,6 @@ public class DbFileUI extends UIEntity<DbFile> {
 				(path, value) -> path.setExtension(value)));
 		columns.add(creator.createFilterColumn("File Tags", path -> path.getFileTags().stream()
 				.map(fileTag -> fileTag.getName()).collect(Collectors.joining(", "))));
-		createCountingColumn(table, "Notes", columns, item -> item.getNotes());
 		createPersonifiedColumns(table, columns);
 		return columns;
 	}

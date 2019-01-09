@@ -101,12 +101,10 @@ public class DbTreeTableView<T> extends TreeTableView<NamedTreeItem>
 		super.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		setItems(getTable().getItems());
-
-		reload();
 	}
 
 	public void reload() {
-		getTable().readAllData();
+		getTable().reload();
 		setItems(getTable().getItems());
 		refresh();
 	}
@@ -131,6 +129,16 @@ public class DbTreeTableView<T> extends TreeTableView<NamedTreeItem>
 					mapper.apply(((AbstractPersonifiedEntity<?>) entity)));
 			return new ReadOnlyStringWrapper("");
 		};
+	}
+
+	public void setItem(T item) {
+		List<TreeItem<NamedTreeItem>> treeItems = new ArrayList<TreeItem<NamedTreeItem>>();
+		TreeItem<NamedTreeItem> treeItem = createTreeItem(new NamedTreeItem(item,
+				((DbPersistent<?, ?>) item).getItemClass().getSimpleName(), "Items"), 0);
+		if (treeItem != null) treeItems.addAll(treeItem.getChildren());
+
+		root.getChildren().clear();
+		root.getChildren().addAll(treeItems);
 	}
 
 	public void setItems(Collection<T> items) {
@@ -256,8 +264,12 @@ public class DbTreeTableView<T> extends TreeTableView<NamedTreeItem>
 
 	@Override
 	public Collection<Object> getSelectedItems() {
-		return getSelectionModel().getSelectedItems().stream()
-				.map(treeItem -> treeItem.getValue().getValue())
+		return getSelectionModel().getSelectedItems().stream().map(treeItem -> {
+			if (treeItem == null) return null;
+			NamedTreeItem namedTreeItem = treeItem.getValue();
+			if (namedTreeItem == null) return null;
+			return namedTreeItem.getValue();
+		}).filter(value -> value != null)
 				.collect(Collectors.toCollection(() -> new ArrayList<Object>()));
 	}
 

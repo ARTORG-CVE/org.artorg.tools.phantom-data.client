@@ -26,6 +26,7 @@ import org.artorg.tools.phantomData.client.scene.CssGlyph;
 import org.artorg.tools.phantomData.client.scene.control.DbEntityView;
 import org.artorg.tools.phantomData.client.scene.control.EntityView;
 import org.artorg.tools.phantomData.client.scene.control.Scene3D;
+import org.artorg.tools.phantomData.client.scene.control.tableView.DbTableView;
 import org.artorg.tools.phantomData.client.scene.control.tableView.ProTableView;
 import org.artorg.tools.phantomData.client.scene.control.treeTableView.DbTreeTableView;
 import org.artorg.tools.phantomData.client.table.Table;
@@ -105,10 +106,12 @@ public class MainController extends StackPane {
 	private final StackPane rootPane;
 	private final SplitPane splitPane;
 	private final ObservableList<SplitTabView> splitTabViews;
+	private final List<SplitTabView> readOnlySplitTabViews;
 	private static String urlLocalhost;
 	private final Label statusLabel;
 	private final Rectangle coloredStatusBox;
 
+	@SuppressWarnings("unchecked")
 	public MainController(Stage stage) {
 		this.stage = stage;
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -122,6 +125,7 @@ public class MainController extends StackPane {
 		contentPane = new AnchorPane();
 		splitPane = new SplitPane();
 		splitTabViews = FXCollections.<SplitTabView>observableArrayList();
+		
 		menuBar = new MenuBar();
 
 		BorderPane desktopLayout = new BorderPane();
@@ -158,7 +162,8 @@ public class MainController extends StackPane {
 
 		addSplitTabView();
 		addSplitTabView();
-
+		readOnlySplitTabViews = FXCollections.unmodifiableObservableList(splitTabViews);
+		
 		initMenuBar(menuBar);
 
 		FxUtil.addToPane(contentPane, splitPane);
@@ -172,9 +177,11 @@ public class MainController extends StackPane {
 		}
 
 		try {
-			getOrCreate(0).openTableTab(createTableViewTab(Phantom.class));
-			getOrCreate(0).openViewerTab(createScene3dTab(null));
-			getOrCreate(1).openTableTab(createTreeTableViewTab(Phantom.class));
+			splitTabViews.get(0).openTableTab(createTableViewTab(Phantom.class));
+			splitTabViews.get(0).openViewerTab(createScene3dTab(null));
+			splitTabViews.get(1).openTableTab(createTreeTableViewTab(Phantom.class));
+			DbTableView<Phantom> phantomTable = (DbTableView<Phantom>) splitTabViews.get(0).getTableTabPane().getTabPane().getTabs().get(0).getContent();
+			phantomTable.getSelectionModel().selectFirst();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -284,8 +291,7 @@ public class MainController extends StackPane {
 	}
 
 	private void addSplitTabView() {
-		SplitTabView splitTabView =
-				new SplitTabView(splitTabViews.size(), i -> splitTabViews.get(i));
+		SplitTabView splitTabView = new SplitTabView();
 		ContextMenu contextMenu = new ContextMenu();
 
 		Menu tableMenu = new Menu("Open Table");
@@ -487,13 +493,7 @@ public class MainController extends StackPane {
 		Tab tab = new Tab(name);
 		tab.setContent(table);
 		tab.setText(table.getTable().getTableName());
-		getOrCreate(row).openTableTab(tab);
-	}
-
-	public SplitTabView getOrCreate(int row) {
-		if (splitTabViews.size() - 1 < row) for (int i = splitTabViews.size() - 1; i < row; i++)
-			splitTabViews.add(new SplitTabView(splitTabViews.size(), j -> splitTabViews.get(j)));
-		return splitTabViews.get(row);
+		splitTabViews.get(row).openTableTab(tab);
 	}
 
 //	private Button createTabButton(String iconName) {
@@ -679,7 +679,7 @@ public class MainController extends StackPane {
 			AboutController controller = new AboutController(stage);
 			Parent parent =
 					FxUtil.loadFXML("fxml/About.fxml", controller, DesktopFxBootApplication.class);
-			FxUtil.openFrame("About PhantomDb", parent);
+			FxUtil.openFrame("About Phantom Database", parent);
 		});
 		menu.getItems().add(menuItem);
 		menuBar.getMenus().add(menu);
@@ -745,6 +745,10 @@ public class MainController extends StackPane {
 		} else if (level == Level.WARN) coloredStatusBox.setFill(Color.ORANGE);
 		else
 			coloredStatusBox.setFill(Color.GREEN);
+	}
+
+	public List<SplitTabView> getSplitTabViews() {
+		return readOnlySplitTabViews;
 	}
 
 }
