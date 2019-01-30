@@ -10,6 +10,8 @@ import org.artorg.tools.phantomData.client.exceptions.NoUserLoggedInException;
 import org.artorg.tools.phantomData.client.exceptions.PermissionDeniedException;
 import org.artorg.tools.phantomData.client.exceptions.PostException;
 import org.artorg.tools.phantomData.client.exceptions.PutException;
+import org.artorg.tools.phantomData.server.model.Identifiable;
+import org.artorg.tools.phantomData.server.model.IdentifiableUUID;
 import org.artorg.tools.phantomData.server.models.base.person.*;
 import org.artorg.tools.phantomData.server.models.base.property.*;
 import org.artorg.tools.phantomData.server.models.phantom.*;
@@ -35,6 +37,8 @@ public class DatabaseInitializer {
 		Connectors.get(IntegerProperty.class);
 	private static ICrudConnector<Special> specConn =
 		Connectors.get(Special.class);
+	private static ICrudConnector<Material> materialConn =
+			Connectors.get(Material.class);
 	private static ICrudConnector<Phantomina> phantominaConn =
 		Connectors.get(Phantomina.class);
 	private static ICrudConnector<Phantom> phantomConn =
@@ -82,10 +86,14 @@ public class DatabaseInitializer {
 			AcademicTitle noAcademicTitle = new AcademicTitle("", "No title");
 			academicTitleConnInit.create(noAcademicTitle);
 			Person hutzli = new Person(noAcademicTitle, "Marc", "Hutzli", "1234", male);
-			
+			hutzli.setId(IdentifiableUUID.getUuid("624f42e6252b40c98eecd346f989c0cc"));
+			hutzli.setPassword("1234");
 			personConnInit.create(hutzli);
-			personConnInit.update(hutzli);
-			academicTitleConnInit.update(noAcademicTitle);
+			
+			Person admin = new Person(noAcademicTitle, "ADMIN", "ADMIN", "1234", male);
+			admin.setId(IdentifiableUUID.getUuid("2ccc4440340a4afc9a0307d4167fcefe"));
+			admin.setPassword("1234");
+			personConnInit.create(admin);
 			
 			AcademicTitle master = new AcademicTitle("M.Sc.", "Master of Science");
 			academicTitleConn.create(new AcademicTitle("Dr.", "General Doctor title"));
@@ -98,7 +106,7 @@ public class DatabaseInitializer {
 			personConn.create(new Person(master, "Silje", "Ekroll Jahren", "1234", female));
 			personConn.create(new Person(master, "Joël", "Illi", "1234", male));
 			return hutzli;
-		} catch (NoUserLoggedInException | PostException | PutException e) {
+		} catch (NoUserLoggedInException | PostException e) {
 			e.printStackTrace();
 		}
 		throw new RuntimeException();	
@@ -182,28 +190,30 @@ public class DatabaseInitializer {
 		Manufacturing manufactPrintCast = new Manufacturing("3d print cast", "description");
 		manufactConn.create(manufactPrintCast);
 		
+		Material material = new Material("name", "description");
+		materialConn.create(material);
 		
 		Phantom[] phantoms = new Phantom[15];
-		phantoms[0] = createPhantom(21, "A", "C", "N", 3, manufactPrintCast, 3.0f);
-		phantoms[1] = createPhantom(21, "A", "C", "N", 5, manufactPrintCast, 3.0f);
-		phantoms[2] = createPhantom(21, "A", "C", "N", 7, manufactPrintCast, 3.0f);
-		phantoms[3] = createPhantom(21, "A", "C", "N", 8, manufactPrintCast, 3.0f);
-		phantoms[4] = createPhantom(21, "A", "C", "N", 9, manufactPrintCast, 3.0f);
-		phantoms[5] = createPhantom(21, "A", "C", "N", 12, manufactPrintCast, 3.0f);
-		phantoms[6] = createPhantom(21, "A", "J", "L", 1, manufactPrintCast, 3.0f);
-		phantoms[7] = createPhantom(25, "A", "J", "L", 1, manufactPrintCast, 3.0f);
-		phantoms[8] = createPhantom(25, "A", "J", "L", 2, manufactPrintCast, 3.0f);
-		phantoms[9] = createPhantom(25, "A", "J", "L", 3, manufactPrintCast, 3.0f);
-		phantoms[10] = createPhantom(25, "A", "J", "L", 5, manufactPrintCast, 3.0f);
-		phantoms[11] = createPhantom(25, "A", "J", "L", 6, manufactPrintCast, 3.0f);
-		phantoms[12] = createPhantom(25, "A", "J", "N", 1, manufactPrintCast, 3.0f);
-		phantoms[13] = createPhantom(25, "A", "J", "N", 2, manufactPrintCast, 3.0f);
-		phantoms[14] = createPhantom(21, "A", "P", "N", 1, manufactPrintCast, 3.0f);
+		phantoms[0] = createPhantom(21, "A", "C", "N", 3, manufactPrintCast, material, 3.0f);
+		phantoms[1] = createPhantom(21, "A", "C", "N", 5, manufactPrintCast, material, 3.0f);
+		phantoms[2] = createPhantom(21, "A", "C", "N", 7, manufactPrintCast, material, 3.0f);
+		phantoms[3] = createPhantom(21, "A", "C", "N", 8, manufactPrintCast, material, 3.0f);
+		phantoms[4] = createPhantom(21, "A", "C", "N", 9, manufactPrintCast, material, 3.0f);
+		phantoms[5] = createPhantom(21, "A", "C", "N", 12, manufactPrintCast, material, 3.0f);
+		phantoms[6] = createPhantom(21, "A", "J", "L", 1, manufactPrintCast, material, 3.0f);
+		phantoms[7] = createPhantom(25, "A", "J", "L", 1, manufactPrintCast, material, 3.0f);
+		phantoms[8] = createPhantom(25, "A", "J", "L", 2, manufactPrintCast, material, 3.0f);
+		phantoms[9] = createPhantom(25, "A", "J", "L", 3, manufactPrintCast, material, 3.0f);
+		phantoms[10] = createPhantom(25, "A", "J", "L", 5, manufactPrintCast, material, 3.0f);
+		phantoms[11] = createPhantom(25, "A", "J", "L", 6, manufactPrintCast, material, 3.0f);
+		phantoms[12] = createPhantom(25, "A", "J", "N", 1, manufactPrintCast, material, 3.0f);
+		phantoms[13] = createPhantom(25, "A", "J", "N", 2, manufactPrintCast, material, 3.0f);
+		phantoms[14] = createPhantom(21, "A", "P", "N", 1, manufactPrintCast, material, 3.0f);
 		phantomConn.create(phantoms);
 	}
 
 	private static Phantom createPhantom(int annulusDiameter, String fType,
-		String litBase, String special, int number, Manufacturing manufacturing, float thickness) throws NoUserLoggedInException, PostException {
+		String litBase, String special, int number, Manufacturing manufacturing, Material material, float thickness) throws NoUserLoggedInException, PostException {
 		AnnulusDiameter annulusDiameter2 =
 			adConn.readByAttribute(annulusDiameter, "shortcut");
 		FabricationType fType2 = fTypeConn.readByAttribute(fType, "shortcut");
@@ -222,7 +232,7 @@ public class DatabaseInitializer {
 			throw new UnsupportedOperationException();
 		}
 
-		return new Phantom(phantomina, number, manufacturing, null, thickness, true);
+		return new Phantom(phantomina, number, manufacturing, material, thickness, true);
 	}
 
 }

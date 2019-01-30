@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -481,8 +482,11 @@ public class MainController extends StackPane {
 		return tab;
 	}
 
+	@SuppressWarnings("unchecked")
 	private Tab createTreeTableViewTab(Class<?> itemClass) {
-		DbTreeTableView<?> table = Main.getUIEntity(itemClass).createProTreeTableView();
+		DbTreeTableView<Object> table = (DbTreeTableView<Object>) Main.getUIEntity(itemClass).createProTreeTableView();
+		Collection<Object> items = (Collection<Object>) Connectors.get(itemClass).readAllAsList();
+		table.setItems(items);
 		Tab tab = new Tab(table.getTable().getTableName());
 		tab.setContent(table);
 		tab.setText(table.getTable().getTableName());
