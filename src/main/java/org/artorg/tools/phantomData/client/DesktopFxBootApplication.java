@@ -38,7 +38,7 @@ public class DesktopFxBootApplication extends Application {
 
 		Platform.runLater(() -> {
 			Main.createBooter(consoleFrame, startupFrame, nConsoleLinesServer, nConsoleLinesClient)
-					.catchedBoot(args);
+					.securedBoot(args);
 		});
 	}
 

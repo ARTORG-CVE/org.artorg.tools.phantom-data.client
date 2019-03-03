@@ -33,6 +33,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.util.Callback;
 
+@SuppressWarnings("restriction")
 public class ProTableView<T> extends javafx.scene.control.TableView<T>
 		implements AddableToPane, EntityView {
 	private final Class<T> itemClass;

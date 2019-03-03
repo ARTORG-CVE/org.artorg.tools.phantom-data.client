@@ -129,7 +129,7 @@ public class Main extends DesktopFxBootApplication {
 		return new ServerBooter() {
 
 			@Override
-			protected void uncatchedBoot(String[] args) {
+			protected void unsecuredBoot(String[] args) {
 				Main.setBooter(this);
 				initBeforeServerStart(BootApplication.class, consoleFrame, startupFrame);
 				Logger.setDefaultOut(getBooter().getConsoleDiverter().getOut());
